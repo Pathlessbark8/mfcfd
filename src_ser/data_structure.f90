@@ -21,6 +21,12 @@ module data_structure_mod
 		integer :: nbhs
 		integer :: conn(15)
 !		
+		integer :: localID
+		integer :: globalID
+
+		integer :: flag1 ! stores location of point
+		integer :: flag2 ! stores shape point belongs to 
+
 		integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
 		integer :: xpos_conn(15), xneg_conn(15)
 		integer :: ypos_conn(15), yneg_conn(15)
