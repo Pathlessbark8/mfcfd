@@ -3,8 +3,6 @@ module point_preprocessor_mod
 	use data_structure_mod
 !
 	contains
-	!
-	!
 !
 !
 !
@@ -24,22 +22,29 @@ module point_preprocessor_mod
 !		
 !
 !		read(101,*) max_points, interior_points, outer_points, wall_points, shapes, (shape_points(r), r=1, shapes)
-		!
+
+		! input file format : 
+        ! max_points local_points
+        ! local_id global_id x_cord y_cord flag_1 flag_2 num_Connectivity connectivity[]
+
+		integer max_points, local_points
+		read(101,*) max_points, local_points
+
 		do i = 1, max_points
-				read(101,*) k, point(k)%x, point(k)%y, point(k)%nbhs, (point(k)%conn(r),r=1,point(k)%nbhs)
+				read(101,*) k, point(k)%global_id, point(k)%x, point(k)%y, point(k)%flag_1, point(k)%flag_2, point(k)%nbhs, (point(k)%conn(r),r=1,point(k)%nbhs)
 		enddo		
 !
-		do i = 1, interior_points
-			read(101,*) interior_points_index(i) 
-		enddo		
-!
-		do i = 1, outer_points
-			read(101,*) outer_points_index(i)
-		enddo	
-!
-		do i = 1, wall_points
-			read(101,*) wall_points_index(i) 
-		enddo
+! 		do i = 1, interior_points
+! 			read(101,*) interior_points_index(i) 
+! 		enddo		
+! !
+! 		do i = 1, outer_points
+! 			read(101,*) outer_points_index(i)
+! 		enddo	
+! !
+! 		do i = 1, wall_points
+! 			read(101,*) wall_points_index(i) 
+! 		enddo
 		!
 !
 !	The above lines of the code will remain the same for all test cases. 
@@ -47,11 +52,11 @@ module point_preprocessor_mod
 !	the wall points into respective shape points ..
 !	
 !	
-		do r = 1, shapes
-			do i = 1, shape_points(r)
-				read(101,*) shape_points_index(r, i) 				
-			enddo
-		enddo
+		! do r = 1, shapes
+		! 	do i = 1, shape_points(r)
+		! 		read(101,*) shape_points_index(r, i) 				
+		! 	enddo
+		! enddo
 !
 !		
 !
