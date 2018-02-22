@@ -1,25 +1,25 @@
 #Start of the makefile
+include makefile.in
 
 # defining the variables
 objects=meshfree_solver.o data_structure.o point_preprocessor.o parameter.o
-f90comp=gfortran  
-ccomp=gcc
+CC=gcc
 
 switch = -O3
 execname: $(objects) 
-	$(f90comp) -o execname $(switch) $(objects)
+	$(FC) -o execname $(switch) $(objects)
 
 meshfree_solver.o:  point_preprocessor.o data_structure.o parameter.o
-	$(f90comp) -c $(switch) meshfree_solver.f90
+	$(FC) -c $(switch) meshfree_solver.f90
 
 point_preprocessor.o: point_preprocessor.f90 data_structure.o
-	$(f90comp) -c $(switch) point_preprocessor.f90
+	$(FC) -c $(switch) point_preprocessor.f90
 
 data_structure.o: data_structure.f90 parameter.o
-	$(f90comp) -c $(switch) data_structure.f90
+	$(FC) -c $(switch) data_structure.f90
 
 parameter.o: parameter.f90 
-	$(f90comp) -c $(switch) parameter.f90
+	$(FC) -c $(switch) parameter.f90
 
 
 # Cleaning 
