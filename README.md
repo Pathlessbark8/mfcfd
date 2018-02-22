@@ -19,6 +19,10 @@ FreeFLOW is a 3D, parallel Meshfree solver integrated with Adjoint based Algorit
 #Running the program
 
 1. First, set the path to the cloned FreeFLOW directory to `$FF_DIR`.
+2. Go to examples directory and choose a test case.
+3. Make necessary changes in the paramter.f90 folder.
+4. Run `make all`.
+5. An executable `execname` will be generated. Run it.
 
 
 
