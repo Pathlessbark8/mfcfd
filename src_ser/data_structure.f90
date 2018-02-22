@@ -1,14 +1,26 @@
+! flag_1 : 	1 -> wall point      -> [2,160]
+! 		 	2 -> interior points -> {1},[161,9440]
+! 		 	3 -> outer points    -> [9441,9600]
+
 module data_structure_mod
 !
 !
 	use parameter_mod
 
-
 	implicit none
 
 	type :: points
 
+!	!	scanned from input file	!	!
 		real*8 :: x,y
+		integer :: local_id
+		integer :: global_id
+		integer :: flag_1 ! stores location of point
+		integer :: flag_2 ! stores shape point belongs to 
+		integer :: nbhs
+		integer :: conn(15)
+!	!	!	!	!	!	!	!	!	!		
+
 		real*8 :: nx, ny
 !		
 		real*8 :: rho, u1, u2, pr
@@ -17,15 +29,6 @@ module data_structure_mod
 		real*8 :: q(4), qx(4), qy(4)
 !
 		real*8 :: entropy, vorticity, vorticity_sqr
-!		
-		integer :: nbhs
-		integer :: conn(15)
-!		
-		integer :: local_id
-		integer :: global_id
-
-		integer :: flag_1 ! stores location of point
-		integer :: flag_2 ! stores shape point belongs to 
 
 		integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
 		integer :: xpos_conn(15), xneg_conn(15)
