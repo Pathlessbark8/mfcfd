@@ -5,10 +5,13 @@
 module data_structure_mod
 !
 !
-	use parameter_mod
+	! use parameter_mod
 
 	implicit none
 
+	integer :: max_points,local_points
+    integer::wall_points,interior_points,outer_points
+		
 	type :: points
 
 !	!	scanned from input file	!	!
@@ -37,14 +40,14 @@ module data_structure_mod
 	 end type points
 !
 !
-	type(points) :: point(max_points)
+	type(points) :: point(9600)
 	
 	save
 !
-	integer :: wall_points_index(wall_points)
-	integer :: outer_points_index(outer_points)
-	integer :: interior_points_index(interior_points)	
-	integer :: shape_points_index(shapes, max_shape_points)
+	! integer :: wall_points_index(wall_points)
+	! integer :: outer_points_index(outer_points)
+	! integer :: interior_points_index(interior_points)	
+	! integer :: shape_points_index(shapes, max_shape_points)
 !
 !
 	real*8	:: res_old, res_new, residue, max_res

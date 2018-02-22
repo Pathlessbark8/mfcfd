@@ -4,7 +4,7 @@ module parameter_mod
 	implicit none
 !
 !
-	integer, parameter :: max_points=9600
+!	integer, parameter :: max_points=9600
 !
 	integer, parameter :: max_iters=20000
 !
@@ -63,15 +63,15 @@ module parameter_mod
 !	Starting and end indices of various types of points ..
 !	
 !
-	integer, parameter :: interior_points = 9281
+!	integer, parameter :: interior_points = 9281
 !
-	integer, parameter :: outer_points = 160
+!	integer, parameter :: outer_points = 160
 !
-	integer, parameter :: wall_points = 159
+!	integer, parameter :: wall_points = 159
 !
-	integer, parameter :: shapes = 1
-	integer, parameter :: shape_points(1) = 160	
-	integer, parameter :: max_shape_points = 160
+	! integer, parameter :: shapes = 1
+	! integer, parameter :: shape_points(1) = 160	
+	! integer, parameter :: max_shape_points = 160
 !
 !	Note: max_shape_points is the maximum value of all 
 !	shape points (Maximum of shape_points_01, shape_points_02, ...)
