@@ -1,6 +1,0 @@
-FC = gfortran
-CC = gcc
-GIT_VERSION = $(shell cd $(UG3_DIR) && git describe --abbrev=8 --dirty --always)
-FFLAGS = -O3 -fdefault-real-8 -Wall -Wextra -Wno-unused-parameter \
-			-Wintrinsics-std -Winteger-division -Wsurprising \
-			-Wtabs -cpp -DVERSION=\"$(GIT_VERSION)\"

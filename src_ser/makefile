@@ -5,9 +5,11 @@ include makefile.in
 objects=meshfree_solver.o data_structure.o point_preprocessor.o parameter.o
 CC=gcc
 
+
 switch = -O3
+
 execname: $(objects) 
-	$(FC) -o execname $(switch) $(objects)
+	$(FC) $(FFLAGS) -o execname $(switch) $(objects)
 
 meshfree_solver.o:  point_preprocessor.o data_structure.o parameter.o
 	$(FC) -c $(switch) meshfree_solver.f90

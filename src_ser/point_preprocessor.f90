@@ -1,30 +1,31 @@
 module point_preprocessor_mod
 !
-	use data_structure_mod
+        use data_structure_mod
 !
-	contains
+        contains
 
-		subroutine read_input_point_data()
+                subroutine read_input_point_data()
 !
 !
-		implicit none
+                implicit none
 
-		integer i, k, r
+                integer i, k, r
+                
 
-!		NOTE : change file path accordingly to single partition file		
-		OPEN(UNIT=101,FILE="./../../metisPre/mfapre/partGrid0",FORM="FORMATTED",STATUS="OLD",ACTION="READ")
+		OPEN(UNIT=101,FILE="partGrid0",FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
 		! input file format : 
         ! max_points local_points
         ! local_id global_id x_cord y_cord flag_1 flag_2 num_Connectivity connectivity[]
 
 		read(101,*) max_points, local_points
+                allocate(point(max_points))
 
 		wall_points = 0
 		interior_points = 0
 		outer_points = 0
 		do i = 1, max_points
-				read(101,*) k, point(k)%global_id, point(k)%x, point(k)%y, &
+			read(101,*) k, point(k)%global_id, point(k)%x, point(k)%y, &
 				& point(k)%flag_1, point(k)%flag_2, point(k)%nbhs, (point(k)%conn(r),r=1,point(k)%nbhs)
 				IF(point(k)%flag_1 == 1) THEN
 					wall_points = wall_points + 1
