@@ -18,7 +18,7 @@ FreeFLOW is a 3D, parallel Meshfree solver integrated with Adjoint based Algorit
 
 #Running the program
 
-1. First, set the path to the cloned FreeFLOW directory to `$FF`.
+1. First, set the path to the cloned FreeFLOW directory to `$FF_DIR`.
 
 
 
