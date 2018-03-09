@@ -95,8 +95,8 @@ module parameter_mod
 	integer, parameter :: ckpts = 350
 !  
 !
-  REAL :: DATAN
-  EXTERNAL DATAN
+!  REAL :: DATAN
+!  EXTERNAL DATAN
 !	
 !
 end module parameter_mod

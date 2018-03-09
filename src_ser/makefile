@@ -9,10 +9,10 @@ CC=gcc
 switch = -O3
 
 execname: $(objects) 
-	$(FC) $(FFLAGS) -o execname $(switch) $(objects)
+	$(FC)  -o execname $(switch) $(objects)
 
 meshfree_solver.o:  point_preprocessor.o data_structure.o parameter.o
-	$(FC) -c $(switch) meshfree_solver.f90
+	$(FC) -c $(switch) meshfree_solver.f90 
 
 point_preprocessor.o: point_preprocessor.f90 data_structure.o
 	$(FC) -c $(switch) point_preprocessor.f90
@@ -26,7 +26,7 @@ parameter.o: parameter.f90
 
 # Cleaning 
 
-clean:
+clean::
 	rm -rf *.mod execname *.o
 
 # End of makefile ..

@@ -1,0 +1,14 @@
+FC = mpif90
+CC = gcc
+GIT_VERSION = $(shell cd $(FF_DIR) && git describe --abbrev=8 --dirty --always)
+
+
+FFLAGS = -march=native  -pipe -ffree-form -cpp \
+                        -Wall -Wextra -Wtabs -Wintrinsics-std -Wsurprising -Waliasing \
+                        -Wno-unused-parameter -Wno-unused-dummy-argument \
+                        -DVERSION=\"$(GIT_VERSION)\" \
+                        -I$(PETSC_DIR)/include
+
+LDFLAGS = -lpetsc -L$(PETSC_DIR)/lib
+
+

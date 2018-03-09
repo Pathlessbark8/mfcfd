@@ -9,7 +9,7 @@ module point_preprocessor_mod
 !
                 implicit none
 
-                integer i, k, r
+                integer:: i, k, r
                 
 
 		OPEN(UNIT=101,FILE="partGrid0",FORM="FORMATTED",STATUS="OLD",ACTION="READ")
@@ -25,16 +25,27 @@ module point_preprocessor_mod
 		interior_points = 0
 		outer_points = 0
 		do i = 1, max_points
-			read(101,*) k, point(k)%global_id, point(k)%x, point(k)%y, &
-				& point(k)%flag_1, point(k)%flag_2, point(k)%nbhs, (point(k)%conn(r),r=1,point(k)%nbhs)
-				IF(point(k)%flag_1 == 1) THEN
-					wall_points = wall_points + 1
-				ELSE IF(point(k)%flag_1 == 2) THEN
-					interior_points = interior_points + 1
-				ELSE IF(point(k)%flag_1 == 3) THEN
-					outer_points = outer_points + 1
-				END IF
+
+			read(101,'(i8)') k
+                        !,point(k)%global_id
+                        !&,point(k)%x
+                !,point(k)%y, point(k)%flag_1,point(k)%flag_2,point(k)%nbhs
+                
+                        !allocate(point(k)%conn(point(k)%nbhs))
+
+!                        read(101,*)(point(k)%conn(r),r=1,point(k)%nbhs)
+!				IF(point(k)%flag_1 == 1) THEN
+!					wall_points = wall_points + 1
+!				ELSE IF(point(k)%flag_1 == 2) THEN
+!					interior_points = interior_points + 1
+!				ELSE IF(point(k)%flag_1 == 3) THEN
+!					outer_points = outer_points + 1
+!				END IF
+                print*,k
 		enddo		
+
+
+!                print*,point(1)%conn(:)
 
 !	The above lines of the code will remain the same for all test cases. 
 !	However, depending on the number of shapes in the geometry, we divide
