@@ -9,7 +9,7 @@ module data_structure_mod
 
 	implicit none
 
-	integer :: max_points,local_points
+	integer :: max_points,local_points,ghost_points
         integer::wall_points,interior_points,outer_points
 		
 	type :: points
@@ -21,7 +21,7 @@ module data_structure_mod
 		integer :: flag_1 ! stores location of point
 		integer :: flag_2 ! stores shape point belongs to 
 		integer :: nbhs
-		integer, dimension(:),allocatable :: conn
+		integer :: conn(15)
 !	!	!	!	!	!	!	!	!	!		
 
 !		real*8 :: nx, ny

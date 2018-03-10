@@ -20,9 +20,8 @@ module point_preprocessor_mod
 
                 if (rank==0) print*,'Reading points'
 
-
                 part_grid = 'partGrid0'
-                if (proc>1) part_grid = 'partGrid'//trim(itos(1,rank))
+                if (proc>1) part_grid = 'partGrid'//trim(itos(2,rank))
 
                 
 		OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
@@ -40,7 +39,7 @@ module point_preprocessor_mod
 		wall_points = 0
 		interior_points = 0
 		outer_points = 0
-		do i = 1, local_points
+		do k = 1, local_points
 
 			read(101,*) point(k)%local_id,point(k)%global_id,point(k)%x &
                 &,point(k)%y, point(k)%flag_1,point(k)%flag_2,point(k)%nbhs,&
@@ -55,8 +54,9 @@ module point_preprocessor_mod
 		enddo	
 
                 if (proc > 1) then
+                        allocate(pghost(ghost_points))
                         do k=local_points+1,max_points
-                        read(101,*) point(k)%local_id,point(k-local_points)%pghost,&
+                        read(101,*) point(k)%local_id,pghost(k-local_points),&
                                 &point(k)%x,point(k)%y
                         enddo
 
@@ -64,7 +64,7 @@ module point_preprocessor_mod
 
 
 
-!                print*,point(1)%conn(:)
+                print*,point(1)%conn(:)
 
 !	The above lines of the code will remain the same for all test cases. 
 !	However, depending on the number of shapes in the geometry, we divide

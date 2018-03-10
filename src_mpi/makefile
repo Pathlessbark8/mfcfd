@@ -1,20 +1,23 @@
 #Start of the makefile
+
 include makefile.in
+
+
+
 
 # defining the variables
 objects=meshfree_solver.o data_structure.o point_preprocessor.o parameter.o utilities.o
 
 
-switch = -O3
 
-execname: $(objects) 
-	$(FC) $(FFLAGS) -o execname $(switch) $^ $(LDFLAGS)
+execname: $(objects)  
+	$(FC)  -o execname $(switch) $(objects) ${PETSC_LIB}
 
-meshfree_solver.o:  point_preprocessor.o data_structure.o parameter.o 
-	$(FC) $(FFLAGS) -c $(switch) meshfree_solver.F90 $(LDFLAGS)
+meshfree_solver.o: point_preprocessor.o data_structure.o parameter.o
+	$(FLINKER) -c  meshfree_solver.F90 
 
 point_preprocessor.o: point_preprocessor.F90 data_structure.o
-	$(FC) $(FFLAGS) -c $(switch) point_preprocessor.F90 $(LDFLAGS)
+	$(FLINKER)  -c  point_preprocessor.F90 
 
 data_structure.o: data_structure.F90 parameter.o 
 	$(FC)  -c $(switch) data_structure.F90 

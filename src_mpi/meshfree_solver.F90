@@ -7,7 +7,7 @@ program meshfree_solver
 !
 !
         use petscsys
-	use parameter_mod
+!	use parameter_mod
 	use data_structure_mod
 	use point_preprocessor_mod
 !    use initial_conditions_mod
@@ -17,9 +17,10 @@ program meshfree_solver
 !
 	implicit none
 
+
         PetscErrorCode          ::  ierr
 !
-        call PetscInitialize('parameter.F90', ierr)
+        call PetscInitialize(PETSC_NULL_CHARACTER, ierr)
         if(ierr /= 0) stop "Unable to initialize PETSc"
         call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr); CHKERRQ(ierr)
         call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr); CHKERRQ(ierr)
