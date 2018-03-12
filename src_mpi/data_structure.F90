@@ -13,7 +13,7 @@ module data_structure_mod
         integer::wall_points,interior_points,outer_points
 
         !ghost global indices
-        integer ,allocatable, dimension(:) :: pghost
+        integer , dimension(:), allocatable :: pghost
 		
 	type :: points
 
