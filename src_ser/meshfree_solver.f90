@@ -23,6 +23,9 @@ program meshfree_solver
 !	Assign the initial conditions for the primitive variables ..	
 !
 	call initial_conditions()
+
+
+        print*,'working till here'
 !
 !	Primal fixed point iterative solver ..
 !

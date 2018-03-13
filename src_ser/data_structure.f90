@@ -26,7 +26,7 @@ module data_structure_mod
 
 !		real*8 :: nx, ny
 !		
-!		real*8 :: rho, u1, u2, pr
+		real*8 :: rho, u1, u2, pr
 !		real*8 :: flux_res(4)
 !
 !		real*8 :: q(4), qx(4), qy(4)

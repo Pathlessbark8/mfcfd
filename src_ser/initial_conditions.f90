@@ -18,7 +18,7 @@ contains
 		!
 		if(initial_conditions_flag .eq. 0) then
 		!
-				do k=1, max_points
+				do k=1, local_points
 		!
 					point(k)%rho =	rho_inf
 					point(k)%u1	= Mach*dcos(theta)
@@ -30,7 +30,7 @@ contains
 		!
 				OPEN(UNIT=100,FILE="./structured-grid-160-60/stored-solution",FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
-				do k=1, max_points
+				do k=1, local_points
 						read(100,*) i, point(k)%rho, point(k)%u1, point(k)%u2, point(k)%pr
 				enddo	
 	!
