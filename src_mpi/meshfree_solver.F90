@@ -1,20 +1,17 @@
-!
-!	Updated on 26.12.2016
-!
-!
 program meshfree_solver
+
 #include <petsc/finclude/petscsys.h>
-!
-!
+
+
         use petscsys
 	use parameter_mod
 	use data_structure_mod
 	use point_preprocessor_mod
-!    use initial_conditions_mod
+        use initial_conditions_mod
 !	use q_lskum_mod
 !	use post_processing_mod
-!
-!
+
+
 	implicit none
 
 
@@ -31,7 +28,7 @@ program meshfree_solver
 !
 !	Assign the initial conditions for the primitive variables ..	
 !
-!	call initial_conditions()
+	call initial_conditions()
 !
 !	Primal fixed point iterative solver ..
 !
@@ -41,9 +38,6 @@ program meshfree_solver
 !
 !	call print_primal_output()
 
-
         call PetscFinalize(ierr); CHKERRQ(ierr)
-
-!
-!	
+	
 end program meshfree_solver
