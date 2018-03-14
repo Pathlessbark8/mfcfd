@@ -29,7 +29,7 @@ module data_structure_mod
 		integer :: conn(15)
 !	!	!	!	!	!	!	!	!	!		
 
-!		real*8 :: nx, ny
+		real*8 :: nx, ny
 !		
 		real*8 :: rho, u1, u2, pr
 !		real*8 :: flux_res(4)
