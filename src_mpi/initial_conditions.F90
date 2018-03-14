@@ -13,7 +13,7 @@ contains
 		if(initial_conditions_flag .eq. 0) then
 
 				do k=1, local_points
-					point(k)%rho =	rho_inf
+					point(k)%rho = rho_inf
 					point(k)%u1	= Mach*dcos(theta)
 					point(k)%u2	= Mach*dsin(theta)
 					point(k)%pr	= pr_inf

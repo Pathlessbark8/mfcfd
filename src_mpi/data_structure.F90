@@ -6,7 +6,7 @@ module data_structure_mod
 #include <petsc/finclude/petscvec.h>
 
 
-        use petscvec
+    use petscvec
 	use parameter_mod
 
 	implicit none
@@ -30,28 +30,28 @@ module data_structure_mod
 !	!	!	!	!	!	!	!	!	!		
 
 		real*8 :: nx, ny
-!		
+		
 		real*8 :: rho, u1, u2, pr
-!		real*8 :: flux_res(4)
-!
-!		real*8 :: q(4), qx(4), qy(4)
-!
-!		real*8 :: entropy, vorticity, vorticity_sqr
+		real*8 :: flux_res(4)
 
-!		integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-!		integer :: xpos_conn(15), xneg_conn(15)
-!		integer :: ypos_conn(15), yneg_conn(15)
-!
+		real*8 :: q(4), qx(4), qy(4)
+
+		real*8 :: entropy, vorticity, vorticity_sqr
+
+		integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
+		integer :: xpos_conn(15), xneg_conn(15)
+		integer :: ypos_conn(15), yneg_conn(15)
+
 	end type points
 	 
     type(points), dimension(:), allocatable :: point
 
 	save
-!
-!	integer :: wall_points_index(wall_points)
-!	integer :: outer_points_index(outer_points)
-!	integer :: interior_points_index(interior_points)	
-!	integer :: shape_points_index(shapes, max_shape_points)
+
+	integer :: wall_points_index(wall_points)
+	integer :: outer_points_index(outer_points)
+	integer :: interior_points_index(interior_points)	
+	integer :: shape_points_index(shapes, max_shape_points)
 
 
 !   real*8	:: res_old, res_new, residue, max_res
