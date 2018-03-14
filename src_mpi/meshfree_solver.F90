@@ -14,8 +14,9 @@ program meshfree_solver
 
 	implicit none
 
+        PetscErrorCode  :: ierr
 
-        PetscErrorCode          ::  ierr
+
 !
         call PetscInitialize(PETSC_NULL_CHARACTER, ierr)
         if(ierr /= 0) stop "Unable to initialize PETSc"
@@ -29,6 +30,10 @@ program meshfree_solver
 !	Assign the initial conditions for the primitive variables ..	
 !
 	call initial_conditions()
+
+         
+        if (proc > 1) call init_petsc()
+        print*,'working till here'
 !
 !	Primal fixed point iterative solver ..
 !
@@ -37,6 +42,8 @@ program meshfree_solver
 !	Printing the output (post-processing) ..
 !
 !	call print_primal_output()
+
+        if (proc>1) call dest_petsc()
 
         call PetscFinalize(ierr); CHKERRQ(ierr)
 	

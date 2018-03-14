@@ -3,8 +3,11 @@
 ! 		 	3 -> outer points    -> [9441,9600]
 
 module data_structure_mod
+#include <petsc/finclude/petscvec.h>
 
-!	use parameter_mod
+
+        use petscvec
+	use parameter_mod
 
 	implicit none
 
@@ -28,7 +31,7 @@ module data_structure_mod
 
 !		real*8 :: nx, ny
 !		
-!		real*8 :: rho, u1, u2, pr
+		real*8 :: rho, u1, u2, pr
 !		real*8 :: flux_res(4)
 !
 !		real*8 :: q(4), qx(4), qy(4)
@@ -59,6 +62,39 @@ module data_structure_mod
 
 !   PETSc variables
 
-    integer :: rank,proc
+    integer              :: rank,proc
+    Vec                  :: p_rho,p_u1,p_u2,p_pr
+
+    contains
+
+            subroutine init_petsc()
+                    implicit none
+                    PetscErrorCode       :: ierr
+                    integer              :: is,ie
+                    ghost_points = ghost_points - 1
+                    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(1)%rho,p_rho,ierr)
+
+                    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(1)%rho,p_u1,ierr)
+
+                    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(1)%rho,p_u2,ierr)
+
+                    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(1)%rho,p_pr,ierr)
+
+
+            end subroutine init_petsc
+
+            subroutine dest_petsc()
+                    implicit none
+                    PetscErrorCode      :: ierr
+                    
+
+                    call VecDestroy(p_rho,ierr)
+                    call VecDestroy(p_u1,ierr)
+                    call VecDestroy(p_u2,ierr)
+                    call VecDestroy(p_pr,ierr)
+
+            end subroutine dest_petsc
+
+
 
 	end module data_structure_mod		 	 
