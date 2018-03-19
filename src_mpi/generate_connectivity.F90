@@ -11,37 +11,37 @@ module generate_connectivity_mod
 		integer :: i, k
 		real*8 :: nx, ny
 
-		do i = 1, local_points
-			nx = point(i)%nx
-			ny = point(i)%ny
-			if(point(i)%flag_1 == 1) then
-                call get_interior_neighbours(i, nx, ny)
-            else if(point(i)%flag_1 == 2) then
-                call get_wall_boundary_neighbours(i, nx, ny)
-            else if(point(k)%flag_1 == 3) then
-				call get_outer_boundary_neighbours(i, nx, ny)
-            end if
+		! do i = 1, local_points
+		! 	nx = point(i)%nx
+		! 	ny = point(i)%ny
+		! 	if(point(i)%flag_1 == 1) then
+        !         call get_interior_neighbours(i, nx, ny)
+        !     else if(point(i)%flag_1 == 2) then
+        !         call get_wall_boundary_neighbours(i, nx, ny)
+        !     else if(point(k)%flag_1 == 3) then
+		! 		call get_outer_boundary_neighbours(i, nx, ny)
+        !     end if
+		! enddo
+		do k = 1, interior_points
+					i = interior_points_index(k)
+					nx = point(i)%nx
+					ny = point(i)%ny
+					call get_interior_neighbours(i, nx, ny)
 		enddo
-		! do k = 1, interior_points
-		! 			i = interior_points_index(k)
-		! 			nx = point(i)%nx
-		! 			ny = point(i)%ny
-		! 			call get_interior_neighbours(i, nx, ny)
-		! enddo
 
-		! do k = 1, wall_points
-		! 			i = wall_points_index(k)
-		! 			nx = point(i)%nx
-		! 			ny = point(i)%ny
-		! 			call get_wall_boundary_neighbours(i, nx, ny)
-		! enddo
+		do k = 1, wall_points
+					i = wall_points_index(k)
+					nx = point(i)%nx
+					ny = point(i)%ny
+					call get_wall_boundary_neighbours(i, nx, ny)
+		enddo
 
-		! do k = 1, outer_points
-		! 			i = outer_points_index(k)
-		! 			nx = point(i)%nx
-		! 			ny = point(i)%ny
-		! 			call get_outer_boundary_neighbours(i, nx, ny)
-		! enddo
+		do k = 1, outer_points
+					i = outer_points_index(k)
+					nx = point(i)%nx
+					ny = point(i)%ny
+					call get_outer_boundary_neighbours(i, nx, ny)
+		enddo
 
 	end subroutine 
 

@@ -36,19 +36,29 @@ contains
 		wall_points = 0
 		interior_points = 0
 		outer_points = 0
-
+                shape_points = 0
+                
 		do k = 1, local_points
 
                         read(101,*) point(k)%local_id,point(k)%global_id,point(k)%x,&
                         & point(k)%y, point(k)%flag_1,point(k)%flag_2,point(k)%nbhs,&
                         & (point(k)%conn(r),r=1,point(k)%nbhs)
-                                        IF(point(k)%flag_1 == 1) THEN
-                                                wall_points = wall_points + 1
-                                        ELSE IF(point(k)%flag_1 == 2) THEN
-                                                interior_points = interior_points + 1
-                                        ELSE IF(point(k)%flag_1 == 3) THEN
-                                                outer_points = outer_points + 1
-                                        END IF
+
+                        if(point(k)%flag_1 == 1) then
+                                wall_points = wall_points + 1
+                                wall_points_index(wall_points) = k
+                        else if(point(k)%flag_1 == 2) then
+                                interior_points = interior_points + 1
+                                interior_points_index(interior_points) = k
+                        else if(point(k)%flag_1 == 3) then
+                                outer_points = outer_points + 1
+                                outer_points_index(outer_points) = k
+                        end if
+
+                        if(point(k)%flag_2 > 0) then
+                                shape_points(point(k)%flag_2) = shape_points(point(k)%flag_2)+1
+                                shape_points_index(point(k)%flag_2,shape_points(point(k)%flag_2))=k
+                        end if
 
 		enddo
 
