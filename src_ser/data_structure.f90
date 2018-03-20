@@ -3,15 +3,28 @@
 ! 		 	3 -> outer points    -> [9441,9600]
 
 module data_structure_mod
-!
-!
-	 use parameter_mod
+
+
+	use parameter_mod
 
 	implicit none
 
 	integer :: max_points,local_points,ghost_points
-        integer::wall_points,interior_points,outer_points
-		
+    integer :: wall_points,interior_points,outer_points
+	integer :: shape_points(shapes)
+
+!   ghost global indices
+    integer , dimension(:), allocatable :: pghost
+
+! !   data structure to hold points by location	
+! 	integer , dimension(:), allocatable :: wall_points_index
+! 	integer , dimension(:), allocatable :: interior_points_index
+! 	integer , dimension(:), allocatable :: outer_points_index
+
+! !	data structure to hold points by shape
+! 	integer, dimension(:,:),allocatable :: shape_points_index
+
+
 	type :: points
 
 !	!	scanned from input file	!	!
@@ -24,43 +37,42 @@ module data_structure_mod
 		integer :: conn(15)
 !	!	!	!	!	!	!	!	!	!		
 
-!		real*8 :: nx, ny
-!		
+		real*8 :: nx, ny
+		
 		real*8 :: rho, u1, u2, pr
-!		real*8 :: flux_res(4)
-!
-!		real*8 :: q(4), qx(4), qy(4)
-!
-!		real*8 :: entropy, vorticity, vorticity_sqr
+		real*8 :: flux_res(4)
 
-!		integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-!		integer :: xpos_conn(15), xneg_conn(15)
-!		integer :: ypos_conn(15), yneg_conn(15)
-!
-	 end type points
+		real*8 :: q(4), qx(4), qy(4)
 
-         type(points), dimension(:), allocatable :: point
+		real*8 :: entropy, vorticity, vorticity_sqr
 
+		integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
+		integer :: xpos_conn(15), xneg_conn(15)
+		integer :: ypos_conn(15), yneg_conn(15)
 
-!
-!
-	
+	end type points
+	 
+    type(points), dimension(:), allocatable :: point
+
 	save
-!
-	! integer :: wall_points_index(wall_points)
-	! integer :: outer_points_index(outer_points)
-	! integer :: interior_points_index(interior_points)	
-	! integer :: shape_points_index(shapes, max_shape_points)
-!
-!
 
-!       real*8	:: res_old, res_new, residue, max_res
+	integer,allocatable,dimension(:) :: wall_points_index
+	integer,allocatable,dimension(:) :: outer_points_index
+	integer,allocatable,dimension(:) :: interior_points_index
+	!TODO make below array dynamic for second index	
+	integer :: shape_points_index(shapes, max_shape_points)
+
+
+!   real*8	:: res_old, res_new, residue, max_res
 !	integer :: max_res_point
 !	real*8 	:: cfv
 !	real*8	:: Cl, Cd, Cm
 !	real*8	:: total_entropy, total_enstrophy
 
 
-!
-!
+
+
+
+
+
 	end module data_structure_mod		 	 

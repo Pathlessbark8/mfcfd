@@ -70,14 +70,14 @@ module point_normals_mod
 						point(k)%ny = ny
 !
 					enddo																		
-				enddo															
+				enddo		
 !			
 !	Finding the normals for the outer boundary points ..
 !
 				do i = 1, outer_points
 !
 						if(i .eq. 1) then 
-						!
+!						!
 								m = outer_points_index(i)
 								r = outer_points_index(i+1)
 								l = outer_points_index(1)
@@ -91,7 +91,7 @@ module point_normals_mod
 						endif
 						!
 						if(i .eq. outer_points) then 
-						!
+!					!
 								m = outer_points_index(i)
 								r = outer_points_index(1)
 								l = outer_points_index(i-1)
@@ -134,7 +134,7 @@ module point_normals_mod
 !	the normals here ..
 !
 					do i = 1, interior_points
-!
+
 						k = interior_points_index(i)
 !
 						point(k)%nx = 0.0d0

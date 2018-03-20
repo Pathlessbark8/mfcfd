@@ -13,6 +13,7 @@ contains
                 implicit none
 
                 integer:: i, k, r
+                integer :: wall_temp,outer_temp,interior_temp
                 character(len=64) :: part_grid
                 !TODO : write a script to convert integer to string up to 4 digits
                 character(len=10) :: itos
@@ -20,7 +21,7 @@ contains
                 if (rank==0) print*,'Reading points'
 
                 part_grid = 'partGrid0'
-                if (proc>1) part_grid = 'partGrid'//trim(itos(1,rank))
+                if (proc>1) part_grid = 'par/partGrid'//trim(itos(1,rank))
 
 		OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
@@ -46,14 +47,16 @@ contains
 
                         if(point(k)%flag_1 == 1) then
                                 wall_points = wall_points + 1
-                                wall_points_index(wall_points) = k
+                             !   wall_points_index(wall_points) = k
                         else if(point(k)%flag_1 == 2) then
                                 interior_points = interior_points + 1
-                                interior_points_index(interior_points) = k
+                              !  interior_points_index(interior_points) = k
                         else if(point(k)%flag_1 == 3) then
                                 outer_points = outer_points + 1
-                                outer_points_index(outer_points) = k
+                               ! outer_points_index(outer_points) = k
                         end if
+
+                        
 
                         if(point(k)%flag_2 > 0) then
                                 shape_points(point(k)%flag_2) = shape_points(point(k)%flag_2)+1
@@ -61,6 +64,27 @@ contains
                         end if
 
 		enddo
+                allocate(wall_points_index(wall_points))
+                allocate(interior_points_index(interior_points))
+                allocate(outer_points_index(outer_points))
+
+                wall_temp = 0
+                interior_temp = 0
+                outer_temp = 0
+                do k = 1,local_points
+                        if(point(k)%flag_1 == 1) then
+                                wall_temp = wall_temp+1
+                                wall_points_index(wall_temp) = k
+                        else if(point(k)%flag_1 == 2) then
+                                interior_temp = interior_temp+1 
+                                interior_points_index(interior_temp) = k
+                        else if(point(k)%flag_1 == 3) then
+                                outer_temp = outer_temp+1
+                                outer_points_index(outer_temp) = k
+                        end if
+                end do
+
+                        
 
                 if (proc > 1) then
                         allocate(pghost(ghost_points))

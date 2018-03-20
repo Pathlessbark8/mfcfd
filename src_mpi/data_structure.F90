@@ -13,7 +13,7 @@ module data_structure_mod
 
 	integer :: max_points,local_points,ghost_points
     integer :: wall_points,interior_points,outer_points
-	integer :: shape_points(shapes)	
+	integer :: shape_points(shapes)
 
 !   ghost global indices
     integer , dimension(:), allocatable :: pghost
@@ -58,9 +58,9 @@ module data_structure_mod
 
 	save
 
-	integer :: wall_points_index(wall_points)
-	integer :: outer_points_index(outer_points)
-	integer :: interior_points_index(interior_points)
+	integer,allocatable,dimension(:) :: wall_points_index
+	integer,allocatable,dimension(:) :: outer_points_index
+	integer,allocatable,dimension(:) :: interior_points_index
 	!TODO make below array dynamic for second index	
 	integer :: shape_points_index(shapes, max_shape_points)
 
