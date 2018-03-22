@@ -101,7 +101,7 @@ contains
 						point(i)%qy = (sum_dely_delq*sum_delx_sqr - sum_delx_delq*sum_delx_dely)*one_by_det
 !
 !
-                                call test(point(i)%x,point(i)%y,point(i)%qx,0)
+!                                call test(point(i)%x,point(i)%y,point(i)%qx,0)
 				enddo	
 !
 !

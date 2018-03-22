@@ -5,6 +5,8 @@ module point_normals_mod
 	contains
 	!
 	!
+
+
 	subroutine compute_normals()
 !
                 implicit none
@@ -41,7 +43,8 @@ module point_normals_mod
 								r = shape_points_index(j, 1)
 								l = shape_points_index(j, i-1) 
 						endif
-!
+!                                               
+                                                
 						lx = point(l)%x
 						ly = point(l)%y
 !							
@@ -50,6 +53,13 @@ module point_normals_mod
 !							
 						rx = point(r)%x
 						ry = point(r)%y
+                                                if (i .eq. 1) then
+                                                        lx = mx+(mx-rx)
+                                                        ly = my+(my-ry)
+                                                else if(i .eq. shape_points(j)) then
+                                                        rx = mx-(mx-lx)
+                                                        ry = my-(my-ly)
+                                                end if
 !																							
 						nx1 = my - ly
 						nx2 = ry - my
@@ -70,7 +80,7 @@ module point_normals_mod
 						point(k)%nx = nx
 						point(k)%ny = ny
 
-!                                                call test(point(k)%x,point(k)%y,point(k)%nx,point(k)%ny)
+                                               call test(point(k)%x,point(k)%y,point(k)%nx,point(k)%ny)
 !
 					enddo																		
 				enddo	
