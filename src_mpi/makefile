@@ -6,7 +6,7 @@ include makefile.in
 
 
 # defining the variables
-objects=meshfree_solver.o data_structure.o point_preprocessor.o parameter.o utilities.o initial_conditions.o q_lskum.o point_normals.o test.o generate_connectivity.o
+objects=meshfree_solver.o data_structure.o point_preprocessor.o parameter.o utilities.o initial_conditions.o q_lskum.o point_normals.o test.o generate_connectivity.o fpi_solver.o q_variables.o
 
 
 
@@ -31,18 +31,23 @@ utilities.o: utilities.F90
 initial_conditions.o: initial_conditions.F90 data_structure.o
 	$(FC) -c $(switch) initial_conditions.F90
 
-q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o
+q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o fpi_solver.o
 	$(FC) -c $(switch) q_lskum.F90
 
 point_normals.o: point_normals.F90 data_structure.o
 	$(FC) -c $(switch) point_normals.F90
 
-test.o: test.F90 data_structure.o 
-	$(FC) -c $(switch) test.F90
-
 generate_connectivity.o: generate_connectivity.F90 data_structure.o 
 	$(FC) -c $(switch) generate_connectivity.F90
 
+test.o: test.F90 data_structure.o 
+	$(FC) -c $(switch) test.F90
+
+fpi_solver.o: fpi_solver.F90 data_structure.o q_variables.o
+	$(FLINKER) -c fpi_solver.F90
+
+q_variables.o: q_variables.F90 data_structure.o
+	$(FC) -c $(switch) q_variables.F90
 
 
 # Cleaning 

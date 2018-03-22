@@ -17,6 +17,7 @@ module point_normals_mod
 !
 !	
 !	Finding the normals for the points on the shapes ..   
+!TODO Proper shape normal computation
 !
 				do j = 1, shapes
 					do i = 1, shape_points(j)
@@ -68,9 +69,12 @@ module point_normals_mod
 !
 						point(k)%nx = nx
 						point(k)%ny = ny
+
+!                                                call test(point(k)%x,point(k)%y,point(k)%nx,point(k)%ny)
 !
 					enddo																		
-				enddo		
+				enddo	
+                                
 !			
 !	Finding the normals for the outer boundary points ..
 !

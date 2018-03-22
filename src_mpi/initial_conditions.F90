@@ -20,6 +20,8 @@ contains
 				enddo		
 	
 		else if(initial_conditions_flag .eq. 1) then
+
+                        !TODO Input file for partitions
 		
 				OPEN(UNIT=100,FILE="./structured-grid-160-60/stored-solution",FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 

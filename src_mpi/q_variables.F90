@@ -16,7 +16,7 @@ contains
 				real*8 :: two_times_beta
 !
 
- 				do k = 1, max_points
+ 				do k = 1, local_points
 				!
 						rho = point(k)%rho
 						u1 = point(k)%u1
@@ -58,7 +58,7 @@ contains
 				real*8 :: one_by_det
 !				
 !				
-				do i = 1, max_points
+				do i = 1, local_points
 				!
 						
 						x_i = point(i)%x
@@ -101,6 +101,7 @@ contains
 						point(i)%qy = (sum_dely_delq*sum_delx_sqr - sum_delx_delq*sum_delx_dely)*one_by_det
 !
 !
+                                call test(point(i)%x,point(i)%y,point(i)%qx,0)
 				enddo	
 !
 !

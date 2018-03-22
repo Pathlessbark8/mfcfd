@@ -7,7 +7,7 @@ module q_lskum_mod
 	use data_structure_mod
 	use point_normals_mod    
 	use generate_connectivity_mod
-!	use fpi_solver_mod	
+	use fpi_solver_mod	
 
 contains
 
@@ -21,22 +21,21 @@ contains
 		OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 !		call cpu_time(start_time)
 
-		point(40)%y = point(40)%y - 1e-6
 		call compute_normals()
 		call generate_connectivity()
 
 			
-!		do t = 1, max_iters
-!			call fpi_solver(t)
+		do t = 1, 5
+			call fpi_solver(t)
 !			print*, t, res_new, residue, max_res, max_res_point, Cl, Cd, cfv
 !			print*, t, res_new, residue, Cl, Cd, cfv
 !			write(301, *) t, residue				
-!		enddo
+		enddo
 
 !		call cpu_time(end_time)
 !		print*, "net time = ", end_time - start_time
 
-!		CLOSE(UNIT=301)	
+		CLOSE(UNIT=301)	
 							
 	end subroutine
 

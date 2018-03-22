@@ -13,7 +13,7 @@ program meshfree_solver
 
 
 	implicit none
-
+        real*8  :: totaltime,runtime
         PetscErrorCode  :: ierr
 
 
@@ -24,27 +24,36 @@ program meshfree_solver
         call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr); CHKERRQ(ierr)
 !
 !	Reading the input data ..
+
+        totaltime = MPI_Wtime()
 !
 	call read_input_point_data()
+
 !
 !	Assign the initial conditions for the primitive variables ..	
 !
 	call initial_conditions()
 
-         
-        if (proc > 1) call init_petsc()
-        print*,'working till here'
+!       Initiate petsc vectors         
+        call init_petsc()
 !
 !	Primal fixed point iterative solver ..
-!
+        
+!       
+        runtime = MPI_Wtime()
 	call q_lskum()
+        runtime = MPI_Wtime() - runtime
 !
 !	Printing the output (post-processing) ..
 !
 !	call print_primal_output()
 
-        if (proc>1) call dest_petsc()
 
+!       destroy petsc vectors
+        call dest_petsc()
+
+        totaltime = MPI_Wtime() - totaltime
+!       stop petsc
         call PetscFinalize(ierr); CHKERRQ(ierr)
 	
 end program meshfree_solver

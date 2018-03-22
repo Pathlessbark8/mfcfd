@@ -15,11 +15,10 @@ contains
                 integer:: i, k, r
                 integer :: wall_temp,outer_temp,interior_temp
                 character(len=64) :: part_grid
-                !TODO : write a script to convert integer to string up to 4 digits
                 character(len=10) :: itos
 
                 if (rank==0) print*,'Reading points'
-
+!TODO Make preproc to name ser grid as partgrid and par as partgrid0....
                 part_grid = 'partGrid0'
                 if (proc>1) part_grid = 'par/partGrid'//trim(itos(1,rank))
 
@@ -45,25 +44,25 @@ contains
                         & point(k)%y, point(k)%flag_1,point(k)%flag_2,point(k)%nbhs,&
                         & (point(k)%conn(r),r=1,point(k)%nbhs)
 
+                !Storing the count for the point types
                         if(point(k)%flag_1 == 1) then
                                 wall_points = wall_points + 1
-                             !   wall_points_index(wall_points) = k
                         else if(point(k)%flag_1 == 2) then
                                 interior_points = interior_points + 1
-                              !  interior_points_index(interior_points) = k
                         else if(point(k)%flag_1 == 3) then
                                 outer_points = outer_points + 1
-                               ! outer_points_index(outer_points) = k
                         end if
 
                         
-
+                !Storing shape point indices for all the shape types
                         if(point(k)%flag_2 > 0) then
                                 shape_points(point(k)%flag_2) = shape_points(point(k)%flag_2)+1
                                 shape_points_index(point(k)%flag_2,shape_points(point(k)%flag_2))=k
                         end if
 
 		enddo
+
+
                 allocate(wall_points_index(wall_points))
                 allocate(interior_points_index(interior_points))
                 allocate(outer_points_index(outer_points))
@@ -71,6 +70,7 @@ contains
                 wall_temp = 0
                 interior_temp = 0
                 outer_temp = 0
+                !Storing indices of the point definitions
                 do k = 1,local_points
                         if(point(k)%flag_1 == 1) then
                                 wall_temp = wall_temp+1
@@ -88,21 +88,20 @@ contains
 
                 if (proc > 1) then
                         allocate(pghost(ghost_points))
+
                         do k=local_points+1,max_points
                                 read(101,*) point(k)%local_id,pghost(k-local_points),&
-                                & point(k)%x,point(k)%y
-                        enddo
+                                & point(k)%x,point(k)%y,point(k)%flag_1,point(k)%flag_2
+
+                        end do
                 end if
 
 
-!	The above lines of the code will remain the same for all test cases. 
-!	However, depending on the number of shapes in the geometry, we divide
-!	the wall points into respective shape points ..	
-!		do r = 1, shapes
-!			do i = 1, shape_points(r)
-!				read(101,*) shape_points_index(r, i) 				
-!			enddo
-!		enddo
+
+
+
+
+
 
 		CLOSE(UNIT=101)
 
