@@ -75,6 +75,8 @@ module data_structure_mod
 
         integer              :: rank,proc
         Vec                  :: p_q1,p_q2,p_q3,p_q4
+        Vec                  :: px_q1,px_q2,px_q3,px_q4
+        Vec                  :: py_q1,py_q2,py_q3,py_q4
 
     contains
 
@@ -92,7 +94,24 @@ module data_structure_mod
 
                 call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(4),p_q4,ierr)
 
-                if(rank==0) print*,'Set up parallel vectors'
+                
+                
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(1),px_q1,ierr)
+                
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(2),px_q2,ierr)
+                
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(3),px_q3,ierr)
+                
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(4),px_q4,ierr)
+
+
+                
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(1),py_q1,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(2),py_q2,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(3),py_q3,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(4),py_q4,ierr)
+                
+        if(rank==0) print*,'Set up parallel vectors'
         end subroutine init_petsc
 
         subroutine dest_petsc()
@@ -108,7 +127,7 @@ module data_structure_mod
 
         end subroutine dest_petsc
 
-        subroutine update_begin_ghost()
+        subroutine update_begin_q_ghost()
                 implicit none
                 PetscErrorCode      :: ierr
                 if (proc==1) return
@@ -118,9 +137,35 @@ module data_structure_mod
                 call VecGhostUpdateBegin(p_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
                 call VecGhostUpdateBegin(p_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
-        end subroutine update_begin_ghost
+        end subroutine update_begin_q_ghost
 
-        subroutine update_end_ghost()
+
+        subroutine update_begin_qx_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateBegin(px_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(px_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(px_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(px_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+
+        end subroutine update_begin_qx_ghost
+
+
+        subroutine update_begin_qy_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateBegin(py_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(py_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(py_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(py_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+
+        end subroutine update_begin_qy_ghost
+
+        subroutine update_end_q_ghost()
                 implicit none
                 PetscErrorCode      :: ierr
                 if (proc==1) return
@@ -130,7 +175,33 @@ module data_structure_mod
                 call VecGhostUpdateEnd(p_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
                 call VecGhostUpdateEnd(p_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
-        end subroutine update_end_ghost
+        end subroutine update_end_q_ghost
+
+
+        subroutine update_end_qx_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateEnd(px_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(px_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(px_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(px_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+
+        end subroutine update_end_qx_ghost
+
+
+        subroutine update_end_qy_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateEnd(py_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(py_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(py_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(py_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+
+        end subroutine update_end_qy_ghost
 
 
 

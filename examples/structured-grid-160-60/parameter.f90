@@ -69,9 +69,9 @@ module parameter_mod
 !
 !	integer, parameter :: wall_points = 159
 !
-	! integer, parameter :: shapes = 1
+	integer, parameter :: shapes = 1
 	! integer, parameter :: shape_points(1) = 160	
-	! integer, parameter :: max_shape_points = 160
+	integer, parameter :: max_shape_points = 160
 !
 !	Note: max_shape_points is the maximum value of all 
 !	shape points (Maximum of shape_points_01, shape_points_02, ...)

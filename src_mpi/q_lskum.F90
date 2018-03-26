@@ -16,10 +16,7 @@ contains
 		implicit none
 	
 		integer :: t, i
-		external cpu_time
-		real*8 :: start_time, end_time
 		OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-!		call cpu_time(start_time)
 
 		call compute_normals()
 		call generate_connectivity()
@@ -32,7 +29,6 @@ contains
 !			write(301, *) t, residue				
 		enddo
 
-!		call cpu_time(end_time)
 !		print*, "net time = ", end_time - start_time
 
 		CLOSE(UNIT=301)	

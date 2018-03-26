@@ -53,12 +53,14 @@ module point_normals_mod
 !							
 						rx = point(r)%x
 						ry = point(r)%y
+                                                if (proc > 1) then 
                                                 if (i .eq. 1) then
                                                         lx = mx+(mx-rx)
                                                         ly = my+(my-ry)
                                                 else if(i .eq. shape_points(j)) then
                                                         rx = mx-(mx-lx)
                                                         ry = my-(my-ly)
+                                                end if
                                                 end if
 !																							
 						nx1 = my - ly

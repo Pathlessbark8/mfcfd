@@ -8,7 +8,7 @@ module fpi_solver_mod
 !	
 !
 	use data_structure_mod
-!	use flux_residual_mod
+	use flux_residual_mod
 !	use state_update_mod
 	use q_variables_mod
 !	use objective_function_mod
@@ -25,18 +25,24 @@ contains
 
 !
                         !Update the ghost values from the owned process
-                        call update_begin_ghost()
+                        call update_begin_q_ghost()
 
 			call eval_q_variables()
 
                         !End the update of ghost values
-                        call update_end_ghost()
+                        call update_end_q_ghost()
 
+
+
+                        call update_begin_qx_ghost()
+                        call update_begin_qy_ghost()
 
 			call eval_q_derivatives()	
 
+                        call update_end_qx_ghost()
+                        call update_end_qy_ghost()
 !				
-!			call cal_flux_residual()
+			call cal_flux_residual()
 !			call state_update()
 !			call objective_function()
 !			

@@ -92,6 +92,7 @@ contains
 							sum_delx_delq = sum_delx_delq + weights*delx*(point(nbh)%q - point(i)%q)
 							sum_dely_delq = sum_dely_delq + weights*dely*(point(nbh)%q - point(i)%q)
 !						!
+
 						enddo							
 !						
 						det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
@@ -100,8 +101,9 @@ contains
 						point(i)%qx = (sum_delx_delq*sum_dely_sqr - sum_dely_delq*sum_delx_dely)*one_by_det
 						point(i)%qy = (sum_dely_delq*sum_delx_sqr - sum_delx_delq*sum_delx_dely)*one_by_det
 !
+
 !
-!                                call test(point(i)%x,point(i)%y,point(i)%qx,0)
+                 !               call test(point(i)%x,point(i)%y,point(i)%qx,0)
 				enddo	
 !
 !
