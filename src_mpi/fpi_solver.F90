@@ -47,8 +47,13 @@ contains
 
 			call cal_flux_residual()
 
-
+                        call func_delta()
+                        
+                        call update_begin_u1_u2_pr_rho_ghost()
 			call state_update()
+                        call update_end_u1_u2_pr_rho_ghost()
+
+
 !			call objective_function()
 !			
 !			if(t .le. 2) then

@@ -52,6 +52,8 @@ module data_structure_mod
                 integer :: xpos_conn(15), xneg_conn(15)
                 integer :: ypos_conn(15), yneg_conn(15)
 
+                real*8  :: delta
+
         end type points
  
         type(points), dimension(:), allocatable :: point
@@ -65,8 +67,8 @@ module data_structure_mod
         integer :: shape_points_index(shapes, max_shape_points)
 
 
-!   real*8	:: res_old, res_new, residue, max_res
-!	integer :: max_res_point
+   real*8	:: res_old, res_new, residue, max_res
+	integer :: max_res_point
 !	real*8 	:: cfv
 !	real*8	:: Cl, Cd, Cm
 !	real*8	:: total_entropy, total_enstrophy

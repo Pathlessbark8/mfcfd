@@ -34,17 +34,12 @@ module state_update_mod
 !
 							call primitive_to_conserved(k, nx, ny, U)
 !				
-							!End the update of ghost values
-							call update_begin_u1_u2_pr_rho_ghost()
 
-							call func_delt(k, delt)
 							
-							!End the update of ghost values	
-							call update_end_u1_u2_pr_rho_ghost()
 !
 							temp = U(1)
 !
-							U =	U - delt*point(k)%flux_res
+							U =	U - point(k)%delta*point(k)%flux_res
 							U(3) = 0.d0
 !
 							U2_rot = U(2)
@@ -77,10 +72,9 @@ module state_update_mod
 							ny = point(k)%ny
 !							
 							call conserved_vector_Ubar(k, U, nx, ny) 
-							call func_delt(k, delt)	
 							temp = U(1)
 !							
-							U =	U - delt*point(k)%flux_res
+							U =	U - point(k)%delta*point(k)%flux_res
 							U2_rot = U(2)
 							U3_rot = U(3)
 					        U(2) = U2_rot*ny + U3_rot*nx
@@ -116,10 +110,9 @@ module state_update_mod
 !							
 							call primitive_to_conserved(k, nx, ny, U)
 !
-							call func_delt(k, delt)	
 !
 							temp = U(1)
-							U =	U - delt*point(k)%flux_res
+							U =	U - point(k)%delta*point(k)%flux_res
 !
 							U2_rot = U(2)
 							U3_rot = U(3)
@@ -203,7 +196,7 @@ module state_update_mod
 !	This subroutine computes the delta_t (local time step) at a given point ..
 !
 
-		subroutine func_delt(i, delta_t)	
+		subroutine func_delta()
 !
 !
 			implicit none
@@ -216,6 +209,8 @@ module state_update_mod
 			real*8 :: dist
 			real*8 :: min_delt 
 			min_delt = 1.0d0
+
+                        do i = 1,local_points
 !
 !
 			do r = 1, point(i)%nbhs
@@ -247,7 +242,8 @@ module state_update_mod
 !
 			enddo	
 !			
-			delta_t = min_delt
+			point(i)%delta = min_delt
+                        end do
 !			
 !
 		end subroutine

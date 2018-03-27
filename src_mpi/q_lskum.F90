@@ -22,8 +22,10 @@ contains
 		call generate_connectivity()
 
 			
-		do t = 1, 5
+		do t = 1, 100
+                        
 			call fpi_solver(t)
+                        !print*,t,res_new,residue
 !			print*, t, res_new, residue, max_res, max_res_point, Cl, Cd, cfv
 !			print*, t, res_new, residue, Cl, Cd, cfv
 !			write(301, *) t, residue				

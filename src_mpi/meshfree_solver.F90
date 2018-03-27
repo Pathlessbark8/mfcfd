@@ -45,6 +45,7 @@ program meshfree_solver
         runtime = MPI_Wtime() - runtime
 
 !
+        print*,runtime
 !	Printing the output (post-processing) ..
 !
 !	call print_primal_output()
