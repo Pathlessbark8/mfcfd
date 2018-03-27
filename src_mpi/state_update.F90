@@ -33,8 +33,14 @@ module state_update_mod
 							ny = point(k)%ny
 !
 							call primitive_to_conserved(k, nx, ny, U)
-!			
-							call func_delt(k, delt)	
+!				
+							!End the update of ghost values
+							call update_begin_u1_u2_pr_rho_ghost()
+
+							call func_delt(k, delt)
+							
+							!End the update of ghost values	
+							call update_end_u1_u2_pr_rho_ghost()
 !
 							temp = U(1)
 !
@@ -194,9 +200,9 @@ module state_update_mod
 		end subroutine
 !		
 !
-!
 !	This subroutine computes the delta_t (local time step) at a given point ..
 !
+
 		subroutine func_delt(i, delta_t)	
 !
 !
