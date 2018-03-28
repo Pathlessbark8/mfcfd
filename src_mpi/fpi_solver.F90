@@ -12,18 +12,18 @@ module fpi_solver_mod
 	use state_update_mod
 	use q_variables_mod
 !	use objective_function_mod
-!
-!
+
+
 contains
-!
-!
+
+
 	subroutine fpi_solver(t)
-!
+
 		implicit none
-		!		
+		
 		integer :: t,i
 
-!
+
             !Update the ghost values from the owned process
             call update_begin_q_ghost()
 
@@ -41,30 +41,26 @@ contains
 
             !End the update of ghost values
             call update_end_qx_ghost()
-            call update_end_qy_ghost()
-!				
+            call update_end_qy_ghost()				
 
 
 			call cal_flux_residual()
 
-                        call func_delta()
-                        
-                        call update_begin_u1_u2_pr_rho_ghost()
+            call func_delta()             
+            call update_begin_u1_u2_pr_rho_ghost()
 			call state_update()
-                        call update_end_u1_u2_pr_rho_ghost()
+            call update_end_u1_u2_pr_rho_ghost()
 
 
-!			call objective_function()
-!			
+			call objective_function()
+
 			if(t .le. 2) then
 					res_old = res_new
 					residue = 0.d0
 			else 
 					residue = dlog10(res_new/res_old)
 			endif					
-!							
+						
 	end subroutine
-!
-!	
-!
+
 end module fpi_solver_mod

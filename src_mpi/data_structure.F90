@@ -1,6 +1,6 @@
-! flag_1 : 	1 -> wall point      -> [2,160]
-! 		 	2 -> interior points -> {1},[161,9440]
-! 		 	3 -> outer points    -> [9441,9600]
+! flag_1 : 1 -> wall point      -> [2,160]
+!          2 -> interior points -> {1},[161,9440]
+! 	   3 -> outer points    -> [9441,9600]
 
 module data_structure_mod
 #include <petsc/finclude/petscvec.h>
@@ -15,16 +15,8 @@ module data_structure_mod
         integer :: wall_points,interior_points,outer_points
         integer :: shape_points(shapes)
 
-!   ghost global indices
+!       ghost global indices
         integer , dimension(:), allocatable :: pghost
-
-! !   data structure to hold points by location	
-! 	integer , dimension(:), allocatable :: wall_points_index
-! 	integer , dimension(:), allocatable :: interior_points_index
-! 	integer , dimension(:), allocatable :: outer_points_index
-
-! !	data structure to hold points by shape
-! 	integer, dimension(:,:),allocatable :: shape_points_index
 
 
         type :: points
@@ -37,7 +29,7 @@ module data_structure_mod
                 integer :: flag_2 ! stores shape point belongs to 
                 integer :: nbhs
                 integer :: conn(15)
-!	!	!	!	!	!	!	!	!	!		
+!	!	!	!	!	!	!	
 
 		real*8 :: nx, ny
 
@@ -63,11 +55,11 @@ module data_structure_mod
         integer,allocatable,dimension(:) :: wall_points_index
         integer,allocatable,dimension(:) :: outer_points_index
         integer,allocatable,dimension(:) :: interior_points_index
-!TODO make below array dynamic for second index	
+!       TODO make below array dynamic for second index	
         integer :: shape_points_index(shapes, max_shape_points)
 
 
-   real*8	:: res_old, res_new, residue, max_res
+        real*8	:: res_old, res_new, residue, max_res
 	integer :: max_res_point
 !	real*8 	:: cfv
 !	real*8	:: Cl, Cd, Cm
@@ -230,11 +222,6 @@ module data_structure_mod
                 call VecGhostUpdateEnd(p_rho,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_end_u1_u2_pr_rho_ghost
-
-
-
-
-
 
 
 end module data_structure_mod
