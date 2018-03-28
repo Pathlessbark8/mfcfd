@@ -40,7 +40,7 @@ contains
 			call eval_q_derivatives()	
 
             !End the update of ghost values
-			call update_end_qx_ghost()
+            call update_end_qx_ghost()
             call update_end_qy_ghost()
 !				
 
@@ -56,12 +56,12 @@ contains
 
 !			call objective_function()
 !			
-!			if(t .le. 2) then
-!					res_old = res_new
-!					residue = 0.d0
-!			else 
-!					residue = dlog10(res_new/res_old)
-!			endif					
+			if(t .le. 2) then
+					res_old = res_new
+					residue = 0.d0
+			else 
+					residue = dlog10(res_new/res_old)
+			endif					
 !							
 	end subroutine
 !

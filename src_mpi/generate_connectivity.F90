@@ -111,6 +111,7 @@ module generate_connectivity_mod
 					point(i)%yneg_conn(count) = nbh;
 
 				endif
+                                
 							
 			enddo		
 

@@ -32,6 +32,7 @@ contains
 				point(k)%flux_res = Gxp + Gxn + Gyn
 				
 				point(k)%flux_res = 2.0d0*point(k)%flux_res
+
 !
 !				
 		enddo

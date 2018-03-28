@@ -82,7 +82,6 @@ module point_normals_mod
 						point(k)%nx = nx
 						point(k)%ny = ny
 
-                                               call test(point(k)%x,point(k)%y,point(k)%nx,point(k)%ny)
 !
 					enddo																		
 				enddo	

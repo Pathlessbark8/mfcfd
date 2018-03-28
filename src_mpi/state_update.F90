@@ -36,6 +36,7 @@ module state_update_mod
 !				
 
 							
+!                                                        print*,point(k)%delta
 !
 							temp = U(1)
 !
@@ -138,6 +139,7 @@ module state_update_mod
 				enddo
 !
 				res_new = dsqrt(sum_res_sqr)/max_points
+
 !
 !
 		end subroutine 							
@@ -208,9 +210,9 @@ module state_update_mod
 			real*8 :: u1, u2, rho, pr, mod_u
 			real*8 :: dist
 			real*8 :: min_delt 
-			min_delt = 1.0d0
 
                         do i = 1,local_points
+			min_delt = 1.0d0
 !
 !
 			do r = 1, point(i)%nbhs
@@ -238,7 +240,7 @@ module state_update_mod
 !
 					if(min_delt > delta_t) then 
 						min_delt = delta_t
-					endif	
+					endif
 !
 			enddo	
 !			
