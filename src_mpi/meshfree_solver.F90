@@ -32,27 +32,30 @@ program meshfree_solver
 !
 !	Assign the initial conditions for the primitive variables ..	
 !
+        
+       call init_petsc()
 	call initial_conditions()
-
+       
+                call VecView(p_q1,PETSC_VIEWER_STDOUT_WORLD,ierr)
 !       Initiate petsc vectors         
-        call init_petsc()
+       ! call init_petsc()
 !
 !	Primal fixed point iterative solver ..
         
 !       
         runtime = MPI_Wtime()
-	call q_lskum()
+!	call q_lskum()
         runtime = MPI_Wtime() - runtime
 
 !
-        print*,runtime
+ !       print*,runtime
 !	Printing the output (post-processing) ..
 !
 !	call print_primal_output()
 
 
 !       destroy petsc vectors
-        call dest_petsc()
+  !      call dest_petsc()
 
         totaltime = MPI_Wtime() - totaltime
 !       stop petsc

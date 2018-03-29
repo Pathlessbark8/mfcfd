@@ -52,7 +52,7 @@ contains
             call update_end_u1_u2_pr_rho_ghost()
 
 
-			call objective_function()
+!			call objective_function()
 
 			if(t .le. 2) then
 					res_old = res_new

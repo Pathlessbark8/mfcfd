@@ -17,6 +17,7 @@ contains
 					point(k)%u1	= Mach*dcos(theta)
 					point(k)%u2	= Mach*dsin(theta)
 					point(k)%pr	= pr_inf
+                                        temp_rho(k) = 2*point(k)%rho
 				enddo		
 	
 		else if(initial_conditions_flag .eq. 1) then

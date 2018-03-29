@@ -32,6 +32,7 @@ contains
 
 		read(101,*) max_points, local_points, ghost_points
                 allocate(point(max_points))
+                allocate(temp_rho(max_points))
 
 		wall_points = 0
 		interior_points = 0
@@ -43,7 +44,7 @@ contains
                         read(101,*) point(k)%local_id,point(k)%global_id,point(k)%x,&
                         & point(k)%y, point(k)%flag_1,point(k)%flag_2,point(k)%nbhs,&
                         & (point(k)%conn(r),r=1,point(k)%nbhs)
-
+                        
                 !Storing the count for the point types
                         if(point(k)%flag_1 == 1) then
                                 wall_points = wall_points + 1

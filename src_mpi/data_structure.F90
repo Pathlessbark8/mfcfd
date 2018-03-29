@@ -17,6 +17,7 @@ module data_structure_mod
 
 !       ghost global indices
         integer , dimension(:), allocatable :: pghost
+        real*8 , dimension(:), allocatable :: temp_rho
 
 
         type :: points
@@ -59,15 +60,15 @@ module data_structure_mod
         integer :: shape_points_index(shapes, max_shape_points)
 
 
-        real*8	:: res_old, res_new, residue, max_res
-	integer :: max_res_point
+        real*8  :: res_old, res_new, residue, max_res
+        integer :: max_res_point
 !	real*8 	:: cfv
 !	real*8	:: Cl, Cd, Cm
 !	real*8	:: total_entropy, total_enstrophy
 
 !   PETSc variables
 
-        integer              :: rank,proc
+        PetscMPIInt              :: rank,proc
         Vec                  :: p_q1,p_q2,p_q3,p_q4
         Vec                  :: px_q1,px_q2,px_q3,px_q4
         Vec                  :: py_q1,py_q2,py_q3,py_q4
@@ -80,30 +81,34 @@ module data_structure_mod
                 PetscErrorCode       :: ierr
                 if (proc==1) return
                 if (rank==0) print*,'Setting up parallel vectors'
-                ghost_points = ghost_points - 1
+                pghost = pghost - 1
 
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(1),p_q1,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(2),p_q2,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(3),p_q3,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(4),p_q4,ierr)
-
+      
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,temp_rho,p_q1,ierr)
+!                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(2),p_q2,ierr)
+ !               call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(3),p_q3,ierr)
+  !              call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(4),p_q4,ierr)
+                !print*, pghost(:)
+                !print*, point(:)%q(1)
+                !print*, temp_rho
+                !call VecView(p_q1,PETSC_VIEWER_STDOUT_WORLD)
                 
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(1),px_q1,ierr) 
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(2),px_q2,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(3),px_q3,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(4),px_q4,ierr)
+   !             call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(1),px_q1,ierr) 
+    !            call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(2),px_q2,ierr)
+     !           call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(3),px_q3,ierr)
+      !          call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(4),px_q4,ierr)
 
 
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(1),py_q1,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(2),py_q2,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(3),py_q3,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(4),py_q4,ierr)
+       !         call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(1),py_q1,ierr)
+        !        call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(2),py_q2,ierr)
+         !       call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(3),py_q3,ierr)
+          !      call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(4),py_q4,ierr)
                 
 
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%u1, p_u1,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%u2, p_u2,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%pr, p_pr,ierr)
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%rho,p_rho,ierr)
+           !     call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%u1, p_u1,ierr)
+            !    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%u2, p_u2,ierr)
+            !    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%pr, p_pr,ierr)
+             !   call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%rho,p_rho,ierr)
         
 
         if(rank==0) print*,'Set up parallel vectors'
