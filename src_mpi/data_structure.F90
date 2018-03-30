@@ -17,39 +17,38 @@ module data_structure_mod
 
 !       ghost global indices
         integer , dimension(:), allocatable :: pghost
-        real*8 , dimension(:), allocatable :: temp_rho
 
 
         type :: points
 
 !	!	scanned from input file	!	!
-		real*8 :: x,y
-                integer :: local_id
-                integer :: global_id
-                integer :: flag_1 ! stores location of point
-                integer :: flag_2 ! stores shape point belongs to 
-                integer :: nbhs
-                integer :: conn(15)
+		real*8, dimension(:), allocatable :: x,y
+                integer, dimension(:), allocatable :: local_id
+                integer, dimension(:), allocatable :: global_id
+                integer, dimension(:), allocatable :: flag_1 ! stores location of point
+                integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
+                integer, dimension(:), allocatable :: nbhs
+                integer, dimension(:,:), allocatable :: conn
 !	!	!	!	!	!	!	
 
-		real*8 :: nx, ny
+		real*8, dimension(:), allocatable :: nx, ny
 
-		real*8 :: rho, u1, u2, pr
-		real*8 :: flux_res(4)
+		real*8, dimension(:), allocatable :: rho, u1, u2, pr
+		real*8, dimension(:,:), allocatable :: flux_res
 
-		real*8 :: q(4), qx(4), qy(4)
+		real*8, dimension(:,:), allocatable :: q, qx, qy
 
-		real*8 :: entropy, vorticity, vorticity_sqr
+		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
 
-                integer :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-                integer :: xpos_conn(15), xneg_conn(15)
-                integer :: ypos_conn(15), yneg_conn(15)
+                integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
+                integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
+                integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
-                real*8  :: delta
+                real*8, dimension(:), allocatable  :: delta
 
         end type points
  
-        type(points), dimension(:), allocatable :: point
+        type(points) :: p
 
         save
 
@@ -69,13 +68,55 @@ module data_structure_mod
 !   PETSc variables
 
         PetscMPIInt              :: rank,proc
-        Vec                  :: p_q1,p_q2,p_q3,p_q4
-        Vec                  :: px_q1,px_q2,px_q3,px_q4
-        Vec                  :: py_q1,py_q2,py_q3,py_q4
+        Vec                  :: p_q
+        Vec                  :: p_qx
+        Vec                  :: p_qy
         Vec                  :: p_u1, p_u2, p_pr, p_rho
 
     contains
 
+        subroutine allocate_soln()
+                implicit none
+
+                allocate(p%nx(max_points))
+                allocate(p%ny(max_points))
+                
+
+                allocate(p%rho(max_points))
+                allocate(p%u1(max_points))
+                allocate(p%u2(max_points))
+                allocate(p%pr(max_points))
+
+
+                allocate(p%flux_res(4,max_points))
+
+
+                allocate(p%q(4,max_points))
+                allocate(p%qx(4,max_points))
+                allocate(p%qy(4,max_points))
+
+
+                allocate(p%entropy(max_points))
+                allocate(p%vorticity(max_points))
+                allocate(p%vorticity_sqr(max_points))
+
+                
+                allocate(p%xpos_nbhs(max_points))
+                allocate(p%xneg_nbhs(max_points))
+                allocate(p%ypos_nbhs(max_points))
+                allocate(p%yneg_nbhs(max_points))
+
+
+                allocate(p%xpos_conn(max_points,15))
+                allocate(p%xneg_conn(max_points,15))
+
+
+                allocate(p%ypos_conn(max_points,15))
+                allocate(p%yneg_conn(max_points,15))
+
+
+                allocate(p%delta(max_points))
+        end subroutine
         subroutine init_petsc()
                 implicit none
                 PetscErrorCode       :: ierr
@@ -84,31 +125,16 @@ module data_structure_mod
                 pghost = pghost - 1
 
       
-                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,temp_rho,p_q1,ierr)
-!                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(2),p_q2,ierr)
- !               call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(3),p_q3,ierr)
-  !              call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%q(4),p_q4,ierr)
-                !print*, pghost(:)
-                !print*, point(:)%q(1)
-                !print*, temp_rho
-                !call VecView(p_q1,PETSC_VIEWER_STDOUT_WORLD)
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,PETSC_DECIDE,ghost_points,pghost,p%q(1,1),p_q,ierr)
                 
-   !             call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(1),px_q1,ierr) 
-    !            call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(2),px_q2,ierr)
-     !           call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(3),px_q3,ierr)
-      !          call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qx(4),px_q4,ierr)
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,PETSC_DECIDE,ghost_points,pghost,p%qx(1,1),p_qx,ierr)
 
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,PETSC_DECIDE,ghost_points,pghost,p%qy(1,1),p_qy,ierr)
 
-       !         call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(1),py_q1,ierr)
-        !        call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(2),py_q2,ierr)
-         !       call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(3),py_q3,ierr)
-          !      call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%qy(4),py_q4,ierr)
-                
-
-           !     call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%u1, p_u1,ierr)
-            !    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%u2, p_u2,ierr)
-            !    call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%pr, p_pr,ierr)
-             !   call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,point(:)%rho,p_rho,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,p%u1(1), p_u1,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,p%u2(1), p_u2,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,p%pr(1), p_pr,ierr)
+                call VecCreateGhostWithArray(PETSC_COMM_WORLD,local_points,PETSC_DECIDE,ghost_points,pghost,p%rho(1),p_rho,ierr)
         
 
         if(rank==0) print*,'Set up parallel vectors'
@@ -120,10 +146,13 @@ module data_structure_mod
                 if (proc==1) return
                     
 
-                call VecDestroy(p_q1,ierr)
-                call VecDestroy(p_q2,ierr)
-                call VecDestroy(p_q3,ierr)
-                call VecDestroy(p_q4,ierr)
+                call VecDestroy(p_q,ierr)
+                call VecDestroy(p_qx,ierr)
+                call VecDestroy(p_qy,ierr)
+                call VecDestroy(p_u1,ierr)
+                call VecDestroy(p_u2,ierr)
+                call VecDestroy(p_pr,ierr)
+                call VecDestroy(p_rho,ierr)
 
         end subroutine dest_petsc
 
@@ -132,10 +161,7 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
-                call VecGhostUpdateBegin(p_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(p_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(p_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(p_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(p_q,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_begin_q_ghost
 
@@ -145,10 +171,7 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
-                call VecGhostUpdateBegin(px_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(px_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(px_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(px_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(p_qx,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_begin_qx_ghost
 
@@ -158,10 +181,7 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
-                call VecGhostUpdateBegin(py_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(py_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(py_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateBegin(py_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateBegin(p_qy,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_begin_qy_ghost
 
@@ -182,10 +202,7 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
-                call VecGhostUpdateEnd(p_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(p_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(p_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(p_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(p_q,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_end_q_ghost
 
@@ -195,10 +212,7 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
-                call VecGhostUpdateEnd(px_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(px_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(px_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(px_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(p_qx,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_end_qx_ghost
 
@@ -208,10 +222,7 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
-                call VecGhostUpdateEnd(py_q1,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(py_q2,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(py_q3,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call VecGhostUpdateEnd(py_q4,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call VecGhostUpdateEnd(p_qy,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine update_end_qy_ghost
 

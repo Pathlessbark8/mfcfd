@@ -7,60 +7,62 @@ module fpi_solver_mod
 !	updated on Oct 30, 2017	
 !	
 !
-	use data_structure_mod
-	use flux_residual_mod
-	use state_update_mod
-	use q_variables_mod
+        use data_structure_mod
+        use flux_residual_mod
+        use state_update_mod
+        use q_variables_mod
 !	use objective_function_mod
 
 
 contains
 
 
-	subroutine fpi_solver(t)
+        subroutine fpi_solver(t)
 
-		implicit none
-		
-		integer :: t,i
+                implicit none
+                
+                integer :: t,i
+                PetscErrorCode :: ierr
 
+                call eval_q_variables()
 
-            !Update the ghost values from the owned process
-            call update_begin_q_ghost()
+                !Update the ghost values from the owned process
 
-			call eval_q_variables()
-			
-            !End the update of ghost values
-            call update_end_q_ghost()
-
-
-            !Update the ghost values from the owned process
-            call update_begin_qx_ghost()
-            call update_begin_qy_ghost()
-
-			call eval_q_derivatives()	
-
-            !End the update of ghost values
-            call update_end_qx_ghost()
-            call update_end_qy_ghost()				
+                call update_begin_q_ghost()
+                call update_end_q_ghost()
 
 
-			call cal_flux_residual()
+                call eval_q_derivatives()
 
-            call func_delta()             
-            call update_begin_u1_u2_pr_rho_ghost()
-			call state_update()
-            call update_end_u1_u2_pr_rho_ghost()
+                !Update the ghost values from the owned process
+
+                call update_begin_qx_ghost()
+                call update_end_qx_ghost()
+
+                call update_begin_qy_ghost()
+                call update_end_qy_ghost()
 
 
-!			call objective_function()
 
-			if(t .le. 2) then
-					res_old = res_new
-					residue = 0.d0
-			else 
-					residue = dlog10(res_new/res_old)
-			endif					
-						
-	end subroutine
+
+                call cal_flux_residual()
+
+                call func_delta()            
+
+                call state_update()
+
+                call update_begin_u1_u2_pr_rho_ghost()
+                call update_end_u1_u2_pr_rho_ghost()
+
+!		call objective_function()
+
+                if(t .le. 2) then
+                        res_old = res_new
+                        residue = 0.d0
+                else 
+                        residue = dlog10(res_new/res_old)
+                endif
+        
+        end subroutine
 
 end module fpi_solver_mod

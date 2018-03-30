@@ -4,15 +4,15 @@ program meshfree_solver
 
 
         use petscsys
-	use parameter_mod
-	use data_structure_mod
-	use point_preprocessor_mod
+        use parameter_mod
+        use data_structure_mod
+        use point_preprocessor_mod
         use initial_conditions_mod
-	use q_lskum_mod
-!	use post_processing_mod
+        use q_lskum_mod
+        !use post_processing_mod
 
 
-	implicit none
+        implicit none
         real*8  :: totaltime,runtime
         PetscErrorCode  :: ierr
 
@@ -27,28 +27,29 @@ program meshfree_solver
 
         totaltime = MPI_Wtime()
 !
-	call read_input_point_data()
+        call read_input_point_data()
 
-!
+!       Allocate solution variables
+
+        call allocate_soln()
+
+!       Initialize Petsc vectors
+
+        call init_petsc()
+
 !	Assign the initial conditions for the primitive variables ..	
-!
-        
-       call init_petsc()
-	call initial_conditions()
+
+        call initial_conditions()
        
-                call VecView(p_q1,PETSC_VIEWER_STDOUT_WORLD,ierr)
-!       Initiate petsc vectors         
-       ! call init_petsc()
-!
 !	Primal fixed point iterative solver ..
         
 !       
         runtime = MPI_Wtime()
-!	call q_lskum()
+        call q_lskum()
         runtime = MPI_Wtime() - runtime
 
-!
- !       print*,runtime
+        !call VecView(p_q,PETSC_VIEWER_STDOUT_WORLD,ierr)
+
 !	Printing the output (post-processing) ..
 !
 !	call print_primal_output()
