@@ -28,7 +28,8 @@ contains
 
                         call wall_dGx_neg(Gxn, k) 
 
-                        call wall_dGy_neg(Gyn, k) 
+                        call wall_dGy_neg(Gyn, k)
+
 
                         p%flux_res(:,k) = Gxp + Gxn + Gyn
 
@@ -37,7 +38,6 @@ contains
 
 
                 enddo
-
 
                 do i = 1, outer_points
 

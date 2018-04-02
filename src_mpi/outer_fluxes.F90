@@ -80,15 +80,15 @@ contains
 
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
-                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%qx(:,i) + dely*p%qy(:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%qx(:,k) + dely*p%qy(:,k))
+                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
                                 call venkat_limiter(qtilde_k, phi_k, k)
 
-                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%qx(:,i) + dely*p%qy(:,i))
-                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%qx(:,k) + dely*p%qy(:,k))
+                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
                         endif
 
 
@@ -204,16 +204,16 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%qx(:,i) + dely*p%qy(:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%qx(:,k) + dely*p%qy(:,k))
+                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
                                 call venkat_limiter(qtilde_k, phi_k, k)
 
-                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%qx(:,i) + dely*p%qy(:,i))
-                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%qx(:,k) + dely*p%qy(:,k))
+                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
                         endif
 
                         if(limiter_flag .eq. 2) then 
@@ -326,16 +326,16 @@ subroutine outer_dGy_pos(G, i)
                 sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                qtilde_i = p%q(:,i) - 0.5d0*(delx*p%qx(:,i) + dely*p%qy(:,i))
-                qtilde_k = p%q(:,k) - 0.5d0*(delx*p%qx(:,k) + dely*p%qy(:,k))
+                qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
 
 
                 if(limiter_flag .eq. 1) then 
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
 
-                        qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%qx(:,i) + dely*p%qy(:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%qx(:,k) + dely*p%qy(:,k))
+                        qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                        qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
                 endif
 
 

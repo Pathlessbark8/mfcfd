@@ -43,7 +43,7 @@ module parameter_mod
 !	limiter_flag = 1 => venkatakrishnan limiter
 !	limiter_flag = 2 => min-max limiter 	
 !
-	integer, parameter :: limiter_flag = 1
+        integer, parameter :: limiter_flag = 1
 	real*8, parameter :: VL_CONST = 150.d0 ! Venkatakrishnan limiter constant ..
 !
 !
@@ -79,7 +79,8 @@ module parameter_mod
 !
 !	Parameters for the adjoint code ..
 !
-!
+!       if using objective function
+        integer, parameter :: obj_func_flag = 0
 	real*8, parameter :: Cl_flag = 0.0d0
 	real*8, parameter :: Cd_flag = 0.0d0
 	real*8, parameter :: Cm_flag = 0.0d0

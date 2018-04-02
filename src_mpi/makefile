@@ -10,7 +10,7 @@ include makefile.in
 initial_conditions.o quadrant_fluxes.o wall_fluxes.o split_fluxes.o interior_fluxes.o outer_fluxes.o flux_residual.o \
 fpi_solver.o q_variables.o limiters.o point_normals.o test.o utilities.o state_update.o
 
-objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o test.o generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o
+objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o test.o generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o compute_enstrophy.o objective_function.o
 
 
 
@@ -50,7 +50,7 @@ generate_connectivity.o: generate_connectivity.F90 data_structure.o
 test.o: test.F90 data_structure.o 
 	$(FC) -c $(switch) test.F90
 
-fpi_solver.o: fpi_solver.F90 data_structure.o q_variables.o flux_residual.o state_update.o
+fpi_solver.o: fpi_solver.F90 data_structure.o q_variables.o flux_residual.o state_update.o objective_function.o
 	$(FLINKER) -c fpi_solver.F90
 
 q_variables.o: q_variables.F90 data_structure.o
@@ -80,6 +80,11 @@ state_update.o: state_update.F90 data_structure.o flux_residual.o
 limiters.o: limiters.F90 data_structure.o
 	$(FC) -c $(switch) limiters.F90
 	
+objective_function.o: objective_function.F90 data_structure.o  compute_enstrophy.o
+	$(FLINKER) -c $(switch) objective_function.F90
+	
+compute_enstrophy.o: compute_enstrophy.F90 data_structure.o
+	$(FC) -c $(switch) compute_enstrophy.F90
 # Cleaning 
 
 clean::

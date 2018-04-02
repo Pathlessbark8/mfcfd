@@ -11,7 +11,7 @@ module state_update_mod
         
         subroutine state_update()
 
-                implicit none			
+                implicit none
 
                 integer :: i, k, r
 		real*8 :: delt, U(4), temp
@@ -53,11 +53,11 @@ module state_update_mod
 
                         sum_res_sqr = sum_res_sqr + res_sqr
 
-                        p%rho(k) = U(1)
+                        p%prim(1,k) = U(1)
                         temp = 1.0d0/U(1)
-                        p%u1(k) = U(2)*temp
-                        p%u2(k) = U(3)*temp
-                        p%pr(k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        p%prim(2,k) = U(2)*temp
+                        p%prim(3,k) = U(3)*temp
+                        p%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
 
                 enddo
 
@@ -94,11 +94,11 @@ module state_update_mod
 !							
 !							sum_res_sqr = sum_res_sqr + res_sqr
 
-                        p%rho(k) = U(1)
+                        p%prim(1,k) = U(1)
                         temp = 1.0d0/U(1)
-                        p%u1(k) = U(2)*temp
-                        p%u2(k) = U(3)*temp
-                        p%pr(k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        p%prim(2,k) = U(2)*temp
+                        p%prim(3,k) = U(3)*temp
+                        p%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
 
                 enddo
 
@@ -129,12 +129,12 @@ module state_update_mod
 
                         sum_res_sqr = sum_res_sqr + res_sqr
 
-                        p%rho(k) = U(1)
+                        p%prim(1,k) = U(1)
                         temp = 1.0d0/U(1)
-                        p%u1(k) = U(2)*temp
-                        p%u2(k) = U(3)*temp
+                        p%prim(2,k) = U(2)*temp
+                        p%prim(3,k) = U(3)*temp
 
-                        p%pr(k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        p%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
         
                 enddo
 
@@ -156,12 +156,12 @@ module state_update_mod
 		real*8 :: temp1, temp2
                 integer :: k
 
-                rho = p%rho(k)
+                rho = p%prim(1,k)
 
                 U(1) = rho 
-                temp1 = rho*p%u1(k)
-                temp2 = rho*p%u2(k)
-                U(4) = 2.5*p%pr(k) + 0.5*(temp1*temp1 + temp2*temp2)/rho
+                temp1 = rho*p%prim(2,k)
+                temp2 = rho*p%prim(3,k)
+                U(4) = 2.5*p%prim(4,k) + 0.5*(temp1*temp1 + temp2*temp2)/rho
 
                 U(2) = temp1*ny - temp2*nx
                 U(3) = temp1*nx + temp2*ny
@@ -178,16 +178,16 @@ module state_update_mod
 		real*8 :: temp, U(4)
                 integer :: k
 
-                p%rho(k) = U(1)
+                p%prim(1,k) = U(1)
 
                 temp = 1.0d0/U(1)
 
-                p%u1(k) = U(2)*temp
-                p%u2(k) = U(3)*temp
+                p%prim(2,k) = U(2)*temp
+                p%prim(3,k) = U(3)*temp
 
                 temp = U(4) - (0.5*temp)*(U(2)*U(2) + U(3)*U(3))
 
-                p%pr(k) = 0.4*temp
+                p%prim(4,k) = 0.4*temp
 
 
         end subroutine
@@ -216,10 +216,10 @@ module state_update_mod
                         do r = 1, p%nbhs(i)
                                 k = p%conn(i,r)
 
-                                u1 = p%u1(k)
-                                u2 = p%u2(k)
-                                pr = p%pr(k)
-                                rho = p%rho(k)
+                                rho = p%prim(1,k)
+                                u1 = p%prim(2,k)
+                                u2 = p%prim(3,k)
+                                pr = p%prim(4,k)
 
                                 x_i = p%x(i)
                                 y_i = p%y(i)
@@ -278,10 +278,10 @@ module state_update_mod
                 B2_inf = exp(-S2*S2)/(2*dsqrt(pi*beta))
                 A2n_inf = 0.5*(1-derf(S2))
 
-                rho = p%rho(k)
-                u1 = p%u1(k)
-                u2 = p%u2(k)
-                pr = p%pr(k)
+                rho = p%prim(1,k)
+                u1 = p%prim(2,k)
+                u2 = p%prim(3,k)
+                pr = p%prim(4,k)
 
                 u1_rot = u1*tx + u2*ty
                 u2_rot = u1*nx + u2*ny

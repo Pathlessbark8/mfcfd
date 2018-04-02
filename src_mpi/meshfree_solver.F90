@@ -47,19 +47,19 @@ program meshfree_solver
         runtime = MPI_Wtime()
         call q_lskum()
         runtime = MPI_Wtime() - runtime
+        if(rank==0)print*,'simulation completed with runtime:',runtime
 
-        !call VecView(p_q,PETSC_VIEWER_STDOUT_WORLD,ierr)
 
 !	Printing the output (post-processing) ..
-!
+
 !	call print_primal_output()
 
 
 !       destroy petsc vectors
-  !      call dest_petsc()
+        call dest_petsc()
 
         totaltime = MPI_Wtime() - totaltime
 !       stop petsc
         call PetscFinalize(ierr); CHKERRQ(ierr)
-	
+
 end program meshfree_solver

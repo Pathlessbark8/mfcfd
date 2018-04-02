@@ -15,19 +15,17 @@ contains
 
                 implicit none
 
-                integer :: t, i
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-
-                call compute_normals()
+!TODO               Temporarily, until an effiecient way of computing normals in parallel is developed
+!                call compute_normals()
                 call generate_connectivity()
 
         
-                do t = 1, 3
+                do it = 1, max_iters
                         
-                        call fpi_solver(t)
-                        print*,t,res_new,residue
+                        call fpi_solver(it)
+                        if (rank==0) write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
 !			print*, t, res_new, residue, max_res, max_res_point, Cl, Cd, cfv
-!			print*, t, res_new, residue, Cl, Cd, cfv
 !			write(301, *) t, residue				
                 enddo
 

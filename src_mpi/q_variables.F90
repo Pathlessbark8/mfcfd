@@ -16,12 +16,12 @@ contains
 				real*8 :: two_times_beta
 !
 
-                                do k = 1, local_points
+                                do k = 1, max_points
 
-                                                rho = p%rho(k)
-                                                u1 = p%u1(k)
-                                                u2 = p%u2(k)
-                                                pr = p%pr(k)
+                                                rho = p%prim(1,k)
+                                                u1 = p%prim(2,k)
+                                                u2 = p%prim(3,k)
+                                                pr = p%prim(4,k)
 
                                 beta = 0.5*rho/pr
 
@@ -96,8 +96,8 @@ contains
                                                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
                                                 one_by_det = 1.0d0/det
 
-                                                p%qx(:,i) = (sum_delx_delq*sum_dely_sqr - sum_dely_delq*sum_delx_dely)*one_by_det
-                                                p%qy(:,i) = (sum_dely_delq*sum_delx_sqr - sum_delx_delq*sum_delx_dely)*one_by_det
+                                                p%dq(1,:,i) = (sum_delx_delq*sum_dely_sqr - sum_dely_delq*sum_delx_dely)*one_by_det
+                                                p%dq(2,:,i) = (sum_dely_delq*sum_delx_sqr - sum_delx_delq*sum_delx_dely)*one_by_det
 
 
 

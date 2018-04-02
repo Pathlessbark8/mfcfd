@@ -39,6 +39,9 @@ contains
                 allocate(p%flag_2(max_points))
                 allocate(p%nbhs(max_points))
                 allocate(p%conn(max_points,15))
+                allocate(p%nx(max_points))
+                allocate(p%ny(max_points))
+
 
                 wall_points = 0
                 interior_points = 0
@@ -48,7 +51,7 @@ contains
                 do k = 1, local_points
 
                         read(101,*) p%local_id(k),p%global_id(k),p%x(k),&
-                        & p%y(k), p%flag_1(k),p%flag_2(k),p%nbhs(k),&
+                        & p%y(k),p%nx(k),p%ny(k), p%flag_1(k),p%flag_2(k),p%nbhs(k),&
                         & (p%conn(k,r),r=1,p%nbhs(k))
                         
                 !Storing the count for the point types
