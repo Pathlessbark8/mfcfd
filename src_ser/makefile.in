@@ -1,7 +1,0 @@
-FC = gfortran
-CC = gcc
-GIT_VERSION = $(shell cd $(UG3_DIR) && git describe --abbrev=8 --dirty --always)
-
-
-
-
