@@ -17,7 +17,7 @@ module objective_function_mod
                         real*8 :: lCFV
                         PetscErrorCode :: ierr
 
-                        if(obj_func_flag==0) return
+                        !if(obj_func_flag==0) return
 
 
 !                        call compute_cl_cd_cm()
@@ -30,7 +30,7 @@ module objective_function_mod
                         lCFV = total_enstrophy
 
                         call MPI_Reduce(lCFV, CFV , 1, MPI_DOUBLE, MPI_SUM, 0, &
-                        PETSC_COMM_WORLD, ierr); CHKERRQ(ierr)
+                        PETSC_COMM_WORLD, ierr)
 
                         if(rank==0)write(*,'(a12,i8,a25,3e30.20)')'iterations:',it,'Objective function:',CFV
 

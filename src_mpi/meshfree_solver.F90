@@ -48,7 +48,6 @@ program meshfree_solver
         runtime = MPI_Wtime()
         call q_lskum()
         runtime = MPI_Wtime() - runtime
-        if(rank==0)print*,'simulation completed with runtime:',runtime
 
 
 !	Printing the output (post-processing) ..
@@ -60,6 +59,10 @@ program meshfree_solver
         call dest_petsc()
 
         totaltime = MPI_Wtime() - totaltime
+        if(rank==0)print*,'Simulation completed!!!'
+        if(rank==0)print*,'runtime:',runtime
+        if(rank==0)print*,'totaltime:',totaltime
+        
 !       stop petsc
         call PetscFinalize(ierr)
 
