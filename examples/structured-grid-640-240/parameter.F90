@@ -4,9 +4,9 @@ module parameter_mod
 	implicit none
 !
 !
-	integer, parameter :: max_points=153600
+!	integer, parameter :: max_points=153600
 !
-	integer, parameter :: max_iters=350000
+	integer, parameter :: max_iters=5000
 !
 !	real*8, parameter :: Mach=1.2d0
 !	real*8, parameter :: aoa = 7.0d0
@@ -63,14 +63,14 @@ module parameter_mod
 !	Starting and end indices of various types of points ..
 !	
 !
-	integer, parameter :: interior_points = 152321 
+!	integer, parameter :: interior_points = 152321 
 !
-	integer, parameter :: outer_points = 640
+!	integer, parameter :: outer_points = 640
 !
-	integer, parameter :: wall_points = 639
+!	integer, parameter :: wall_points = 639
 !
 	integer, parameter :: shapes = 1
-	integer, parameter :: shape_points(1) = 640	
+!	integer, parameter :: shape_points(1) = 640	
 	integer, parameter :: max_shape_points = 640
 !
 !	Note: max_shape_points is the maximum value of all 
@@ -80,6 +80,8 @@ module parameter_mod
 !	Parameters for the adjoint code ..
 !
 !
+!        integer, parameter :: obj_func_flag = 0
+
 	real*8, parameter :: Cl_flag = 0.0d0
 	real*8, parameter :: Cd_flag = 0.0d0
 	real*8, parameter :: Cm_flag = 0.0d0
