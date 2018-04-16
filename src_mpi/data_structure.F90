@@ -4,6 +4,7 @@
 
 module data_structure_mod
 #include <petsc/finclude/petscvec.h>
+#include <petsc/finclude/petsclog.h>
 
 
         use petscvec
@@ -77,6 +78,7 @@ module data_structure_mod
         PetscMPIInt              :: rank,proc
         Vec                  :: p_dq
         Vec                  :: p_prim
+        PetscLogEvent           :: dq_comm, prim_comm
 
     contains
 
@@ -134,6 +136,10 @@ module data_structure_mod
                 call VecGetSize(p_prim,plen,ierr)
                 plen = plen/4
 
+                call PetscLogEventRegister('dq_comm',  0,dq_comm,ierr);
+                call PetscLogEventRegister('prim_comm',  0,prim_comm,ierr);
+
+
 
         if(rank==0) print*,'Set up parallel vectors'
         end subroutine 
@@ -163,7 +169,7 @@ module data_structure_mod
                 implicit none
                 PetscErrorCode      :: ierr
                 if (proc==1) return
-
+ 
                 call VecGhostUpdateBegin(p_prim,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine 
@@ -174,7 +180,9 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
+                call PetscLogEventBegin(dq_comm, ierr)
                 call VecGhostUpdateEnd(p_dq,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call PetscLogEventEnd(dq_comm, ierr)
 
         end subroutine 
 
@@ -183,7 +191,9 @@ module data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
 
+                call PetscLogEventBegin(prim_comm, ierr)
                 call VecGhostUpdateEnd(p_prim,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call PetscLogEventEnd(prim_comm, ierr)
 
         end subroutine
 

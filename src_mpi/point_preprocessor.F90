@@ -19,7 +19,7 @@ contains
 
                 if (rank==0) print*,'Reading points'
 !TODO Make preproc to name ser grid as partgrid and par as partgrid0....
-                part_grid = 'partGrid0'
+                part_grid = 'par/partGrid0'
                 if (proc==2) part_grid = 'par2/partGrid'//trim(itos(1,rank))
                 if (proc==4) part_grid = 'par4/partGrid'//trim(itos(1,rank))
                 if (proc==8) part_grid = 'par8/partGrid'//trim(itos(1,rank))
