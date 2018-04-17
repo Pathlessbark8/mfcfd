@@ -129,9 +129,11 @@ module data_structure_mod
                 if (rank==0) print*,'Setting up parallel vectors'
                 pghost = pghost - 1
 
-                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,PETSC_DECIDE,ghost_points,pghost,p%dq(1,1,1),p_dq,ierr)
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
+			&PETSC_DECIDE,ghost_points,pghost,p%dq(1,1,1),p_dq,ierr)
                 
-                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,PETSC_DECIDE,ghost_points,pghost,p%prim(1,1),p_prim,ierr)
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
+			&PETSC_DECIDE,ghost_points,pghost,p%prim(1,1),p_prim,ierr)
 
                 call VecGetSize(p_prim,plen,ierr)
                 plen = plen/4
