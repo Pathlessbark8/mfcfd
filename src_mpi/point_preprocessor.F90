@@ -19,13 +19,8 @@ contains
 
                 if (rank==0) print*,'Reading points'
 !TODO Make preproc to name ser grid as partgrid and par as partgrid0....
-                part_grid = 'par/partGrid0'
-                if (proc==2) part_grid = 'par2/partGrid'//trim(itos(1,rank))
-                if (proc==4) part_grid = 'par4/partGrid'//trim(itos(1,rank))
-                if (proc==8) part_grid = 'par8/partGrid'//trim(itos(1,rank))
-                if (proc==16) part_grid = 'par16/partGrid'//trim(itos(2,rank))
-                if (proc==32) part_grid = 'par32/partGrid'//trim(itos(2,rank))
-                if (proc==40) part_grid = 'par40/partGrid'//trim(itos(2,rank))
+                part_grid = 'partGrid'
+                if (proc>1) part_grid = 'partGrid'//trim(itos(2,rank))
 
                 OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 

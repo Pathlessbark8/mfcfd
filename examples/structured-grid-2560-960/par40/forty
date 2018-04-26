@@ -1,0 +1,1103 @@
+ Reading points
+ Setting up parallel vectors
+ Set up parallel vectors
+ No of points:     2457600
+ iterations:       1      Objective function:    0.35805941142353057861E+08
+ iterations:       1       residue:    0.00000000000000000000E+00
+ iterations:       2      Objective function:    0.36195603477923385799E+08
+ iterations:       2       residue:    0.00000000000000000000E+00
+ iterations:       3      Objective function:    0.36596884934152476490E+08
+ iterations:       3       residue:   -0.27621999444558975080E-02
+ iterations:       4      Objective function:    0.37008830067525550723E+08
+ iterations:       4       residue:   -0.56429343295216803991E-02
+ iterations:       5      Objective function:    0.37431076679013319314E+08
+ iterations:       5       residue:   -0.87535754478844911980E-02
+ iterations:       6      Objective function:    0.37862820966117039323E+08
+ iterations:       6       residue:   -0.12075580319108845939E-01
+ iterations:       7      Objective function:    0.38303585122220404446E+08
+ iterations:       7       residue:   -0.15571084353029746722E-01
+ iterations:       8      Objective function:    0.38752713519204191864E+08
+ iterations:       8       residue:   -0.19212084515877077967E-01
+ iterations:       9      Objective function:    0.39209624610221408308E+08
+ iterations:       9       residue:   -0.22961338523025391634E-01
+ iterations:      10      Objective function:    0.39673548025398112833E+08
+ iterations:      10       residue:   -0.26791915367599554443E-01
+ iterations:      11      Objective function:    0.40143853323559097946E+08
+ iterations:      11       residue:   -0.30702106222972352229E-01
+ iterations:      12      Objective function:    0.40619488338789187372E+08
+ iterations:      12       residue:   -0.34669542010053469583E-01
+ iterations:      13      Objective function:    0.41099589932384915650E+08
+ iterations:      13       residue:   -0.38674437875702731560E-01
+ iterations:      14      Objective function:    0.41583247196744531393E+08
+ iterations:      14       residue:   -0.42702673761225051763E-01
+ iterations:      15      Objective function:    0.42069582355406679213E+08
+ iterations:      15       residue:   -0.46746311975958750040E-01
+ iterations:      16      Objective function:    0.42557667326459676027E+08
+ iterations:      16       residue:   -0.50798727480882842344E-01
+ iterations:      17      Objective function:    0.43047407513524547219E+08
+ iterations:      17       residue:   -0.54852901473969414847E-01
+ iterations:      18      Objective function:    0.43537864715094991028E+08
+ iterations:      18       residue:   -0.58901008416266963097E-01
+ iterations:      19      Objective function:    0.44028249795411191881E+08
+ iterations:      19       residue:   -0.62941930119566183444E-01
+ iterations:      20      Objective function:    0.44518100521666854620E+08
+ iterations:      20       residue:   -0.66974437394571498250E-01
+ iterations:      21      Objective function:    0.45006774501055330038E+08
+ iterations:      21       residue:   -0.71000285410982910683E-01
+ iterations:      22      Objective function:    0.45493715735233999789E+08
+ iterations:      22       residue:   -0.75023923946949247488E-01
+ iterations:      23      Objective function:    0.45978654556195504963E+08
+ iterations:      23       residue:   -0.79049500939399261479E-01
+ iterations:      24      Objective function:    0.46461421136404201388E+08
+ iterations:      24       residue:   -0.83135700799216422086E-01
+ iterations:      25      Objective function:    0.46941919577357999980E+08
+ iterations:      25       residue:   -0.87333347393840785045E-01
+ iterations:      26      Objective function:    0.47420026214513927698E+08
+ iterations:      26       residue:   -0.91529031543088598677E-01
+ iterations:      27      Objective function:    0.47895629153952836990E+08
+ iterations:      27       residue:   -0.95759985193430527395E-01
+ iterations:      28      Objective function:    0.48368556245608486235E+08
+ iterations:      28       residue:   -0.99978779224738231757E-01
+ iterations:      29      Objective function:    0.48838763105045169592E+08
+ iterations:      29       residue:   -0.10415549185880364214E+00
+ iterations:      30      Objective function:    0.49306268769571080804E+08
+ iterations:      30       residue:   -0.10828769763024047312E+00
+ iterations:      31      Objective function:    0.49771085546083614230E+08
+ iterations:      31       residue:   -0.11237514697905290340E+00
+ iterations:      32      Objective function:    0.50233119482417300344E+08
+ iterations:      32       residue:   -0.11641756966761353242E+00
+ iterations:      33      Objective function:    0.50692325170058742166E+08
+ iterations:      33       residue:   -0.12041598310038163777E+00
+ iterations:      34      Objective function:    0.51148710745447508991E+08
+ iterations:      34       residue:   -0.12437122258821485532E+00
+ iterations:      35      Objective function:    0.51602285843068070710E+08
+ iterations:      35       residue:   -0.12828375069864653146E+00
+ iterations:      36      Objective function:    0.52053098519363857806E+08
+ iterations:      36       residue:   -0.13215390918261957220E+00
+ iterations:      37      Objective function:    0.52501302518344223499E+08
+ iterations:      37       residue:   -0.13598137551505548593E+00
+ iterations:      38      Objective function:    0.52947340107422731817E+08
+ iterations:      38       residue:   -0.13976616496578109228E+00
+ iterations:      39      Objective function:    0.53391626476511500776E+08
+ iterations:      39       residue:   -0.14351048525035223213E+00
+ iterations:      40      Objective function:    0.53834551445150330663E+08
+ iterations:      40       residue:   -0.14721498213911629604E+00
+ iterations:      41      Objective function:    0.54276436816324308515E+08
+ iterations:      41       residue:   -0.15087988409224409314E+00
+ iterations:      42      Objective function:    0.54717669577327616513E+08
+ iterations:      42       residue:   -0.15450329437992560422E+00
+ iterations:      43      Objective function:    0.55156723164317645133E+08
+ iterations:      43       residue:   -0.15808496889560805232E+00
+ iterations:      44      Objective function:    0.55592780832318075001E+08
+ iterations:      44       residue:   -0.16161340437006416204E+00
+ iterations:      45      Objective function:    0.56025549847384639084E+08
+ iterations:      45       residue:   -0.16509088789787285112E+00
+ iterations:      46      Objective function:    0.56455125142122946680E+08
+ iterations:      46       residue:   -0.16852755138813851898E+00
+ iterations:      47      Objective function:    0.56881869998925611377E+08
+ iterations:      47       residue:   -0.17193779653444515865E+00
+ iterations:      48      Objective function:    0.57306092189281970263E+08
+ iterations:      48       residue:   -0.17530186130731378880E+00
+ iterations:      49      Objective function:    0.57727815200816653669E+08
+ iterations:      49       residue:   -0.17862080260656262864E+00
+ iterations:      50      Objective function:    0.58146725320952109993E+08
+ iterations:      50       residue:   -0.18189485306880931459E+00
+ iterations:      51      Objective function:    0.58562872173897407949E+08
+ iterations:      51       residue:   -0.18512422385895338506E+00
+ iterations:      52      Objective function:    0.58976907074216276407E+08
+ iterations:      52       residue:   -0.18830890909021938406E+00
+ iterations:      53      Objective function:    0.59389269375128813088E+08
+ iterations:      53       residue:   -0.19144892188686252199E+00
+ iterations:      54      Objective function:    0.59799904376531504095E+08
+ iterations:      54       residue:   -0.19454435328062053001E+00
+ iterations:      55      Objective function:    0.60208798125463314354E+08
+ iterations:      55       residue:   -0.19759494278538344836E+00
+ iterations:      56      Objective function:    0.60615937562970042229E+08
+ iterations:      56       residue:   -0.20060062072067161298E+00
+ iterations:      57      Objective function:    0.61021555405983865261E+08
+ iterations:      57       residue:   -0.20356123455778640796E+00
+ iterations:      58      Objective function:    0.61425808641010001302E+08
+ iterations:      58       residue:   -0.20647666569659153812E+00
+ iterations:      59      Objective function:    0.61828673948271915317E+08
+ iterations:      59       residue:   -0.20934679689991478324E+00
+ iterations:      60      Objective function:    0.62230156172251746058E+08
+ iterations:      60       residue:   -0.21217159752328773603E+00
+ iterations:      61      Objective function:    0.62630198550381220877E+08
+ iterations:      61       residue:   -0.21495037454718241010E+00
+ iterations:      62      Objective function:    0.63028868634483501315E+08
+ iterations:      62       residue:   -0.21768236589016559668E+00
+ iterations:      63      Objective function:    0.63426282786561183631E+08
+ iterations:      63       residue:   -0.22036912059507240969E+00
+ iterations:      64      Objective function:    0.63822329583141140640E+08
+ iterations:      64       residue:   -0.22300963450214172923E+00
+ iterations:      65      Objective function:    0.64216913272767938673E+08
+ iterations:      65       residue:   -0.22560373450484952351E+00
+ iterations:      66      Objective function:    0.64610142781620994210E+08
+ iterations:      66       residue:   -0.22815122299113815840E+00
+ iterations:      67      Objective function:    0.65002103333432786167E+08
+ iterations:      67       residue:   -0.23065169228836088222E+00
+ iterations:      68      Objective function:    0.65391442654464296997E+08
+ iterations:      68       residue:   -0.23310533084793755298E+00
+ iterations:      69      Objective function:    0.65778431802443653345E+08
+ iterations:      69       residue:   -0.23551208317788879798E+00
+ iterations:      70      Objective function:    0.66163666768128864467E+08
+ iterations:      70       residue:   -0.23787180573118379967E+00
+ iterations:      71      Objective function:    0.66547245070980839431E+08
+ iterations:      71       residue:   -0.24018454659783503025E+00
+ iterations:      72      Objective function:    0.66929289641525767744E+08
+ iterations:      72       residue:   -0.24245031811916223363E+00
+ iterations:      73      Objective function:    0.67309958749667912722E+08
+ iterations:      73       residue:   -0.24466910975843056408E+00
+ iterations:      74      Objective function:    0.67689287534056738019E+08
+ iterations:      74       residue:   -0.24684085775792419248E+00
+ iterations:      75      Objective function:    0.68067274133302375674E+08
+ iterations:      75       residue:   -0.24896540691994825667E+00
+ iterations:      76      Objective function:    0.68443917882530316710E+08
+ iterations:      76       residue:   -0.25104279750367008983E+00
+ iterations:      77      Objective function:    0.68819225328230112791E+08
+ iterations:      77       residue:   -0.25307227890216316135E+00
+ iterations:      78      Objective function:    0.69193198611603900790E+08
+ iterations:      78       residue:   -0.25505434625010736660E+00
+ iterations:      79      Objective function:    0.69565839670351460576E+08
+ iterations:      79       residue:   -0.25699080585662326115E+00
+ iterations:      80      Objective function:    0.69937152142077147961E+08
+ iterations:      80       residue:   -0.25888110722318063983E+00
+ iterations:      81      Objective function:    0.70307140982182130218E+08
+ iterations:      81       residue:   -0.26072513978754913166E+00
+ iterations:      82      Objective function:    0.70675773053569525480E+08
+ iterations:      82       residue:   -0.26252256711126092936E+00
+ iterations:      83      Objective function:    0.71043044341414973140E+08
+ iterations:      83       residue:   -0.26427407279536729856E+00
+ iterations:      84      Objective function:    0.71408945742411702871E+08
+ iterations:      84       residue:   -0.26597962112148176850E+00
+ iterations:      85      Objective function:    0.71773375660322710872E+08
+ iterations:      85       residue:   -0.26763945678241185533E+00
+ iterations:      86      Objective function:    0.72136344515756011009E+08
+ iterations:      86       residue:   -0.26925381386832281105E+00
+ iterations:      87      Objective function:    0.72497845758898675442E+08
+ iterations:      87       residue:   -0.27082274465783456874E+00
+ iterations:      88      Objective function:    0.72857877492105424404E+08
+ iterations:      88       residue:   -0.27234676300978066799E+00
+ iterations:      89      Objective function:    0.73216427721130579710E+08
+ iterations:      89       residue:   -0.27382662408229668793E+00
+ iterations:      90      Objective function:    0.73573482505137935281E+08
+ iterations:      90       residue:   -0.27526254510885239668E+00
+ iterations:      91      Objective function:    0.73929017170602992177E+08
+ iterations:      91       residue:   -0.27665361435853347283E+00
+ iterations:      92      Objective function:    0.74283006332366645336E+08
+ iterations:      92       residue:   -0.27799998923259894301E+00
+ iterations:      93      Objective function:    0.74635421945907071233E+08
+ iterations:      93       residue:   -0.27930383956154186675E+00
+ iterations:      94      Objective function:    0.74986260333507046103E+08
+ iterations:      94       residue:   -0.28056981143032300174E+00
+ iterations:      95      Objective function:    0.75335572841316625476E+08
+ iterations:      95       residue:   -0.28180139400572390418E+00
+ iterations:      96      Objective function:    0.75683358669625192881E+08
+ iterations:      96       residue:   -0.28298619946213576792E+00
+ iterations:      97      Objective function:    0.76029622097266808152E+08
+ iterations:      97       residue:   -0.28413347606187827621E+00
+ iterations:      98      Objective function:    0.76374387378177851439E+08
+ iterations:      98       residue:   -0.28525332449322238215E+00
+ iterations:      99      Objective function:    0.76717652349945724010E+08
+ iterations:      99       residue:   -0.28633956796008486201E+00
+ iterations:     100      Objective function:    0.77059405312213912606E+08
+ iterations:     100       residue:   -0.28739275206300674004E+00
+ iterations:     101      Objective function:    0.77399625750141516328E+08
+ iterations:     101       residue:   -0.28840959369313073912E+00
+ iterations:     102      Objective function:    0.77738292598738759756E+08
+ iterations:     102       residue:   -0.28938840498226597875E+00
+ iterations:     103      Objective function:    0.78075399492661476135E+08
+ iterations:     103       residue:   -0.29033208210924527082E+00
+ iterations:     104      Objective function:    0.78410928992593050003E+08
+ iterations:     104       residue:   -0.29123943628489395996E+00
+ iterations:     105      Objective function:    0.78744885888739034534E+08
+ iterations:     105       residue:   -0.29210910379843790796E+00
+ iterations:     106      Objective function:    0.79077326176317676902E+08
+ iterations:     106       residue:   -0.29294257423609104674E+00
+ iterations:     107      Objective function:    0.79408234146258771420E+08
+ iterations:     107       residue:   -0.29373572844550516203E+00
+ iterations:     108      Objective function:    0.79737610225603163242E+08
+ iterations:     108       residue:   -0.29449081672182858549E+00
+ iterations:     109      Objective function:    0.80065444429153695703E+08
+ iterations:     109       residue:   -0.29520802301590598482E+00
+ iterations:     110      Objective function:    0.80391712765921533108E+08
+ iterations:     110       residue:   -0.29588927613888404977E+00
+ iterations:     111      Objective function:    0.80716338184342488647E+08
+ iterations:     111       residue:   -0.29653506641647137121E+00
+ iterations:     112      Objective function:    0.81039310624052882195E+08
+ iterations:     112       residue:   -0.29714341235118352236E+00
+ iterations:     113      Objective function:    0.81360623320788204670E+08
+ iterations:     113       residue:   -0.29771603056801693166E+00
+ iterations:     114      Objective function:    0.81680274151095673442E+08
+ iterations:     114       residue:   -0.29825495199588158979E+00
+ iterations:     115      Objective function:    0.81998273593937173486E+08
+ iterations:     115       residue:   -0.29875753831951967765E+00
+ iterations:     116      Objective function:    0.82314653992821604013E+08
+ iterations:     116       residue:   -0.29922243493535422010E+00
+ iterations:     117      Objective function:    0.82629427056123211980E+08
+ iterations:     117       residue:   -0.29964925618349308456E+00
+ iterations:     118      Objective function:    0.82942588541765451431E+08
+ iterations:     118       residue:   -0.30004011058738183637E+00
+ iterations:     119      Objective function:    0.83254141614371880889E+08
+ iterations:     119       residue:   -0.30040592677021765722E+00
+ iterations:     120      Objective function:    0.83564083944289371371E+08
+ iterations:     120       residue:   -0.30075598587612284440E+00
+ iterations:     121      Objective function:    0.83872415230146080256E+08
+ iterations:     121       residue:   -0.30109081493393763385E+00
+ iterations:     122      Objective function:    0.84179146423909693956E+08
+ iterations:     122       residue:   -0.30140894922051952864E+00
+ iterations:     123      Objective function:    0.84484273229242771864E+08
+ iterations:     123       residue:   -0.30170373276187351097E+00
+ iterations:     124      Objective function:    0.84787784626770690084E+08
+ iterations:     124       residue:   -0.30195740009252053371E+00
+ iterations:     125      Objective function:    0.85089672184277266264E+08
+ iterations:     125       residue:   -0.30216525030960683651E+00
+ iterations:     126      Objective function:    0.85389937564892590046E+08
+ iterations:     126       residue:   -0.30234216440297068118E+00
+ iterations:     127      Objective function:    0.85688576667198687792E+08
+ iterations:     127       residue:   -0.30250624214584131977E+00
+ iterations:     128      Objective function:    0.85985599695917636156E+08
+ iterations:     128       residue:   -0.30265768773622075960E+00
+ iterations:     129      Objective function:    0.86281012894369095564E+08
+ iterations:     129       residue:   -0.30278297583712698859E+00
+ iterations:     130      Objective function:    0.86574816299176990986E+08
+ iterations:     130       residue:   -0.30288135337963090210E+00
+ iterations:     131      Objective function:    0.86867011850687623024E+08
+ iterations:     131       residue:   -0.30295279143502346075E+00
+ iterations:     132      Objective function:    0.87157596002803951502E+08
+ iterations:     132       residue:   -0.30299943226229042459E+00
+ iterations:     133      Objective function:    0.87446569172667428851E+08
+ iterations:     133       residue:   -0.30302307561412217263E+00
+ iterations:     134      Objective function:    0.87733929834811657667E+08
+ iterations:     134       residue:   -0.30302425107023800432E+00
+ iterations:     135      Objective function:    0.88019679496309608221E+08
+ iterations:     135       residue:   -0.30300351500396438542E+00
+ iterations:     136      Objective function:    0.88303799724664106965E+08
+ iterations:     136       residue:   -0.30296125218303177062E+00
+ iterations:     137      Objective function:    0.88586211501211896539E+08
+ iterations:     137       residue:   -0.30289795374670624994E+00
+ iterations:     138      Objective function:    0.88866922081099241972E+08
+ iterations:     138       residue:   -0.30281450573681034655E+00
+ iterations:     139      Objective function:    0.89145940904044806957E+08
+ iterations:     139       residue:   -0.30271127345741760672E+00
+ iterations:     140      Objective function:    0.89423298524903401732E+08
+ iterations:     140       residue:   -0.30258901939069077214E+00
+ iterations:     141      Objective function:    0.89699004220488578081E+08
+ iterations:     141       residue:   -0.30244824841635098434E+00
+ iterations:     142      Objective function:    0.89973052413826122880E+08
+ iterations:     142       residue:   -0.30228957396691491510E+00
+ iterations:     143      Objective function:    0.90245456373080372810E+08
+ iterations:     143       residue:   -0.30211418528155181695E+00
+ iterations:     144      Objective function:    0.90516227123398005962E+08
+ iterations:     144       residue:   -0.30192188194403485335E+00
+ iterations:     145      Objective function:    0.90785368135153487325E+08
+ iterations:     145       residue:   -0.30171346410088095702E+00
+ iterations:     146      Objective function:    0.91052879550746619701E+08
+ iterations:     146       residue:   -0.30148906739966530033E+00
+ iterations:     147      Objective function:    0.91318761143423065543E+08
+ iterations:     147       residue:   -0.30124903000463010283E+00
+ iterations:     148      Objective function:    0.91583009427183970809E+08
+ iterations:     148       residue:   -0.30099448675924778129E+00
+ iterations:     149      Objective function:    0.91845625073131978512E+08
+ iterations:     149       residue:   -0.30072631808369948425E+00
+ iterations:     150      Objective function:    0.92106598093863368034E+08
+ iterations:     150       residue:   -0.30044505782262637128E+00
+ iterations:     151      Objective function:    0.92365928878399834037E+08
+ iterations:     151       residue:   -0.30015132865551691355E+00
+ iterations:     152      Objective function:    0.92623619099851191044E+08
+ iterations:     152       residue:   -0.29984569358345475321E+00
+ iterations:     153      Objective function:    0.92879662765561550856E+08
+ iterations:     153       residue:   -0.29952853769490295210E+00
+ iterations:     154      Objective function:    0.93134043746946722269E+08
+ iterations:     154       residue:   -0.29920045528945066193E+00
+ iterations:     155      Objective function:    0.93386780915890917182E+08
+ iterations:     155       residue:   -0.29886232808704915609E+00
+ iterations:     156      Objective function:    0.93637876279863029718E+08
+ iterations:     156       residue:   -0.29851458487802806641E+00
+ iterations:     157      Objective function:    0.93887326584570169449E+08
+ iterations:     157       residue:   -0.29815816397479005806E+00
+ iterations:     158      Objective function:    0.94135130309021800756E+08
+ iterations:     158       residue:   -0.29779358126217203573E+00
+ iterations:     159      Objective function:    0.94381286661793798208E+08
+ iterations:     159       residue:   -0.29742138340777518613E+00
+ iterations:     160      Objective function:    0.94625780300668910146E+08
+ iterations:     160       residue:   -0.29704221174984740683E+00
+ iterations:     161      Objective function:    0.94868600111282914877E+08
+ iterations:     161       residue:   -0.29665615918423149378E+00
+ iterations:     162      Objective function:    0.95109743415628254414E+08
+ iterations:     162       residue:   -0.29626297355883268736E+00
+ iterations:     163      Objective function:    0.95349206533817872405E+08
+ iterations:     163       residue:   -0.29586307258383542917E+00
+ iterations:     164      Objective function:    0.95586990497758910060E+08
+ iterations:     164       residue:   -0.29545718229492884399E+00
+ iterations:     165      Objective function:    0.95823095146162465215E+08
+ iterations:     165       residue:   -0.29504625839816200905E+00
+ iterations:     166      Objective function:    0.96057522379944190383E+08
+ iterations:     166       residue:   -0.29463055267737442433E+00
+ iterations:     167      Objective function:    0.96290270107797786593E+08
+ iterations:     167       residue:   -0.29420968053976814804E+00
+ iterations:     168      Objective function:    0.96521337939461708069E+08
+ iterations:     168       residue:   -0.29378419523728799279E+00
+ iterations:     169      Objective function:    0.96750722522663474083E+08
+ iterations:     169       residue:   -0.29335396794676121823E+00
+ iterations:     170      Objective function:    0.96978421712495326996E+08
+ iterations:     170       residue:   -0.29292105616925889766E+00
+ iterations:     171      Objective function:    0.97204434420134186745E+08
+ iterations:     171       residue:   -0.29248505009523351195E+00
+ iterations:     172      Objective function:    0.97428760286121904850E+08
+ iterations:     172       residue:   -0.29204758235769368024E+00
+ iterations:     173      Objective function:    0.97651406650539666414E+08
+ iterations:     173       residue:   -0.29160135593838254486E+00
+ iterations:     174      Objective function:    0.97872380157956406474E+08
+ iterations:     174       residue:   -0.29115214042040526987E+00
+ iterations:     175      Objective function:    0.98091671171649947762E+08
+ iterations:     175       residue:   -0.29071014959477825546E+00
+ iterations:     176      Objective function:    0.98309279638961523771E+08
+ iterations:     176       residue:   -0.29027671805948429551E+00
+ iterations:     177      Objective function:    0.98525207108759045601E+08
+ iterations:     177       residue:   -0.28984422586806990463E+00
+ iterations:     178      Objective function:    0.98739455680158883333E+08
+ iterations:     178       residue:   -0.28940877443550855341E+00
+ iterations:     179      Objective function:    0.98952029535373359919E+08
+ iterations:     179       residue:   -0.28897030981329019372E+00
+ iterations:     180      Objective function:    0.99162927668942645192E+08
+ iterations:     180       residue:   -0.28852994455685876396E+00
+ iterations:     181      Objective function:    0.99371705502142027020E+08
+ iterations:     181       residue:   -0.28808874552853214190E+00
+ iterations:     182      Objective function:    0.99578184723556309938E+08
+ iterations:     182       residue:   -0.28764059247587869805E+00
+ iterations:     183      Objective function:    0.99782267395146399736E+08
+ iterations:     183       residue:   -0.28717099733051815180E+00
+ iterations:     184      Objective function:    0.99983939944152116776E+08
+ iterations:     184       residue:   -0.28670362308368513293E+00
+ iterations:     185      Objective function:    0.10018322050679323077E+09
+ iterations:     185       residue:   -0.28626591175643911757E+00
+ iterations:     186      Objective function:    0.10038011129984070361E+09
+ iterations:     186       residue:   -0.28586413369781038529E+00
+ iterations:     187      Objective function:    0.10057460946331034601E+09
+ iterations:     187       residue:   -0.28546470051602029772E+00
+ iterations:     188      Objective function:    0.10076672877122499049E+09
+ iterations:     188       residue:   -0.28504805026190077610E+00
+ iterations:     189      Objective function:    0.10095649513815230131E+09
+ iterations:     189       residue:   -0.28461156170956691813E+00
+ iterations:     190      Objective function:    0.10114393794950959086E+09
+ iterations:     190       residue:   -0.28416423242262811577E+00
+ iterations:     191      Objective function:    0.10132907085211782157E+09
+ iterations:     191       residue:   -0.28371884006864434014E+00
+ iterations:     192      Objective function:    0.10151190528896699846E+09
+ iterations:     192       residue:   -0.28327577184289981505E+00
+ iterations:     193      Objective function:    0.10169245041745659709E+09
+ iterations:     193       residue:   -0.28283453485642334746E+00
+ iterations:     194      Objective function:    0.10187072029633358121E+09
+ iterations:     194       residue:   -0.28239468608255929860E+00
+ iterations:     195      Objective function:    0.10204672824140763283E+09
+ iterations:     195       residue:   -0.28195614231670362848E+00
+ iterations:     196      Objective function:    0.10222048725414033234E+09
+ iterations:     196       residue:   -0.28151912861219902107E+00
+ iterations:     197      Objective function:    0.10239200861378455162E+09
+ iterations:     197       residue:   -0.28108404011508109077E+00
+ iterations:     198      Objective function:    0.10256131111513273418E+09
+ iterations:     198       residue:   -0.28065113456581630702E+00
+ iterations:     199      Objective function:    0.10272841229952338338E+09
+ iterations:     199       residue:   -0.28022037081190015462E+00
+ iterations:     200      Objective function:    0.10289332750585411489E+09
+ iterations:     200       residue:   -0.27979193920925216066E+00
+ iterations:     201      Objective function:    0.10305606928435473144E+09
+ iterations:     201       residue:   -0.27936589487771412710E+00
+ iterations:     202      Objective function:    0.10321665497278547287E+09
+ iterations:     202       residue:   -0.27894246059011795769E+00
+ iterations:     203      Objective function:    0.10337510830431441963E+09
+ iterations:     203       residue:   -0.27852190138646049089E+00
+ iterations:     204      Objective function:    0.10353144892748928070E+09
+ iterations:     204       residue:   -0.27810442218230957412E+00
+ iterations:     205      Objective function:    0.10368569356465624273E+09
+ iterations:     205       residue:   -0.27768985719864858197E+00
+ iterations:     206      Objective function:    0.10383785543320727348E+09
+ iterations:     206       residue:   -0.27727820025462812659E+00
+ iterations:     207      Objective function:    0.10398794858389602602E+09
+ iterations:     207       residue:   -0.27686948377773701324E+00
+ iterations:     208      Objective function:    0.10413598726445993781E+09
+ iterations:     208       residue:   -0.27646377102219116262E+00
+ iterations:     209      Objective function:    0.10428198771818424761E+09
+ iterations:     209       residue:   -0.27606128046837802303E+00
+ iterations:     210      Objective function:    0.10442596476300622523E+09
+ iterations:     210       residue:   -0.27566220982804978679E+00
+ iterations:     211      Objective function:    0.10456793200942476094E+09
+ iterations:     211       residue:   -0.27526652238794824257E+00
+ iterations:     212      Objective function:    0.10470790282882446051E+09
+ iterations:     212       residue:   -0.27487421335674283585E+00
+ iterations:     213      Objective function:    0.10484589063101652265E+09
+ iterations:     213       residue:   -0.27448503298374959947E+00
+ iterations:     214      Objective function:    0.10498190146385034919E+09
+ iterations:     214       residue:   -0.27409876719673903489E+00
+ iterations:     215      Objective function:    0.10511594897641682625E+09
+ iterations:     215       residue:   -0.27371569155583702626E+00
+ iterations:     216      Objective function:    0.10524804965009278059E+09
+ iterations:     216       residue:   -0.27333609982722134601E+00
+ iterations:     217      Objective function:    0.10537821576394136250E+09
+ iterations:     217       residue:   -0.27296003911861221880E+00
+ iterations:     218      Objective function:    0.10550646109050941467E+09
+ iterations:     218       residue:   -0.27258765614544705480E+00
+ iterations:     219      Objective function:    0.10563279816555269063E+09
+ iterations:     219       residue:   -0.27221920720331405086E+00
+ iterations:     220      Objective function:    0.10575724094407790899E+09
+ iterations:     220       residue:   -0.27185448794312278009E+00
+ iterations:     221      Objective function:    0.10587980554207700491E+09
+ iterations:     221       residue:   -0.27149342631593120778E+00
+ iterations:     222      Objective function:    0.10600050471491701901E+09
+ iterations:     222       residue:   -0.27113617695552044706E+00
+ iterations:     223      Objective function:    0.10611934861389039457E+09
+ iterations:     223       residue:   -0.27078266079175344894E+00
+ iterations:     224      Objective function:    0.10623635274217389524E+09
+ iterations:     224       residue:   -0.27043285844283049268E+00
+ iterations:     225      Objective function:    0.10635152850964668393E+09
+ iterations:     225       residue:   -0.27008684147390327190E+00
+ iterations:     226      Objective function:    0.10646487413310883939E+09
+ iterations:     226       residue:   -0.26974470977346348688E+00
+ iterations:     227      Objective function:    0.10657639973829524219E+09
+ iterations:     227       residue:   -0.26940606001254374657E+00
+ iterations:     228      Objective function:    0.10668611682278311253E+09
+ iterations:     228       residue:   -0.26907155393468651372E+00
+ iterations:     229      Objective function:    0.10679403689795605838E+09
+ iterations:     229       residue:   -0.26874103441044744356E+00
+ iterations:     230      Objective function:    0.10690016723875077069E+09
+ iterations:     230       residue:   -0.26841460526912430673E+00
+ iterations:     231      Objective function:    0.10700450286997814476E+09
+ iterations:     231       residue:   -0.26809350787280422646E+00
+ iterations:     232      Objective function:    0.10710705349868153036E+09
+ iterations:     232       residue:   -0.26777712500750278091E+00
+ iterations:     233      Objective function:    0.10720783367615005374E+09
+ iterations:     233       residue:   -0.26746450479623734564E+00
+ iterations:     234      Objective function:    0.10730685794514544308E+09
+ iterations:     234       residue:   -0.26715773874958237410E+00
+ iterations:     235      Objective function:    0.10740413942244172096E+09
+ iterations:     235       residue:   -0.26685618523186765971E+00
+ iterations:     236      Objective function:    0.10749969278328761458E+09
+ iterations:     236       residue:   -0.26655886820959590056E+00
+ iterations:     237      Objective function:    0.10759352983087010682E+09
+ iterations:     237       residue:   -0.26626313932390777151E+00
+ iterations:     238      Objective function:    0.10768566018192125857E+09
+ iterations:     238       residue:   -0.26597855710849405142E+00
+ iterations:     239      Objective function:    0.10777609021292832494E+09
+ iterations:     239       residue:   -0.26570884937947197857E+00
+ iterations:     240      Objective function:    0.10786482945543101430E+09
+ iterations:     240       residue:   -0.26544796882787030645E+00
+ iterations:     241      Objective function:    0.10795188435962265730E+09
+ iterations:     241       residue:   -0.26519218271794242625E+00
+ iterations:     242      Objective function:    0.10803727050128087401E+09
+ iterations:     242       residue:   -0.26493949353379392386E+00
+ iterations:     243      Objective function:    0.10812101940447521210E+09
+ iterations:     243       residue:   -0.26469291778110604074E+00
+ iterations:     244      Objective function:    0.10820314234811729193E+09
+ iterations:     244       residue:   -0.26444983634166702169E+00
+ iterations:     245      Objective function:    0.10828365032436071336E+09
+ iterations:     245       residue:   -0.26421131434758660106E+00
+ iterations:     246      Objective function:    0.10836255314983864129E+09
+ iterations:     246       residue:   -0.26397119171402794180E+00
+ iterations:     247      Objective function:    0.10843986031888461113E+09
+ iterations:     247       residue:   -0.26371502906013066792E+00
+ iterations:     248      Objective function:    0.10851558637283201516E+09
+ iterations:     248       residue:   -0.26345963547360673473E+00
+ iterations:     249      Objective function:    0.10858974311073036492E+09
+ iterations:     249       residue:   -0.26322811199616236166E+00
+ iterations:     250      Objective function:    0.10866234011466598511E+09
+ iterations:     250       residue:   -0.26302312545641842734E+00
+ iterations:     251      Objective function:    0.10873338620698256791E+09
+ iterations:     251       residue:   -0.26283281510343409204E+00
+ iterations:     252      Objective function:    0.10880289156404979527E+09
+ iterations:     252       residue:   -0.26264117717327783996E+00
+ iterations:     253      Objective function:    0.10887086545373693109E+09
+ iterations:     253       residue:   -0.26243389707976938485E+00
+ iterations:     254      Objective function:    0.10893731902032119036E+09
+ iterations:     254       residue:   -0.26220843192182935466E+00
+ iterations:     255      Objective function:    0.10900226271787816286E+09
+ iterations:     255       residue:   -0.26197117628408889134E+00
+ iterations:     256      Objective function:    0.10906569086107462645E+09
+ iterations:     256       residue:   -0.26173236174073144511E+00
+ iterations:     257      Objective function:    0.10912760585343371332E+09
+ iterations:     257       residue:   -0.26149335290289404954E+00
+ iterations:     258      Objective function:    0.10918802085557463765E+09
+ iterations:     258       residue:   -0.26125365066921718560E+00
+ iterations:     259      Objective function:    0.10924695344778221846E+09
+ iterations:     259       residue:   -0.26101341937058619713E+00
+ iterations:     260      Objective function:    0.10930441691978107393E+09
+ iterations:     260       residue:   -0.26077277029281054066E+00
+ iterations:     261      Objective function:    0.10936041778475698829E+09
+ iterations:     261       residue:   -0.26053197998871047147E+00
+ iterations:     262      Objective function:    0.10941495895884597301E+09
+ iterations:     262       residue:   -0.26029120164836655471E+00
+ iterations:     263      Objective function:    0.10946804280576413870E+09
+ iterations:     263       residue:   -0.26005021303523340181E+00
+ iterations:     264      Objective function:    0.10951967908115109801E+09
+ iterations:     264       residue:   -0.25980885363235795005E+00
+ iterations:     265      Objective function:    0.10956988192571699619E+09
+ iterations:     265       residue:   -0.25956725468577157567E+00
+ iterations:     266      Objective function:    0.10961866039076428115E+09
+ iterations:     266       residue:   -0.25932553903269284223E+00
+ iterations:     267      Objective function:    0.10966602536221890152E+09
+ iterations:     267       residue:   -0.25908361735887575072E+00
+ iterations:     268      Objective function:    0.10971198895935791731E+09
+ iterations:     268       residue:   -0.25884130203377286872E+00
+ iterations:     269      Objective function:    0.10975656343484556675E+09
+ iterations:     269       residue:   -0.25859897224115896419E+00
+ iterations:     270      Objective function:    0.10979975378496493399E+09
+ iterations:     270       residue:   -0.25835669822545287433E+00
+ iterations:     271      Objective function:    0.10984157066549661756E+09
+ iterations:     271       residue:   -0.25811453359437880328E+00
+ iterations:     272      Objective function:    0.10988202319959834218E+09
+ iterations:     272       residue:   -0.25787247146968567124E+00
+ iterations:     273      Objective function:    0.10992112610403878987E+09
+ iterations:     273       residue:   -0.25763033449264260977E+00
+ iterations:     274      Objective function:    0.10995889778106115758E+09
+ iterations:     274       residue:   -0.25738833195533294962E+00
+ iterations:     275      Objective function:    0.10999535516631752253E+09
+ iterations:     275       residue:   -0.25714678319755307490E+00
+ iterations:     276      Objective function:    0.11003050743631504476E+09
+ iterations:     276       residue:   -0.25690547527132695516E+00
+ iterations:     277      Objective function:    0.11006436156846241653E+09
+ iterations:     277       residue:   -0.25666431891206686888E+00
+ iterations:     278      Objective function:    0.11009692453931328654E+09
+ iterations:     278       residue:   -0.25642363168492482428E+00
+ iterations:     279      Objective function:    0.11012820963458672166E+09
+ iterations:     279       residue:   -0.25618334275041981796E+00
+ iterations:     280      Objective function:    0.11015822798072321713E+09
+ iterations:     280       residue:   -0.25594310862976782373E+00
+ iterations:     281      Objective function:    0.11018698957164807618E+09
+ iterations:     281       residue:   -0.25570373123646977787E+00
+ iterations:     282      Objective function:    0.11021450311384524405E+09
+ iterations:     282       residue:   -0.25546495241522954034E+00
+ iterations:     283      Objective function:    0.11024078029829423130E+09
+ iterations:     283       residue:   -0.25522656340913973949E+00
+ iterations:     284      Objective function:    0.11026582040261891484E+09
+ iterations:     284       residue:   -0.25498822412774302393E+00
+ iterations:     285      Objective function:    0.11028961285743728280E+09
+ iterations:     285       residue:   -0.25475063262539493492E+00
+ iterations:     286      Objective function:    0.11031217001837967336E+09
+ iterations:     286       residue:   -0.25451454244504739810E+00
+ iterations:     287      Objective function:    0.11033350466131801903E+09
+ iterations:     287       residue:   -0.25427901925201179534E+00
+ iterations:     288      Objective function:    0.11035363112879991531E+09
+ iterations:     288       residue:   -0.25404498675916054040E+00
+ iterations:     289      Objective function:    0.11037257553165036440E+09
+ iterations:     289       residue:   -0.25381371444361683354E+00
+ iterations:     290      Objective function:    0.11039035251326417923E+09
+ iterations:     290       residue:   -0.25358380465959295957E+00
+ iterations:     291      Objective function:    0.11040697529628354311E+09
+ iterations:     291       residue:   -0.25335413794687899891E+00
+ iterations:     292      Objective function:    0.11042245512072587013E+09
+ iterations:     292       residue:   -0.25312707143596890891E+00
+ iterations:     293      Objective function:    0.11043680417507171631E+09
+ iterations:     293       residue:   -0.25290225712779945688E+00
+ iterations:     294      Objective function:    0.11045003546972224116E+09
+ iterations:     294       residue:   -0.25267868723904196582E+00
+ iterations:     295      Objective function:    0.11046216016226553917E+09
+ iterations:     295       residue:   -0.25245714287734211112E+00
+ iterations:     296      Objective function:    0.11047318895009492338E+09
+ iterations:     296       residue:   -0.25223614032314423117E+00
+ iterations:     297      Objective function:    0.11048313205345629156E+09
+ iterations:     297       residue:   -0.25201426204816762544E+00
+ iterations:     298      Objective function:    0.11049200193814100325E+09
+ iterations:     298       residue:   -0.25179610092885496009E+00
+ iterations:     299      Objective function:    0.11049981103286850452E+09
+ iterations:     299       residue:   -0.25158882543575489255E+00
+ iterations:     300      Objective function:    0.11050657322866199911E+09
+ iterations:     300       residue:   -0.25138822720409881306E+00
+ iterations:     301      Objective function:    0.11051230374901545048E+09
+ iterations:     301       residue:   -0.25118669870449139570E+00
+ iterations:     302      Objective function:    0.11051701526343649626E+09
+ iterations:     302       residue:   -0.25098359688379612287E+00
+ iterations:     303      Objective function:    0.11052071994402991235E+09
+ iterations:     303       residue:   -0.25078211869358729702E+00
+ iterations:     304      Objective function:    0.11052342833151847124E+09
+ iterations:     304       residue:   -0.25058215918059956184E+00
+ iterations:     305      Objective function:    0.11052514732627746463E+09
+ iterations:     305       residue:   -0.25038007291399660970E+00
+ iterations:     306      Objective function:    0.11052589255287574232E+09
+ iterations:     306       residue:   -0.25017781375506303876E+00
+ iterations:     307      Objective function:    0.11052568014782862365E+09
+ iterations:     307       residue:   -0.24997689841597556248E+00
+ iterations:     308      Objective function:    0.11052452476319248974E+09
+ iterations:     308       residue:   -0.24977245937273254150E+00
+ iterations:     309      Objective function:    0.11052243497619923949E+09
+ iterations:     309       residue:   -0.24956132951490722638E+00
+ iterations:     310      Objective function:    0.11051942283400519192E+09
+ iterations:     310       residue:   -0.24933938385728851572E+00
+ iterations:     311      Objective function:    0.11051550281966519356E+09
+ iterations:     311       residue:   -0.24912402395599905769E+00
+ iterations:     312      Objective function:    0.11051068975204841793E+09
+ iterations:     312       residue:   -0.24894462018406574022E+00
+ iterations:     313      Objective function:    0.11050499724945379794E+09
+ iterations:     313       residue:   -0.24878476965250828634E+00
+ iterations:     314      Objective function:    0.11049843734367103875E+09
+ iterations:     314       residue:   -0.24862362573443702596E+00
+ iterations:     315      Objective function:    0.11049102317912650108E+09
+ iterations:     315       residue:   -0.24844928969128121654E+00
+ iterations:     316      Objective function:    0.11048276661680021882E+09
+ iterations:     316       residue:   -0.24825588677858084763E+00
+ iterations:     317      Objective function:    0.11047367729321107268E+09
+ iterations:     317       residue:   -0.24805163557884041259E+00
+ iterations:     318      Objective function:    0.11046376988219322264E+09
+ iterations:     318       residue:   -0.24784584549418381405E+00
+ iterations:     319      Objective function:    0.11045305933457617462E+09
+ iterations:     319       residue:   -0.24764004313677501212E+00
+ iterations:     320      Objective function:    0.11044156038473798335E+09
+ iterations:     320       residue:   -0.24743447428598261406E+00
+ iterations:     321      Objective function:    0.11042928717231288552E+09
+ iterations:     321       residue:   -0.24723197483012795961E+00
+ iterations:     322      Objective function:    0.11041625311117014289E+09
+ iterations:     322       residue:   -0.24703920780200103180E+00
+ iterations:     323      Objective function:    0.11040247172078531981E+09
+ iterations:     323       residue:   -0.24685190304127382910E+00
+ iterations:     324      Objective function:    0.11038795460800132155E+09
+ iterations:     324       residue:   -0.24666784834455338093E+00
+ iterations:     325      Objective function:    0.11037272777588932216E+09
+ iterations:     325       residue:   -0.24648598125790768809E+00
+ iterations:     326      Objective function:    0.11035680998770052195E+09
+ iterations:     326       residue:   -0.24630567672884193242E+00
+ iterations:     327      Objective function:    0.11034021392678475380E+09
+ iterations:     327       residue:   -0.24612683672931864876E+00
+ iterations:     328      Objective function:    0.11032295019950084388E+09
+ iterations:     328       residue:   -0.24594901880831707142E+00
+ iterations:     329      Objective function:    0.11030503298206888139E+09
+ iterations:     329       residue:   -0.24577240224735769081E+00
+ iterations:     330      Objective function:    0.11028647519931636751E+09
+ iterations:     330       residue:   -0.24559651762992282253E+00
+ iterations:     331      Objective function:    0.11026729099698761106E+09
+ iterations:     331       residue:   -0.24542128188080641893E+00
+ iterations:     332      Objective function:    0.11024749263800197840E+09
+ iterations:     332       residue:   -0.24524657790627174547E+00
+ iterations:     333      Objective function:    0.11022708043306988478E+09
+ iterations:     333       residue:   -0.24507220920106231876E+00
+ iterations:     334      Objective function:    0.11020605197192235291E+09
+ iterations:     334       residue:   -0.24489815122379332557E+00
+ iterations:     335      Objective function:    0.11018442034498706460E+09
+ iterations:     335       residue:   -0.24472353375878239112E+00
+ iterations:     336      Objective function:    0.11016219722353017330E+09
+ iterations:     336       residue:   -0.24454858819562372285E+00
+ iterations:     337      Objective function:    0.11013939534027770162E+09
+ iterations:     337       residue:   -0.24437310953309668293E+00
+ iterations:     338      Objective function:    0.11011602754119805992E+09
+ iterations:     338       residue:   -0.24419724801220260568E+00
+ iterations:     339      Objective function:    0.11009210625614942610E+09
+ iterations:     339       residue:   -0.24402000215415933781E+00
+ iterations:     340      Objective function:    0.11006764420175471902E+09
+ iterations:     340       residue:   -0.24384087488694716761E+00
+ iterations:     341      Objective function:    0.11004265335414639115E+09
+ iterations:     341       residue:   -0.24365960493942612208E+00
+ iterations:     342      Objective function:    0.11001714501837736368E+09
+ iterations:     342       residue:   -0.24347692572737941741E+00
+ iterations:     343      Objective function:    0.10999113102842392027E+09
+ iterations:     343       residue:   -0.24329336935153267341E+00
+ iterations:     344      Objective function:    0.10996462300815597177E+09
+ iterations:     344       residue:   -0.24310809213997947031E+00
+ iterations:     345      Objective function:    0.10993763238782793283E+09
+ iterations:     345       residue:   -0.24292113438182563745E+00
+ iterations:     346      Objective function:    0.10991016973816807568E+09
+ iterations:     346       residue:   -0.24273256968434106517E+00
+ iterations:     347      Objective function:    0.10988224270979271829E+09
+ iterations:     347       residue:   -0.24254172250209005135E+00
+ iterations:     348      Objective function:    0.10985385981182359159E+09
+ iterations:     348       residue:   -0.24234864550998053145E+00
+ iterations:     349      Objective function:    0.10982503119157642126E+09
+ iterations:     349       residue:   -0.24215259738194636063E+00
+ iterations:     350      Objective function:    0.10979576289160586894E+09
+ iterations:     350       residue:   -0.24195495966149574429E+00
+ iterations:     351      Objective function:    0.10976606177266688645E+09
+ iterations:     351       residue:   -0.24175831833679239935E+00
+ iterations:     352      Objective function:    0.10973593577674564719E+09
+ iterations:     352       residue:   -0.24155824421766855514E+00
+ iterations:     353      Objective function:    0.10970539209747880697E+09
+ iterations:     353       residue:   -0.24135482229194071824E+00
+ iterations:     354      Objective function:    0.10967443735453045368E+09
+ iterations:     354       residue:   -0.24115105956615154326E+00
+ iterations:     355      Objective function:    0.10964308002721567452E+09
+ iterations:     355       residue:   -0.24094568095813051478E+00
+ iterations:     356      Objective function:    0.10961132848940116167E+09
+ iterations:     356       residue:   -0.24074141542552804363E+00
+ iterations:     357      Objective function:    0.10957918996424765885E+09
+ iterations:     357       residue:   -0.24053733682472802635E+00
+ iterations:     358      Objective function:    0.10954665304738114774E+09
+ iterations:     358       residue:   -0.24033535858153837195E+00
+ iterations:     359      Objective function:    0.10951372613700430095E+09
+ iterations:     359       residue:   -0.24014328858426878255E+00
+ iterations:     360      Objective function:    0.10948041648968744278E+09
+ iterations:     360       residue:   -0.23995911692619309452E+00
+ iterations:     361      Objective function:    0.10944672983002662659E+09
+ iterations:     361       residue:   -0.23977953814872060567E+00
+ iterations:     362      Objective function:    0.10941267281862118840E+09
+ iterations:     362       residue:   -0.23960237901286396411E+00
+ iterations:     363      Objective function:    0.10937825170090992749E+09
+ iterations:     363       residue:   -0.23943498391611781062E+00
+ iterations:     364      Objective function:    0.10934347013413760066E+09
+ iterations:     364       residue:   -0.23928340724115243487E+00
+ iterations:     365      Objective function:    0.10930833391507235169E+09
+ iterations:     365       residue:   -0.23914291410947119410E+00
+ iterations:     366      Objective function:    0.10927285099203144014E+09
+ iterations:     366       residue:   -0.23901052046012555286E+00
+ iterations:     367      Objective function:    0.10923702709986190498E+09
+ iterations:     367       residue:   -0.23888558344349222762E+00
+ iterations:     368      Objective function:    0.10920086790506397188E+09
+ iterations:     368       residue:   -0.23875864293566209651E+00
+ iterations:     369      Objective function:    0.10916437916488642991E+09
+ iterations:     369       residue:   -0.23863310556956057740E+00
+ iterations:     370      Objective function:    0.10912756497742916644E+09
+ iterations:     370       residue:   -0.23850527650034891725E+00
+ iterations:     371      Objective function:    0.10909042965318912268E+09
+ iterations:     371       residue:   -0.23838152903782425240E+00
+ iterations:     372      Objective function:    0.10905297884080973268E+09
+ iterations:     372       residue:   -0.23827056182951431018E+00
+ iterations:     373      Objective function:    0.10901521979644286633E+09
+ iterations:     373       residue:   -0.23818202651469869147E+00
+ iterations:     374      Objective function:    0.10897715832936136425E+09
+ iterations:     374       residue:   -0.23810462981745250666E+00
+ iterations:     375      Objective function:    0.10893879891405756772E+09
+ iterations:     375       residue:   -0.23802093640023849752E+00
+ iterations:     376      Objective function:    0.10890014348941071332E+09
+ iterations:     376       residue:   -0.23792306427001638780E+00
+ iterations:     377      Objective function:    0.10886119198015467823E+09
+ iterations:     377       residue:   -0.23781293422053731423E+00
+ iterations:     378      Objective function:    0.10882194863539354503E+09
+ iterations:     378       residue:   -0.23769896623328257146E+00
+ iterations:     379      Objective function:    0.10878241783268693089E+09
+ iterations:     379       residue:   -0.23758555833480760056E+00
+ iterations:     380      Objective function:    0.10874260738867950439E+09
+ iterations:     380       residue:   -0.23747287201785907684E+00
+ iterations:     381      Objective function:    0.10870253142722132802E+09
+ iterations:     381       residue:   -0.23736031193334139466E+00
+ iterations:     382      Objective function:    0.10866219499958811700E+09
+ iterations:     382       residue:   -0.23724722763176939178E+00
+ iterations:     383      Objective function:    0.10862160262199632823E+09
+ iterations:     383       residue:   -0.23713314713307392934E+00
+ iterations:     384      Objective function:    0.10858075845642668009E+09
+ iterations:     384       residue:   -0.23701821336122919082E+00
+ iterations:     385      Objective function:    0.10853966786408740282E+09
+ iterations:     385       residue:   -0.23690203760665823340E+00
+ iterations:     386      Objective function:    0.10849833632073935866E+09
+ iterations:     386       residue:   -0.23678509523959684335E+00
+ iterations:     387      Objective function:    0.10845676835184679925E+09
+ iterations:     387       residue:   -0.23666832515301552964E+00
+ iterations:     388      Objective function:    0.10841496633243149519E+09
+ iterations:     388       residue:   -0.23654626851442867030E+00
+ iterations:     389      Objective function:    0.10837293365733379126E+09
+ iterations:     389       residue:   -0.23641879135378637833E+00
+ iterations:     390      Objective function:    0.10833067416040879488E+09
+ iterations:     390       residue:   -0.23628686886829636249E+00
+ iterations:     391      Objective function:    0.10828819080468603969E+09
+ iterations:     391       residue:   -0.23614731635769603546E+00
+ iterations:     392      Objective function:    0.10824548508669546247E+09
+ iterations:     392       residue:   -0.23600055119735885434E+00
+ iterations:     393      Objective function:    0.10820255873364488780E+09
+ iterations:     393       residue:   -0.23584720488375357506E+00
+ iterations:     394      Objective function:    0.10815941391652484238E+09
+ iterations:     394       residue:   -0.23568743180663873082E+00
+ iterations:     395      Objective function:    0.10811605094999255240E+09
+ iterations:     395       residue:   -0.23552142645452314729E+00
+ iterations:     396      Objective function:    0.10807246307642620802E+09
+ iterations:     396       residue:   -0.23535033904672808536E+00
+ iterations:     397      Objective function:    0.10802865103244051337E+09
+ iterations:     397       residue:   -0.23517493442114376090E+00
+ iterations:     398      Objective function:    0.10798461614415033162E+09
+ iterations:     398       residue:   -0.23499631961942191172E+00
+ iterations:     399      Objective function:    0.10794035679178954661E+09
+ iterations:     399       residue:   -0.23481469565196197435E+00
+ iterations:     400      Objective function:    0.10789586471372242272E+09
+ iterations:     400       residue:   -0.23463000841438375055E+00
+ iterations:     401      Objective function:    0.10785113398512370884E+09
+ iterations:     401       residue:   -0.23444324732062488126E+00
+ iterations:     402      Objective function:    0.10780616565150055289E+09
+ iterations:     402       residue:   -0.23425471657647006785E+00
+ iterations:     403      Objective function:    0.10776095971355205774E+09
+ iterations:     403       residue:   -0.23406408330507486037E+00
+ iterations:     404      Objective function:    0.10771551702354054153E+09
+ iterations:     404       residue:   -0.23387236012224105197E+00
+ iterations:     405      Objective function:    0.10766983738007669151E+09
+ iterations:     405       residue:   -0.23367956286617275197E+00
+ iterations:     406      Objective function:    0.10762392081230793893E+09
+ iterations:     406       residue:   -0.23348638208405522732E+00
+ iterations:     407      Objective function:    0.10757776812006986141E+09
+ iterations:     407       residue:   -0.23329390033529823212E+00
+ iterations:     408      Objective function:    0.10753137960765050352E+09
+ iterations:     408       residue:   -0.23310464066294073193E+00
+ iterations:     409      Objective function:    0.10748475532987390459E+09
+ iterations:     409       residue:   -0.23292044343499984649E+00
+ iterations:     410      Objective function:    0.10743789595833228528E+09
+ iterations:     410       residue:   -0.23274669542291492874E+00
+ iterations:     411      Objective function:    0.10739080306057837605E+09
+ iterations:     411       residue:   -0.23258077643234290055E+00
+ iterations:     412      Objective function:    0.10734347788374337554E+09
+ iterations:     412       residue:   -0.23242047907063598244E+00
+ iterations:     413      Objective function:    0.10729591771678012609E+09
+ iterations:     413       residue:   -0.23226598976561219079E+00
+ iterations:     414      Objective function:    0.10724812185768575966E+09
+ iterations:     414       residue:   -0.23211830102161012945E+00
+ iterations:     415      Objective function:    0.10720009058811844885E+09
+ iterations:     415       residue:   -0.23198919480002089255E+00
+ iterations:     416      Objective function:    0.10715182300486628711E+09
+ iterations:     416       residue:   -0.23188082054958097933E+00
+ iterations:     417      Objective function:    0.10710331813050466776E+09
+ iterations:     417       residue:   -0.23178843135266463671E+00
+ iterations:     418      Objective function:    0.10705457434256596863E+09
+ iterations:     418       residue:   -0.23171235065812614828E+00
+ iterations:     419      Objective function:    0.10700559256368440390E+09
+ iterations:     419       residue:   -0.23164932223088846586E+00
+ iterations:     420      Objective function:    0.10695637145822051167E+09
+ iterations:     420       residue:   -0.23158938933543296579E+00
+ iterations:     421      Objective function:    0.10690690772724400461E+09
+ iterations:     421       residue:   -0.23153115844436750193E+00
+ iterations:     422      Objective function:    0.10685720126158776879E+09
+ iterations:     422       residue:   -0.23147261236278321439E+00
+ iterations:     423      Objective function:    0.10680725101245215535E+09
+ iterations:     423       residue:   -0.23141305662392502862E+00
+ iterations:     424      Objective function:    0.10675705613818384707E+09
+ iterations:     424       residue:   -0.23135204706967033017E+00
+ iterations:     425      Objective function:    0.10670661756059555709E+09
+ iterations:     425       residue:   -0.23129576278348870644E+00
+ iterations:     426      Objective function:    0.10665593649325850606E+09
+ iterations:     426       residue:   -0.23123860723074007861E+00
+ iterations:     427      Objective function:    0.10660501341057597101E+09
+ iterations:     427       residue:   -0.23117675345668556308E+00
+ iterations:     428      Objective function:    0.10655384861257995665E+09
+ iterations:     428       residue:   -0.23112195548321740057E+00
+ iterations:     429      Objective function:    0.10650244303352774680E+09
+ iterations:     429       residue:   -0.23107955503774685324E+00
+ iterations:     430      Objective function:    0.10645079784289722145E+09
+ iterations:     430       residue:   -0.23103785802596077392E+00
+ iterations:     431      Objective function:    0.10639891449254213274E+09
+ iterations:     431       residue:   -0.23099179266298838775E+00
+ iterations:     432      Objective function:    0.10634679591541732848E+09
+ iterations:     432       residue:   -0.23096126222147689289E+00
+ iterations:     433      Objective function:    0.10629444385090808570E+09
+ iterations:     433       residue:   -0.23094412950469517254E+00
+ iterations:     434      Objective function:    0.10624185840983775258E+09
+ iterations:     434       residue:   -0.23092216383765762355E+00
+ iterations:     435      Objective function:    0.10618903867172022164E+09
+ iterations:     435       residue:   -0.23088751425913084381E+00
+ iterations:     436      Objective function:    0.10613598357810485363E+09
+ iterations:     436       residue:   -0.23083548939730424987E+00
+ iterations:     437      Objective function:    0.10608269456796069443E+09
+ iterations:     437       residue:   -0.23077846247937428004E+00
+ iterations:     438      Objective function:    0.10602917659847693145E+09
+ iterations:     438       residue:   -0.23071449914068600795E+00
+ iterations:     439      Objective function:    0.10597542972488529980E+09
+ iterations:     439       residue:   -0.23064279948678340082E+00
+ iterations:     440      Objective function:    0.10592145391482754052E+09
+ iterations:     440       residue:   -0.23056509532366645243E+00
+ iterations:     441      Objective function:    0.10586724881574144959E+09
+ iterations:     441       residue:   -0.23047719461500792981E+00
+ iterations:     442      Objective function:    0.10581280917998343706E+09
+ iterations:     442       residue:   -0.23038082068292495275E+00
+ iterations:     443      Objective function:    0.10575813430846318603E+09
+ iterations:     443       residue:   -0.23027684488352084813E+00
+ iterations:     444      Objective function:    0.10570322365307915211E+09
+ iterations:     444       residue:   -0.23016517220191526349E+00
+ iterations:     445      Objective function:    0.10564807577201184630E+09
+ iterations:     445       residue:   -0.23004650166193169047E+00
+ iterations:     446      Objective function:    0.10559268853192210197E+09
+ iterations:     446       residue:   -0.22992156797276142033E+00
+ iterations:     447      Objective function:    0.10553706000376243889E+09
+ iterations:     447       residue:   -0.22979109935561228828E+00
+ iterations:     448      Objective function:    0.10548119079165762663E+09
+ iterations:     448       residue:   -0.22965515022617596919E+00
+ iterations:     449      Objective function:    0.10542507826489889622E+09
+ iterations:     449       residue:   -0.22951243941466920040E+00
+ iterations:     450      Objective function:    0.10536871917955933511E+09
+ iterations:     450       residue:   -0.22936584862844594523E+00
+ iterations:     451      Objective function:    0.10531211077172817290E+09
+ iterations:     451       residue:   -0.22921559870987354146E+00
+ iterations:     452      Objective function:    0.10525525197005972266E+09
+ iterations:     452       residue:   -0.22906374056761935609E+00
+ iterations:     453      Objective function:    0.10519814365088666975E+09
+ iterations:     453       residue:   -0.22891205337142661591E+00
+ iterations:     454      Objective function:    0.10514078550780415535E+09
+ iterations:     454       residue:   -0.22876126868950671933E+00
+ iterations:     455      Objective function:    0.10508317810901020467E+09
+ iterations:     455       residue:   -0.22861091007885947501E+00
+ iterations:     456      Objective function:    0.10502532184355966747E+09
+ iterations:     456       residue:   -0.22846030316359944301E+00
+ iterations:     457      Objective function:    0.10496721730497802794E+09
+ iterations:     457       residue:   -0.22830993794946755071E+00
+ iterations:     458      Objective function:    0.10490886526053673029E+09
+ iterations:     458       residue:   -0.22815953549966941361E+00
+ iterations:     459      Objective function:    0.10485026735253043473E+09
+ iterations:     459       residue:   -0.22800886922820257086E+00
+ iterations:     460      Objective function:    0.10479142524763496220E+09
+ iterations:     460       residue:   -0.22785849954861031597E+00
+ iterations:     461      Objective function:    0.10473233192995493114E+09
+ iterations:     461       residue:   -0.22770889141827233004E+00
+ iterations:     462      Objective function:    0.10467298841078419983E+09
+ iterations:     462       residue:   -0.22756262666534735062E+00
+ iterations:     463      Objective function:    0.10461339335565929115E+09
+ iterations:     463       residue:   -0.22742830315363002369E+00
+ iterations:     464      Objective function:    0.10455354213515593112E+09
+ iterations:     464       residue:   -0.22730526737735118337E+00
+ iterations:     465      Objective function:    0.10449343472145761549E+09
+ iterations:     465       residue:   -0.22718999125747391110E+00
+ iterations:     466      Objective function:    0.10443306488355392218E+09
+ iterations:     466       residue:   -0.22707903263528905757E+00
+ iterations:     467      Objective function:    0.10437243176467624307E+09
+ iterations:     467       residue:   -0.22697239891220288843E+00
+ iterations:     468      Objective function:    0.10431153692893242836E+09
+ iterations:     468       residue:   -0.22686971910999711999E+00
+ iterations:     469      Objective function:    0.10425038225411351025E+09
+ iterations:     469       residue:   -0.22677989553811550572E+00
+ iterations:     470      Objective function:    0.10418897292748968303E+09
+ iterations:     470       residue:   -0.22670893138488365515E+00
+ iterations:     471      Objective function:    0.10412730973821814358E+09
+ iterations:     471       residue:   -0.22665230194358707005E+00
+ iterations:     472      Objective function:    0.10406539400305572152E+09
+ iterations:     472       residue:   -0.22660808965651127456E+00
+ iterations:     473      Objective function:    0.10400322725497990847E+09
+ iterations:     473       residue:   -0.22657572111917936852E+00
+ iterations:     474      Objective function:    0.10394081170988446474E+09
+ iterations:     474       residue:   -0.22655065502594284865E+00
+ iterations:     475      Objective function:    0.10387814773430605233E+09
+ iterations:     475       residue:   -0.22652501281259562749E+00
+ iterations:     476      Objective function:    0.10381523674539726973E+09
+ iterations:     476       residue:   -0.22649853542777445559E+00
+ iterations:     477      Objective function:    0.10375208094514235854E+09
+ iterations:     477       residue:   -0.22648026276801411227E+00
+ iterations:     478      Objective function:    0.10368868336713072658E+09
+ iterations:     478       residue:   -0.22647083896394393232E+00
+ iterations:     479      Objective function:    0.10362504714779135585E+09
+ iterations:     479       residue:   -0.22646419513354718034E+00
+ iterations:     480      Objective function:    0.10356117558155833185E+09
+ iterations:     480       residue:   -0.22645870202130341520E+00
+ iterations:     481      Objective function:    0.10349707222974762321E+09
+ iterations:     481       residue:   -0.22645386711444931427E+00
+ iterations:     482      Objective function:    0.10343274044763545692E+09
+ iterations:     482       residue:   -0.22645030593242074235E+00
+ iterations:     483      Objective function:    0.10336818319345991313E+09
+ iterations:     483       residue:   -0.22644971108665354342E+00
+ iterations:     484      Objective function:    0.10330340370457506180E+09
+ iterations:     484       residue:   -0.22644218159524706624E+00
+ iterations:     485      Objective function:    0.10323840512965454161E+09
+ iterations:     485       residue:   -0.22643385521691111739E+00
+ iterations:     486      Objective function:    0.10317319110918027163E+09
+ iterations:     486       residue:   -0.22643285850377048440E+00
+ iterations:     487      Objective function:    0.10310776495245599747E+09
+ iterations:     487       residue:   -0.22644426000260720055E+00
+ iterations:     488      Objective function:    0.10304213044555649161E+09
+ iterations:     488       residue:   -0.22644511798286470761E+00
+ iterations:     489      Objective function:    0.10297629456981848180E+09
+ iterations:     489       residue:   -0.22643318431220652021E+00
+ iterations:     490      Objective function:    0.10291026407969723642E+09
+ iterations:     490       residue:   -0.22642288785457309608E+00
+ iterations:     491      Objective function:    0.10284404613742178679E+09
+ iterations:     491       residue:   -0.22643212489175790214E+00
+ iterations:     492      Objective function:    0.10277764481243275106E+09
+ iterations:     492       residue:   -0.22644245683673508429E+00
+ iterations:     493      Objective function:    0.10271106226560753584E+09
+ iterations:     493       residue:   -0.22644060214276232057E+00
+ iterations:     494      Objective function:    0.10264430076291142404E+09
+ iterations:     494       residue:   -0.22641393704473830595E+00
+ iterations:     495      Objective function:    0.10257736186742699146E+09
+ iterations:     495       residue:   -0.22636495361397587778E+00
+ iterations:     496      Objective function:    0.10251024759086647630E+09
+ iterations:     496       residue:   -0.22630469009252146551E+00
+ iterations:     497      Objective function:    0.10244295791971126199E+09
+ iterations:     497       residue:   -0.22623480611223042991E+00
+ iterations:     498      Objective function:    0.10237549585817147791E+09
+ iterations:     498       residue:   -0.22615591132933274277E+00
+ iterations:     499      Objective function:    0.10230786321489755809E+09
+ iterations:     499       residue:   -0.22606782568900463115E+00
+ iterations:     500      Objective function:    0.10224005896137522161E+09
+ iterations:     500       residue:   -0.22596807362359447313E+00
+ Simulation completed!!!
+ runtime:   187.539516925812     
+ totaltime:   187.802101850510     
+************************************************************************************************************************
+***             WIDEN YOUR WINDOW TO 120 CHARACTERS.  Use 'enscript -r -fCourier9' to print this document            ***
+************************************************************************************************************************
+
+---------------------------------------------- PETSc Performance Summary: ----------------------------------------------
+
+./execname on a arch-linux2-c-opt named localhost.localdomain with 40 processors, by srikanth Sat Apr 21 18:46:26 2018
+Using Petsc Release Version 3.8.2, Nov, 09, 2017 
+
+                         Max       Max/Min        Avg      Total 
+Time (sec):           1.878e+02      1.00000   1.878e+02
+Objects:              1.300e+01      1.00000   1.300e+01
+Flop:                 0.000e+00      0.00000   0.000e+00  0.000e+00
+Flop/sec:            0.000e+00      0.00000   0.000e+00  0.000e+00
+MPI Messages:         7.028e+03      1.75000   5.070e+03  2.028e+05
+MPI Message Lengths:  4.010e+07      1.75886   6.097e+03  1.237e+09
+MPI Reductions:       1.700e+01      1.00000
+
+Flop counting convention: 1 flop = 1 real number operation of type (multiply/divide/add/subtract)
+                            e.g., VecAXPY() for real vectors of length N --> 2N flop
+                            and VecAXPY() for complex vectors of length N --> 8N flop
+
+Summary of Stages:   ----- Time ------  ----- Flop -----  --- Messages ---  -- Message Lengths --  -- Reductions --
+                        Avg     %Total     Avg     %Total   counts   %Total     Avg         %Total   counts   %Total 
+ 0:      Main Stage: 1.8780e+02 100.0%  0.0000e+00   0.0%  2.028e+05 100.0%  6.097e+03      100.0%  1.600e+01  94.1% 
+
+------------------------------------------------------------------------------------------------------------------------
+See the 'Profiling' chapter of the users' manual for details on interpreting output.
+Phase summary info:
+   Count: number of times phase was executed
+   Time and Flop: Max - maximum over all processors
+                   Ratio - ratio of maximum to minimum over all processors
+   Mess: number of messages sent
+   Avg. len: average message length (bytes)
+   Reduct: number of global reductions
+   Global: entire computation
+   Stage: stages of a computation. Set stages with PetscLogStagePush() and PetscLogStagePop().
+      %T - percent time in this phase         %F - percent flop in this phase
+      %M - percent messages in this phase     %L - percent message lengths in this phase
+      %R - percent reductions in this phase
+   Total Mflop/s: 10e-6 * (sum of flop over all processors)/(max time over all processors)
+------------------------------------------------------------------------------------------------------------------------
+Event                Count      Time (sec)     Flop                             --- Global ---  --- Stage ---   Total
+                   Max Ratio  Max     Ratio   Max  Ratio  Mess   Avg len Reduct  %T %F %M %L %R  %T %F %M %L %R Mflop/s
+------------------------------------------------------------------------------------------------------------------------
+
+--- Event Stage 0: Main Stage
+
+VecScatterBegin     1000 1.0 9.2733e-02 2.6 0.00e+00 0.0 2.0e+05 6.1e+03 0.0e+00  0  0100100  0   0  0100100  0     0
+VecScatterEnd       1000 1.0 1.4030e+01235.4 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  3  0  0  0  0   3  0  0  0  0     0
+dq_comm              500 1.0 2.7037e-0111.2 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  0  0  0  0  0   0  0  0  0  0     0
+prim_comm            500 1.0 1.3956e+011876.1 0.00e+00 0.0 0.0e+00 0.0e+00 0.0e+00  3  0  0  0  0   3  0  0  0  0     0
+------------------------------------------------------------------------------------------------------------------------
+
+Memory usage is given in bytes:
+
+Object Type          Creations   Destructions     Memory  Descendants' Mem.
+Reports information only for process 0.
+
+--- Event Stage 0: Main Stage
+
+              Vector     4              4         6352     0.
+      Vector Scatter     2              2         2144     0.
+           Index Set     4              4        12400     0.
+   IS L to G Mapping     2              2       502224     0.
+              Viewer     1              0            0     0.
+========================================================================================================================
+Average time to get PetscTime(): 1.28746e-06
+Average time for MPI_Barrier(): 5.57899e-06
+Average time for zero size MPI_Send(): 7.9751e-06
+#PETSc Option Table entries:
+-log_view
+#End of PETSc Option Table entries
+Compiled without FORTRAN kernels
+Compiled with full precision matrices (default)
+sizeof(short) 2 sizeof(int) 4 sizeof(long) 8 sizeof(void*) 8 sizeof(PetscScalar) 8 sizeof(PetscInt) 4
+Configure options: --prefix=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/petsc-3.8.2-ozmyrdxzgdo56z7gwwezcwpqzkbhwrl4 --with-ssl=0 --with-x=0 --download-c2html=0 --download-sowing=0 --download-hwloc=0 --with-cc=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpicc --with-cxx=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpic++ --with-fc=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpif90 --with-precision=double --with-scalar-type=real --with-shared-libraries=1 --with-debugging=0 --with-64-bit-indices=0 --with-blaslapack-lib=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/openblas-0.2.20-m4zt6nqa4dr3wpiftlrqtnyauopttuv6/lib/libopenblas.so --with-clanguage=C --with-scalapack-lib=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/netlib-scalapack-2.0.2-wgx67rqf7wdgnvmocgwa2o3apyvijruq/lib/libscalapack.so --with-scalapack=1 --with-metis=1 --with-metis-dir=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/metis-5.1.0-dapd4ieceyuq5ac5j3j3jywbng6dkeqp --with-boost=0 --with-hdf5=1 --with-hdf5-dir=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hdf5-1.10.1-a3riguahicgj7bnudyscngrhxfysgjkd --with-hypre=1 --with-hypre-dir=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hypre-2.13.0-pm6zywjurjsr5p2aul4uxnj5obi3kvlt --with-parmetis=1 --with-parmetis-dir=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/parmetis-4.0.3-rzlmt3nvw6feozwfjmdrq3bkpot7qeyz --with-mumps=1 --with-mumps-dir=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mumps-5.1.1-ed2blr4of7pzkzxdbz4jnsvu4dpjawic --with-trilinos=0 --with-superlu_dist-include=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/superlu-dist-5.2.2-eq6rblnh2cyh3hya4aflmqvh5j3kdgit/include --with-superlu_dist-lib=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/superlu-dist-5.2.2-eq6rblnh2cyh3hya4aflmqvh5j3kdgit/lib/libsuperlu_dist.a --with-superlu_dist=1 --with-suitesparse=0 --with-zlib-include=/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/zlib-1.2.11-uxvdr64v6jfm4maxyca7oqnyzc3gzkju/include --with-zlib-lib="-L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/zlib-1.2.11-uxvdr64v6jfm4maxyca7oqnyzc3gzkju/lib -lz" --with-zlib=1
+-----------------------------------------
+Libraries compiled on Wed Apr 18 19:28:22 2018 on localhost.localdomain 
+Machine characteristics: Linux-3.10.0-693.11.6.el7.x86_64-x86_64-with-redhat-7.4-Nitrogen
+Using PETSc directory: /tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2
+Using PETSc arch: arch-linux2-c-opt
+-----------------------------------------
+
+Using C compiler: /opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpicc  -fPIC  -wd1572 -g -O3  ${COPTFLAGS} ${CFLAGS}
+Using Fortran compiler: /opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpif90  -fPIC -g -O3   ${FOPTFLAGS} ${FFLAGS} 
+-----------------------------------------
+
+Using include paths: -I/tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2/arch-linux2-c-opt/include -I/tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2/include -I/tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2/include -I/tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2/arch-linux2-c-opt/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/superlu-dist-5.2.2-eq6rblnh2cyh3hya4aflmqvh5j3kdgit/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hypre-2.13.0-pm6zywjurjsr5p2aul4uxnj5obi3kvlt/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mumps-5.1.1-ed2blr4of7pzkzxdbz4jnsvu4dpjawic/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/parmetis-4.0.3-rzlmt3nvw6feozwfjmdrq3bkpot7qeyz/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/metis-5.1.0-dapd4ieceyuq5ac5j3j3jywbng6dkeqp/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hdf5-1.10.1-a3riguahicgj7bnudyscngrhxfysgjkd/include -I/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/zlib-1.2.11-uxvdr64v6jfm4maxyca7oqnyzc3gzkju/include
+-----------------------------------------
+
+Using C linker: /opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpicc
+Using Fortran linker: /opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/bin/mpif90
+Using libraries: -Wl,-rpath,/tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2/arch-linux2-c-opt/lib -L/tmp/root/spack-stage/spack-stage-Jd2MJG/petsc-3.8.2/arch-linux2-c-opt/lib -lpetsc -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/superlu-dist-5.2.2-eq6rblnh2cyh3hya4aflmqvh5j3kdgit/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/superlu-dist-5.2.2-eq6rblnh2cyh3hya4aflmqvh5j3kdgit/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hypre-2.13.0-pm6zywjurjsr5p2aul4uxnj5obi3kvlt/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hypre-2.13.0-pm6zywjurjsr5p2aul4uxnj5obi3kvlt/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mumps-5.1.1-ed2blr4of7pzkzxdbz4jnsvu4dpjawic/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mumps-5.1.1-ed2blr4of7pzkzxdbz4jnsvu4dpjawic/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/netlib-scalapack-2.0.2-wgx67rqf7wdgnvmocgwa2o3apyvijruq/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/netlib-scalapack-2.0.2-wgx67rqf7wdgnvmocgwa2o3apyvijruq/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/openblas-0.2.20-m4zt6nqa4dr3wpiftlrqtnyauopttuv6/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/openblas-0.2.20-m4zt6nqa4dr3wpiftlrqtnyauopttuv6/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/parmetis-4.0.3-rzlmt3nvw6feozwfjmdrq3bkpot7qeyz/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/parmetis-4.0.3-rzlmt3nvw6feozwfjmdrq3bkpot7qeyz/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/metis-5.1.0-dapd4ieceyuq5ac5j3j3jywbng6dkeqp/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/metis-5.1.0-dapd4ieceyuq5ac5j3j3jywbng6dkeqp/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hdf5-1.10.1-a3riguahicgj7bnudyscngrhxfysgjkd/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/hdf5-1.10.1-a3riguahicgj7bnudyscngrhxfysgjkd/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/zlib-1.2.11-uxvdr64v6jfm4maxyca7oqnyzc3gzkju/lib -Wl,-rpath,/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/lib -L/opt/spack/opt/spack/linux-rhel7-x86_64/intel-18.0.1/mpich-3.2.1-r77yvorzu4zhmzresidvg6wuk73z2ujn/lib -Wl,-rpath,/opt/intel/compilers_and_libraries_2018.1.163/linux/ipp/lib/intel64 -L/opt/intel/compilers_and_libraries_2018.1.163/linux/ipp/lib/intel64 -Wl,-rpath,/opt/intel/compilers_and_libraries_2018.1.163/linux/compiler/lib/intel64_lin -L/opt/intel/compilers_and_libraries_2018.1.163/linux/compiler/lib/intel64_lin -Wl,-rpath,/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin -L/opt/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64_lin -Wl,-rpath,/opt/intel/compilers_and_libraries_2018.1.163/linux/tbb/lib/intel64/gcc4.7 -L/opt/intel/compilers_and_libraries_2018.1.163/linux/tbb/lib/intel64/gcc4.7 -Wl,-rpath,/opt/intel/compilers_and_libraries_2018.1.163/linux/daal/lib/intel64_lin -L/opt/intel/compilers_and_libraries_2018.1.163/linux/daal/lib/intel64_lin -Wl,-rpath,/opt/intel/compilers_and_libraries_2018.1.163/linux/tbb/lib/intel64_lin/gcc4.4 -L/opt/intel/compilers_and_libraries_2018.1.163/linux/tbb/lib/intel64_lin/gcc4.4 -Wl,-rpath,/usr/lib/gcc/x86_64-redhat-linux/4.8.5 -L/usr/lib/gcc/x86_64-redhat-linux/4.8.5 -lsuperlu_dist -lHYPRE -lcmumps -ldmumps -lsmumps -lzmumps -lmumps_common -lpord -lscalapack -lopenblas -lparmetis -lmetis -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5 -lz -lpthread -lmpifort -lifport -lifcoremt_pic -lpthread -lmpicxx -ldl -lmpi -limf -lsvml -lirng -lm -lipgo -ldecimal -lcilkrts -lstdc++ -lgcc_s -lirc -lirc_s -ldl
+-----------------------------------------
+
