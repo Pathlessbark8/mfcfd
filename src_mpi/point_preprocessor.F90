@@ -31,16 +31,16 @@ contains
 !               local_id global_id x_cord y_cord flag_1 flag_2 num_Connectivity connectivity[]
 
                 read(101,*) max_points, local_points, ghost_points
-                allocate(p%x(max_points))
-                allocate(p%y(max_points))
-                allocate(p%local_id(max_points))
-                allocate(p%global_id(max_points))
-                allocate(p%flag_1(max_points))
-                allocate(p%flag_2(max_points))
-                allocate(p%nbhs(max_points))
-                allocate(p%conn(max_points,15))
-                allocate(p%nx(max_points))
-                allocate(p%ny(max_points))
+                allocate(point%x(max_points))
+                allocate(point%y(max_points))
+                allocate(point%local_id(max_points))
+                allocate(point%global_id(max_points))
+                allocate(point%flag_1(max_points))
+                allocate(point%flag_2(max_points))
+                allocate(point%nbhs(max_points))
+                allocate(point%conn(max_points,15))
+                allocate(point%nx(max_points))
+                allocate(point%ny(max_points))
 
 
                 wall_points = 0
@@ -50,24 +50,24 @@ contains
                 
                 do k = 1, local_points
 
-                        read(101,*) p%local_id(k),p%global_id(k),p%x(k),&
-                        & p%y(k),p%nx(k),p%ny(k), p%flag_1(k),p%flag_2(k),p%nbhs(k),&
-                        & (p%conn(k,r),r=1,p%nbhs(k))
+                        read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
+                        & point%y(k),point%nx(k),point%ny(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
+                        & (point%conn(k,r),r=1,point%nbhs(k))
                         
                 !Storing the count for the point types
-                        if(p%flag_1(k) == 1) then
+                        if(point%flag_1(k) == 1) then
                                 wall_points = wall_points + 1
-                        else if(p%flag_1(k) == 2) then
+                        else if(point%flag_1(k) == 2) then
                                 interior_points = interior_points + 1
-                        else if(p%flag_1(k) == 3) then
+                        else if(point%flag_1(k) == 3) then
                                 outer_points = outer_points + 1
                         end if
 
                         
                 !Storing shape point indices for all the shape types
-                        if(p%flag_2(k) > 0) then
-                                shape_points(p%flag_2(k)) = shape_points(p%flag_2(k))+1
-                                shape_points_index(p%flag_2(k),shape_points(p%flag_2(k)))=k
+                        if(point%flag_2(k) > 0) then
+                                shape_points(point%flag_2(k)) = shape_points(point%flag_2(k))+1
+                                shape_points_index(point%flag_2(k),shape_points(point%flag_2(k)))=k
                         end if
 
                 enddo
@@ -82,13 +82,13 @@ contains
                 outer_temp = 0
                 !Storing indices of the point definitions
                 do k = 1,local_points
-                        if(p%flag_1(k) == 1) then
+                        if(point%flag_1(k) == 1) then
                                 wall_temp = wall_temp+1
                                 wall_points_index(wall_temp) = k
-                        else if(p%flag_1(k) == 2) then
+                        else if(point%flag_1(k) == 2) then
                                 interior_temp = interior_temp+1 
                                 interior_points_index(interior_temp) = k
-                        else if(p%flag_1(k) == 3) then
+                        else if(point%flag_1(k) == 3) then
                                 outer_temp = outer_temp+1
                                 outer_points_index(outer_temp) = k
                         end if
@@ -100,8 +100,8 @@ contains
                         allocate(pghost(ghost_points))
 
                         do k=local_points+1,max_points
-                                read(101,*) p%local_id(k),pghost(k-local_points),&
-                                & p%x(k),p%y(k),p%flag_1(k),p%flag_2(k)
+                                read(101,*) point%local_id(k),pghost(k-local_points),&
+                                & point%x(k),point%y(k),point%flag_1(k),point%flag_2(k)
 
                         end do
                 end if

@@ -13,22 +13,22 @@ module generate_connectivity_mod
 
                 do k = 1, interior_points
                                         i = interior_points_index(k)
-                                        nx = p%nx(i)
-                                        ny = p%ny(i)
+                                        nx = point%nx(i)
+                                        ny = point%ny(i)
                                         call get_interior_neighbours(i, nx, ny)
                 enddo
 
                 do k = 1, wall_points
                                         i = wall_points_index(k)
-                                        nx = p%nx(i)
-                                        ny = p%ny(i)
+                                        nx = point%nx(i)
+                                        ny = point%ny(i)
                                         call get_wall_boundary_neighbours(i, nx, ny)
                 enddo
 
                 do k = 1, outer_points
                                         i = outer_points_index(k)
-                                        nx = p%nx(i)
-                                        ny = p%ny(i)
+                                        nx = point%nx(i)
+                                        ny = point%ny(i)
                                         call get_outer_boundary_neighbours(i, nx, ny)
                 enddo
 
@@ -43,21 +43,21 @@ module generate_connectivity_mod
 		real*8 :: nx, ny, tx, ty
                 integer :: i, r, count, nbh
 
-                xi = p%x(i)
-                yi = p%y(i)
+                xi = point%x(i)
+                yi = point%y(i)
 
                 tx = ny
                 ty = -nx
 
-                p%xpos_nbhs(i) = 0
-                p%xneg_nbhs(i) = 0
-                p%ypos_nbhs(i) = 0
-                p%yneg_nbhs(i) = 0
+                point%xpos_nbhs(i) = 0
+                point%xneg_nbhs(i) = 0
+                point%ypos_nbhs(i) = 0
+                point%yneg_nbhs(i) = 0
 
-                do r=1, p%nbhs(i)
-                        nbh = p%conn(i,r)
-                        xk = p%x(nbh)
-                        yk = p%y(nbh)
+                do r=1, point%nbhs(i)
+                        nbh = point%conn(i,r)
+                        xk = point%x(nbh)
+                        yk = point%y(nbh)
 
                         delx = xk - xi
                         dely = yk - yi
@@ -67,37 +67,37 @@ module generate_connectivity_mod
 
                         if(dels .le. 0.0) then
 
-                                p%xpos_nbhs(i) = p%xpos_nbhs(i) + 1;
+                                point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
 
-                                count = p%xpos_nbhs(i);
-                                p%xpos_conn(i,count) = nbh;
+                                count = point%xpos_nbhs(i);
+                                point%xpos_conn(i,count) = nbh;
 
                         endif
 
                         if(dels .gt. 0.0) then
                         
-                                p%xneg_nbhs(i) = p%xneg_nbhs(i) + 1;
+                                point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
-                                count = p%xneg_nbhs(i);
-                                p%xneg_conn(i,count) = nbh;
+                                count = point%xneg_nbhs(i);
+                                point%xneg_conn(i,count) = nbh;
 
                         endif
 
                         if(deln .le. 0.0) then
 
-                                p%ypos_nbhs(i) = p%ypos_nbhs(i) + 1;
+                                point%ypos_nbhs(i) = point%ypos_nbhs(i) + 1;
 
-                                count = p%ypos_nbhs(i);
-                                p%ypos_conn(i,count) = nbh;
+                                count = point%ypos_nbhs(i);
+                                point%ypos_conn(i,count) = nbh;
 
                         endif
         
                         if(deln .gt. 0.0) then
 
-                                p%yneg_nbhs(i) = p%yneg_nbhs(i) + 1;
+                                point%yneg_nbhs(i) = point%yneg_nbhs(i) + 1;
 
-                                count = p%yneg_nbhs(i);
-                                p%yneg_conn(i,count) = nbh;
+                                count = point%yneg_nbhs(i);
+                                point%yneg_conn(i,count) = nbh;
         
                         endif
                                 
@@ -116,22 +116,22 @@ subroutine get_wall_boundary_neighbours(i, nx, ny)
                 integer :: i, r, count, nbh
 
 
-                xi = p%x(i)
-                yi = p%y(i)
+                xi = point%x(i)
+                yi = point%y(i)
 
                 tx = ny
                 ty = -nx
 
-                p%xpos_nbhs(i) = 0
-                p%xneg_nbhs(i) = 0
-                p%yneg_nbhs(i) = 0
+                point%xpos_nbhs(i) = 0
+                point%xneg_nbhs(i) = 0
+                point%yneg_nbhs(i) = 0
 
-                do r=1, p%nbhs(i)
+                do r=1, point%nbhs(i)
 
-                        nbh = p%conn(i,r)
+                        nbh = point%conn(i,r)
 
-                        xk = p%x(nbh)
-                        yk = p%y(nbh)
+                        xk = point%x(nbh)
+                        yk = point%y(nbh)
 
                         delx = xk - xi
                         dely = yk - yi
@@ -141,26 +141,26 @@ subroutine get_wall_boundary_neighbours(i, nx, ny)
 
                         if(dels .le. 0.0) then
 
-                                p%xpos_nbhs(i) = p%xpos_nbhs(i) + 1;
+                                point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
 
-                                count = p%xpos_nbhs(i);
-                                p%xpos_conn(i,count) = nbh;
+                                count = point%xpos_nbhs(i);
+                                point%xpos_conn(i,count) = nbh;
 
                         endif
 
                         if(dels .gt. 0.0) then
 
-                                p%xneg_nbhs(i) = p%xneg_nbhs(i) + 1;
+                                point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
-                                count = p%xneg_nbhs(i);
-                                p%xneg_conn(i,count) = nbh;
+                                count = point%xneg_nbhs(i);
+                                point%xneg_conn(i,count) = nbh;
   
                         endif
 
-                        p%yneg_nbhs(i) = p%yneg_nbhs(i) + 1;
+                        point%yneg_nbhs(i) = point%yneg_nbhs(i) + 1;
 
-                        count = p%yneg_nbhs(i);
-                        p%yneg_conn(i,count) = nbh;
+                        count = point%yneg_nbhs(i);
+                        point%yneg_conn(i,count) = nbh;
 
                 enddo
 
@@ -177,22 +177,22 @@ subroutine get_outer_boundary_neighbours(i, nx, ny)
                 integer :: i, r, count, nbh
 
 
-                xi = p%x(i)
-                yi = p%y(i)
+                xi = point%x(i)
+                yi = point%y(i)
 
                 tx = ny
                 ty = -nx
                 
-                p%xpos_nbhs(i) = 0
-                p%xneg_nbhs(i) = 0
-                p%ypos_nbhs(i) = 0
+                point%xpos_nbhs(i) = 0
+                point%xneg_nbhs(i) = 0
+                point%ypos_nbhs(i) = 0
 
-                do r=1, p%nbhs(i)
+                do r=1, point%nbhs(i)
 
-                        nbh = p%conn(i,r)
+                        nbh = point%conn(i,r)
 
-                        xk = p%x(nbh)
-                        yk = p%y(nbh)
+                        xk = point%x(nbh)
+                        yk = point%y(nbh)
   
                         delx = xk - xi
                         dely = yk - yi
@@ -202,27 +202,27 @@ subroutine get_outer_boundary_neighbours(i, nx, ny)
 
                         if(dels .le. 0.0) then
 
-                                p%xpos_nbhs(i) = p%xpos_nbhs(i) + 1;
+                                point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
 
-                                count = p%xpos_nbhs(i);
-                                p%xpos_conn(i,count) = nbh;
+                                count = point%xpos_nbhs(i);
+                                point%xpos_conn(i,count) = nbh;
 
                         endif
 
                         if(dels .gt. 0.0) then
 
-                                p%xneg_nbhs(i) = p%xneg_nbhs(i) + 1;
+                                point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
-                                count = p%xneg_nbhs(i);
-                                p%xneg_conn(i,count) = nbh;
+                                count = point%xneg_nbhs(i);
+                                point%xneg_conn(i,count) = nbh;
 
                         endif
 
 
-                        p%ypos_nbhs(i) = p%ypos_nbhs(i) + 1;
+                        point%ypos_nbhs(i) = point%ypos_nbhs(i) + 1;
 
-                        count = p%ypos_nbhs(i);
-                        p%ypos_conn(i,count) = nbh;
+                        count = point%ypos_nbhs(i);
+                        point%ypos_conn(i,count) = nbh;
 
 
                 enddo

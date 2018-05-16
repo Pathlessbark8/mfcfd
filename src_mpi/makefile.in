@@ -3,18 +3,20 @@ include ${PETSC_DIR}/lib/petsc/conf/rules
 
 
 #Intel compiler
-FC = mpiifort
+#FC = mpiifort
 
 #gcc compiler
-#FC = mpif90
+FC = mpif90
 
 CC = gcc
 
 #flags for intel compiler
-FFLAGS = -O3 -xHost -ipo -I$(PETSC_DIR)/include
+#FFLAGS = -O3 -xHost -ipo -I$(PETSC_DIR)/include
+
 
 #flags for gcc
-#FFLAGS =-march=native -O3  -pipe -ffree-form -cpp \
+FFLAGS =-march=native -O3 -I$(PETSC_DIR)/include
+#-pipe -ffree-form -cpp \
                         -Wall -Wextra -Wtabs -Wintrinsics-std -Wsurprising -Waliasing \
                         -Wno-unused-parameter -Wno-unused-dummy-argument \
                         -I$(PETSC_DIR)/include

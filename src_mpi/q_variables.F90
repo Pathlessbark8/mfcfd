@@ -18,22 +18,22 @@ contains
 
                                 do k = 1, max_points
 
-                                                rho = p%prim(1,k)
-                                                u1 = p%prim(2,k)
-                                                u2 = p%prim(3,k)
-                                                pr = p%prim(4,k)
+                                                rho = point%prim(1,k)
+                                                u1 = point%prim(2,k)
+                                                u2 = point%prim(3,k)
+                                                pr = point%prim(4,k)
 
                                 beta = 0.5*rho/pr
 
-                                                p%q(1,k) = dlog(rho) + (dlog(beta)*2.5) - beta*(u1*u1 + u2*u2)
+                                                point%q(1,k) = dlog(rho) + (dlog(beta)*2.5) - beta*(u1*u1 + u2*u2)
 
                                                 two_times_beta = 2.0d0*beta
 
-                                                p%q(2,k) = two_times_beta*u1
+                                                point%q(2,k) = two_times_beta*u1
 
-                                                p%q(3,k) = two_times_beta*u2
+                                                point%q(3,k) = two_times_beta*u2
 
-                                                p%q(4,k) = -two_times_beta
+                                                point%q(4,k) = -two_times_beta
                                 enddo
 
                         end subroutine 
@@ -59,8 +59,8 @@ contains
                                 do i = 1, local_points
 
 
-                                                x_i = p%x(i)
-                                                y_i = p%y(i)
+                                                x_i = point%x(i)
+                                                y_i = point%y(i)
 
                                                 sum_delx_sqr = 0.d0
                                                 sum_dely_sqr = 0.d0
@@ -69,12 +69,12 @@ contains
                                                 sum_delx_delq = 0.d0
                                                 sum_dely_delq = 0.d0
 
-                                                do k = 1, p%nbhs(i)
+                                                do k = 1, point%nbhs(i)
 
-                                                        nbh = p%conn(i,k)
+                                                        nbh = point%conn(i,k)
 
-                                                        x_k = p%x(nbh)
-                                                        y_k = p%y(nbh)
+                                                        x_k = point%x(nbh)
+                                                        y_k = point%y(nbh)
 
                                                         delx = x_k - x_i
                                                         dely = y_k - y_i
@@ -87,8 +87,8 @@ contains
 
                                                         sum_delx_dely = sum_delx_dely + delx*dely*weights
 
-                                                        sum_delx_delq = sum_delx_delq + weights*delx*(p%q(:,nbh) - p%q(:,i))
-                                                        sum_dely_delq = sum_dely_delq + weights*dely*(p%q(:,nbh) - p%q(:,i))
+                                                        sum_delx_delq = sum_delx_delq + weights*delx*(point%q(:,nbh) - point%q(:,i))
+                                                        sum_dely_delq = sum_dely_delq + weights*dely*(point%q(:,nbh) - point%q(:,i))
 
 
                                                 enddo
@@ -96,8 +96,10 @@ contains
                                                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
                                                 one_by_det = 1.0d0/det
 
-                                                p%dq(1,:,i) = (sum_delx_delq*sum_dely_sqr - sum_dely_delq*sum_delx_dely)*one_by_det
-                                                p%dq(2,:,i) = (sum_dely_delq*sum_delx_sqr - sum_delx_delq*sum_delx_dely)*one_by_det
+                                                point%dq(1,:,i) = (sum_delx_delq*sum_dely_sqr&
+                                                       & - sum_dely_delq*sum_delx_dely)*one_by_det
+                                                point%dq(2,:,i) = (sum_dely_delq*sum_delx_sqr&
+                                                       &- sum_delx_delq*sum_delx_dely)*one_by_det
 
 
 

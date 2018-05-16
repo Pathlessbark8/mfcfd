@@ -15,15 +15,15 @@ contains
                 integer i, j, k, r
 		real*8 :: maxi(4)
                 
-                maxi = p%q(:,i)
+                maxi = point%q(:,i)
                 
-                do j = 1, p%nbhs(i)
+                do j = 1, point%nbhs(i)
                 
-                        k = p%conn(i,j)
+                        k = point%conn(i,j)
         
                         do r = 1, 4
-                                if( maxi(r) < p%q(r,k) ) then
-                                        maxi(r) = p%q(r,k)
+                                if( maxi(r) < point%q(r,k) ) then
+                                        maxi(r) = point%q(r,k)
                                 endif
                         enddo
                 enddo
@@ -39,15 +39,15 @@ contains
                 integer i, j, k, r
 	        real*8 :: mini(4)
                 
-                mini = p%q(:,i)
+                mini = point%q(:,i)
         
-                do j = 1, p%nbhs(i)
+                do j = 1, point%nbhs(i)
                 
-                        k = p%conn(i,j)
+                        k = point%conn(i,j)
 
                         do r = 1, 4
-                                if( mini(r) > p%q(r,k) ) then
-                                        mini(r) = p%q(r,k)
+                                if( mini(r) > point%q(r,k) ) then
+                                        mini(r) = point%q(r,k)
                                 endif
                         enddo
                 enddo
@@ -73,7 +73,7 @@ contains
 
                 do r = 1, 4
 
-                        q = p%q(r,k) 
+                        q = point%q(r,k) 
                         del_neg = qtilde(r) - q
                         if(dabs(del_neg) .le. 10e-6) then
                                 phi(r)=1.d0
@@ -122,13 +122,13 @@ contains
                 integer :: k, r, j, nbh
 		real*8 :: max
 
-                max = p%q(r,k)
+                max = point%q(r,k)
 
-                do j = 1, p%nbhs(k)
-                        nbh = p%conn(k,j)
+                do j = 1, point%nbhs(k)
+                        nbh = point%conn(k,j)
 
-                        if(p%q(r,nbh) .gt. max) then 
-                                max = p%q(r,nbh)
+                        if(point%q(r,nbh) .gt. max) then 
+                                max = point%q(r,nbh)
                         endif
                 enddo
         end subroutine
@@ -141,14 +141,14 @@ contains
                 integer :: k, r, j, nbh
 		real*8 :: min
 
-                min = p%q(r,k)
+                min = point%q(r,k)
 
-                do j = 1, p%nbhs(k)
+                do j = 1, point%nbhs(k)
 
-                        nbh = p%conn(k,j)
+                        nbh = point%conn(k,j)
 
-                        if(p%q(r,nbh) .lt. min) then 
-                                min = p%q(r,nbh)
+                        if(point%q(r,nbh) .lt. min) then 
+                                min = point%q(r,nbh)
                         endif
                 enddo
         end subroutine!
@@ -164,10 +164,10 @@ contains
 
                 min_dist = 10000.d0
 
-                do j = 1, p%nbhs(k)
-                        nbh = p%conn(k,j)
-                        dx = p%x(nbh) - p%x(k)
-                        dy = p%y(nbh) - p%y(k)
+                do j = 1, point%nbhs(k)
+                        nbh = point%conn(k,j)
+                        dx = point%x(nbh) - point%x(k)
+                        dy = point%y(nbh) - point%y(k)
 
 
                         ds = dsqrt(dx*dx + dy*dy)

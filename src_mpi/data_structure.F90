@@ -40,7 +40,7 @@ module data_structure_mod
 		real*8, dimension(:,:), allocatable :: q
 		real*8, dimension(:,:,:), allocatable :: dq
 
-		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
+		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr,sensor
 
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
                 integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
@@ -50,7 +50,7 @@ module data_structure_mod
 
         end type points
  
-        type(points) :: p
+        type(points) :: point
 
         save
 
@@ -85,37 +85,38 @@ module data_structure_mod
         subroutine allocate_soln()
                 implicit none
 
-                allocate(p%prim(4,max_points))
+                allocate(point%prim(4,max_points))
 
 
-                allocate(p%flux_res(4,max_points))
+                allocate(point%flux_res(4,max_points))
 
 
-                allocate(p%q(4,max_points))
+                allocate(point%q(4,max_points))
 
-                allocate(p%dq(2,4,max_points))
+                allocate(point%dq(2,4,max_points))
 
 
-                allocate(p%entropy(max_points))
-                allocate(p%vorticity(max_points))
-                allocate(p%vorticity_sqr(max_points))
+                allocate(point%entropy(max_points))
+                allocate(point%vorticity(max_points))
+                allocate(point%vorticity_sqr(max_points))
+                allocate(point%sensor(max_points))
 
                 
-                allocate(p%xpos_nbhs(max_points))
-                allocate(p%xneg_nbhs(max_points))
-                allocate(p%ypos_nbhs(max_points))
-                allocate(p%yneg_nbhs(max_points))
+                allocate(point%xpos_nbhs(max_points))
+                allocate(point%xneg_nbhs(max_points))
+                allocate(point%ypos_nbhs(max_points))
+                allocate(point%yneg_nbhs(max_points))
 
 
-                allocate(p%xpos_conn(max_points,15))
-                allocate(p%xneg_conn(max_points,15))
+                allocate(point%xpos_conn(max_points,15))
+                allocate(point%xneg_conn(max_points,15))
 
 
-                allocate(p%ypos_conn(max_points,15))
-                allocate(p%yneg_conn(max_points,15))
+                allocate(point%ypos_conn(max_points,15))
+                allocate(point%yneg_conn(max_points,15))
 
 
-                allocate(p%delta(max_points))
+                allocate(point%delta(max_points))
         end subroutine
 
 
@@ -130,10 +131,10 @@ module data_structure_mod
                 pghost = pghost - 1
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
-			&PETSC_DECIDE,ghost_points,pghost,p%dq(1,1,1),p_dq,ierr)
+			&PETSC_DECIDE,ghost_points,pghost,point%dq(1,1,1),p_dq,ierr)
                 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
-			&PETSC_DECIDE,ghost_points,pghost,p%prim(1,1),p_prim,ierr)
+			&PETSC_DECIDE,ghost_points,pghost,point%prim(1,1),p_prim,ierr)
 
                 call VecGetSize(p_prim,plen,ierr)
                 plen = plen/4

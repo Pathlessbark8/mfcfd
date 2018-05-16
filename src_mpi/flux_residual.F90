@@ -31,9 +31,9 @@ contains
                         call wall_dGy_neg(Gyn, k)
 
 
-                        p%flux_res(:,k) = Gxp + Gxn + Gyn
+                        point%flux_res(:,k) = Gxp + Gxn + Gyn
 
-                        p%flux_res(:,k) = 2.0d0*p%flux_res(:,k)
+                        point%flux_res(:,k) = 2.0d0*point%flux_res(:,k)
 
 
 
@@ -49,7 +49,7 @@ contains
 
                         call outer_dGy_pos(Gyp, k) 
 
-                        p%flux_res(:,k) = Gxp + Gxn + Gyp
+                        point%flux_res(:,k) = Gxp + Gxn + Gyp
 
 
                 enddo
@@ -67,7 +67,7 @@ contains
 
                         call interior_dGy_neg(Gyn, k) 
 
-                        p%flux_res(:,k) = Gxp + Gxn + Gyp + Gyn
+                        point%flux_res(:,k) = Gxp + Gxn + Gyp + Gyn
 
 
                 enddo

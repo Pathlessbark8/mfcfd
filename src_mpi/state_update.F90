@@ -27,8 +27,8 @@ module state_update_mod
 
                         k = wall_points_index(i)
 
-                        nx = p%nx(k)
-                        ny = p%ny(k)
+                        nx = point%nx(k)
+                        ny = point%ny(k)
 
                         call primitive_to_conserved(k, nx, ny, U)
 
@@ -36,7 +36,7 @@ module state_update_mod
 
                         temp = U(1)
 
-                        U = U - p%delta(k)*p%flux_res(:,k)
+                        U = U - point%delta(k)*point%flux_res(:,k)
                         U(3) = 0.d0
 
                         U2_rot = U(2)
@@ -53,11 +53,11 @@ module state_update_mod
 
                         sum_res_sqr = sum_res_sqr + res_sqr
 
-                        p%prim(1,k) = U(1)
+                        point%prim(1,k) = U(1)
                         temp = 1.0d0/U(1)
-                        p%prim(2,k) = U(2)*temp
-                        p%prim(3,k) = U(3)*temp
-                        p%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        point%prim(2,k) = U(2)*temp
+                        point%prim(3,k) = U(3)*temp
+                        point%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
 
                 enddo
 
@@ -65,14 +65,14 @@ module state_update_mod
 
                         k = outer_points_index(i)
 
-                        nx = p%nx(k)
-                        ny = p%ny(k)
+                        nx = point%nx(k)
+                        ny = point%ny(k)
 
                         call conserved_vector_Ubar(k, U, nx, ny) 
                         
                         temp = U(1)
 
-                        U = U - p%delta(k)*p%flux_res(:,k)
+                        U = U - point%delta(k)*point%flux_res(:,k)
                         
                         U2_rot = U(2)
                         
@@ -94,11 +94,11 @@ module state_update_mod
 !							
 !							sum_res_sqr = sum_res_sqr + res_sqr
 
-                        p%prim(1,k) = U(1)
+                        point%prim(1,k) = U(1)
                         temp = 1.0d0/U(1)
-                        p%prim(2,k) = U(2)*temp
-                        p%prim(3,k) = U(3)*temp
-                        p%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        point%prim(2,k) = U(2)*temp
+                        point%prim(3,k) = U(3)*temp
+                        point%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
 
                 enddo
 
@@ -106,14 +106,14 @@ module state_update_mod
                 
                         k = interior_points_index(i)
 
-                        nx = p%nx(k)
-                        ny = p%ny(k)
+                        nx = point%nx(k)
+                        ny = point%ny(k)
 
                         call primitive_to_conserved(k, nx, ny, U)
 
 
                         temp = U(1)
-                        U = U - p%delta(k)*p%flux_res(:,k)
+                        U = U - point%delta(k)*point%flux_res(:,k)
 
                         U2_rot = U(2)
                         U3_rot = U(3)
@@ -129,12 +129,12 @@ module state_update_mod
 
                         sum_res_sqr = sum_res_sqr + res_sqr
 
-                        p%prim(1,k) = U(1)
+                        point%prim(1,k) = U(1)
                         temp = 1.0d0/U(1)
-                        p%prim(2,k) = U(2)*temp
-                        p%prim(3,k) = U(3)*temp
+                        point%prim(2,k) = U(2)*temp
+                        point%prim(3,k) = U(3)*temp
 
-                        p%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        point%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
         
                 enddo
 
@@ -155,12 +155,12 @@ module state_update_mod
 		real*8 :: temp1, temp2
                 integer :: k
 
-                rho = p%prim(1,k)
+                rho = point%prim(1,k)
 
                 U(1) = rho 
-                temp1 = rho*p%prim(2,k)
-                temp2 = rho*p%prim(3,k)
-                U(4) = 2.5*p%prim(4,k) + 0.5*(temp1*temp1 + temp2*temp2)/rho
+                temp1 = rho*point%prim(2,k)
+                temp2 = rho*point%prim(3,k)
+                U(4) = 2.5*point%prim(4,k) + 0.5*(temp1*temp1 + temp2*temp2)/rho
 
                 U(2) = temp1*ny - temp2*nx
                 U(3) = temp1*nx + temp2*ny
@@ -177,16 +177,16 @@ module state_update_mod
 		real*8 :: temp, U(4)
                 integer :: k
 
-                p%prim(1,k) = U(1)
+                point%prim(1,k) = U(1)
 
                 temp = 1.0d0/U(1)
 
-                p%prim(2,k) = U(2)*temp
-                p%prim(3,k) = U(3)*temp
+                point%prim(2,k) = U(2)*temp
+                point%prim(3,k) = U(3)*temp
 
                 temp = U(4) - (0.5*temp)*(U(2)*U(2) + U(3)*U(3))
 
-                p%prim(4,k) = 0.4*temp
+                point%prim(4,k) = 0.4*temp
 
 
         end subroutine
@@ -212,19 +212,19 @@ module state_update_mod
                         min_delt = 1.0d0
 
 
-                        do r = 1, p%nbhs(i)
-                                k = p%conn(i,r)
+                        do r = 1, point%nbhs(i)
+                                k = point%conn(i,r)
 
-                                rho = p%prim(1,k)
-                                u1 = p%prim(2,k)
-                                u2 = p%prim(3,k)
-                                pr = p%prim(4,k)
+                                rho = point%prim(1,k)
+                                u1 = point%prim(2,k)
+                                u2 = point%prim(3,k)
+                                pr = point%prim(4,k)
 
-                                x_i = p%x(i)
-                                y_i = p%y(i)
+                                x_i = point%x(i)
+                                y_i = point%y(i)
 
-                                x_k = p%x(k)
-                                y_k = p%y(k)
+                                x_k = point%x(k)
+                                y_k = point%y(k)
 
                                 dist = (x_k - x_i)*(x_k - x_i) + (y_k - y_i)*(y_k - y_i)
                                 dist = dsqrt(dist)
@@ -240,7 +240,7 @@ module state_update_mod
                                 endif
 
                         enddo
-                        p%delta(i) = min_delt
+                        point%delta(i) = min_delt
                 end do
 
 
@@ -277,10 +277,10 @@ module state_update_mod
                 B2_inf = exp(-S2*S2)/(2*dsqrt(pi*beta))
                 A2n_inf = 0.5*(1-derf(S2))
 
-                rho = p%prim(1,k)
-                u1 = p%prim(2,k)
-                u2 = p%prim(3,k)
-                pr = p%prim(4,k)
+                rho = point%prim(1,k)
+                u1 = point%prim(2,k)
+                u2 = point%prim(3,k)
+                pr = point%prim(4,k)
 
                 u1_rot = u1*tx + u2*ty
                 u2_rot = u1*nx + u2*ny

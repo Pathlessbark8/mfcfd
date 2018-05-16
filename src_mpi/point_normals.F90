@@ -48,14 +48,14 @@ module point_normals_mod
                                                 endif
 
                                                 
-                                                lx = p%x(l)
-                                                ly = p%y(l)
+                                                lx = point%x(l)
+                                                ly = point%y(l)
 
-                                                mx = p%x(m)
-                                                my = p%y(m)
+                                                mx = point%x(m)
+                                                my = point%y(m)
 
-                                                rx = p%x(r)
-                                                ry = p%y(r)
+                                                rx = point%x(r)
+                                                ry = point%y(r)
                                                 !TODO Problem with normal computation in parallel
                                                 if (proc > 1) then 
                                                         if (i .eq. 1) then
@@ -83,8 +83,8 @@ module point_normals_mod
 
                                                 k = shape_points_index(j, i)
 
-                                                p%nx(k) = nx
-                                                p%ny(k) = ny
+                                                point%nx(k) = nx
+                                                point%ny(k) = ny
 
 
 
@@ -117,14 +117,14 @@ module point_normals_mod
                                                                 l = outer_points_index(i-1)
                                                 endif
 
-                                                lx = p%x(l)
-                                                ly = p%y(l)
+                                                lx = point%x(l)
+                                                ly = point%y(l)
 
-                                                mx = p%x(m)
-                                                my = p%y(m)
+                                                mx = point%x(m)
+                                                my = point%y(m)
 
-                                                rx = p%x(r)
-                                                ry = p%y(r)
+                                                rx = point%x(r)
+                                                ry = point%y(r)
    
                                                 nx1 = my - ly
                                                 nx2 = ry - my
@@ -142,8 +142,8 @@ module point_normals_mod
 
                                                 k = outer_points_index(i)
 
-                                                p%nx(k) = nx
-                                                p%ny(k) = ny
+                                                point%nx(k) = nx
+                                                point%ny(k) = ny
 
                                         enddo
 
@@ -157,8 +157,8 @@ module point_normals_mod
 
                                                 k = interior_points_index(i)
 
-                                                p%nx(k) = 0.0d0
-                                                p%ny(k) = 1.0d0
+                                                point%nx(k) = 0.0d0
+                                                point%ny(k) = 1.0d0
 
                                         enddo
 
@@ -171,8 +171,8 @@ module point_normals_mod
                                         if(interior_points_normal_flag .eq. 0) then
                                                 do i = 1, interior_points
                                                         k = interior_points_index(i)
-                                                        p%nx(k) = 0.d0
-                                                        p%ny(k) = 1.d0
+                                                        point%nx(k) = 0.d0
+                                                        point%ny(k) = 1.d0
                                                 enddo
                                         endif
 

@@ -9,7 +9,8 @@ program meshfree_solver
         use point_preprocessor_mod
         use initial_conditions_mod
         use q_lskum_mod
-        !use post_processing_mod
+        use post_processing_mod
+	use adaptation_sensors_mod
 
 
         implicit none
@@ -49,10 +50,11 @@ program meshfree_solver
         call q_lskum()
         runtime = MPI_Wtime() - runtime
 
+	call sensor_D2_distance()
 
 !	Printing the output (post-processing) ..
 
-!	call print_primal_output()
+	call print_primal_output()
 
 
 !       destroy petsc vectors

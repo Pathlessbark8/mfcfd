@@ -7,7 +7,7 @@ include makefile.in
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o compute_enstrophy.o objective_function.o miscellaneous.o
+objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o compute_enstrophy.o objective_function.o miscellaneous.o adaptation_sensors.o post_processing.o
 
 
 
@@ -17,11 +17,17 @@ execname: $(objects)
 	$(FC)  -o execname $(FFLAGS) $(objects) $(PETSC_LIB)
 
 
-meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o parameter.o initial_conditions.o q_lskum.o
+meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o parameter.o initial_conditions.o q_lskum.o adaptation_sensors.o post_processing.o
 	$(FC) $(FFLAGS) -c  meshfree_solver.F90 
 
 point_preprocessor.o: point_preprocessor.F90 data_structure.o
 	$(FC) $(FFLAGS) -c  point_preprocessor.F90 
+
+adaptation_sensors.o: adaptation_sensors.F90 data_structure.o
+	$(FC) $(FFLAGS) -c  adaptation_sensors.F90 
+
+post_processing.o: post_processing.F90 data_structure.o
+	$(FC) $(FFLAGS) -c  post_processing.F90 
 
 data_structure.o: data_structure.F90 parameter.o 
 	$(FC) $(FFLAGS) -c  data_structure.F90 

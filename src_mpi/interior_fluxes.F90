@@ -45,21 +45,21 @@ contains
                 sum_delx_delf = 0.0d0
                 sum_dely_delf = 0.0d0
 
-                x_i = p%x(i)
-                y_i = p%y(i)
+                x_i = point%x(i)
+                y_i = point%y(i)
 
-                nx = p%nx(i)
-                ny = p%ny(i)
+                nx = point%nx(i)
+                ny = point%ny(i)
 
                 tx = ny
                 ty = -nx
 
-                do j = 1, p%xpos_nbhs(i)
+                do j = 1, point%xpos_nbhs(i)
 
-                        k = p%xpos_conn(i,j)
+                        k = point%xpos_conn(i,j)
 
-                        x_k = p%x(k)
-                        y_k = p%y(k)
+                        x_k = point%x(k)
+                        y_k = point%y(k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -79,16 +79,16 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
                                 call venkat_limiter(qtilde_k, phi_k, k)
 
-                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                                qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                                qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         elseif(limiter_flag .eq. 2) then 
@@ -169,22 +169,22 @@ contains
                 sum_delx_delf = 0.0d0
                 sum_dely_delf = 0.0d0
 
-                x_i = p%x(i)
-                y_i = p%y(i)
+                x_i = point%x(i)
+                y_i = point%y(i)
 
 
-                nx = p%nx(i)
-                ny = p%ny(i)
+                nx = point%nx(i)
+                ny = point%ny(i)
 
                 tx = ny
                 ty = -nx
 
-                do j = 1, p%xneg_nbhs(i)
+                do j = 1, point%xneg_nbhs(i)
 
-                        k = p%xneg_conn(i,j)
+                        k = point%xneg_conn(i,j)
 
-                        x_k = p%x(k)
-                        y_k = p%y(k)
+                        x_k = point%x(k)
+                        y_k = point%y(k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -204,17 +204,17 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
                                 call venkat_limiter(qtilde_k, phi_k, k)
 
-                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
+                                qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
                                 
-                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                                qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
                         endif
 
 
@@ -296,22 +296,22 @@ contains
                 sum_delx_delf = 0.0d0
                 sum_dely_delf = 0.0d0
 
-                x_i = p%x(i)
-                y_i = p%y(i)
+                x_i = point%x(i)
+                y_i = point%y(i)
        
-                nx = p%nx(i)
-                ny = p%ny(i)
+                nx = point%nx(i)
+                ny = point%ny(i)
 
 
                 tx = ny
                 ty = -nx
 
-                do j = 1, p%ypos_nbhs(i)
+                do j = 1, point%ypos_nbhs(i)
 
-                        k = p%ypos_conn(i,j)
+                        k = point%ypos_conn(i,j)
 
-                        x_k = p%x(k)
-                        y_k = p%y(k)
+                        x_k = point%x(k)
+                        y_k = point%y(k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -331,15 +331,15 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
                                 call venkat_limiter(qtilde_k, phi_k, k)
 
-                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                                qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                                qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
                         endif
 
 
@@ -421,21 +421,21 @@ contains
                 sum_delx_delf = 0.0d0
                 sum_dely_delf = 0.0d0
 
-                x_i = p%x(i)
-                y_i = p%y(i)
+                x_i = point%x(i)
+                y_i = point%y(i)
 
-                nx = p%nx(i)
-                ny = p%ny(i)
+                nx = point%nx(i)
+                ny = point%ny(i)
 
                 tx = ny
                 ty = -nx
 
-                do j = 1, p%yneg_nbhs(i)
+                do j = 1, point%yneg_nbhs(i)
 
-                        k = p%yneg_conn(i,j)
+                        k = point%yneg_conn(i,j)
 
-                        x_k = p%x(k)
-                        y_k = p%y(k)
+                        x_k = point%x(k)
+                        y_k = point%y(k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -455,16 +455,16 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = p%q(:,i) - 0.5d0*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                        qtilde_k = p%q(:,k) - 0.5d0*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
                                 call venkat_limiter(qtilde_k, phi_k, k)
 
-                                qtilde_i = p%q(:,i) - 0.5d0*phi_i*(delx*p%dq(1,:,i) + dely*p%dq(2,:,i))
-                                qtilde_k = p%q(:,k) - 0.5d0*phi_k*(delx*p%dq(1,:,k) + dely*p%dq(2,:,k))
+                                qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                                qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
                         endif
 
 

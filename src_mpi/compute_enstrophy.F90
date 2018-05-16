@@ -27,8 +27,8 @@ module compute_enstrophy_mod
                         do i = 1, local_points
                         
 
-                                x_i = p%x(i)
-                                y_i = p%y(i)
+                                x_i = point%x(i)
+                                y_i = point%y(i)
 
                                 sum_delx_sqr = 0.d0
                                 sum_dely_sqr = 0.d0
@@ -39,12 +39,12 @@ module compute_enstrophy_mod
                                 sum_delx_delu2 = 0.d0
                                 sum_dely_delu2 = 0.d0
 
-                                do k = 1, p%nbhs(i)
+                                do k = 1, point%nbhs(i)
 
-                                        nbh = p%conn(i,k)
+                                        nbh = point%conn(i,k)
 
-                                        x_k = p%x(nbh)
-                                        y_k = p%y(nbh)
+                                        x_k = point%x(nbh)
+                                        y_k = point%y(nbh)
 
                                         delx = x_k - x_i
                                         dely = y_k - y_i
@@ -57,10 +57,10 @@ module compute_enstrophy_mod
 
                                         sum_delx_dely = sum_delx_dely + delx*dely*weights
 
-                                        sum_delx_delu1 = sum_delx_delu1 + weights*delx*(p%prim(2,nbh) - p%prim(2,i))
-                                        sum_delx_delu2 = sum_delx_delu2 + weights*delx*(p%prim(3,nbh) - p%prim(3,i))
-                                        sum_dely_delu1 = sum_dely_delu1 + weights*dely*(p%prim(2,nbh) - p%prim(2,i))
-                                        sum_dely_delu2 = sum_dely_delu2 + weights*dely*(p%prim(3,nbh) - p%prim(3,i))
+                                        sum_delx_delu1 = sum_delx_delu1 + weights*delx*(point%prim(2,nbh) - point%prim(2,i))
+                                        sum_delx_delu2 = sum_delx_delu2 + weights*delx*(point%prim(3,nbh) - point%prim(3,i))
+                                        sum_dely_delu1 = sum_dely_delu1 + weights*dely*(point%prim(2,nbh) - point%prim(2,i))
+                                        sum_dely_delu2 = sum_dely_delu2 + weights*dely*(point%prim(3,nbh) - point%prim(3,i))
 
                                 enddo
 
@@ -72,11 +72,11 @@ module compute_enstrophy_mod
 
                                 temp = du2_dx - du1_dy
 
-                                p%vorticity(i) = temp
+                                point%vorticity(i) = temp
 
-                                p%vorticity_sqr(i) = temp*temp
+                                point%vorticity_sqr(i) = temp*temp
 
-                                total_enstrophy = total_enstrophy + p%vorticity_sqr(i)
+                                total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
 
 
                         enddo

@@ -32,7 +32,7 @@ module objective_function_mod
                         call MPI_Reduce(lCFV, CFV , 1, MPI_DOUBLE, MPI_SUM, 0, &
                         PETSC_COMM_WORLD, ierr)
 
-                        if(rank==0)write(*,'(a12,i8,a25,3e30.20)')'iterations:',it,'Objective function:',CFV
+!                        if(rank==0)write(*,'(a12,i8,a25,3e30.20)')'iterations:',it,'Objective function:',CFV
 
 
 
