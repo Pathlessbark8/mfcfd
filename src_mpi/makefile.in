@@ -16,10 +16,6 @@ CC = gcc
 
 #flags for gcc
 FFLAGS =-march=native -O3 -I$(PETSC_DIR)/include
-#-pipe -ffree-form -cpp \
-                        -Wall -Wextra -Wtabs -Wintrinsics-std -Wsurprising -Waliasing \
-                        -Wno-unused-parameter -Wno-unused-dummy-argument \
-                        -I$(PETSC_DIR)/include
 
 
 

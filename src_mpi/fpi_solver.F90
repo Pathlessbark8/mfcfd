@@ -11,7 +11,7 @@ module fpi_solver_mod
         use flux_residual_mod
         use state_update_mod
         use q_variables_mod
-        use objective_function_mod
+!        use objective_function_mod
 
 
 contains
@@ -44,7 +44,7 @@ contains
                 call update_begin_prim_ghost()
                 call update_end_prim_ghost()
 
-                call objective_function()
+!                call objective_function()
 
                 call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
                    0, PETSC_COMM_WORLD, ierr)

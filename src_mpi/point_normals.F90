@@ -5,8 +5,6 @@ module point_normals_mod
         contains
 
 
-
-
         subroutine compute_normals()
 
                 implicit none
@@ -17,36 +15,16 @@ module point_normals_mod
                 
                 integer:: i, j, k, l, m, r
 
+        open(99,file='normals.dat')
 
 !Finding the normals for the points on the shapes ..   
-!TODO Proper shape normal computation
 
-                                do j = 1, shapes
-                                        do i = 1, shape_points(j)
-                                                if(i .eq. 1) then 
+                                        do i = 1, wall_points
+                                                m = wall_points_index(i)
+                                                l = point%left(m)
+                                                r = point%right(m)
 
-                                                        m = shape_points_index(j, i)
-                                                        r = shape_points_index(j, i+1) 
-                                                        l = shape_points_index(j, 1)
-                                                endif
-
-                                                if(i .gt. 1 .and. i .lt. shape_points(j)) then 
-
-                                                                m = shape_points_index(j, i)
-                                                                
-                                                                r = shape_points_index(j, i+1)
-
-                                                                l = shape_points_index(j, i-1) 
-
-                                                endif
-
-                                                if(i .eq. shape_points(j)) then 
-
-                                                                m = shape_points_index(j, i) 
-                                                                r = shape_points_index(j, 1)
-                                                                l = shape_points_index(j, i-1) 
-                                                endif
-
+                                                
                                                 
                                                 lx = point%x(l)
                                                 ly = point%y(l)
@@ -56,17 +34,7 @@ module point_normals_mod
 
                                                 rx = point%x(r)
                                                 ry = point%y(r)
-                                                !TODO Problem with normal computation in parallel
-                                                if (proc > 1) then 
-                                                        if (i .eq. 1) then
-                                                                lx = mx+(mx-rx)
-                                                                ly = my+(my-ry)
-                                                        else if(i .eq. shape_points(j)) then
-                                                                rx = mx-(mx-lx)
-                                                                ry = my-(my-ly)
-                                                        end if
-                                                end if
-
+!
                                                 nx1 = my - ly
                                                 nx2 = ry - my
 
@@ -80,42 +48,21 @@ module point_normals_mod
 
                                                 nx = -nx/det
                                                 ny = ny/det
+!                                                k = shape_points_index(j, i)
 
-                                                k = shape_points_index(j, i)
-
-                                                point%nx(k) = nx
-                                                point%ny(k) = ny
-
+                                                point%nx(m) = nx
+                                                point%ny(m) = ny
 
 
                                         enddo
-                                enddo
                                 
 
 !	Finding the normals for the outer boundary points ..
 
                                 do i = 1, outer_points
-
-                                                if(i .eq. 1) then 
-
-                                                                m = outer_points_index(i)
-                                                                r = outer_points_index(i+1)
-                                                                l = outer_points_index(1)
-                                                endif
-
-                                                if(i .gt. 1 .and. i .lt. outer_points) then 
-
-                                                                m = outer_points_index(i)
-                                                                r = outer_points_index(i+1)
-                                                                l = outer_points_index(i-1)
-                                                endif
-                                                
-                                                if(i .eq. outer_points) then 
-
-                                                                m = outer_points_index(i)
-                                                                r = outer_points_index(1)
-                                                                l = outer_points_index(i-1)
-                                                endif
+                                                m = outer_points_index(i)
+                                                l = point%left(m)
+                                                r = point%right(m)
 
                                                 lx = point%x(l)
                                                 ly = point%y(l)
@@ -146,6 +93,8 @@ module point_normals_mod
                                                 point%ny(k) = ny
 
                                         enddo
+
+        
 
 
 !	The below lines of code are temporary. In future

@@ -1,0 +1,11 @@
+-cfl 0.8   | default=0.0d0
+-max_iters 15 | default=1000000
+-mach 0.85  | default=0.0d0
+-aoa 1.2  | default=0.0d0
+-power 0  | default=0.0d0 | options, d : 0.0d0, -2.0d0, -4.0d0, -6.0d0 .. 
+-limiter_flag 1 | default=1 => VK limiter | options : 2 => minmax
+-vl_const 150  |  default = 150.0d0 | VK limiter constant
+-initial_conditions_flag 0 |  default=0 | options : 1, externally intialize
+-interior_points_normal_flag 0 |  default=0 
+-shapes 1 |  default=1, increase it according to the case
+-solution_restart 0 | default=0 | options: 1, restart from a particular point with same number of procs

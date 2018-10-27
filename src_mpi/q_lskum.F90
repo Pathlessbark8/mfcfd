@@ -15,9 +15,8 @@ contains
 
                 implicit none
 
-                OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-!TODO               Temporarily, until an effiecient way of computing normals in parallel is developed
-!                call compute_normals()
+                if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                call compute_normals()
                 call generate_connectivity()
 
         

@@ -9,8 +9,8 @@ program meshfree_solver
         use point_preprocessor_mod
         use initial_conditions_mod
         use q_lskum_mod
-        use post_processing_mod
-	use adaptation_sensors_mod
+!        use post_processing_mod 
+!        use compute_force_coeffs_mod
 
 
         implicit none
@@ -19,7 +19,7 @@ program meshfree_solver
 
 
 !
-        call PetscInitialize(PETSC_NULL_CHARACTER, ierr)
+        call PetscInitialize('parameter.in', ierr)
         if(ierr /= 0) stop "Unable to initialize PETSc"
         call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr)
         call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr)
@@ -30,31 +30,35 @@ program meshfree_solver
 !
         call read_input_point_data()
 
+!       Read the parameter file
+
+        call readparam()
+
 !       Allocate solution variables
 
         call allocate_soln()
 
 !       Initialize Petsc vectors
 
-        call init_petsc()
-        if(rank==0) print*,'No of points:',plen
+        if(proc .ne. 1)call init_petsc()
+        if(rank==0 .and. proc .ne. 1) print*,'No of points:',plen
+        if(proc==1) print*,'No of points:',max_points
 
 !	Assign the initial conditions for the primitive variables ..	
 
         call initial_conditions()
+        if(rank==0)print*,'solution initialised'
        
 !	Primal fixed point iterative solver ..
-        
 !       
         runtime = MPI_Wtime()
         call q_lskum()
         runtime = MPI_Wtime() - runtime
 
-	call sensor_D2_distance()
 
 !	Printing the output (post-processing) ..
 
-	call print_primal_output()
+!        call print_primal_output()
 
 
 !       destroy petsc vectors

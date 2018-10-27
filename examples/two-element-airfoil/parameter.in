@@ -1,0 +1,5 @@
+-cfl 0.8
+-max_iters 15
+-mach 0.85
+-aoa 1.2
+-shapes 1

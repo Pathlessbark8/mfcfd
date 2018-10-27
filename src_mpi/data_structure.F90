@@ -14,7 +14,6 @@ module data_structure_mod
 
         integer :: max_points,local_points,ghost_points
         integer :: wall_points,interior_points,outer_points
-        integer :: shape_points(shapes)
 
 !       ghost global indices
         integer , dimension(:), allocatable :: pghost
@@ -26,6 +25,7 @@ module data_structure_mod
 		real*8, dimension(:), allocatable :: x,y
                 integer, dimension(:), allocatable :: local_id
                 integer, dimension(:), allocatable :: global_id
+                integer, dimension(:), allocatable :: left,right
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
                 integer, dimension(:), allocatable :: nbhs
@@ -40,7 +40,7 @@ module data_structure_mod
 		real*8, dimension(:,:), allocatable :: q
 		real*8, dimension(:,:,:), allocatable :: dq
 
-		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr,sensor
+		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
 
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
                 integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
@@ -57,8 +57,7 @@ module data_structure_mod
         integer,allocatable,dimension(:) :: wall_points_index
         integer,allocatable,dimension(:) :: outer_points_index
         integer,allocatable,dimension(:) :: interior_points_index
-!       TODO make below array dynamic for second index	
-        integer :: shape_points_index(shapes, max_shape_points)
+        integer,allocatable,dimension(:,:) :: shape_points_index
 
         !iterations
         integer*8 :: it
@@ -69,9 +68,47 @@ module data_structure_mod
         integer :: max_res_point
 	real*8  :: cfv
 !	real*8	:: Cl, Cd, Cm
-!	real*8	:: total_entropy, total_enstrophy
-	real*8 :: total_enstrophy
+	real*8	:: total_entropy, total_enstrophy
         integer :: plen
+
+        !Parameter file
+        !The parameter CFL is the CFL number for stability ..
+        real*8 :: CFL
+
+        integer :: max_iters
+!
+        real*8 :: Mach
+        real*8 :: aoa
+        real*8 :: theta
+
+!       The parameter power is used to specify the weights 
+!       in the LS formula for the derivatives ..
+!       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
+!       For example, power = -2.0 implies that
+!       power = -2.0 => weights = 1/d^2
+!       power = -4.0 => weights = 1/d^4
+!
+        real*8 :: power
+!
+!
+!       limiter_flag = 1 => venkatakrishnan limiter
+!       limiter_flag = 2 => min-max limiter     
+!
+        integer :: limiter_flag
+        real*8 :: VL_CONST  ! Venkatakrishnan limiter constant ..
+
+        integer :: initial_conditions_flag
+!       
+!       Interior points normal flag ..
+!       If flag is zero => nx = 0.0 and ny = 1.0
+!
+        integer :: interior_points_normal_flag
+
+!       Restart solution parameter
+        integer :: solution_restart
+
+!       No of shapes
+        integer :: shapes
 
 !   PETSc variables
 
@@ -87,7 +124,6 @@ module data_structure_mod
 
                 allocate(point%prim(4,max_points))
 
-
                 allocate(point%flux_res(4,max_points))
 
 
@@ -99,7 +135,6 @@ module data_structure_mod
                 allocate(point%entropy(max_points))
                 allocate(point%vorticity(max_points))
                 allocate(point%vorticity_sqr(max_points))
-                allocate(point%sensor(max_points))
 
                 
                 allocate(point%xpos_nbhs(max_points))
@@ -117,16 +152,13 @@ module data_structure_mod
 
 
                 allocate(point%delta(max_points))
+
         end subroutine
 
 
         subroutine init_petsc()
                 implicit none
                 PetscErrorCode       :: ierr
-                if (proc==1) then
-                        plen = max_points
-                        return
-                end if
                 if (rank==0) print*,'Setting up parallel vectors'
                 pghost = pghost - 1
 
