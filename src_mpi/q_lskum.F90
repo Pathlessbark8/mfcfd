@@ -16,6 +16,7 @@ contains
                 implicit none
 
                 if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+
                 call compute_normals()
                 call generate_connectivity()
 
@@ -23,14 +24,14 @@ contains
                 do it = 1, max_iters
                         
                         call fpi_solver(it)
-                        if (rank==0) write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
-!			print*, t, res_new, residue, max_res, max_res_point, Cl, Cd, cfv
-                        if(rank==0) write(301, *) it, residue
+                        if (rank==0) then
+                                write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
+                                write(301, *) it, residue
+                        end if
                 enddo
 
-!		print*, "net time = ", end_time - start_time
 
-!		CLOSE(UNIT=301)	
+                CLOSE(UNIT=301)
 
         end subroutine
 

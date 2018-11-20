@@ -15,84 +15,80 @@ module point_normals_mod
                 
                 integer:: i, j, k, l, m, r
 
-        open(99,file='normals.dat')
 
 !Finding the normals for the points on the shapes ..   
 
-                                        do i = 1, wall_points
-                                                m = wall_points_index(i)
-                                                l = point%left(m)
-                                                r = point%right(m)
+                do i = 1, wall_points
+                        m = wall_points_index(i)
+                        l = point%left(m)
+                        r = point%right(m)
 
-                                                
-                                                
-                                                lx = point%x(l)
-                                                ly = point%y(l)
+                        
+                        
+                        lx = point%x(l)
+                        ly = point%y(l)
 
-                                                mx = point%x(m)
-                                                my = point%y(m)
+                        mx = point%x(m)
+                        my = point%y(m)
 
-                                                rx = point%x(r)
-                                                ry = point%y(r)
-!
-                                                nx1 = my - ly
-                                                nx2 = ry - my
+                        rx = point%x(r)
+                        ry = point%y(r)
 
-                                                ny1 = mx - lx
-                                                ny2 = rx - mx
+                        nx1 = my - ly
+                        nx2 = ry - my
 
-                                                nx = 0.5d0*(nx1 + nx2)
-                                                ny = 0.5d0*(ny1 + ny2)
+                        ny1 = mx - lx
+                        ny2 = rx - mx
 
-                                                det = dsqrt(nx*nx + ny*ny)
+                        nx = 0.5d0*(nx1 + nx2)
+                        ny = 0.5d0*(ny1 + ny2)
 
-                                                nx = -nx/det
-                                                ny = ny/det
-!                                                k = shape_points_index(j, i)
+                        det = dsqrt(nx*nx + ny*ny)
 
-                                                point%nx(m) = nx
-                                                point%ny(m) = ny
+                        nx = -nx/det
+                        ny = ny/det
+
+                        point%nx(m) = nx
+                        point%ny(m) = ny
 
 
-                                        enddo
+                enddo
                                 
 
 !	Finding the normals for the outer boundary points ..
 
-                                do i = 1, outer_points
-                                                m = outer_points_index(i)
-                                                l = point%left(m)
-                                                r = point%right(m)
+                do i = 1, outer_points
+                        m = outer_points_index(i)
+                        l = point%left(m)
+                        r = point%right(m)
 
-                                                lx = point%x(l)
-                                                ly = point%y(l)
+                        lx = point%x(l)
+                        ly = point%y(l)
 
-                                                mx = point%x(m)
-                                                my = point%y(m)
+                        mx = point%x(m)
+                        my = point%y(m)
 
-                                                rx = point%x(r)
-                                                ry = point%y(r)
+                        rx = point%x(r)
+                        ry = point%y(r)
    
-                                                nx1 = my - ly
-                                                nx2 = ry - my
+                        nx1 = my - ly
+                        nx2 = ry - my
 
-                                                ny1 = mx - lx
-                                                ny2 = rx - mx
+                        ny1 = mx - lx
+                        ny2 = rx - mx
 
-                                                nx = 0.5d0*(nx1 + nx2)
-                                                ny = 0.5d0*(ny1 + ny2)
+                        nx = 0.5d0*(nx1 + nx2)
+                        ny = 0.5d0*(ny1 + ny2)
 
-                                                det = dsqrt(nx*nx + ny*ny)
+                        det = dsqrt(nx*nx + ny*ny)
 
-                                                nx = -nx/det
-                                                ny = ny/det
+                        nx = -nx/det
+                        ny = ny/det
 
-                                                k = outer_points_index(i)
+                        point%nx(m) = nx
+                        point%ny(m) = ny
 
-                                                point%nx(k) = nx
-                                                point%ny(k) = ny
-
-                                        enddo
+                enddo
 
         
 
@@ -102,14 +98,14 @@ module point_normals_mod
 !	to be taken into account then we need to evaluate 
 !	the normals here ..
 !
-                                        do i = 1, interior_points
+                do i = 1, interior_points
 
-                                                k = interior_points_index(i)
+                        k = interior_points_index(i)
 
-                                                point%nx(k) = 0.0d0
-                                                point%ny(k) = 1.0d0
+                        point%nx(k) = 0.0d0
+                        point%ny(k) = 1.0d0
 
-                                        enddo
+                enddo
 
 
 !	Suppose the normals of the interior points are available
@@ -117,13 +113,13 @@ module point_normals_mod
 !	then the following portion of the code ensures it ..
 
 
-                                        if(interior_points_normal_flag .eq. 0) then
-                                                do i = 1, interior_points
-                                                        k = interior_points_index(i)
-                                                        point%nx(k) = 0.d0
-                                                        point%ny(k) = 1.d0
-                                                enddo
-                                        endif
+                if(interior_points_normal_flag .eq. 0) then
+                        do i = 1, interior_points
+                                k = interior_points_index(i)
+                                point%nx(k) = 0.d0
+                                point%ny(k) = 1.d0
+                        enddo
+                endif
 
 
         end subroutine 

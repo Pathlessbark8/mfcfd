@@ -1,17 +1,11 @@
 module fpi_solver_mod
 #include <petsc/finclude/petscsys.h>
-!
-!	First written on 14.10.2016
-!	updated on Dec 26, 2016
-!	updated on Dec 29, 2016
-!	updated on Oct 30, 2017	
-!	
-!
         use data_structure_mod
         use flux_residual_mod
         use state_update_mod
         use q_variables_mod
-!        use objective_function_mod
+        use objective_function_mod
+        use post_processing_mod 
 
 
 contains
@@ -31,7 +25,6 @@ contains
                 !Update the ghost values from the owned process
 
                 call update_begin_dq_ghost()
-
                 call update_end_dq_ghost()
 
 
@@ -44,7 +37,7 @@ contains
                 call update_begin_prim_ghost()
                 call update_end_prim_ghost()
 
-!                call objective_function()
+                call objective_function()
 
                 call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
                    0, PETSC_COMM_WORLD, ierr)
@@ -60,6 +53,9 @@ contains
                 else 
                         residue = dlog10(res_new/res_old)
                 endif
+
+                ! Primal output
+                if(mod(it,nsave)==0)call print_primal_output()
 
         
         end subroutine

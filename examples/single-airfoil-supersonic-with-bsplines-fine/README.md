@@ -4,4 +4,6 @@
 
 2. Use the point-preprocessor to obtain the input file to the meshfree code.
 
-3. Set the parameter.in file 
+3. Copy the makefile from ../
+
+4. Set the parameter.in file 

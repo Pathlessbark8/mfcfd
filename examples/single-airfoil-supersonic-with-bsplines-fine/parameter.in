@@ -1,0 +1,6 @@
+-cfl 0.4
+-max_iters 10
+-mach 1.2
+-shapes 1
+-obj_flag 0
+-nsave  1

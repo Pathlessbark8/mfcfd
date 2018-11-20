@@ -25,10 +25,6 @@ contains
 
                 !TODO: Add asserts
 
-!               input file format : 
-!               max_points local_points ghost_points
-!               local_id global_id x_cord y_cord flag_1 flag_2 num_Connectivity connectivity[]
-
                 read(101,*) max_points, local_points, ghost_points
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
@@ -63,12 +59,6 @@ contains
                         end if
 
                         
-!                !Storing shape point indices for all the shape types
-!                        if(point%flag_2(k) > 0) then
-!                                shape_points(point%flag_2(k)) = shape_points(point%flag_2(k))+1
-!                                shape_points_index(point%flag_2(k),shape_points(point%flag_2(k)))=k
-!                        end if
-!
                 enddo
 
 
@@ -100,20 +90,38 @@ contains
 
                         do k=local_points+1,max_points
                                 read(101,*) point%local_id(k),pghost(k-local_points),&
-                                & point%x(k),point%y(k),point%flag_1(k),point%flag_2(k)
+                                & point%x(k),point%y(k)
 
                         end do
                 end if
 
-
-
-
-
-
-
-
                 CLOSE(UNIT=101)
 
         end subroutine 
+
+        subroutine dealloc_points()
+                implicit none
+
+                
+                deallocate(point%x)
+                deallocate(point%y)
+                deallocate(point%local_id)
+                deallocate(point%global_id)
+                deallocate(point%flag_1)
+                deallocate(point%flag_2)
+                deallocate(point%nbhs)
+                deallocate(point%conn)
+                deallocate(point%nx)
+                deallocate(point%ny)
+                deallocate(point%left)
+                deallocate(point%right)
+
+                deallocate(wall_points_index)
+                deallocate(interior_points_index)
+                deallocate(outer_points_index)
+                
+                if(proc>1) deallocate(pghost)
+
+        end subroutine
 
 end module 

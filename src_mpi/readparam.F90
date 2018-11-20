@@ -61,15 +61,47 @@ subroutine readparam()
                             '-solution_restart',&
                             solution_restart,set,ierr); CHKERRQ(ierr)
 
+        nsave = 0 ! Default : saving solution count
+        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-nsave',&
+                            nsave,set,ierr); CHKERRQ(ierr)
+        
+        obj_flag = 0 ! Default : no objective function
+        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-obj_flag',obj_flag,set,ierr)
+
+        if(obj_flag==0) then
+                if(rank==0)print*,"no objective function chosen"
+        elseif(obj_flag==1) then
+                if(rank==0)print*,"Cl is chosen as the objective function"
+                cl_flag = 1
+        elseif(obj_flag==2) then
+                if(rank==0)print*,"Cd is chosen as the objective function"
+                cd_flag = 1
+        elseif(obj_flag==3) then
+                if(rank==0)print*,"Cm is chosen as the objective function"
+                cm_flag = 1
+        elseif(obj_flag==4) then
+                if(rank==0)print*,"Cl/Cd is chosen as the objective function"
+                cl_cd_flag = 1
+        elseif(obj_flag==5) then
+                if(rank==0)print*,"Total entropy is chosen as the objective function"
+                ent_flag = 1
+        elseif(obj_flag==6) then
+                if(rank==0)print*,"Total enstrophy is chosen as the objective function"
+                ens_flag = 1
+        end if
 
         ! Print paramaters to screen
         fmt1 = "(5x,a10,i14)"
         fmt2 = "(5x,a10,e14.4)"
-        write(*,fmt1) 'max_iters  =', max_iters
-        write(*,fmt2) 'cfl   =', cfl
-        write(*,fmt2) 'mach   =', mach
-        write(*,fmt2) 'aoa  =', aoa
-        write(*,fmt1) 'shapes      =', shapes
+        if (rank==0) then
+                write(*,fmt1) 'max_iters  =', max_iters
+                write(*,fmt2) 'cfl   =', cfl
+                write(*,fmt2) 'mach   =', mach
+                write(*,fmt2) 'aoa  =', aoa
+                write(*,fmt1) 'shapes      =', shapes
+        end if
 
 
 end subroutine 

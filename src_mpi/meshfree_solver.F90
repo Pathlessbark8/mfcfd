@@ -9,8 +9,7 @@ program meshfree_solver
         use point_preprocessor_mod
         use initial_conditions_mod
         use q_lskum_mod
-!        use post_processing_mod 
-!        use compute_force_coeffs_mod
+        use compute_force_coeffs_mod
 
 
         implicit none
@@ -23,6 +22,11 @@ program meshfree_solver
         if(ierr /= 0) stop "Unable to initialize PETSc"
         call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr)
         call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr)
+        if(rank==0) then
+                call execute_command_line('mkdir -p solution')
+                call execute_command_line('mkdir -p cp')
+        end if
+
 !
 !	Reading the input data ..
 
@@ -41,8 +45,8 @@ program meshfree_solver
 !       Initialize Petsc vectors
 
         if(proc .ne. 1)call init_petsc()
-        if(rank==0 .and. proc .ne. 1) print*,'No of points:',plen
-        if(proc==1) print*,'No of points:',max_points
+        if(proc==1) plen = max_points
+        if(rank==0) print*,'No of points:',plen
 
 !	Assign the initial conditions for the primitive variables ..	
 
@@ -55,14 +59,10 @@ program meshfree_solver
         call q_lskum()
         runtime = MPI_Wtime() - runtime
 
-
-!	Printing the output (post-processing) ..
-
-!        call print_primal_output()
-
-
-!       destroy petsc vectors
+!       destroy petsc vectors and deallocate point/solution vectors
         call dest_petsc()
+        call deallocate_soln()
+        call dealloc_points()
 
         totaltime = MPI_Wtime() - totaltime
         if(rank==0)print*,'Simulation completed!!!'

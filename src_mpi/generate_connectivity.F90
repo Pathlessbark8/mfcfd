@@ -74,7 +74,7 @@ module generate_connectivity_mod
 
                         endif
 
-                        if(dels .gt. 0.0) then
+                        if(dels .ge. 0.0) then
                         
                                 point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
@@ -92,7 +92,7 @@ module generate_connectivity_mod
 
                         endif
         
-                        if(deln .gt. 0.0) then
+                        if(deln .ge. 0.0) then
 
                                 point%yneg_nbhs(i) = point%yneg_nbhs(i) + 1;
 
@@ -148,7 +148,7 @@ subroutine get_wall_boundary_neighbours(i, nx, ny)
 
                         endif
 
-                        if(dels .gt. 0.0) then
+                        if(dels .ge. 0.0) then
 
                                 point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
@@ -209,7 +209,7 @@ subroutine get_outer_boundary_neighbours(i, nx, ny)
 
                         endif
 
-                        if(dels .gt. 0.0) then
+                        if(dels .ge. 0.0) then
 
                                 point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 

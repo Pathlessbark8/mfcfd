@@ -66,9 +66,8 @@ module data_structure_mod
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
         integer :: max_res_point
-	real*8  :: cfv
-!	real*8	:: Cl, Cd, Cm
-	real*8	:: total_entropy, total_enstrophy
+	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, cfv
+	real*8  :: total_entropy, total_enstrophy
         integer :: plen
 
         !Parameter file
@@ -106,6 +105,14 @@ module data_structure_mod
 
 !       Restart solution parameter
         integer :: solution_restart
+
+!       solution save parameter
+        integer :: nsave
+
+!       Objective function
+        real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
+        integer :: obj_flag
+
 
 !       No of shapes
         integer :: shapes
@@ -153,8 +160,53 @@ module data_structure_mod
 
                 allocate(point%delta(max_points))
 
+                allocate(Cl(shapes))
+                allocate(Cd(shapes))
+                allocate(Cm(shapes))
+                allocate(cfv(shapes))
+
         end subroutine
 
+        subroutine deallocate_soln()
+                implicit none
+
+                deallocate(point%prim)
+
+                deallocate(point%flux_res)
+
+
+                deallocate(point%q)
+
+                deallocate(point%dq)
+
+
+                deallocate(point%entropy)
+                deallocate(point%vorticity)
+                deallocate(point%vorticity_sqr)
+
+                
+                deallocate(point%xpos_nbhs)
+                deallocate(point%xneg_nbhs)
+                deallocate(point%ypos_nbhs)
+                deallocate(point%yneg_nbhs)
+
+
+                deallocate(point%xpos_conn)
+                deallocate(point%xneg_conn)
+
+
+                deallocate(point%ypos_conn)
+                deallocate(point%yneg_conn)
+
+
+                deallocate(point%delta)
+
+                deallocate(Cl)
+                deallocate(Cd)
+                deallocate(Cm)
+                deallocate(cfv)
+
+        end subroutine
 
         subroutine init_petsc()
                 implicit none
@@ -174,9 +226,6 @@ module data_structure_mod
                 call PetscLogEventRegister('dq_comm',  0,dq_comm,ierr);
                 call PetscLogEventRegister('prim_comm',  0,prim_comm,ierr);
 
-
-
-        if(rank==0) print*,'Set up parallel vectors'
         end subroutine 
 
         subroutine dest_petsc()
