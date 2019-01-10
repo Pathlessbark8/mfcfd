@@ -27,9 +27,14 @@ subroutine readparam()
         aoa = 0.0d0 ! Default aoa
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-aoa',aoa,set,ierr); CHKERRQ(ierr)
+        
         !calculate theta
         theta = aoa*pi/180.d0
 
+        gamma = 1.4d0 ! Default gamma
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-gamma',gamma,set,ierr); CHKERRQ(ierr)
+        
         power = 0.0d0 ! Default power
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-power',power,set,ierr); CHKERRQ(ierr)
@@ -37,6 +42,14 @@ subroutine readparam()
         limiter_flag = 1 ! Default limiter => VK
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-limiter_flag',limiter_flag,set,ierr); CHKERRQ(ierr)
+
+        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                              '-tscheme',string,set,ierr); CHKERRQ(ierr)
+        if(trim(string) == 'explicit')then
+                tscheme = 0
+        else if(trim(string) == 'implicit')then
+                tscheme = 1
+        end if
 
         vl_const = 150.0d0 ! Default VK limiter constant
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -93,14 +106,14 @@ subroutine readparam()
         end if
 
         ! Print paramaters to screen
-        fmt1 = "(5x,a10,i14)"
-        fmt2 = "(5x,a10,e14.4)"
+        fmt1 = "(5x,a11,i14)"
+        fmt2 = "(5x,a11,e14.4)"
         if (rank==0) then
-                write(*,fmt1) 'max_iters  =', max_iters
+                write(*,fmt1) 'max_iters =', max_iters
                 write(*,fmt2) 'cfl   =', cfl
                 write(*,fmt2) 'mach   =', mach
                 write(*,fmt2) 'aoa  =', aoa
-                write(*,fmt1) 'shapes      =', shapes
+                write(*,fmt1) 'shapes  =', shapes
         end if
 
 

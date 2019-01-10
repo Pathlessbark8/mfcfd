@@ -7,7 +7,7 @@ include makefile.in
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o miscellaneous.o readparam.o post_processing.o objective_function.o compute_force_coeffs.o compute_entropy.o compute_enstrophy.o
+objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o miscellaneous.o readparam.o post_processing.o objective_function.o compute_force_coeffs.o compute_entropy.o compute_enstrophy.o 
 
 
 
@@ -48,7 +48,7 @@ generate_connectivity.o: generate_connectivity.F90 data_structure.o
 	$(FC) $(FFLAGS) -c  generate_connectivity.F90
 
 
-fpi_solver.o: fpi_solver.F90 data_structure.o q_variables.o flux_residual.o state_update.o objective_function.o post_processing.o
+fpi_solver.o: fpi_solver.F90 data_structure.o q_variables.o flux_residual.o state_update.o objective_function.o post_processing.o 
 	$(FC) $(FFLAGS) -c fpi_solver.F90
 
 q_variables.o: q_variables.F90 data_structure.o

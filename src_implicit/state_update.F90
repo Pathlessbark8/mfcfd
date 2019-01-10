@@ -36,7 +36,7 @@ module state_update_mod
 
                         temp = U(1)
 
-                        U = U - point%delta(k)*point%flux_res(:,k)
+                        U = U - point%flux_res(:,k)
                         U(3) = 0.d0
 
                         U2_rot = U(2)
@@ -72,7 +72,7 @@ module state_update_mod
                         
                         temp = U(1)
 
-                        U = U - point%delta(k)*point%flux_res(:,k)
+                        U = U - point%flux_res(:,k)
                         
                         U2_rot = U(2)
                         
@@ -113,7 +113,7 @@ module state_update_mod
 
 
                         temp = U(1)
-                        U = U - point%delta(k)*point%flux_res(:,k)
+                        U = U - point%flux_res(:,k)
 
                         U2_rot = U(2)
                         U3_rot = U(3)

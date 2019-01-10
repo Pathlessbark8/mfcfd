@@ -37,7 +37,7 @@ module data_structure_mod
 		real*8, dimension(:,:), allocatable :: prim
 		real*8, dimension(:,:), allocatable :: flux_res
 
-		real*8, dimension(:,:), allocatable :: q
+                real*8, dimension(:,:), allocatable :: q
 		real*8, dimension(:,:,:), allocatable :: dq
 
 		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
@@ -48,6 +48,8 @@ module data_structure_mod
 
                 real*8, dimension(:), allocatable  :: delta
 
+! Implicit data
+                real*8, dimension(:,:), allocatable :: U_old
         end type points
  
         type(points) :: point
@@ -60,7 +62,7 @@ module data_structure_mod
         integer,allocatable,dimension(:,:) :: shape_points_index
 
         !iterations
-        integer*8 :: it
+        integer :: it
 
 
         real*8  :: res_old, res_new, residue, max_res
@@ -78,6 +80,7 @@ module data_structure_mod
 !
         real*8 :: Mach
         real*8 :: aoa
+        real*8 :: gamma
         real*8 :: theta
 
 !       The parameter power is used to specify the weights 
@@ -97,7 +100,7 @@ module data_structure_mod
         real*8 :: VL_CONST  ! Venkatakrishnan limiter constant ..
 
         integer :: initial_conditions_flag
-!       
+
 !       Interior points normal flag ..
 !       If flag is zero => nx = 0.0 and ny = 1.0
 !
@@ -108,6 +111,9 @@ module data_structure_mod
 
 !       solution save parameter
         integer :: nsave
+
+!       Time scheme, explicit or implicit
+        integer :: tscheme
 
 !       Objective function
         real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
@@ -133,6 +139,7 @@ module data_structure_mod
 
                 allocate(point%flux_res(4,max_points))
 
+                allocate(point%U_old(4,max_points))
 
                 allocate(point%q(4,max_points))
 
@@ -173,6 +180,7 @@ module data_structure_mod
                 deallocate(point%prim)
 
                 deallocate(point%flux_res)
+                deallocate(point%U_old)
 
 
                 deallocate(point%q)

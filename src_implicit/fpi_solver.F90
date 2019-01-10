@@ -15,8 +15,9 @@ contains
 
                 implicit none
                 
-                integer*8 :: t
+                integer :: t, i
                 PetscErrorCode :: ierr
+
 
                 call eval_q_variables()
                 
@@ -25,13 +26,16 @@ contains
                 !Update the ghost values from the owned process
 
                 call update_begin_dq_ghost()
+                call func_delta()   
                 call update_end_dq_ghost()
-
 
                 call cal_flux_residual()
 
-                call func_delta()            
-
+                ! Save previous solution
+                do i=1,max_points
+                        call primitive_to_conserved(i, point%nx(i), point%ny(i), point%U_old(:,i))
+                end do
+                
                 call state_update()
 
                 call update_begin_prim_ghost()
