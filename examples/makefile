@@ -2,13 +2,7 @@ ifndef FF_DIR
 	$(error directory not set)
 endif
 
-SRCDIR=$(FF_DIR)/src_mpi
-
-
-
-
-
-
+SRCDIR=$(FF_DIR)/src
 
 
 all: 
@@ -18,6 +12,7 @@ all:
 	cp parameter.F90 src/
 	cd src && make -f makefile execname 
 	mv src/execname .
+	@echo "Built solver"
 
 clean:
 	rm -rf src

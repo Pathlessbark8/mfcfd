@@ -1,7 +1,3 @@
-! flag_1 : 1 -> wall point      -> [2,160]
-!          2 -> interior points -> {1},[161,9440]
-! 	   3 -> outer points    -> [9441,9600]
-
 module data_structure_mod
 #include <petsc/finclude/petscvec.h>
 #include <petsc/finclude/petsclog.h>
@@ -21,7 +17,6 @@ module data_structure_mod
 
         type :: points
 
-!	!	scanned from input file	!	!
 		real*8, dimension(:), allocatable :: x,y
                 integer, dimension(:), allocatable :: local_id
                 integer, dimension(:), allocatable :: global_id
@@ -80,7 +75,6 @@ module data_structure_mod
 !
         real*8 :: Mach
         real*8 :: aoa
-        real*8 :: gamma
         real*8 :: theta
 
 !       The parameter power is used to specify the weights 
@@ -118,7 +112,6 @@ module data_structure_mod
 !       Objective function
         real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
         integer :: obj_flag
-
 
 !       No of shapes
         integer :: shapes

@@ -7,7 +7,7 @@ include makefile.in
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o miscellaneous.o readparam.o post_processing.o objective_function.o compute_force_coeffs.o compute_entropy.o compute_enstrophy.o 
+objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o miscellaneous.o readcase.o post_processing.o objective_function.o compute_force_coeffs.o compute_entropy.o compute_enstrophy.o 
 
 
 
@@ -29,8 +29,8 @@ data_structure.o: data_structure.F90 parameter.o
 parameter.o: parameter.F90 
 	$(FC) $(FFLAGS)  -c  parameter.F90 
 
-readparam.o: readparam.F90 data_structure.o
-	$(FC) $(FFLAGS) -c  readparam.F90 
+readcase.o: readcase.F90 data_structure.o
+	$(FC) $(FFLAGS) -c  readcase.F90 
 
 utilities.o: utilities.F90
 	$(FC) $(FFLAGS) -c  utilities.F90

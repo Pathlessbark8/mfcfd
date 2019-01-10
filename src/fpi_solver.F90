@@ -37,7 +37,7 @@ contains
                 end do
                 
                 call state_update()
-
+                
                 call update_begin_prim_ghost()
                 call update_end_prim_ghost()
 

@@ -6,4 +6,4 @@
 
 3. Copy the makefile from ../
 
-4. Set the parameter.in file 
+4. Set the case.in file 

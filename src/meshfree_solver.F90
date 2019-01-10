@@ -18,7 +18,7 @@ program meshfree_solver
 
 
 !
-        call PetscInitialize('parameter.in', ierr)
+        call PetscInitialize('case.in', ierr)
         if(ierr /= 0) stop "Unable to initialize PETSc"
         call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr)
         call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr)
@@ -34,9 +34,9 @@ program meshfree_solver
 !
         call read_input_point_data()
 
-!       Read the parameter file
+        !       Read the case file
 
-        call readparam()
+        call readcase()
 
 !       Allocate solution variables
 
@@ -54,10 +54,14 @@ program meshfree_solver
         if(rank==0)print*,'solution initialised'
        
 !	Primal fixed point iterative solver ..
-!       
+        
         runtime = MPI_Wtime()
         call q_lskum()
         runtime = MPI_Wtime() - runtime
+
+!       Save solution one last time
+        call print_primal_output()
+
 
 !       destroy petsc vectors and deallocate point/solution vectors
         call dest_petsc()

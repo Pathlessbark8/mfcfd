@@ -20,7 +20,6 @@ contains
 		real*8 :: Gxpd(4), Gxnd(4), Gypd(4), Gynd(4)
 		real*8 :: local_sos, Dp
                 real*8 :: LSxp, LSxn, LSyp, LSyn
-
                 do i = 1, wall_points
 
                         k = wall_points_index(i)

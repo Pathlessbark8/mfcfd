@@ -1,4 +1,4 @@
-subroutine readparam()
+subroutine readcase()
 #include <petsc/finclude/petscsys.h>
         use petscsys
         use data_structure_mod
@@ -8,14 +8,14 @@ subroutine readparam()
         character(len=64)  :: string
         character(len=20)  :: fmt1, fmt2
 
-        if(rank==0) print*,'Reading parameters from parameter.in'
+        if(rank==0) print*,'Reading parameters from case.in'
 
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-cfl',cfl,set,ierr); CHKERRQ(ierr)
 
-        max_iters = 10000 ! Default iterations
+        max_iters = 10000000 ! Default iterations
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-max_iters',max_iters,set,ierr); CHKERRQ(ierr)
 
@@ -31,10 +31,6 @@ subroutine readparam()
         !calculate theta
         theta = aoa*pi/180.d0
 
-        gamma = 1.4d0 ! Default gamma
-        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-gamma',gamma,set,ierr); CHKERRQ(ierr)
-        
         power = 0.0d0 ! Default power
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-power',power,set,ierr); CHKERRQ(ierr)
@@ -47,8 +43,10 @@ subroutine readparam()
                               '-tscheme',string,set,ierr); CHKERRQ(ierr)
         if(trim(string) == 'explicit')then
                 tscheme = 0
+                if (rank==0) print*,"explicit time scheme being used"
         else if(trim(string) == 'implicit')then
                 tscheme = 1
+                if (rank==0) print*,"implicit time scheme being used"
         end if
 
         vl_const = 150.0d0 ! Default VK limiter constant
@@ -74,7 +72,7 @@ subroutine readparam()
                             '-solution_restart',&
                             solution_restart,set,ierr); CHKERRQ(ierr)
 
-        nsave = 0 ! Default : saving solution count
+        nsave = 1000 ! Default : saving solution count
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-nsave',&
                             nsave,set,ierr); CHKERRQ(ierr)
