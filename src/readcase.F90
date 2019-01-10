@@ -19,18 +19,6 @@ subroutine readcase()
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-max_iters',max_iters,set,ierr); CHKERRQ(ierr)
 
-
-        mach = 0.0d0 ! Default mach no
-        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-mach',mach,set,ierr); CHKERRQ(ierr)
-
-        aoa = 0.0d0 ! Default aoa
-        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-aoa',aoa,set,ierr); CHKERRQ(ierr)
-        
-        !calculate theta
-        theta = aoa*pi/180.d0
-
         power = 0.0d0 ! Default power
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-power',power,set,ierr); CHKERRQ(ierr)

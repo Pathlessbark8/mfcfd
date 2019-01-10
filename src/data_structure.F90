@@ -73,10 +73,6 @@ module data_structure_mod
 
         integer :: max_iters
 !
-        real*8 :: Mach
-        real*8 :: aoa
-        real*8 :: theta
-
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
 !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..

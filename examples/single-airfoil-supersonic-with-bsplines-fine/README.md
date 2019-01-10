@@ -1,4 +1,4 @@
-# Two-element airfoil case
+# naca-0012 airfoil case
 
 1. download the point-input file from https://bitbucket.org/srikanthcs05/mfapre/downloads/ 
 
@@ -6,4 +6,4 @@
 
 3. Copy the makefile from ../
 
-4. Set the case.in file 
+4. Set the parameter.in file 

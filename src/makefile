@@ -35,7 +35,7 @@ readcase.o: readcase.F90 data_structure.o
 utilities.o: utilities.F90
 	$(FC) $(FFLAGS) -c  utilities.F90
 
-initial_conditions.o: initial_conditions.F90 data_structure.o
+initial_conditions.o: initial_conditions.F90 data_structure.o parameter.o
 	$(FC) $(FFLAGS) -c  initial_conditions.F90
 
 q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o fpi_solver.o 
