@@ -26,17 +26,16 @@ program meshfree_solver
                 call execute_command_line('mkdir -p solution')
                 call execute_command_line('mkdir -p cp')
         end if
-
-!
-!	Reading the input data ..
-
+        
         totaltime = MPI_Wtime()
-!
-        call read_input_point_data()
 
-        !       Read the case file
+!       Read the case file
 
         call readcase()
+
+!	Reading the input data ..
+
+        call read_input_point_data()
 
 !       Allocate solution variables
 

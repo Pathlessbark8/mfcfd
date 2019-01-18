@@ -69,6 +69,15 @@ subroutine readcase()
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-obj_flag',obj_flag,set,ierr)
 
+        old_format = 0 ! Default : new format
+        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-old_format',&
+                            old_format,set,ierr); CHKERRQ(ierr)
+
+        fo_flag = 1.0 ! Default: second order
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-fo_flag',fo_flag,set,ierr); CHKERRQ(ierr)
+        
         if(obj_flag==0) then
                 if(rank==0)print*,"no objective function chosen"
         elseif(obj_flag==1) then

@@ -105,6 +105,12 @@ module data_structure_mod
 !       Time scheme, explicit or implicit
         integer :: tscheme
 
+!       old format tag
+        integer :: old_format
+
+!       First order flag
+        real*8 :: fo_flag
+
 !       Objective function
         real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
         integer :: obj_flag

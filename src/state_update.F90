@@ -19,7 +19,7 @@ module state_update_mod
 		real*8 :: nx, ny
 		real*8 :: U2_rot, U3_rot
 
-                max_res = 0.0d0	
+                max_res = 0.0d0
                 sum_res_sqr = 0.0d0
 
 
@@ -31,8 +31,6 @@ module state_update_mod
                         ny = point%ny(k)
 
                         call primitive_to_conserved(k, nx, ny, U)
-
-
 
                         temp = U(1)
 
@@ -110,7 +108,6 @@ module state_update_mod
                         ny = point%ny(k)
 
                         call primitive_to_conserved(k, nx, ny, U)
-
 
                         temp = U(1)
                         U = U - point%flux_res(:,k)
@@ -260,8 +257,8 @@ module state_update_mod
 		real*8 :: nx, ny, tx, ty
                 integer :: k
 
-                u1_inf = Mach*dcos(theta)
-                u2_inf = Mach*dsin(theta)
+                u1_inf = q_inf(2)
+                u2_inf = q_inf(3)
 
                 tx = ny
                 ty = -nx

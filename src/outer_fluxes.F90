@@ -15,7 +15,7 @@ contains
 !	This subroutine evaluates the wall flux derivative dGs_pos
 
 
-        subroutine outer_dGx_pos(G, Gd, L, i)
+        subroutine outer_dGx_pos(G, Gd, L, Ud, i)
 
 
                 implicit none
@@ -89,8 +89,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
@@ -135,8 +135,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
 
-                        Ud(:) = U(:)-point%U_old(:,k)
-
                         call FLUX_QUAD_GXIII_D(G_k, G_kd, U, Ud, nx, ny)
                         
                         !call flux_quad_GxIII(G_k, nx, ny, u1, u2, rho, pr)
@@ -161,7 +159,7 @@ contains
 
 !	This subroutine evaluates the wall flux derivative dGs_neg
 
-        subroutine outer_dGx_neg(G, Gd, L, i)
+        subroutine outer_dGx_neg(G, Gd, L, Ud, i)
 
 
                 implicit none
@@ -237,8 +235,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
@@ -283,8 +281,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
 
-                        Ud(:) = U(:)-point%U_old(:,k)
-                        
                         call FLUX_QUAD_GXIV_D(G_k, G_kd, U, Ud, nx, ny)
                        
                         !call flux_quad_GxIV(G_k, nx, ny, u1, u2, rho, pr)
@@ -308,7 +304,7 @@ contains
         end subroutine
 
 
-        subroutine outer_dGy_pos(G, Gd, L, i)
+        subroutine outer_dGy_pos(G, Gd, L, Ud, i)
         
         
                 implicit none
@@ -383,8 +379,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
         
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
         
         
                         if(limiter_flag .eq. 1) then 
@@ -430,8 +426,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
         
-                        Ud(:) = U(:)-point%U_old(:,k)
-                        
                         call FLUX_GYP_D(G_k, G_kd, U, Ud, nx, ny)
                         
                         !call flux_Gyp(G_k, nx, ny, u1, u2, rho, pr)

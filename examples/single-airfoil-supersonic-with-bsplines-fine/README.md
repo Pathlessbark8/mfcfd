@@ -1,4 +1,4 @@
-# naca-0012 airfoil case
+# Two-element airfoil case
 
 1. download the point-input file from https://bitbucket.org/srikanthcs05/mfapre/downloads/ 
 

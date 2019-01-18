@@ -15,10 +15,23 @@ contains
 
                 implicit none
 
+                integer :: i
+
                 if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-                call compute_normals()
+                if(old_format == 0) call compute_normals()
                 call generate_connectivity()
+
+
+                ! Set U_old to U for first iteration
+                do i=1,max_points
+                        point%U_old(1,i) = point%prim(1,i)
+                        point%U_old(2,i) = point%prim(1,i)*point%prim(2,i)
+                        point%U_old(3,i) = point%prim(1,i)*point%prim(3,i)
+                        point%U_old(4,i) = 2.5*point%prim(4,i) + 0.5*point%prim(1,i)*&
+                                &(point%prim(2,i)*point%prim(2,i) +&
+                                &point%prim(3,i)*point%prim(3,i))
+                end do
 
         
                 do it = 1, max_iters

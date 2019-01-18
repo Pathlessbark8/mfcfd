@@ -16,7 +16,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_pos
 
 
-        subroutine interior_dGx_pos(G, Gd, L, i)
+        subroutine interior_dGx_pos(G, Gd, L, Ud, i)
 
 
                 implicit none
@@ -87,8 +87,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
@@ -134,8 +134,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
 
-                        Ud(:) = U(:)-point%U_old(:,k)
-
                         call FLUX_GXP_D(G_k, G_kd, U, Ud, nx, ny)
         
                         !call flux_Gxp(G_k, nx, ny, u1, u2, rho, pr)
@@ -163,7 +161,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_neg
 
 
-        subroutine interior_dGx_neg(G, Gd, L, i)
+        subroutine interior_dGx_neg(G, Gd, L, Ud, i)
 
 
                 implicit none
@@ -236,8 +234,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
@@ -285,8 +283,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
 
-                        Ud(:) = U(:)-point%U_old(:,k)
-                       
                         call FLUX_GXN_D(G_k, G_kd, U, Ud, nx, ny)
 
                         !call flux_Gxn(G_k, nx, ny, u1, u2, rho, pr)
@@ -312,7 +308,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_neg
 !
 !
-        subroutine interior_dGy_pos(G, Gd, L, i)
+        subroutine interior_dGy_pos(G, Gd, L, Ud, i)
 
 
                 implicit none
@@ -385,8 +381,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         if(limiter_flag .eq. 1) then 
                                 call venkat_limiter(qtilde_i, phi_i, i)
@@ -431,8 +427,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
 
-                        Ud(:) = U(:)-point%U_old(:,k)
-                       
                         call FLUX_GYP_D(G_k, G_kd, U, Ud, nx, ny)
 
                         !call flux_Gyp(G_k, nx, ny, u1, u2, rho, pr)
@@ -459,7 +453,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_neg
 
 
-        subroutine interior_dGy_neg(G, Gd, L, i)
+        subroutine interior_dGy_neg(G, Gd, L, Ud, i)
 
 
                 implicit none
@@ -532,8 +526,8 @@ contains
                         sum_delx = sum_delx + dels_weights
                         sum_dely = sum_dely + deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*fo_flag*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*fo_flag*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         if(limiter_flag .eq. 1) then 
@@ -579,8 +573,6 @@ contains
                         U(3) = rho*u2
                         U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
 
-                        Ud(:) = U(:)-point%U_old(:,k)
-                       
                         call FLUX_GYN_D(G_k, G_kd, U, Ud, nx, ny)
 
                         !call flux_Gyn(G_k, nx, ny, u1, u2, rho, pr)
