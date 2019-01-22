@@ -65,7 +65,7 @@ module generate_connectivity_mod
                         dels = delx*tx + dely*ty
                         deln = delx*nx + dely*ny
 
-                        if(dels .le. 0.0) then
+                        if(dels .le. 0.0d0) then
 
                                 point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
 
@@ -74,7 +74,7 @@ module generate_connectivity_mod
 
                         endif
 
-                        if(dels .ge. 0.0) then
+                        if(dels .ge. 0.0d0) then
                         
                                 point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
@@ -83,7 +83,7 @@ module generate_connectivity_mod
 
                         endif
 
-                        if(deln .le. 0.0) then
+                        if(deln .le. 0.0d0) then
 
                                 point%ypos_nbhs(i) = point%ypos_nbhs(i) + 1;
 
@@ -92,7 +92,7 @@ module generate_connectivity_mod
 
                         endif
         
-                        if(deln .ge. 0.0) then
+                        if(deln .ge. 0.0d0) then
 
                                 point%yneg_nbhs(i) = point%yneg_nbhs(i) + 1;
 
@@ -139,7 +139,7 @@ subroutine get_wall_boundary_neighbours(i, nx, ny)
                         dels = delx*tx + dely*ty
                         deln = delx*nx + dely*ny
 
-                        if(dels .le. 0.0) then
+                        if(dels .le. 0.0d0) then
 
                                 point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
 
@@ -148,7 +148,7 @@ subroutine get_wall_boundary_neighbours(i, nx, ny)
 
                         endif
 
-                        if(dels .ge. 0.0) then
+                        if(dels .ge. 0.0d0) then
 
                                 point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 
@@ -200,7 +200,7 @@ subroutine get_outer_boundary_neighbours(i, nx, ny)
                         dels = delx*tx + dely*ty
                         deln = delx*nx + dely*ny
 
-                        if(dels .le. 0.0) then
+                        if(dels .le. 0.0d0) then
 
                                 point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
 
@@ -209,7 +209,7 @@ subroutine get_outer_boundary_neighbours(i, nx, ny)
 
                         endif
 
-                        if(dels .ge. 0.0) then
+                        if(dels .ge. 0.0d0) then
 
                                 point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
 

@@ -218,10 +218,10 @@ module data_structure_mod
                 pghost = pghost - 1
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
-			&PETSC_DECIDE,ghost_points,pghost,point%dq(1,1,1),p_dq,ierr)
+                        &PETSC_DECIDE,ghost_points,pghost,point%dq(1,1,1),p_dq,ierr)
                 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
-			&PETSC_DECIDE,ghost_points,pghost,point%prim(1,1),p_prim,ierr)
+                        &PETSC_DECIDE,ghost_points,pghost,point%prim(1,1),p_prim,ierr)
 
                 call VecGetSize(p_prim,plen,ierr)
                 plen = plen/4

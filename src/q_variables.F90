@@ -23,9 +23,9 @@ contains
                                                 u2 = point%prim(3,k)
                                                 pr = point%prim(4,k)
 
-                                beta = 0.5*rho/pr
+                                beta = 0.5d0*rho/pr
 
-                                                point%q(1,k) = dlog(rho) + (dlog(beta)*2.5) - beta*(u1*u1 + u2*u2)
+                                                point%q(1,k) = dlog(rho) + (dlog(beta)*2.5d0) - beta*(u1*u1 + u2*u2)
 
                                                 two_times_beta = 2.0d0*beta
 
@@ -134,7 +134,7 @@ contains
                                 temp1 = q1 + beta*(u1*u1 + u2*u2)
                                 temp2 = temp1 - (dlog(beta)/(gamma-1))
 
-                                rho = exp(temp2)
+                                rho = dexp(temp2)
                                 pr = rho*temp
 
                 end subroutine 

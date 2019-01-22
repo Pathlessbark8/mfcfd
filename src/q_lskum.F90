@@ -28,7 +28,7 @@ contains
                         point%U_old(1,i) = point%prim(1,i)
                         point%U_old(2,i) = point%prim(1,i)*point%prim(2,i)
                         point%U_old(3,i) = point%prim(1,i)*point%prim(3,i)
-                        point%U_old(4,i) = 2.5*point%prim(4,i) + 0.5*point%prim(1,i)*&
+                        point%U_old(4,i) = 2.5d0*point%prim(4,i) + 0.5d0*point%prim(1,i)*&
                                 &(point%prim(2,i)*point%prim(2,i) +&
                                 &point%prim(3,i)*point%prim(3,i))
                 end do

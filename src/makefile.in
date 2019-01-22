@@ -14,6 +14,8 @@ CC = gcc
 #FFLAGS = -O3 -xHost -ipo -I$(PETSC_DIR)/include
 
 
+#flags for gcc(profiling)
+#FFLAGS =-march=native -O3 -pg -I$(PETSC_DIR)/include
 #flags for gcc
 FFLAGS =-march=native -O3 -I$(PETSC_DIR)/include
 

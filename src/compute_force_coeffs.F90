@@ -28,7 +28,7 @@ module compute_force_coeffs_mod
                         OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
 
-                        temp = 0.5*rho_inf*Mach*Mach
+                        temp = 0.5d0*rho_inf*Mach*Mach
 
                         H = 0.d0
                         V = 0.d0
@@ -56,7 +56,7 @@ module compute_force_coeffs_mod
                                 ds2 = (rx - mx)**2 + (ry - my)**2
                                 ds2 = dsqrt(ds2)
 
-                                ds = 0.5*(ds1 + ds2)
+                                ds = 0.5d0*(ds1 + ds2)
 
 
                                 nx = point%nx(m)
@@ -71,7 +71,7 @@ module compute_force_coeffs_mod
                                 V(point%flag_2(m)+1) = V(point%flag_2(m)+1) + cp*ny*ds
                                         
                                 pitch_mom(point%flag_2(m)+1) = pitch_mom(point%flag_2(m)+1)&
-                                        + (-cp*ny*ds*(mx - 0.25) + cp*nx*ds*(my))
+                                        + (-cp*ny*ds*(mx - 0.25d0) + cp*nx*ds*(my))
 
                         enddo
 

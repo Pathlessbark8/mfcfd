@@ -30,7 +30,7 @@ contains
                         U(1) = point%prim(1,k)
                         U(2) = point%prim(1,k)*point%prim(2,k)
                         U(3) = point%prim(1,k)*point%prim(3,k)
-                        U(4) = 2.5*point%prim(4,k) + 0.5*point%prim(1,k)*&
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
                                 &(point%prim(2,k)*point%prim(2,k) +&
                                 &point%prim(3,k)*point%prim(3,k))
 
@@ -78,7 +78,7 @@ contains
                         U(1) = point%prim(1,k)
                         U(2) = point%prim(1,k)*point%prim(2,k)
                         U(3) = point%prim(1,k)*point%prim(3,k)
-                        U(4) = 2.5*point%prim(4,k) + 0.5*point%prim(1,k)*&
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
                                 &(point%prim(2,k)*point%prim(2,k) +&
                                 &point%prim(3,k)*point%prim(3,k))
 
@@ -121,7 +121,7 @@ contains
                         U(1) = point%prim(1,k)
                         U(2) = point%prim(1,k)*point%prim(2,k)
                         U(3) = point%prim(1,k)*point%prim(3,k)
-                        U(4) = 2.5*point%prim(4,k) + 0.5*point%prim(1,k)*&
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
                                 &(point%prim(2,k)*point%prim(2,k) +&
                                 &point%prim(3,k)*point%prim(3,k))
                         Ud = U(:) - point%U_old(:,k)

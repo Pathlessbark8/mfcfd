@@ -135,7 +135,7 @@ contains
                         U(1) = rho
                         U(2) = rho*u1
                         U(3) = rho*u2
-                        U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
+                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
 
                         call FLUX_QUAD_GXII_D(G_k, G_kd, U, Ud, nx, ny)
@@ -280,7 +280,7 @@ end subroutine
                         U(1) = rho
                         U(2) = rho*u1
                         U(3) = rho*u2
-                        U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
+                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
                         call FLUX_QUAD_GXI_D(G_k, G_kd, U, Ud, nx, ny)
                        
@@ -419,7 +419,7 @@ end subroutine
                         U(1) = rho
                         U(2) = rho*u1
                         U(3) = rho*u2
-                        U(4) = 2.5*pr + 0.5*rho*(u1*u1 + u2*u2)
+                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
                         call FLUX_GYN_D(G_k, G_kd, U, Ud, nx, ny)
                         

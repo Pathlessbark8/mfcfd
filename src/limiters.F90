@@ -90,12 +90,12 @@ contains
                                 call smallest_dist(k, ds)
 
                                 epsi = VL_CONST*ds
-                                epsi = epsi**3.0
+                                epsi = epsi**3.0d0
 
                                 num = (del_pos*del_pos) + (epsi*epsi)  ! Numerator .. 
-                                num = num*del_neg + 2.0*del_neg*del_neg*del_pos
+                                num = num*del_neg + 2.0d0*del_neg*del_neg*del_pos
 
-                                den = del_pos*del_pos + 2.0*del_neg*del_neg ! Denominator ..
+                                den = del_pos*del_pos + 2.0d0*del_neg*del_neg ! Denominator ..
                                 den = den + del_neg*del_pos + epsi*epsi
                                 den = den*del_neg
 

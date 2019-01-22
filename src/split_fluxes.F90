@@ -22,10 +22,10 @@ contains
                 ut = u1*tx + u2*ty
                 un = u1*nx + u2*ny
 
-                beta = 0.5*rho/pr
+                beta = 0.5d0*rho/pr
                 S1 = ut*dsqrt(beta) 
-                B1 = 0.5*dexp(-S1*S1)/dsqrt(pi*beta)
-                A1pos = 0.5*(1 + derf(S1))     
+                B1 = 0.5d0*dexp(-S1*S1)/dsqrt(pi*beta)
+                A1pos = 0.5d0*(1.0d0 + derf(S1))     
 
                 pr_by_rho = pr/rho
                 u_sqr = ut*ut + un*un
@@ -42,9 +42,9 @@ contains
                 Gxp(3) = rho*temp1
 
                 temp1 = (7.0d0*pr_by_rho) + u_sqr
-                temp2 = 0.5*ut*temp1*A1pos 
+                temp2 = 0.5d0*ut*temp1*A1pos 
                 temp1 = (6.0d0*pr_by_rho) + u_sqr
-                Gxp(4) = rho*(temp2 + 0.5*temp1*B1)
+                Gxp(4) = rho*(temp2 + 0.5d0*temp1*B1)
 
 
         end
@@ -67,10 +67,10 @@ contains
                 ut = u1*tx + u2*ty
                 un = u1*nx + u2*ny
 
-                beta = 0.5*rho/pr
+                beta = 0.5d0*rho/pr
                 S1 = ut*dsqrt(beta) 
-                B1 = 0.5*dexp(-S1*S1)/dsqrt(pi*beta)
-                A1neg = 0.5*(1 - derf(S1))     
+                B1 = 0.5d0*dexp(-S1*S1)/dsqrt(pi*beta)
+                A1neg = 0.5d0*(1.0d0 - derf(S1))     
 
                 pr_by_rho = pr/rho
                 u_sqr = ut*ut + un*un
@@ -87,9 +87,9 @@ contains
                 Gxn(3) = rho*temp1
 
                 temp1 = (7.0d0*pr_by_rho) + u_sqr
-                temp2 = 0.5*ut*temp1*A1neg 
+                temp2 = 0.5d0*ut*temp1*A1neg 
                 temp1 = (6.0d0*pr_by_rho) + u_sqr
-                Gxn(4) = rho*(temp2 - 0.5*temp1*B1)
+                Gxn(4) = rho*(temp2 - 0.5d0*temp1*B1)
 
 
       end
@@ -112,10 +112,10 @@ contains
                 ut = u1*tx + u2*ty
                 un = u1*nx + u2*ny
 
-                beta = 0.5*rho/pr
+                beta = 0.5d0*rho/pr
                 S2 = un*dsqrt(beta) 
-                B2 = 0.5*dexp(-S2*S2)/dsqrt(pi*beta)
-                A2pos = 0.5*(1 + derf(S2))     
+                B2 = 0.5d0*dexp(-S2*S2)/dsqrt(pi*beta)
+                A2pos = 0.5d0*(1.0d0 + derf(S2))     
 
                 pr_by_rho = pr/rho
                 u_sqr = ut*ut + un*un
@@ -132,9 +132,9 @@ contains
                 Gyp(2) = rho*temp1
 
                 temp1 = (7.0d0*pr_by_rho) + u_sqr
-                temp2 = 0.5*un*temp1*A2pos 
+                temp2 = 0.5d0*un*temp1*A2pos 
                 temp1 = (6.0d0*pr_by_rho) + u_sqr
-                Gyp(4) = rho*(temp2 + 0.5*temp1*B2)
+                Gyp(4) = rho*(temp2 + 0.5d0*temp1*B2)
 
 
       end
@@ -159,10 +159,10 @@ contains
                 ut = u1*tx + u2*ty
                 un = u1*nx + u2*ny
 
-                beta = 0.5*rho/pr
+                beta = 0.5d0*rho/pr
                 S2 = un*dsqrt(beta) 
-                B2 = 0.5*dexp(-S2*S2)/dsqrt(pi*beta)
-                A2neg = 0.5*(1 - derf(S2))     
+                B2 = 0.5d0*dexp(-S2*S2)/dsqrt(pi*beta)
+                A2neg = 0.5d0*(1.0d0 - derf(S2))     
 
                 pr_by_rho = pr/rho
                 u_sqr = ut*ut + un*un
@@ -179,9 +179,9 @@ contains
                 Gyn(2) = rho*temp1
 
                 temp1 = (7.0d0*pr_by_rho) + u_sqr
-                temp2 = 0.5*un*temp1*A2neg 
+                temp2 = 0.5d0*un*temp1*A2neg 
                 temp1 = (6.0d0*pr_by_rho) + u_sqr
-                Gyn(4) = rho*(temp2 - 0.5*temp1*B2)
+                Gyn(4) = rho*(temp2 - 0.5d0*temp1*B2)
 
 
       end
@@ -225,16 +225,16 @@ contains
           u1 = u(2)/u(1)
           u2d = (ud(3)*u(1)-u(3)*ud(1))/u(1)**2
           u2 = u(3)/u(1)
-          prd = (ud(4)-0.5*(2*u(2)*ud(2)+2*u(3)*ud(3))/u(1)+0.5*ud(1)*(u(2)**2+u&
-&   (3)**2)/u(1)**2)/2.5
-          pr = (u(4)-0.5/u(1)*(u(2)**2+u(3)**2))/2.5
+          prd = (ud(4)-0.5d0*(2.0d0*u(2)*ud(2)+2.0d0*u(3)*ud(3))/u(1)+0.5d0*ud(1)*(u(2)**2+u&
+&   (3)**2)/u(1)**2)/2.5d0
+          pr = (u(4)-0.5d0/u(1)*(u(2)**2+u(3)**2))/2.5d0
 !
           utd = tx*u1d + ty*u2d
           ut = u1*tx + u2*ty
           und = nx*u1d + ny*u2d
           un = u1*nx + u2*ny
-          betad = (0.5*rhod*pr-0.5*rho*prd)/pr**2
-          beta = 0.5*rho/pr
+          betad = (0.5d0*rhod*pr-0.5d0*rho*prd)/pr**2
+          beta = 0.5d0*rho/pr
           IF (beta .EQ. 0.0) THEN
             result1d = 0.D0
           ELSE
@@ -245,22 +245,22 @@ contains
           s1 = ut*result1
           arg1d = pi*betad
           arg1 = pi*beta
-          IF (arg1 .EQ. 0.0) THEN
+          IF (arg1 .EQ. 0.0d0) THEN
             result1d = 0.D0
           ELSE
             result1d = arg1d/(2.D0*DSQRT(arg1))
           END IF
           result1 = DSQRT(arg1)
-          b1d = (-(0.5*(s1d*s1+s1*s1d)*DEXP(-(s1*s1))*result1)-0.5*DEXP(-(s1*s1)&
+          b1d = (-(0.5d0*(s1d*s1+s1*s1d)*DEXP(-(s1*s1))*result1)-0.5d0*DEXP(-(s1*s1)&
         &   )*result1d)/result1**2
-          b1 = 0.5*DEXP(-(s1*s1))/result1
+          b1 = 0.5d0*DEXP(-(s1*s1))/result1
         !  result10d = DERF_D(s1, s1d, result10)
           
           result10d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
           result10 = derf(s1)
           
-          a1posd = 0.5*result10d
-          a1pos = 0.5*(1+result10)
+          a1posd = 0.5d0*result10d
+          a1pos = 0.5d0*(1.d0+result10)
           pr_by_rhod = (prd*rho-pr*rhod)/rho**2
           pr_by_rho = pr/rho
           u_sqrd = utd*ut + ut*utd + und*un + un*und
@@ -281,13 +281,13 @@ contains
           gxp(3) = rho*temp1
           temp1d = 7.0d0*pr_by_rhod + u_sqrd
           temp1 = 7.0d0*pr_by_rho + u_sqr
-          temp2d = 0.5*((utd*temp1+ut*temp1d)*a1pos+ut*temp1*a1posd)
-          temp2 = 0.5*ut*temp1*a1pos
+          temp2d = 0.5d0*((utd*temp1+ut*temp1d)*a1pos+ut*temp1*a1posd)
+          temp2 = 0.5d0*ut*temp1*a1pos
           temp1d = 6.0d0*pr_by_rhod + u_sqrd
           temp1 = 6.0d0*pr_by_rho + u_sqr
-          gxpd(4) = rhod*(temp2+0.5*temp1*b1) + rho*(temp2d+0.5*(temp1d*b1+temp1&
+          gxpd(4) = rhod*(temp2+0.5d0*temp1*b1) + rho*(temp2d+0.5d0*(temp1d*b1+temp1&
         &   *b1d))
-          gxp(4) = rho*(temp2+0.5*temp1*b1)
+          gxp(4) = rho*(temp2+0.5d0*temp1*b1)
         END SUBROUTINE FLUX_GXP_D
         
         !        Generated by TAPENADE     (INRIA, Ecuador team)
@@ -329,16 +329,16 @@ contains
           u1 = u(2)/u(1)
           u2d = (ud(3)*u(1)-u(3)*ud(1))/u(1)**2
           u2 = u(3)/u(1)
-          prd = (ud(4)-0.5*(2*u(2)*ud(2)+2*u(3)*ud(3))/u(1)+0.5*ud(1)*(u(2)**2+u&
-&   (3)**2)/u(1)**2)/2.5
-          pr = (u(4)-0.5/u(1)*(u(2)**2+u(3)**2))/2.5
+          prd = (ud(4)-0.5d0*(2.d0*u(2)*ud(2)+2.0d0*u(3)*ud(3))/u(1)+0.5d0*ud(1)*(u(2)**2+u&
+&   (3)**2)/u(1)**2)/2.5d0
+          pr = (u(4)-0.5d0/u(1)*(u(2)**2+u(3)**2))/2.5d0
           utd = tx*u1d + ty*u2d
           ut = u1*tx + u2*ty
           und = nx*u1d + ny*u2d
           un = u1*nx + u2*ny
-          betad = (0.5*rhod*pr-0.5*rho*prd)/pr**2
-          beta = 0.5*rho/pr
-          IF (beta .EQ. 0.0) THEN
+          betad = (0.5d0*rhod*pr-0.5d0*rho*prd)/pr**2
+          beta = 0.5d0*rho/pr
+          IF (beta .EQ. 0.0d0) THEN
             result1d = 0.D0
           ELSE
             result1d = betad/(2.D0*DSQRT(beta))
@@ -348,22 +348,22 @@ contains
           s1 = ut*result1
           arg1d = pi*betad
           arg1 = pi*beta
-          IF (arg1 .EQ. 0.0) THEN
+          IF (arg1 .EQ. 0.0d0) THEN
             result1d = 0.D0
           ELSE
             result1d = arg1d/(2.D0*DSQRT(arg1))
           END IF
           result1 = DSQRT(arg1)
-          b1d = (-(0.5*(s1d*s1+s1*s1d)*DEXP(-(s1*s1))*result1)-0.5*DEXP(-(s1*s1)&
+          b1d = (-(0.5d0*(s1d*s1+s1*s1d)*DEXP(-(s1*s1))*result1)-0.5d0*DEXP(-(s1*s1)&
         &   )*result1d)/result1**2
-          b1 = 0.5*DEXP(-(s1*s1))/result1
+          b1 = 0.5d0*DEXP(-(s1*s1))/result1
         !  result10d = DERF_D(s1, s1d, result10)
           
           result10d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
           result10 = derf(s1)
         
-          a1negd = -(0.5*result10d)
-          a1neg = 0.5*(1-result10)
+          a1negd = -(0.5d0*result10d)
+          a1neg = 0.5d0*(1.d0-result10)
           pr_by_rhod = (prd*rho-pr*rhod)/rho**2
           pr_by_rho = pr/rho
           u_sqrd = utd*ut + ut*utd + und*un + un*und
@@ -384,13 +384,13 @@ contains
           gxn(3) = rho*temp1
           temp1d = 7.0d0*pr_by_rhod + u_sqrd
           temp1 = 7.0d0*pr_by_rho + u_sqr
-          temp2d = 0.5*((utd*temp1+ut*temp1d)*a1neg+ut*temp1*a1negd)
-          temp2 = 0.5*ut*temp1*a1neg
+          temp2d = 0.5d0*((utd*temp1+ut*temp1d)*a1neg+ut*temp1*a1negd)
+          temp2 = 0.5d0*ut*temp1*a1neg
           temp1d = 6.0d0*pr_by_rhod + u_sqrd
           temp1 = 6.0d0*pr_by_rho + u_sqr
-          gxnd(4) = rhod*(temp2-0.5*temp1*b1) + rho*(temp2d-0.5*(temp1d*b1+temp1&
+          gxnd(4) = rhod*(temp2-0.5d0*temp1*b1) + rho*(temp2d-0.5d0*(temp1d*b1+temp1&
         &   *b1d))
-          gxn(4) = rho*(temp2-0.5*temp1*b1)
+          gxn(4) = rho*(temp2-0.5d0*temp1*b1)
         END SUBROUTINE FLUX_GXN_D
         
         !        Generated by TAPENADE     (INRIA, Ecuador team)
@@ -432,16 +432,16 @@ contains
           u1 = u(2)/u(1)
           u2d = (ud(3)*u(1)-u(3)*ud(1))/u(1)**2
           u2 = u(3)/u(1)
-          prd = (ud(4)-0.5*(2*u(2)*ud(2)+2*u(3)*ud(3))/u(1)+0.5*ud(1)*(u(2)**2+u&
-&   (3)**2)/u(1)**2)/2.5
-          pr = (u(4)-0.5/u(1)*(u(2)**2+u(3)**2))/2.5
+          prd = (ud(4)-0.5d0*(2.d0*u(2)*ud(2)+2.d0*u(3)*ud(3))/u(1)+0.5d0*ud(1)*(u(2)**2+u&
+&   (3)**2)/u(1)**2)/2.5d0
+          pr = (u(4)-0.5d0/u(1)*(u(2)**2+u(3)**2))/2.5d0
           utd = tx*u1d + ty*u2d
           ut = u1*tx + u2*ty
           und = nx*u1d + ny*u2d
           un = u1*nx + u2*ny
-          betad = (0.5*rhod*pr-0.5*rho*prd)/pr**2
-          beta = 0.5*rho/pr
-          IF (beta .EQ. 0.0) THEN
+          betad = (0.5d0*rhod*pr-0.5d0*rho*prd)/pr**2
+          beta = 0.5d0*rho/pr
+          IF (beta .EQ. 0.0d0) THEN
             result1d = 0.D0
           ELSE
             result1d = betad/(2.D0*DSQRT(beta))
@@ -457,16 +457,16 @@ contains
             result1d = arg1d/(2.D0*DSQRT(arg1))
           END IF
           result1 = DSQRT(arg1)
-          b2d = (-(0.5*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5*DEXP(-(s2*s2)&
+          b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(s2*s2)&
         &   )*result1d)/result1**2
-          b2 = 0.5*DEXP(-(s2*s2))/result1
+          b2 = 0.5d0*DEXP(-(s2*s2))/result1
         !  result10d = DERF_D(s2, s2d, result10)
         
           result10d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
           result10 = derf(s2)
         
-          a2posd = 0.5*result10d
-          a2pos = 0.5*(1+result10)
+          a2posd = 0.5d0*result10d
+          a2pos = 0.5d0*(1.0d0+result10)
           pr_by_rhod = (prd*rho-pr*rhod)/rho**2
           pr_by_rho = pr/rho
           u_sqrd = utd*ut + ut*utd + und*un + un*und
@@ -487,13 +487,13 @@ contains
           gyp(2) = rho*temp1
           temp1d = 7.0d0*pr_by_rhod + u_sqrd
           temp1 = 7.0d0*pr_by_rho + u_sqr
-          temp2d = 0.5*((und*temp1+un*temp1d)*a2pos+un*temp1*a2posd)
-          temp2 = 0.5*un*temp1*a2pos
+          temp2d = 0.5d0*((und*temp1+un*temp1d)*a2pos+un*temp1*a2posd)
+          temp2 = 0.5d0*un*temp1*a2pos
           temp1d = 6.0d0*pr_by_rhod + u_sqrd
           temp1 = 6.0d0*pr_by_rho + u_sqr
-          gypd(4) = rhod*(temp2+0.5*temp1*b2) + rho*(temp2d+0.5*(temp1d*b2+temp1&
+          gypd(4) = rhod*(temp2+0.5d0*temp1*b2) + rho*(temp2d+0.5d0*(temp1d*b2+temp1&
         &   *b2d))
-          gyp(4) = rho*(temp2+0.5*temp1*b2)
+          gyp(4) = rho*(temp2+0.5d0*temp1*b2)
         END SUBROUTINE FLUX_GYP_D
         
         !        Generated by TAPENADE     (INRIA, Ecuador team)
@@ -535,16 +535,16 @@ contains
           u1 = u(2)/u(1)
           u2d = (ud(3)*u(1)-u(3)*ud(1))/u(1)**2
           u2 = u(3)/u(1)
-          prd = (ud(4)-0.5*(2*u(2)*ud(2)+2*u(3)*ud(3))/u(1)+0.5*ud(1)*(u(2)**2+u&
-&   (3)**2)/u(1)**2)/2.5
-          pr = (u(4)-0.5/u(1)*(u(2)**2+u(3)**2))/2.5
+          prd = (ud(4)-0.5d0*(2.0d0*u(2)*ud(2)+2.0d0*u(3)*ud(3))/u(1)+0.5d0*ud(1)*(u(2)**2+u&
+&   (3)**2)/u(1)**2)/2.5d0
+          pr = (u(4)-0.5d0/u(1)*(u(2)**2+u(3)**2))/2.5d0
           utd = tx*u1d + ty*u2d
           ut = u1*tx + u2*ty
           und = nx*u1d + ny*u2d
           un = u1*nx + u2*ny
-          betad = (0.5*rhod*pr-0.5*rho*prd)/pr**2
-          beta = 0.5*rho/pr
-          IF (beta .EQ. 0.0) THEN
+          betad = (0.5d0*rhod*pr-0.5d0*rho*prd)/pr**2
+          beta = 0.5d0*rho/pr
+          IF (beta .EQ. 0.0d0) THEN
             result1d = 0.D0
           ELSE
             result1d = betad/(2.D0*DSQRT(beta))
@@ -554,22 +554,22 @@ contains
           s2 = un*result1
           arg1d = pi*betad
           arg1 = pi*beta
-          IF (arg1 .EQ. 0.0) THEN
+          IF (arg1 .EQ. 0.0d0) THEN
             result1d = 0.D0
           ELSE
             result1d = arg1d/(2.D0*DSQRT(arg1))
           END IF
           result1 = DSQRT(arg1)
-          b2d = (-(0.5*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5*DEXP(-(s2*s2)&
+          b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(s2*s2)&
         &   )*result1d)/result1**2
-          b2 = 0.5*DEXP(-(s2*s2))/result1
+          b2 = 0.5d0*DEXP(-(s2*s2))/result1
         !  result10d = DERF_D(s2, s2d, result10)
         
           result10d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
           result10 = derf(s2)
         
-          a2negd = -(0.5*result10d)
-          a2neg = 0.5*(1-result10)
+          a2negd = -(0.5d0*result10d)
+          a2neg = 0.5d0*(1.0d0-result10)
           pr_by_rhod = (prd*rho-pr*rhod)/rho**2
           pr_by_rho = pr/rho
           u_sqrd = utd*ut + ut*utd + und*un + un*und
@@ -590,13 +590,13 @@ contains
           gyn(2) = rho*temp1
           temp1d = 7.0d0*pr_by_rhod + u_sqrd
           temp1 = 7.0d0*pr_by_rho + u_sqr
-          temp2d = 0.5*((und*temp1+un*temp1d)*a2neg+un*temp1*a2negd)
-          temp2 = 0.5*un*temp1*a2neg
+          temp2d = 0.5d0*((und*temp1+un*temp1d)*a2neg+un*temp1*a2negd)
+          temp2 = 0.5d0*un*temp1*a2neg
           temp1d = 6.0d0*pr_by_rhod + u_sqrd
           temp1 = 6.0d0*pr_by_rho + u_sqr
-          gynd(4) = rhod*(temp2-0.5*temp1*b2) + rho*(temp2d-0.5*(temp1d*b2+temp1&
+          gynd(4) = rhod*(temp2-0.5d0*temp1*b2) + rho*(temp2d-0.5d0*(temp1d*b2+temp1&
         &   *b2d))
-          gyn(4) = rho*(temp2-0.5*temp1*b2)
+          gyn(4) = rho*(temp2-0.5d0*temp1*b2)
         END SUBROUTINE FLUX_GYN_D
 
 

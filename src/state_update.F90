@@ -55,7 +55,7 @@ module state_update_mod
                         temp = 1.0d0/U(1)
                         point%prim(2,k) = U(2)*temp
                         point%prim(3,k) = U(3)*temp
-                        point%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        point%prim(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
 
                 enddo
 
@@ -96,7 +96,7 @@ module state_update_mod
                         temp = 1.0d0/U(1)
                         point%prim(2,k) = U(2)*temp
                         point%prim(3,k) = U(3)*temp
-                        point%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        point%prim(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
 
                 enddo
 
@@ -131,7 +131,7 @@ module state_update_mod
                         point%prim(2,k) = U(2)*temp
                         point%prim(3,k) = U(3)*temp
 
-                        point%prim(4,k) = 0.4*U(4) - (0.2*temp)*(U(2)*U(2) + U(3)*U(3))
+                        point%prim(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
         
                 enddo
 
@@ -157,7 +157,7 @@ module state_update_mod
                 U(1) = rho 
                 temp1 = rho*point%prim(2,k)
                 temp2 = rho*point%prim(3,k)
-                U(4) = 2.5*point%prim(4,k) + 0.5*(temp1*temp1 + temp2*temp2)/rho
+                U(4) = 2.5d0*point%prim(4,k) + 0.5d0*(temp1*temp1 + temp2*temp2)/rho
 
                 U(2) = temp1*ny - temp2*nx
                 U(3) = temp1*nx + temp2*ny
@@ -181,9 +181,9 @@ module state_update_mod
                 point%prim(2,k) = U(2)*temp
                 point%prim(3,k) = U(3)*temp
 
-                temp = U(4) - (0.5*temp)*(U(2)*U(2) + U(3)*U(3))
+                temp = U(4) - (0.5d0*temp)*(U(2)*U(2) + U(3)*U(3))
 
-                point%prim(4,k) = 0.4*temp
+                point%prim(4,k) = 0.4d0*temp
 
 
         end subroutine
@@ -226,9 +226,9 @@ module state_update_mod
                                 dist = (x_k - x_i)*(x_k - x_i) + (y_k - y_i)*(y_k - y_i)
                                 dist = dsqrt(dist)
 
-                                mod_u = sqrt(u1*u1 + u2*u2)
+                                mod_u = dsqrt(u1*u1 + u2*u2)
 
-                                delta_t = dist/(mod_u + 3*dsqrt(pr/rho))
+                                delta_t = dist/(mod_u + 3.0d0*dsqrt(pr/rho))
 
                                 delta_t = cfl*delta_t
 
@@ -267,12 +267,12 @@ module state_update_mod
                 u2_inf_rot = u1_inf*nx + u2_inf*ny
 
                 temp1 = (u1_inf_rot*u1_inf_rot + u2_inf_rot*u2_inf_rot)
-                e_inf = pr_inf/(rho_inf*(gamma-1)) + 0.5*(temp1)
+                e_inf = pr_inf/(rho_inf*(gamma-1.0d0)) + 0.5d0*(temp1)
 
-                beta = (0.5*rho_inf)/pr_inf
+                beta = (0.5d0*rho_inf)/pr_inf
                 S2 = u2_inf_rot*dsqrt(beta)
-                B2_inf = exp(-S2*S2)/(2*dsqrt(pi*beta))
-                A2n_inf = 0.5*(1-derf(S2))
+                B2_inf = dexp(-S2*S2)/(2.0d0*dsqrt(pi*beta))
+                A2n_inf = 0.5d0*(1.0d0-derf(S2))
 
                 rho = point%prim(1,k)
                 u1 = point%prim(2,k)
@@ -283,12 +283,12 @@ module state_update_mod
                 u2_rot = u1*nx + u2*ny
 
                 temp1 = (u1_rot*u1_rot + u2_rot*u2_rot)
-                e = pr/(rho*(gamma-1)) + 0.5*(temp1)
+                e = pr/(rho*(gamma-1.0d0)) + 0.5d0*(temp1)
 
-                beta = (rho)/(2*pr)
+                beta = (rho)/(2.0d0*pr)
                 S2 = u2_rot*sqrt(beta)
-                B2 = exp(-S2*S2)/(2*sqrt(pi*beta))
-                A2p = 0.5*(1+derf(S2))
+                B2 = exp(-S2*S2)/(2.0d0*sqrt(pi*beta))
+                A2p = 0.5d0*(1.0d0+derf(S2))
 
                 Ubar(1) = (rho_inf*A2n_inf) + (rho*A2p)
 
@@ -298,8 +298,8 @@ module state_update_mod
                 temp2 = rho*(u2_rot*A2p + B2)
                 Ubar(3) = temp1 + temp2
 
-                temp1 = (rho_inf*A2n_inf*e_inf - 0.5*rho_inf*u2_inf_rot*B2_inf)
-                temp2 = (rho*A2p*e + 0.5*rho*u2_rot*B2)
+                temp1 = (rho_inf*A2n_inf*e_inf - 0.5d0*rho_inf*u2_inf_rot*B2_inf)
+                temp2 = (rho*A2p*e + 0.5d0*rho*u2_rot*B2)
 
                 Ubar(4) = temp1 + temp2
                 
