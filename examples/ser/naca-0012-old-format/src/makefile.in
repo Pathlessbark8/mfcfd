@@ -1,0 +1,7 @@
+#pgi compiler
+FC = pgfortran
+
+FFLAGS =-O3
+
+
+

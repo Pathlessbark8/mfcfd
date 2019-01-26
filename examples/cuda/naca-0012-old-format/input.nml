@@ -1,0 +1,9 @@
+&input_parameters
+        cfl = 0.63 
+        max_iters = 1000
+        blockx = 128
+        blocky = 1
+        blockz = 1
+	power = 0
+	solution_restart = 0
+/

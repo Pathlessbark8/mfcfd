@@ -1,0 +1,2 @@
+max_iters    cfl 
+   100       0.8
