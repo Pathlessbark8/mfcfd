@@ -1,7 +1,6 @@
 module q_lskum_mod
 
         use q_variables_mod
-        use compute_delta_mod
         use flux_residual_mod
         use state_update_mod
         use data_structure_mod
@@ -19,9 +18,6 @@ contains
                 ! Grid and block dim
                 type(dim3) :: grid , tBlock
                 integer :: istat
-                real*8 :: residue, res_old, res_new
-                real*8, device :: sum_res_sqr_d, max_res_d
-                real*8 :: sum_res_sqr, max_res
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
@@ -35,29 +31,21 @@ contains
                 tBlock = dim3 (blockx, blocky, blockz)
                 grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
                 
-                write(*,*)'%%%%%%%%%%%%%%%-GPU size info-%%%%%%%%%%%%%%'
+                write(*,*)'%%%%%%%%%%%%%%%-GPU size info-%%%%%%%%%%%%%'
                 write(*,*) 'number of threads per block:',blockx*blocky*blockz
                 write(*,*) 'grid dimension:',grid
                 write(*,*) 'thread block dimension:',tBlock
 
                 write(*,*)
-                write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%%'
+                write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
                 write(*,*)
 
-                do it = 1, max_iters
+                do it = 0, max_iters
                         
-                        max_res = 0.0d0
-                        sum_res_sqr = 0.0d0
-                        max_res_d = max_res
-                        sum_res_sqr_d = sum_res_sqr
-
                         call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
 
                         call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                 & point_d%conn, point_d%q, point_d%dq)
-
-                        call func_delta<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                               & point_d%conn, point_d%prim, point_d%delta)
 
                         call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                 & point_d%flag, point_d%nbhs, point_d%conn, &
@@ -67,23 +55,17 @@ contains
                                 & point_d%q, point_d%dq, point_d%flux_res)
 
                         call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
-                                & point_d%nbhs, point_d%conn, point_d%prim, point_d%flux_res, &
-                                & point_d%delta, max_res_d, sum_res_sqr_d)
-
-                        max_res = max_res_d
-                        sum_res_sqr = sum_res_sqr_d
-
-                        res_new = dsqrt(sum_res_sqr)/max_points
-
-                        if(it .le. 2) then
-                                res_old = res_new
-                                residue = 0.d0
-                        else 
-                                residue = dlog10(res_new/res_old)
+                                & point_d%nbhs, point_d%conn, point_d%prim, point_d%flux_res)
+                        
+                        istat = cudaGetLastError() 
+                        
+                        if (istat .ne. 0) then
+                                print*, cudaGetErrorString(istat) 
+                                stop istat 
                         endif
 
-                        write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
-                        write(301, *) it, residue
+                        write(*,'(a12,i8,a15,e30.20)')'iterations:',it
+                        write(301, *) it
 
                 enddo
                 

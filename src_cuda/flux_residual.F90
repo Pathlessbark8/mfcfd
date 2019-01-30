@@ -20,10 +20,50 @@ contains
                 real*8 :: prim_d(:,:), q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
-                integer :: i
+                integer :: i, r, k
                 real*8 :: Gxp(4), Gxn(4), Gyp(4), Gyn(4)
+                ! delta t variables
+                real*8 :: delta_t, delta_d
+                real*8 :: min_dist
+                real*8 :: x_i, y_i, x_k, y_k
+                real*8 :: u1, u2, rho, pr, mod_u
+                real*8 :: dist
+                real*8 :: min_delt
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+                
+                min_delt = 1.0d0
+
+                do r = 1, nbhs_d(i)
+                        k = conn_d(i,r)
+
+                        rho = prim_d(1,k)
+                        u1 = prim_d(2,k)
+                        u2 = prim_d(3,k)
+                        pr = prim_d(4,k)
+
+                        x_i = x_d(1,i)
+                        y_i = x_d(2,i)
+
+                        x_k = x_d(1,k)
+                        y_k = x_d(2,k)
+
+                        dist = (x_k - x_i)*(x_k - x_i) + (y_k - y_i)*(y_k - y_i)
+                        dist = dsqrt(dist)
+
+                        mod_u = dsqrt(u1*u1 + u2*u2)
+
+                        delta_t = dist/(mod_u + 3.0d0*dsqrt(pr/rho))
+
+                        delta_t = cfl_d*delta_t
+
+                        if(min_delt > delta_t) then
+                                min_delt = delta_t
+                        endif
+
+                enddo
+                delta_d = min_delt
+                call syncthreads()
 
                 if (flag_d(1,i) == 1) then
 
@@ -37,7 +77,7 @@ contains
                                 & yneg_conn_d, prim_d, q_d, dq_d)
                         
                         flux_res_d(:,i) = Gxp + Gxn + Gyn
-                        flux_res_d(:,i) = 2.0d0 * flux_res_d(:,i)
+                        flux_res_d(:,i) = 2.0d0 * delta_d * flux_res_d(:,i)
                 end if
                 call syncthreads()
 
@@ -52,7 +92,7 @@ contains
                         call outer_dGy_pos(i, Gyp, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
                                 & ypos_conn_d, prim_d, q_d, dq_d)
                         
-                        flux_res_d(:,i) = Gxp + Gxn + Gyp
+                        flux_res_d(:,i) = delta_d * (Gxp + Gxn + Gyp)
                 end if
                 call syncthreads()
 
@@ -70,7 +110,7 @@ contains
                         call interior_dGy_neg(i, Gyn, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
                                 & yneg_conn_d, prim_d, q_d, dq_d)
                         
-                        flux_res_d(:,i) = Gxp + Gxn + Gyp + Gyn
+                        flux_res_d(:,i) = delta_d * (Gxp + Gxn + Gyp + Gyn)
                 end if
                 call syncthreads()
 
@@ -152,6 +192,29 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
 #endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
+#endif
+
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
@@ -250,6 +313,28 @@ contains
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+#endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
 #endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
@@ -350,6 +435,28 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
 #endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
+#endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
@@ -448,6 +555,28 @@ contains
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+#endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
 #endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
@@ -548,6 +677,28 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
 #endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
+#endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
@@ -646,6 +797,28 @@ contains
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+#endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
 #endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
@@ -746,6 +919,28 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
 #endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
+#endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
@@ -844,6 +1039,28 @@ contains
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+#endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
 #endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
@@ -944,6 +1161,28 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
 #endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
+#endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
@@ -1043,6 +1282,28 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
 #endif
+#ifdef MINMAX
+                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                        do r = 1, 4
+                                if( qtilde_i(r) .gt. maxi(r) ) then
+                                        qtilde_i(r) = maxi(r)
+                                endif
+
+                                if( qtilde_i(r) .lt. mini(r) ) then
+                                        qtilde_i(r) = mini(r)
+                                endif
+
+                                if( qtilde_k(r) .gt. maxi(r) ) then
+                                        qtilde_k(r) = maxi(r)
+                                endif
+
+                                if( qtilde_k(r) .lt. mini(r) ) then
+                                        qtilde_k(r) = mini(r)
+                                endif
+                        enddo
+#endif
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
@@ -1065,6 +1326,8 @@ contains
                 call syncthreads()
 
         end subroutine
+
+#ifdef VENKAT
 
         attributes(device) subroutine venkat_limiter(qtilde, phi, k, q_d, nbhs_d, conn_d, x_d)
 
@@ -1197,6 +1460,61 @@ contains
 
         end subroutine
 
+#endif
+
+#ifdef MINMAX
+
+        attributes(device) subroutine max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+
+                implicit none
+                ! device variables
+                real*8 :: q_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
+                ! local variables
+                integer i, j, k, r
+                real*8 :: maxi(4)
+
+                maxi = q_d(:,i)
+
+                do j = 1, nbhs_d(i)
+
+                        k = conn_d(i,j)
+
+                        do r = 1, 4
+                                if( maxi(r) < q_d(r,k) ) then
+                                        maxi(r) = q_d(r,k)
+                                endif
+                        enddo
+                enddo
+
+        end subroutine
+
+        attributes(device) subroutine min_q_value(i, mini, q_d, nbhs_d, conn_d)
+
+                implicit none
+                ! device variables
+                real*8 :: q_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
+                ! local variables
+                integer i, j, k, r
+                real*8 :: mini(4)
+
+                mini = q_d(:,i)
+
+                do j = 1, nbhs_d(i)
+
+                        k = conn_d(i,j)
+
+                        do r = 1, 4
+                                if( mini(r) > q_d(r,k) ) then
+                                        mini(r) = q_d(r,k)
+                                endif
+                        enddo
+                enddo
+
+        end subroutine
+
+#endif
 
         attributes(device) subroutine qtilde_to_primitive(qtilde, u1, u2, rho, pr)
 

@@ -36,8 +36,6 @@ module device_data_structure_mod
                 integer, device, dimension(:,:), allocatable :: xpos_conn, xneg_conn
                 integer, device, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
-                real*8, device, dimension(:), allocatable  :: delta
-
         end type points_d
         
         type(points_d) :: point_d
@@ -65,16 +63,11 @@ module device_data_structure_mod
                 allocate(point_d%ypos_nbhs(max_points))
                 allocate(point_d%yneg_nbhs(max_points))
 
-
                 allocate(point_d%xpos_conn(max_points,15))
                 allocate(point_d%xneg_conn(max_points,15))
 
-
                 allocate(point_d%ypos_conn(max_points,15))
                 allocate(point_d%yneg_conn(max_points,15))
-
-
-                allocate(point_d%delta(max_points))
 
         end subroutine
 
@@ -94,16 +87,11 @@ module device_data_structure_mod
                 deallocate(point_d%ypos_nbhs)
                 deallocate(point_d%yneg_nbhs)
 
-
                 deallocate(point_d%xpos_conn)
                 deallocate(point_d%xneg_conn)
 
-
                 deallocate(point_d%ypos_conn)
                 deallocate(point_d%yneg_conn)
-
-
-                deallocate(point_d%delta)
 
         end subroutine
 
@@ -121,10 +109,6 @@ module device_data_structure_mod
                 qinf4_d = q_inf(4)
                 ! transfer from host to device(solution)
                 point_d%prim = point%prim
-                point_d%q    = point%q
-                point_d%dq    = point%dq
-                point_d%flux_res    = point%flux_res
-                point_d%delta    = point%delta
                 ! grid variables transfer
                 point_d%x(1,:) = point%x
                 point_d%x(2,:) = point%y

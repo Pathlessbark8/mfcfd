@@ -7,6 +7,7 @@ program meshfree_solver
         use initial_conditions_mod
         use q_lskum_mod
         use post_processing_mod
+        use objective_function_mod
 
 
         implicit none
@@ -32,7 +33,7 @@ program meshfree_solver
 
 !	Reading the input data ..
 
-        write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%%'
+        write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%'
         call read_input_point_data()
         write(*,*) 'Number of points:         ', max_points
         write(*,*) 'Number of wall points:    ', wall_points
@@ -51,7 +52,7 @@ program meshfree_solver
 !	Assign the initial conditions for the primitive variables ..	
 
         call initial_conditions()
-        write(*,*) '%%%%%%%%%%%-Solution initialized-%%%%%%%%%%%'
+        write(*,*) '%%%%%%%%%%%-Solution initialized-%%%%%%%%%%'
         write(*,*)
        
 !	Primal fixed point iterative solver ..
@@ -59,6 +60,9 @@ program meshfree_solver
         call cpu_time(startr) 
         call q_lskum()
         call cpu_time(finishr) 
+
+!       Objective function computation
+        call objective_function()
 
 !       Save solution one last time
         call print_primal_output()
@@ -70,8 +74,8 @@ program meshfree_solver
         call deallocate_device_soln()
 
         call cpu_time(finish) 
-        print*,'Simulation completed!!!'
-        print*,'runtime:',finishr-startr
-        print*,'totaltime:',finish-start
+        write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%'
+        write(*,*) 'runtime:',finishr-startr
+        write(*,*) 'totaltime:',finish-start
         
 end program meshfree_solver

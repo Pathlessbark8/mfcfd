@@ -1,9 +1,9 @@
-ifndef FF_DIR
+ifndef MF_DIR
 	$(error directory not set)
 endif
 
-SRCDIRM=$(FF_DIR)/src_mpi
-SRCDIRC=$(FF_DIR)/src_cuda
+SRCDIRM=$(MF_DIR)/src_mpi
+SRCDIRC=$(MF_DIR)/src_cuda
 
 all:
 	@echo "make cpu or gpu"

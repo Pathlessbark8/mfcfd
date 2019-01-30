@@ -1,9 +1,10 @@
 &input_parameters
-        cfl = 0.63 
-        max_iters = 1000
-        blockx = 128
+        cfl = 0.8
+        max_iters = 5
+        blockx = 32
         blocky = 1
         blockz = 1
+	vl_const = 150.0
 	power = 0
 	solution_restart = 0
 /

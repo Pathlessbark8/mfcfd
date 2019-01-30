@@ -5,19 +5,18 @@ module state_update_mod
         contains
         
         attributes(global) subroutine state_update(x_d, nx_d, flag_d, nbhs_d, conn_d, &
-                & prim_d, flux_res_d, delta_d, max_res, sum_res_sqr)
+                & prim_d, flux_res_d)
 
                 implicit none
 
                 ! device variables
                 real*8 :: x_d(:,:), nx_d(:,:)
                 integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
-                real*8 :: prim_d(:,:), delta_d(:)
+                real*8 :: prim_d(:,:)
                 real*8 :: flux_res_d(:,:)
-                real*8 :: max_res, sum_res_sqr, res_sqr
                 ! local variables
                 integer :: i, k, r
-                real*8 :: delt, U(4), temp
+                real*8 :: U(4), temp
                 real*8 :: nx, ny
                 real*8 :: U2_rot, U3_rot
 
@@ -30,23 +29,13 @@ module state_update_mod
 
                         call primitive_to_conserved(k, nx, ny, U, prim_d)
 
-                        temp = U(1)
-
-                        U = U - delta_d(k) * flux_res_d(:,k)
+                        U = U - flux_res_d(:,k)
                         U(3) = 0.d0
 
                         U2_rot = U(2)
                         U3_rot = U(3)
                         U(2) = U2_rot*ny + U3_rot*nx
                         U(3) = U3_rot*ny - U2_rot*nx
-
-                        res_sqr = (U(1) - temp)*(U(1) - temp)
-                        
-                        if(res_sqr .gt. max_res) then 
-                                max_res = res_sqr
-                        endif
-
-                        sum_res_sqr = sum_res_sqr + res_sqr
 
                         prim_d(1,k) = U(1)
                         temp = 1.0d0/U(1)
@@ -64,7 +53,7 @@ module state_update_mod
 
                         call conserved_vector_Ubar(k, U, nx, ny, prim_d) 
                         
-                        U = U - delta_d(k) *flux_res_d(:,k)
+                        U = U - flux_res_d(:,k)
                         
                         U2_rot = U(2)
                         
@@ -80,7 +69,6 @@ module state_update_mod
                         prim_d(3,k) = U(3)*temp
                         prim_d(4,k) = 0.4d0*U(4) - (0.2d0*temp)*(U(2)*U(2) + U(3)*U(3))
 
-
                 end if
                 call syncthreads()
 
@@ -91,22 +79,12 @@ module state_update_mod
 
                         call primitive_to_conserved(k, nx, ny, U, prim_d)
 
-                        temp = U(1)
-
-                        U = U - delta_d(k) * flux_res_d(:,k)
+                        U = U - flux_res_d(:,k)
 
                         U2_rot = U(2)
                         U3_rot = U(3)
                         U(2) = U2_rot*ny + U3_rot*nx
                         U(3) = U3_rot*ny - U2_rot*nx
-
-                        res_sqr = (U(1) - temp)*(U(1) - temp)
-
-                        if(res_sqr .gt. max_res) then 
-                                max_res = res_sqr
-                        endif
-
-                        sum_res_sqr = sum_res_sqr + res_sqr
 
                         prim_d(1,k) = U(1)
                         temp = 1.0d0/U(1)
