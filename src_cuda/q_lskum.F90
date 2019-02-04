@@ -9,6 +9,10 @@ module q_lskum_mod
         use generate_connectivity_mod
         use cudafor
 
+        real*8 :: sum_res_sqr, residue, res_old
+        real*8, device :: temp
+        real*8, device, allocatable :: sum_res_sqr_d(:)
+
 contains
 
         subroutine q_lskum()
@@ -17,7 +21,8 @@ contains
 
                 ! Grid and block dim
                 type(dim3) :: grid , tBlock
-                integer :: istat
+                integer :: istat, stat
+                integer :: i
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
@@ -27,6 +32,8 @@ contains
                 ! Transfer from host device
 
                 call host_to_device()
+
+                allocate(sum_res_sqr_d(max_points))
 
                 tBlock = dim3 (blockx, blocky, blockz)
                 grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
@@ -40,8 +47,8 @@ contains
                 write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
                 write(*,*)
 
-                do it = 0, max_iters
-                        
+                do it = 1, max_iters
+
                         call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
 
                         call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
@@ -55,17 +62,37 @@ contains
                                 & point_d%q, point_d%dq, point_d%flux_res)
 
                         call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
-                                & point_d%nbhs, point_d%conn, point_d%prim, point_d%flux_res)
-                        
+                                & point_d%nbhs, point_d%conn, point_d%prim, point_d%flux_res, sum_res_sqr_d)
+
                         istat = cudaGetLastError() 
-                        
+
                         if (istat .ne. 0) then
                                 print*, cudaGetErrorString(istat) 
                                 stop istat 
                         endif
+                        
+                        ! Residue norm evaluation
+                        stat = cudaDeviceSynchronize()
+                        
+                        temp = 0.0
+                        !$cuf kernel do <<< *, * >>>
+                        do i = 1, mp_d
+                                temp = temp + sum_res_sqr_d(i)
+                        end do
 
-                        write(*,'(a12,i8,a15,e30.20)')'iterations:',it
-                        write(301, *) it
+                        sum_res_sqr = temp
+
+                        residue = dsqrt(sum_res_sqr)/max_points
+
+                        if (it .le. 2) then
+                                res_old = residue
+                                residue = 0.0d0
+                        else
+                                residue = dlog10(residue/res_old)
+                        end if
+
+                        write(*,*) "iterations:", it, "residue:", residue
+                        write(301,*) it, residue
 
                 enddo
                 

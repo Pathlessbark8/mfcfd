@@ -5,7 +5,7 @@ module state_update_mod
         contains
         
         attributes(global) subroutine state_update(x_d, nx_d, flag_d, nbhs_d, conn_d, &
-                & prim_d, flux_res_d)
+                & prim_d, flux_res_d, sum_res_sqr)
 
                 implicit none
 
@@ -13,15 +13,18 @@ module state_update_mod
                 real*8 :: x_d(:,:), nx_d(:,:)
                 integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
                 real*8 :: prim_d(:,:)
-                real*8 :: flux_res_d(:,:)
+                real*8 :: flux_res_d(:,:), sum_res_sqr(:)
                 ! local variables
                 integer :: i, k, r
                 real*8 :: U(4), temp
                 real*8 :: nx, ny
-                real*8 :: U2_rot, U3_rot
+                real*8 :: U2_rot, U3_rot, res_sqr
+                integer :: istat
 
                 k = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
+                sum_res_sqr(k) = 0.0d0
+                
                 if (flag_d(1,k) == 1) then
                         
                         nx = nx_d(1,k)
@@ -29,7 +32,10 @@ module state_update_mod
 
                         call primitive_to_conserved(k, nx, ny, U, prim_d)
 
+                        temp = U(1)
+                        
                         U = U - flux_res_d(:,k)
+
                         U(3) = 0.d0
 
                         U2_rot = U(2)
@@ -37,6 +43,10 @@ module state_update_mod
                         U(2) = U2_rot*ny + U3_rot*nx
                         U(3) = U3_rot*ny - U2_rot*nx
 
+                        res_sqr = (U(1) - temp)*(U(1) - temp)
+
+                        sum_res_sqr(k) = res_sqr
+                        
                         prim_d(1,k) = U(1)
                         temp = 1.0d0/U(1)
                         prim_d(2,k) = U(2)*temp
@@ -79,12 +89,18 @@ module state_update_mod
 
                         call primitive_to_conserved(k, nx, ny, U, prim_d)
 
+                        temp = U(1)
+
                         U = U - flux_res_d(:,k)
 
                         U2_rot = U(2)
                         U3_rot = U(3)
                         U(2) = U2_rot*ny + U3_rot*nx
                         U(3) = U3_rot*ny - U2_rot*nx
+
+                        res_sqr = (U(1) - temp)*(U(1) - temp)
+
+                        sum_res_sqr(k) = res_sqr
 
                         prim_d(1,k) = U(1)
                         temp = 1.0d0/U(1)
