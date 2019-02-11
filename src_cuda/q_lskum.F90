@@ -26,12 +26,19 @@ contains
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-                if(old_format == 0) call compute_normals()
+                if(format_file == 0) call compute_normals()
                 call generate_connectivity()
+                write(*,*)'%%%%-Normals and connectivity generated-%%%'
+                write(*,*)
+                do i = 1,max_points
+                        print*,point%nx,point%ny
+                end do
 
                 ! Transfer from host device
-
                 call host_to_device()
+                
+                write(*,*)'%%%%%%%%%-Host to device performed-%%%%%%%%'
+                write(*,*)
 
                 allocate(sum_res_sqr_d(max_points))
 
@@ -72,7 +79,6 @@ contains
                         endif
                         
                         ! Residue norm evaluation
-                        stat = cudaDeviceSynchronize()
                         
                         temp = 0.0
                         !$cuf kernel do <<< *, * >>>
@@ -97,6 +103,9 @@ contains
                 enddo
                 
                 call device_to_host()
+                
+                write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
+                write(*,*)
 
                 CLOSE(UNIT=301)
 

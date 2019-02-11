@@ -51,7 +51,6 @@ module point_normals_mod
                         point%nx(m) = nx
                         point%ny(m) = ny
 
-
                 enddo
                                 
 
@@ -120,7 +119,6 @@ module point_normals_mod
                                 point%ny(k) = 1.d0
                         enddo
                 endif
-
 
         end subroutine 
 

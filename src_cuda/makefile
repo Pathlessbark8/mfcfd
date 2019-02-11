@@ -4,7 +4,7 @@ include makefile.in
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o device_data_structure.o post_processing.o q_variables.o flux_residual.o state_update.o objective_function.o compute_force_coeffs.F90
+objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o device_data_structure.o post_processing.o q_variables.o flux_residual.o state_update.o objective_function.o compute_force_coeffs.o
 
 execname: $(objects)  
 	$(FC)  -o execname $(FFLAGS) $(objects)

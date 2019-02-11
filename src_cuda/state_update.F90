@@ -11,7 +11,7 @@ module state_update_mod
 
                 ! device variables
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
                 real*8 :: prim_d(:,:)
                 real*8 :: flux_res_d(:,:), sum_res_sqr(:)
                 ! local variables
@@ -25,7 +25,7 @@ module state_update_mod
 
                 sum_res_sqr(k) = 0.0d0
                 
-                if (flag_d(1,k) == 1) then
+                if (flag_d(k) == 0) then
                         
                         nx = nx_d(1,k)
                         ny = nx_d(2,k)
@@ -56,7 +56,7 @@ module state_update_mod
                 end if
                 call syncthreads()
 
-                if (flag_d(1,k) == 3) then
+                if (flag_d(k) == 2) then
 
                         nx = nx_d(1,k)
                         ny = nx_d(2,k)
@@ -82,7 +82,7 @@ module state_update_mod
                 end if
                 call syncthreads()
 
-                if (flag_d(1,k) == 2) then
+                if (flag_d(k) == 1) then
 
                         nx = nx_d(1,k)
                         ny = nx_d(2,k)

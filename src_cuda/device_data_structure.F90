@@ -15,16 +15,11 @@ module device_data_structure_mod
         type :: points_d
 
                 real*8, device, dimension(:,:), allocatable :: x
-                integer, device, dimension(:), allocatable :: local_id
-                integer, device, dimension(:), allocatable :: global_id
-                integer, device, dimension(:), allocatable :: left,right
-                integer, device, dimension(:,:), allocatable :: flag 
+                integer, device, dimension(:), allocatable :: flag 
                 integer, device, dimension(:), allocatable :: nbhs
                 integer, device, dimension(:,:), allocatable :: conn
-!       !       !       !       !       !       !       
 
                 real*8, device, dimension(:,:), allocatable :: nx
-
 
                 real*8, device, dimension(:,:), allocatable :: prim
                 real*8, device, dimension(:,:), allocatable :: flux_res
@@ -116,8 +111,7 @@ module device_data_structure_mod
                 point_d%nx(2,:) = point%ny
                 point_d%nbhs = point%nbhs
                 point_d%conn = point%conn
-                point_d%flag(1,:) = point%flag_1
-                point_d%flag(2,:) = point%flag_2
+                point_d%flag = point%flag_1
                 point_d%xpos_nbhs = point%xpos_nbhs
                 point_d%xneg_nbhs = point%xneg_nbhs
                 point_d%ypos_nbhs = point%ypos_nbhs

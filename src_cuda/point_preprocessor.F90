@@ -11,11 +11,11 @@ contains
 
                 integer:: i, k, r
                 integer :: wall_temp,outer_temp,interior_temp
-                character(len=64) :: part_grid
+                character(len=64) :: grid
 
-                part_grid = 'partGrid'
+                grid = 'point'
 
-                OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
+                OPEN(UNIT=101,FILE=trim(grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
                 !TODO: Add asserts
 
@@ -35,20 +35,16 @@ contains
                 
                 ! device variables
                 allocate(point_d%x(2,max_points))
-                allocate(point_d%local_id(max_points))
-                allocate(point_d%global_id(max_points))
-                allocate(point_d%flag(2,max_points))
+                allocate(point_d%flag(max_points))
                 allocate(point_d%nbhs(max_points))
                 allocate(point_d%conn(max_points,15))
                 allocate(point_d%nx(2,max_points))
-                allocate(point_d%left(max_points))
-                allocate(point_d%right(max_points))
                 
                 wall_points = 0
                 interior_points = 0
                 outer_points = 0
 
-                if(old_format == 0) then
+                if(format_file == 0) then
                         do k = 1, max_points
         
                                 read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
@@ -78,13 +74,14 @@ contains
                                 read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
                                 & point%y(k),point%nx(k),point%ny(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
+                        point%flag_1(k) = point%flag_1(k) - 1
                                 
                         !Storing the count for the point types
-                                if(point%flag_1(k) == 1) then
+                                if(point%flag_1(k) == 0) then
                                         wall_points = wall_points + 1
-                                else if(point%flag_1(k) == 2) then
+                                else if(point%flag_1(k) == 1) then
                                         interior_points = interior_points + 1
-                                else if(point%flag_1(k) == 3) then
+                                else if(point%flag_1(k) == 2) then
                                         outer_points = outer_points + 1
                                 end if
         
@@ -102,41 +99,22 @@ contains
                 allocate(interior_points_index_d(interior_points))
                 allocate(outer_points_index_d(outer_points))
 
-                if(old_format == 0)then
-                        wall_temp = 0
-                        interior_temp = 0
-                        outer_temp = 0
-                        !Storing indices of the point definitions
-                        do k = 1,max_points
-                                if(point%flag_1(k) == 0) then
-                                        wall_temp = wall_temp+1
-                                        wall_points_index(wall_temp) = k
-                                else if(point%flag_1(k) == 1) then
-                                        interior_temp = interior_temp+1 
-                                        interior_points_index(interior_temp) = k
-                                else if(point%flag_1(k) == 2) then
-                                        outer_temp = outer_temp+1
-                                        outer_points_index(outer_temp) = k
-                                end if
-                        end do
-                else
-                        wall_temp = 0
-                        interior_temp = 0
-                        outer_temp = 0
-                        !Storing indices of the point definitions
-                        do k = 1,max_points
-                                if(point%flag_1(k) == 1) then
-                                        wall_temp = wall_temp+1
-                                        wall_points_index(wall_temp) = k
-                                else if(point%flag_1(k) == 2) then
-                                        interior_temp = interior_temp+1 
-                                        interior_points_index(interior_temp) = k
-                                else if(point%flag_1(k) == 3) then
-                                        outer_temp = outer_temp+1
-                                        outer_points_index(outer_temp) = k
-                                end if
-                        end do
-                end if
+                wall_temp = 0
+                interior_temp = 0
+                outer_temp = 0
+                !Storing indices of the point definitions
+                do k = 1,max_points
+                        if(point%flag_1(k) == 0) then
+                                wall_temp = wall_temp+1
+                                wall_points_index(wall_temp) = k
+                        else if(point%flag_1(k) == 1) then
+                                interior_temp = interior_temp+1 
+                                interior_points_index(interior_temp) = k
+                        else if(point%flag_1(k) == 2) then
+                                outer_temp = outer_temp+1
+                                outer_points_index(outer_temp) = k
+                        end if
+                end do
 
                 CLOSE(UNIT=101)
 

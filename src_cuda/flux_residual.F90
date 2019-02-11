@@ -14,7 +14,7 @@ contains
 
                 ! device variables
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
                 integer :: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -65,7 +65,7 @@ contains
                 delta_d = min_delt
                 call syncthreads()
 
-                if (flag_d(1,i) == 1) then
+                if (flag_d(i) == 0) then
 
                         call wall_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
                                 & xpos_conn_d, prim_d, q_d, dq_d)
@@ -81,7 +81,7 @@ contains
                 end if
                 call syncthreads()
 
-                if (flag_d(1,i) == 3) then
+                if (flag_d(i) == 2) then
 
                         call outer_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
                                 & xpos_conn_d, prim_d, q_d, dq_d)
@@ -96,7 +96,7 @@ contains
                 end if
                 call syncthreads()
 
-                if (flag_d(1,i) == 2) then
+                if (flag_d(i) == 1) then
 
                         call interior_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
                                 & xpos_conn_d, prim_d, q_d, dq_d)
@@ -122,7 +122,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
                 integer :: xpos_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -244,7 +244,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer :: xneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -365,7 +365,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: yneg_nbhs_d(:)
                 integer :: yneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -486,7 +486,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
                 integer :: xpos_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -607,7 +607,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer :: xneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -728,7 +728,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: ypos_nbhs_d(:)
                 integer :: ypos_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -849,7 +849,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
                 integer :: xpos_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -970,7 +970,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer :: xneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -1091,7 +1091,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: ypos_nbhs_d(:)
                 integer :: ypos_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)
@@ -1212,7 +1212,7 @@ contains
                 ! device variables
                 integer :: i
                 real*8 :: x_d(:,:), nx_d(:,:)
-                integer :: flag_d(:,:), nbhs_d(:), conn_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
                 integer :: yneg_nbhs_d(:)
                 integer :: yneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:)

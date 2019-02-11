@@ -4,8 +4,8 @@ module parameter_mod
 
         implicit none
 
-        real*8, parameter :: Mach = 0.63d0
-        real*8, parameter :: aoa = 2.0d0
+        real*8, parameter :: Mach = 0.85d0
+        real*8, parameter :: aoa = 1.0d0
         real*8 :: theta
 	real*8, parameter :: rho_inf = 1.0d0
 	real*8, parameter :: pr_inf = 1.0d0/1.4d0
@@ -37,11 +37,11 @@ module parameter_mod
 !       Restart solution parameter
         integer :: solution_restart
 
-!       old format tag
-        integer,parameter :: old_format=1
+!       format tag
+        integer :: format_file
 
 !       First order flag
-!        real*8,parameter, constant :: fo_flag=1.0
+        real*8 :: fo_flag=1.0
 
 !       No of shapes
         integer,parameter :: shapes = 1
@@ -57,7 +57,10 @@ module parameter_mod
                           blockz, &
                           vl_const, &
                           power, &
-                          solution_restart
+                          solution_restart, &
+                          fo_flag, &
+                          format_file
+
 contains
 
         subroutine setup_case_parameters()
