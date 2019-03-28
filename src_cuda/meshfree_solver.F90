@@ -8,10 +8,11 @@ program meshfree_solver
         use q_lskum_mod
         use post_processing_mod
         use objective_function_mod
+        use adaptation_sensors_mod
 
 
         implicit none
-        integer :: istat
+        integer :: istat, i, nDevices=0
         real*8  :: start,finish
         real*8  :: startr,finishr
         type(cudaDeviceProp) :: prop
@@ -22,10 +23,17 @@ program meshfree_solver
         write(*,*)'%%%%%%%%-CUDA Fortran Meshfree Code-%%%%%%%'
         write(*,*)
         write(*,*)'%%%%%%%%%%%%%%%-Device info-%%%%%%%%%%%%%%%'
-        istat = cudaGetDeviceProperties(prop, 0)
-        write(*,*)'Device Name:', trim(prop%name)
-        write(*,*)'Compute Capability: ',prop%major, prop%minor
-        write(*,*)
+        istat = cudaGetDeviceCount ( nDevices )
+        do i = 0, nDevices - 1
+                istat = cudaGetDeviceProperties(prop, i)
+                write(*,*)'Device Name:               ', trim(prop%name)
+                write(*,*)'Compute Capability:        ',prop%major, prop%minor
+                write(*,*)'Device number:             ',i
+                write(*,*)'MemoryClockRate(KHz):      ',prop%memoryBusWidth
+                write(*,*)'PeakMemoryBandwidth(GB/s): ',2.0 *prop%memoryClockRate * &
+                        & (prop%memoryBusWidth/8) * 1.e-6
+                write(*,*)
+        end do
 
 !       Set up case input
 
@@ -61,6 +69,9 @@ program meshfree_solver
         call q_lskum()
         call cpu_time(finishr) 
 
+!       Compute sensor values
+        call compute_adapt_sensor()
+
 !       Objective function computation
         call objective_function()
 
@@ -74,8 +85,8 @@ program meshfree_solver
         call deallocate_device_soln()
 
         call cpu_time(finish) 
-        write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%'
-        write(*,*) 'runtime:',finishr-startr
-        write(*,*) 'totaltime:',finish-start
+        write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
+        write(*,*) 'Run time:  ',finishr-startr,'seconds'
+        write(*,*) 'Total time:',finish-start,'seconds'
         
 end program meshfree_solver

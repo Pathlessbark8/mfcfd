@@ -4,13 +4,15 @@ include makefile.in
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o device_data_structure.o post_processing.o q_variables.o flux_residual.o state_update.o objective_function.o compute_force_coeffs.o
+objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o device_data_structure.o post_processing.o q_variables.o flux_residual.o state_update.o objective_function.o compute_force_coeffs.o adaptation_sensors.o compute_entropy.o
 
 execname: $(objects)  
-	$(FC)  -o execname $(FFLAGS) $(objects)
+	cd triangle/ && make clean && make
+	cp triangle/triangle poly
+	$(FC) -o execname $(FFLAGS) $(objects)
 
 
-meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o parameter.o initial_conditions.o q_lskum.o post_processing.o objective_function.o
+meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o parameter.o initial_conditions.o q_lskum.o post_processing.o objective_function.o adaptation_sensors.o
 	$(FC) $(FFLAGS) -c  meshfree_solver.F90 
 
 parameter.o: parameter.F90
@@ -21,6 +23,9 @@ point_preprocessor.o: point_preprocessor.F90 data_structure.o device_data_struct
 
 data_structure.o: data_structure.F90 parameter.o
 	$(FC) $(FFLAGS) -c  data_structure.F90
+
+adaptation_sensors.o: adaptation_sensors.F90 data_structure.o
+	$(FC) $(FFLAGS) -c  adaptation_sensors.F90
 
 device_data_structure.o: device_data_structure.F90 parameter.o data_structure.o
 	$(FC) $(FFLAGS) -c  device_data_structure.F90
@@ -49,11 +54,14 @@ flux_residual.o: flux_residual.F90 device_data_structure.o
 state_update.o: state_update.F90 device_data_structure.o
 	$(FC) $(FFLAGS) -c  state_update.F90
 
-objective_function.o: objective_function.F90 data_structure.o compute_force_coeffs.o
+objective_function.o: objective_function.F90 data_structure.o compute_force_coeffs.o compute_entropy.o
 	$(FC) $(FFLAGS) -c  objective_function.F90
 
 compute_force_coeffs.o: compute_force_coeffs.F90 data_structure.o 
 	$(FC) $(FFLAGS) -c  compute_force_coeffs.F90
+
+compute_entropy.o: compute_entropy.F90 data_structure.o 
+	$(FC) $(FFLAGS) -c  compute_entropy.F90
 
 clean::
 	rm -rf *.mod execname *.o

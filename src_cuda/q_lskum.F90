@@ -26,13 +26,10 @@ contains
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-                if(format_file == 0) call compute_normals()
+                if(format_file == 2) call compute_normals()
                 call generate_connectivity()
                 write(*,*)'%%%%-Normals and connectivity generated-%%%'
                 write(*,*)
-                do i = 1,max_points
-                        print*,point%nx,point%ny
-                end do
 
                 ! Transfer from host device
                 call host_to_device()
@@ -104,8 +101,15 @@ contains
                 
                 call device_to_host()
                 
+                write(*,*)
                 write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
                 write(*,*)
+
+                stat = cudaDeviceSynchronize()
+                if (stat .ne. 0) then
+                        print*, cudaGetErrorString(stat) 
+                        stop stat 
+                endif
 
                 CLOSE(UNIT=301)
 

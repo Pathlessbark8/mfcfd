@@ -10,8 +10,6 @@ contains
                 implicit none
                 
                 integer :: k,i, dummy
-                real*8 :: dummyx, dummyy
-
 
                 call setup_case_parameters()
 
@@ -28,9 +26,11 @@ contains
                         write(*,*) '%%%%%%%%%%%%-Using Restart file-%%%%%%%%%%%%'
 
                         open(unit=105, file="restart.dat", form='formatted', action="read")
-
+                        read(105,*) dummy
                         do k=1, max_points
-                               read(105,*) dummy, dummy, dummy, dummyx, dummyy, point%prim(1,k), point%prim(2,k), point%prim(3,k), point%prim(4,k)
+                               read(105,*) dummy, dummy, dummy, dummy, &
+                                       & point%prim(1,k), point%prim(2,k), point%prim(3,k), &
+                                       & point%prim(4,k), dummy, dummy, dummy
                         end do
 
                         close(unit=105)

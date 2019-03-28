@@ -2,6 +2,7 @@ module objective_function_mod
         
         use data_structure_mod
         use compute_force_coeffs_mod
+        use compute_entropy_mod
 
         contains
 
@@ -12,6 +13,7 @@ module objective_function_mod
                         implicit none
                         
                         call compute_cl_cd_cm()
+                        call compute_entropy()
 
                 end subroutine objective_function
 !

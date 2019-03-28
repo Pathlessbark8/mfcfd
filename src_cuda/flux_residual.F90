@@ -186,11 +186,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -213,10 +216,9 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
 
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxII(G_i, nx, ny, u1, u2, rho, pr)
@@ -308,11 +310,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -335,9 +340,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxI(G_i, nx, ny, u1, u2, rho, pr)
@@ -429,11 +433,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -456,9 +463,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)
@@ -550,11 +556,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -577,9 +586,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxIII(G_i, nx, ny, u1, u2, rho, pr)
@@ -671,11 +679,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -698,9 +709,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxIV(G_i, nx, ny, u1, u2, rho, pr)
@@ -792,11 +802,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -819,9 +832,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyp(G_i, nx, ny, u1, u2, rho, pr)
@@ -913,11 +925,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -940,9 +955,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gxp(G_i, nx, ny, u1, u2, rho, pr)
@@ -1034,11 +1048,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -1061,9 +1078,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gxn(G_i, nx, ny, u1, u2, rho, pr)
@@ -1155,11 +1171,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -1182,9 +1201,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyp(G_i, nx, ny, u1, u2, rho, pr)
@@ -1276,11 +1294,14 @@ contains
 
 !                       Higher order accuracy using q-variables ..
 
-                        qtilde_i = q_d(:,i) - 0.5d0*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
+                        qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #ifdef VENKAT
                         call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d)
                         call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d)
+                        
+                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
+                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
 #endif
 #ifdef MINMAX
                         call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
@@ -1303,9 +1324,8 @@ contains
                                         qtilde_k(r) = mini(r)
                                 endif
                         enddo
+                        
 #endif
-                        qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
-                        qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)

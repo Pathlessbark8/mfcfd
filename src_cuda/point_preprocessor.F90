@@ -12,6 +12,7 @@ contains
                 integer:: i, k, r
                 integer :: wall_temp,outer_temp,interior_temp
                 character(len=64) :: grid
+                real*8 :: dummy
 
                 grid = 'point'
 
@@ -19,7 +20,6 @@ contains
 
                 !TODO: Add asserts
 
-                read(101,*) max_points
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
                 allocate(point%local_id(max_points))
@@ -32,6 +32,7 @@ contains
                 allocate(point%ny(max_points))
                 allocate(point%left(max_points))
                 allocate(point%right(max_points))
+                allocate(point%qtdepth(max_points))
                 
                 ! device variables
                 allocate(point_d%x(2,max_points))
@@ -43,32 +44,8 @@ contains
                 wall_points = 0
                 interior_points = 0
                 outer_points = 0
-
-                if(format_file == 0) then
-                        do k = 1, max_points
-        
-                                read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
-                                & point%y(k),point%left(k),point%right(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
-                                & (point%conn(k,r),r=1,point%nbhs(k))
-                                
-                        !Storing the count for the point types
-                                if(point%flag_1(k) == 0) then
-                                        wall_points = wall_points + 1
-                                else if(point%flag_1(k) == 1) then
-                                        interior_points = interior_points + 1
-                                else if(point%flag_1(k) == 2) then
-                                        outer_points = outer_points + 1
-                                end if
-
-                                if(point%flag_2(k) > shapes)then
-                                        print*,"shapes value wrong, check again"
-                                        stop
-                                end if
-                                         
-        
-                                
-                        enddo
-                else
+                !TODO old format(should retire)
+                if (format_file==1) then
                         do k = 1, max_points
         
                                 read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
@@ -83,6 +60,36 @@ contains
                                         interior_points = interior_points + 1
                                 else if(point%flag_1(k) == 2) then
                                         outer_points = outer_points + 1
+                                end if
+        
+                                if(point%flag_2(k) > shapes)then
+                                        print*,"shapes value wrong, check again"
+                                        stop
+                                end if
+                                
+                        enddo
+                ! new format from quadtree code
+                elseif (format_file == 2) then
+                        do k = 1, max_points
+        
+                                read(101,*) point%local_id(k),point%x(k), point%y(k),point%left(k),&
+                                        & point%right(k), point%flag_1(k),point%flag_2(k),&
+                                        & dummy, dummy, dummy, dummy, dummy, dummy, point%qtdepth(k), dummy,&
+                                        & dummy, dummy, dummy, dummy, point%nbhs(k),&
+                                        & (point%conn(k,r),r=1,point%nbhs(k))
+                                
+                        !Storing the count for the point types
+                                if(point%flag_1(k) == 0) then
+                                        wall_points = wall_points + 1
+                                else if(point%flag_1(k) == 1) then
+                                        interior_points = interior_points + 1
+                                else if(point%flag_1(k) == 2) then
+                                        outer_points = outer_points + 1
+                                end if
+                                
+                                if(point%flag_2(k) > shapes)then
+                                        print*,"shapes value wrong, check again"
+                                        stop
                                 end if
         
                                 
@@ -136,6 +143,7 @@ contains
                 deallocate(point%ny)
                 deallocate(point%left)
                 deallocate(point%right)
+                deallocate(point%qtdepth)
 
                 deallocate(wall_points_index)
                 deallocate(interior_points_index)
