@@ -4,6 +4,7 @@ module parameter_mod
 
         implicit none
 
+        integer :: max_points
         real*8, parameter :: Mach = 0.85d0
         real*8, parameter :: aoa = 1.0d0
         real*8 :: theta
@@ -31,17 +32,19 @@ module parameter_mod
 
 !       Interior points normal flag ..
 !       If flag is zero => nx = 0.0 and ny = 1.0
-!
         integer,parameter :: interior_points_normal_flag=0
 
 !       Restart solution parameter
         integer :: solution_restart
 
+!       solution save counter
+        integer :: savesol
+
 !       format tag
         integer :: format_file
 
 !       First order flag
-        real*8 :: fo_flag=1.0
+        real*8 :: first_order_flag
 
 !       No of shapes
         integer,parameter :: shapes = 1
@@ -50,6 +53,7 @@ module parameter_mod
         integer :: blockx, blocky, blockz
 
         namelist / input_parameters /   &
+                      max_points, &
                              cfl, &
                        max_iters, &
                           blockx, &
@@ -58,8 +62,9 @@ module parameter_mod
                           vl_const, &
                           power, &
                           solution_restart, &
-                          fo_flag, &
-                          format_file
+                          first_order_flag, &
+                          format_file, &
+                          savesol
 
 contains
 
@@ -106,9 +111,6 @@ contains
                 write(*,nml=input_parameters)
                 write(*,*)
                 
-
-
-
 end subroutine
 
 

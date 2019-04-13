@@ -60,7 +60,8 @@ module parameter_mod
                           power, &
                           solution_restart, &
                           first_order_flag, &
-                          format_file
+                          format_file, &
+                          savesol
 
 contains
 

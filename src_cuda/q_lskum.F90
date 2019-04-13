@@ -7,9 +7,10 @@ module q_lskum_mod
         use device_data_structure_mod
         use point_normals_mod    
         use generate_connectivity_mod
+        use post_processing_mod
         use cudafor
 
-        real*8 :: sum_res_sqr, residue, res_old
+        real*8 :: sum_res_sqr, residue
         real*8, device :: temp
         real*8, device, allocatable :: sum_res_sqr_d(:)
 
@@ -51,7 +52,9 @@ contains
                 write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
                 write(*,*)
 
-                do it = 1, max_iters
+                if(solution_restart == 0) itr = 0
+
+                do it = itr+1, itr+max_iters
 
                         call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
 
@@ -87,7 +90,7 @@ contains
 
                         residue = dsqrt(sum_res_sqr)/max_points
 
-                        if (it .le. 2) then
+                        if (it .le. 2 .and. solution_restart == 0) then
                                 res_old = residue
                                 residue = 0.0d0
                         else
@@ -97,7 +100,14 @@ contains
                         write(*,*) "iterations:", it, "residue:", residue
                         write(301,*) it, residue
 
+                        if(mod(it,savesol) == 0) then
+                                write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+                                call device_to_host()
+                                call print_primal_output()
+                        end if
                 enddo
+
+                it = it - 1
                 
                 call device_to_host()
                 

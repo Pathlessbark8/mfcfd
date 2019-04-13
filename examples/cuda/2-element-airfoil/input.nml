@@ -10,4 +10,5 @@
 	solution_restart = 0
 	first_order_flag = 1.0
 	format_file = 2
+	savesol = 100000
 /

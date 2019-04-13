@@ -26,7 +26,7 @@ contains
                         write(*,*) '%%%%%%%%%%%%-Using Restart file-%%%%%%%%%%%%'
 
                         open(unit=105, file="restart.dat", form='formatted', action="read")
-                        read(105,*) dummy
+                        read(105,*) dummy, itr, res_old
                         do k=1, max_points
                                read(105,*) dummy, dummy, dummy, dummy, &
                                        & point%prim(1,k), point%prim(2,k), point%prim(3,k), &

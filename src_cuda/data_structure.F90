@@ -49,6 +49,9 @@ module data_structure_mod
 
         real*8 :: total_entropy
 
+        integer :: itr
+        real*8 :: res_old
+
     contains
 
         subroutine allocate_soln()

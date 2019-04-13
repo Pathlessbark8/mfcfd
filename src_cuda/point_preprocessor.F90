@@ -48,7 +48,7 @@ contains
                 if (format_file==1) then
                         do k = 1, max_points
         
-                                read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
+                                read(101,*) point%local_id(k),point%x(k),&
                                 & point%y(k),point%nx(k),point%ny(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
                         point%flag_1(k) = point%flag_1(k) - 1
