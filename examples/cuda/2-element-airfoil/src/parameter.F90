@@ -43,11 +43,8 @@ module parameter_mod
 !       First order flag
         real*8 :: first_order_flag
 
-!       no of shapes
+!       No of shapes
         integer :: shapes
-
-!       save frequency
-        integer :: savesol
 
 !       Block input
         integer :: blockx, blocky, blockz

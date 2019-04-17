@@ -1,4 +1,7 @@
 &input_parameters 
+        mach = 0.85
+	aoa = 0.0
+	shapes = 2
         max_points = 7741
         cfl = 0.2
         max_iters = 10

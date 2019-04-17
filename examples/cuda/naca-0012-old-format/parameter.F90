@@ -5,8 +5,8 @@ module parameter_mod
         implicit none
 
         integer :: max_points
-        real*8, parameter :: Mach = 0.85d0
-        real*8, parameter :: aoa = 1.0d0
+        real*8 :: Mach
+        real*8 :: aoa
         real*8 :: theta
 	real*8, parameter :: rho_inf = 1.0d0
 	real*8, parameter :: pr_inf = 1.0d0/1.4d0
@@ -37,9 +37,6 @@ module parameter_mod
 !       Restart solution parameter
         integer :: solution_restart
 
-!       solution save counter
-        integer :: savesol
-
 !       format tag
         integer :: format_file
 
@@ -47,12 +44,18 @@ module parameter_mod
         real*8 :: first_order_flag
 
 !       No of shapes
-        integer,parameter :: shapes = 1
+        integer :: shapes
+
+!       save frequency
+        integer :: savesol
 
 !       Block input
         integer :: blockx, blocky, blockz
 
         namelist / input_parameters /   &
+                      mach, &
+                      aoa, &
+                      shapes, &
                       max_points, &
                              cfl, &
                        max_iters, &
@@ -98,8 +101,6 @@ contains
                 read(unit=10,nml=input_parameters)
       
                 close(10)
-                write(*,*) '%%%%%%%%%%%%%-Input parameters-%%%%%%%%%%%%'
-                write(*,*) 'Mach:', mach, 'aoa:', aoa
 #ifdef VENKAT
                 write(*,*) 'limiter:', 'venkat'
 #endif
