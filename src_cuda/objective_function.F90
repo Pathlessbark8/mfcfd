@@ -16,10 +16,5 @@ module objective_function_mod
                         call compute_entropy()
 
                 end subroutine objective_function
-!
-!									
-!
+
 end module objective_function_mod
-!		
-!
-!

@@ -36,35 +36,30 @@ program meshfree_solver
         end do
 
 !       Set up case input
-
         call readnml()
 
 !	Reading the input data ..
-
         write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%'
         call read_input_point_data()
         write(*,*) 'Number of points:         ', max_points
         write(*,*) 'Number of wall points:    ', wall_points
+        write(*,*) 'Number of shape points:   ', shape_points
         write(*,*) 'Number of interior points:', interior_points
         write(*,*) 'Number of outer points:   ', outer_points
         write(*,*)
 
 !       Allocate solution variables
-
         call allocate_soln()
 
 !       Allocate device solution variables
-        
         call allocate_device_soln()
 
 !	Assign the initial conditions for the primitive variables ..	
-
         call initial_conditions()
         write(*,*) '%%%%%%%%%%%-Solution initialized-%%%%%%%%%%'
         write(*,*)
        
 !	Primal fixed point iterative solver ..
-        
         call cpu_time(startr) 
         call q_lskum()
         call cpu_time(finishr) 
@@ -78,7 +73,6 @@ program meshfree_solver
 !       Save solution one last time
         call print_primal_output()
 
-
 !       Deallocate point/solution vectors
         call deallocate_soln()
         call dealloc_points()
@@ -88,5 +82,5 @@ program meshfree_solver
         write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
         write(*,*) 'Run time:  ',finishr-startr,'seconds'
         write(*,*) 'Total time:',finish-start,'seconds'
-        
+
 end program meshfree_solver

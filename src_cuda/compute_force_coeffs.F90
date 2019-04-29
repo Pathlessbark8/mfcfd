@@ -18,12 +18,10 @@ module compute_force_coeffs_mod
 			real*8, dimension(shapes) :: H, V, pitch_mom
 			real*8 :: nx, ny
                         character(len=64) :: cp_file
-                        character(len=10) :: itos
 
                         cp_file = 'cp-file'
 
                         OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-
 
                         temp = 0.5d0*rho_inf*Mach*Mach
 
@@ -31,12 +29,11 @@ module compute_force_coeffs_mod
                         V = 0.d0
                         pitch_mom = 0.0d0
 
-                        do j = 1, wall_points
-                                       
-                                m = wall_points_index(j)
+                        do j = 1, shape_points
+
+                                m = j
                                 r = point%right(m) 
                                 l = point%left(m) 
-
 
                                 lx = point%x(l)
                                 ly = point%y(l)
@@ -44,8 +41,8 @@ module compute_force_coeffs_mod
                                 mx = point%x(m)
                                 my = point%y(m)
 
-                                rx = point%x(m)
-                                ry = point%y(m)
+                                rx = point%x(r)
+                                ry = point%y(r)
 
                                 ds1 = (mx - lx)**2 + (my - ly)**2
                                 ds1 = dsqrt(ds1)
@@ -55,7 +52,6 @@ module compute_force_coeffs_mod
 
                                 ds = 0.5d0*(ds1 + ds2)
 
-
                                 nx = point%nx(m)
                                 ny = point%ny(m)
 
@@ -64,10 +60,10 @@ module compute_force_coeffs_mod
 
                                 write(201, *) point%flag_2(m), point%x(m), cp
 
-                                H(point%flag_2(m)+1) = H(point%flag_2(m)+1) + cp*nx*ds
-                                V(point%flag_2(m)+1) = V(point%flag_2(m)+1) + cp*ny*ds
+                                H(point%flag_2(m)) = H(point%flag_2(m)) + cp*nx*ds
+                                V(point%flag_2(m)) = V(point%flag_2(m)) + cp*ny*ds
                                         
-                                pitch_mom(point%flag_2(m)+1) = pitch_mom(point%flag_2(m)+1)&
+                                pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m))&
                                         + (-cp*ny*ds*(mx - 0.25d0) + cp*nx*ds*(my))
 
                         enddo
@@ -77,7 +73,6 @@ module compute_force_coeffs_mod
                         Cm = pitch_mom
 
                         CLOSE(UNIT=201)
-
 
                 end subroutine 
 

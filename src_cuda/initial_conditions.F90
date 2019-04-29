@@ -24,6 +24,7 @@ contains
                 else
 
                         write(*,*) '%%%%%%%%%%%%-Using Restart file-%%%%%%%%%%%%'
+                        write(*,*) 
 
                         open(unit=105, file="restart.dat", form='formatted', action="read")
                         read(105,*) dummy, itr, res_old

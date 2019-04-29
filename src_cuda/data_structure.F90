@@ -5,7 +5,7 @@ module data_structure_mod
 
         implicit none
 
-        integer :: wall_points,interior_points,outer_points
+        integer :: wall_points,interior_points,outer_points,shape_points
 
         type :: points
 
@@ -39,17 +39,17 @@ module data_structure_mod
         save
 
         integer,allocatable,dimension(:) :: wall_points_index
+        integer,allocatable,dimension(:) :: shape_points_index
         integer,allocatable,dimension(:) :: outer_points_index
         integer,allocatable,dimension(:) :: interior_points_index
 
         !iterations
-        integer :: it
+        integer :: it, itr
 
         real*8, allocatable, dimension(:)  :: Cl, Cd, Cm
 
         real*8 :: total_entropy
 
-        integer :: itr
         real*8 :: res_old
 
     contains

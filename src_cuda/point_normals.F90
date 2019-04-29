@@ -18,8 +18,8 @@ module point_normals_mod
 
 !Finding the normals for the points on the shapes ..   
 
-                do i = 1, wall_points
-                        m = wall_points_index(i)
+                do i = 1, shape_points
+                        m = shape_points_index(i)
                         l = point%left(m)
                         r = point%right(m)
 

@@ -27,7 +27,7 @@ contains
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-                if(format_file == 2) call compute_normals()
+                if(format_file == 2 .or. format_file == 3) call compute_normals()
                 call generate_connectivity()
                 write(*,*)'%%%%-Normals and connectivity generated-%%%'
                 write(*,*)
