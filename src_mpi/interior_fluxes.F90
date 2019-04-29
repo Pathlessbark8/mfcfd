@@ -16,7 +16,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_pos
 
 
-        subroutine interior_dGx_pos(G, Gd, L, Ud, i)
+        subroutine interior_dGx_pos(G, Gd, L, i)
 
 
                 implicit none
@@ -30,6 +30,9 @@ contains
 		real*8 :: L
 		real*8 :: delx, dely, det, one_by_det
 		real*8 :: dels, deln
+
+                real*8 :: local_sos, spectral_Ax, spectral_Ay
+                real*8 :: Ax, Ay
 !		
 		real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
@@ -59,6 +62,10 @@ contains
 
                 tx = ny
                 ty = -nx
+
+                G = 0.0d0
+                Gd = 0.0d0 
+                L = 0.0d0
 
                 do j = 1, point%xpos_nbhs(i)
 
@@ -129,20 +136,45 @@ contains
 
                         call qtilde_to_primitive(qtilde_k, u1, u2, rho, pr)
                         
-                        U(1) = rho
-                        U(2) = rho*u1
-                        U(3) = rho*u2
-                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
+                        !U(1) = rho
+                        !U(2) = rho*u1
+                        !U(3) = rho*u2
+                        !U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
-                        call FLUX_GXP_D(G_k, G_kd, U, Ud, nx, ny)
+                        !call FLUX_GXP_D(G_k, G_kd, U, Ud, nx, ny)
+                       
+                        !sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        !sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
         
-                        !call flux_Gxp(G_k, nx, ny, u1, u2, rho, pr)
+                        call flux_Gxp(G_k, nx, ny, u1, u2, rho, pr)
+
+                        local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
+
+                        spectral_Ax = dabs(point%prim(2,k)) + local_sos
+                        spectral_Ay = dabs(point%prim(3,k)) + local_sos
+
+                        Ax = spectral_Ax / 2.0d0
+                        Ay = spectral_Ay / 2.0d0
+
+                        U(1) = point%prim(1,k)
+                        U(2) = point%prim(1,k)*point%prim(2,k)
+                        U(3) = point%prim(1,k)*point%prim(3,k)
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
+                                &(point%prim(2,k)*point%prim(2,k) +&
+                                &point%prim(3,k)*point%prim(3,k))
+
+                        Ud = U(:) - point%U_old(:,k)
+
+                        G_kd = Ax*Ud
+
+                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        
+                        G_kd = Ay*Ud
+
+                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                         
                         sum_delx_delf = sum_delx_delf + (G_k - G_i)*dels_weights
                         sum_dely_delf = sum_dely_delf + (G_k - G_i)*deln_weights
-
-                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
-                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                 enddo
 
 
@@ -161,7 +193,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_neg
 
 
-        subroutine interior_dGx_neg(G, Gd, L, Ud, i)
+        subroutine interior_dGx_neg(G, Gd, L, i)
 
 
                 implicit none
@@ -176,7 +208,10 @@ contains
 		real*8 :: delx, dely, det, one_by_det
 		real*8 :: dels, deln
 
-		real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                real*8 :: local_sos, spectral_Ax, spectral_Ay
+                real*8 :: Ax, Ay
+
+                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
 		real*8 :: sum_delx_delfd(4), sum_dely_delfd(4)
 		real*8 :: sum_delx, sum_dely
@@ -186,6 +221,9 @@ contains
 		real*8 :: maxi(4), mini(4)
 		real*8 :: dels_weights, deln_weights
 
+                G = 0.0d0
+                Gd = 0.0d0 
+                L = 0.0d0
 
                 sum_delx_sqr = 0.0d0
                 sum_dely_sqr = 0.0d0
@@ -278,20 +316,45 @@ contains
 
                         call qtilde_to_primitive(qtilde_k, u1, u2, rho, pr)
                         
-                        U(1) = rho
-                        U(2) = rho*u1
-                        U(3) = rho*u2
-                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
+                        !U(1) = rho
+                        !U(2) = rho*u1
+                        !U(3) = rho*u2
+                        !U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
-                        call FLUX_GXN_D(G_k, G_kd, U, Ud, nx, ny)
+                        !call FLUX_GXN_D(G_k, G_kd, U, Ud, nx, ny)
+                        !
+                        !sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        !sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
 
-                        !call flux_Gxn(G_k, nx, ny, u1, u2, rho, pr)
+                        call flux_Gxn(G_k, nx, ny, u1, u2, rho, pr)
+                        
+                        local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
+
+                        spectral_Ax = dabs(point%prim(2,k)) + local_sos
+                        spectral_Ay = dabs(point%prim(3,k)) + local_sos
+
+                        Ax = spectral_Ax / 2.0d0
+                        Ay = spectral_Ay / 2.0d0
+
+                        U(1) = point%prim(1,k)
+                        U(2) = point%prim(1,k)*point%prim(2,k)
+                        U(3) = point%prim(1,k)*point%prim(3,k)
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
+                                &(point%prim(2,k)*point%prim(2,k) +&
+                                &point%prim(3,k)*point%prim(3,k))
+
+                        Ud = U(:) - point%U_old(:,k)
+                        
+                        G_kd = Ax*Ud
+
+                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        
+                        G_kd = Ay*Ud
+
+                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                         
                         sum_delx_delf = sum_delx_delf + (G_k - G_i)*dels_weights
                         sum_dely_delf = sum_dely_delf + (G_k - G_i)*deln_weights
-
-                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
-                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                 enddo
 
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
@@ -308,7 +371,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_neg
 !
 !
-        subroutine interior_dGy_pos(G, Gd, L, Ud, i)
+        subroutine interior_dGy_pos(G, Gd, L, i)
 
 
                 implicit none
@@ -323,7 +386,10 @@ contains
 		real*8 :: delx, dely, det, one_by_det
 		real*8 :: dels, deln
 
-		real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                real*8 :: local_sos, spectral_Ax, spectral_Ay
+                real*8 :: Ax, Ay
+
+                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
 		real*8 :: sum_delx_delfd(4), sum_dely_delfd(4)
 		real*8 :: sum_delx, sum_dely
@@ -333,6 +399,9 @@ contains
 		real*8 :: maxi(4), mini(4)
 		real*8 :: dels_weights, deln_weights
 
+                G = 0.0d0
+                Gd = 0.0d0 
+                L = 0.0d0
 
                 sum_delx_sqr = 0.0d0
                 sum_dely_sqr = 0.0d0
@@ -422,20 +491,45 @@ contains
 
                         call qtilde_to_primitive(qtilde_k, u1, u2, rho, pr)
                         
-                        U(1) = rho
-                        U(2) = rho*u1
-                        U(3) = rho*u2
-                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
+                        !U(1) = rho
+                        !U(2) = rho*u1
+                        !U(3) = rho*u2
+                        !U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
-                        call FLUX_GYP_D(G_k, G_kd, U, Ud, nx, ny)
+                        !call FLUX_GYP_D(G_k, G_kd, U, Ud, nx, ny)
 
-                        !call flux_Gyp(G_k, nx, ny, u1, u2, rho, pr)
+                        !sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        !sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
+                        
+                        call flux_Gyp(G_k, nx, ny, u1, u2, rho, pr)
+                        
+                        local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
+
+                        spectral_Ax = dabs(point%prim(2,k)) + local_sos
+                        spectral_Ay = dabs(point%prim(3,k)) + local_sos
+
+                        Ax = spectral_Ax / 2.0d0
+                        Ay = spectral_Ay / 2.0d0
+
+                        U(1) = point%prim(1,k)
+                        U(2) = point%prim(1,k)*point%prim(2,k)
+                        U(3) = point%prim(1,k)*point%prim(3,k)
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
+                                &(point%prim(2,k)*point%prim(2,k) +&
+                                &point%prim(3,k)*point%prim(3,k))
+
+                        Ud = U(:) - point%U_old(:,k)
+                        
+                        G_kd = Ax*Ud
+
+                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        
+                        G_kd = Ay*Ud
+
+                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                         
                         sum_delx_delf = sum_delx_delf + (G_k - G_i)*dels_weights
                         sum_dely_delf = sum_dely_delf + (G_k - G_i)*deln_weights
-
-                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
-                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                 enddo
 
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
@@ -453,7 +547,7 @@ contains
 !	This subroutine evaluates the interior flux derivative dGx_neg
 
 
-        subroutine interior_dGy_neg(G, Gd, L, Ud, i)
+        subroutine interior_dGy_neg(G, Gd, L, i)
 
 
                 implicit none
@@ -467,6 +561,9 @@ contains
 		real*8 :: L
 		real*8 :: delx, dely, det, one_by_det
 		real*8 :: dels, deln
+                
+                real*8 :: local_sos, spectral_Ax, spectral_Ay
+                real*8 :: Ax, Ay
 
 		real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
@@ -479,6 +576,9 @@ contains
 		real*8 :: dels_weights, deln_weights
 		real*8 :: temp1, temp2
 
+                G = 0.0d0
+                Gd = 0.0d0 
+                L = 0.0d0
 
                 sum_delx_sqr = 0.0d0
                 sum_dely_sqr = 0.0d0
@@ -568,20 +668,46 @@ contains
 
                         call qtilde_to_primitive(qtilde_k, u1, u2, rho, pr)
                         
-                        U(1) = rho
-                        U(2) = rho*u1
-                        U(3) = rho*u2
-                        U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
+                        !U(1) = rho
+                        !U(2) = rho*u1
+                        !U(3) = rho*u2
+                        !U(4) = 2.5d0*pr + 0.5d0*rho*(u1*u1 + u2*u2)
 
-                        call FLUX_GYN_D(G_k, G_kd, U, Ud, nx, ny)
+                        !call FLUX_GYN_D(G_k, G_kd, U, Ud, nx, ny)
+                        !
+                        !sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        !sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
 
-                        !call flux_Gyn(G_k, nx, ny, u1, u2, rho, pr)
+                        call flux_Gyn(G_k, nx, ny, u1, u2, rho, pr)
+                        
+                        local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
+
+                        spectral_Ax = dabs(point%prim(2,k)) + local_sos
+                        spectral_Ay = dabs(point%prim(3,k)) + local_sos
+
+                        Ax = spectral_Ax / 2.0d0
+                        Ay = spectral_Ay / 2.0d0
+
+                        U(1) = point%prim(1,k)
+                        U(2) = point%prim(1,k)*point%prim(2,k)
+                        U(3) = point%prim(1,k)*point%prim(3,k)
+                        U(4) = 2.5d0*point%prim(4,k) + 0.5d0*point%prim(1,k)*&
+                                &(point%prim(2,k)*point%prim(2,k) +&
+                                &point%prim(3,k)*point%prim(3,k))
+
+                        Ud = U(:) - point%U_old(:,k)
+                        
+                        G_kd = Ax*Ud
+
+                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
+                        
+                        G_kd = Ay*Ud
+
+                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                         
                         sum_delx_delf = sum_delx_delf + (G_k - G_i)*dels_weights
                         sum_dely_delf = sum_dely_delf + (G_k - G_i)*deln_weights
 
-                        sum_delx_delfd = sum_delx_delfd + (G_kd)*dels_weights
-                        sum_dely_delfd = sum_dely_delfd + (G_kd)*deln_weights
                 enddo
         
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
