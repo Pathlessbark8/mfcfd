@@ -5,15 +5,24 @@ INC    = -I$(METIS_DIR)/include
 LDFLAGS = -lm -lmetis -L$(METIS_DIR)/lib
 LDFLAGS += -Wl,-rpath=$(METIS_DIR)/lib
 
-graphpart: graphPart.o
-	$(CC) -o graphpart graphPart.o $(LDFLAGS)
-	rm *.o
 
-graphPart.o: graphPart.cpp
-	$(CC) $(CCFLAG) $(INC) -c graphPart.cpp 
+HDR = $(wildcard *.h)
+SRC = $(wildcard *.cpp)
+OBJ = $(patsubst %.cpp,%.o,$(SRC))
+
+PROGRAM  = graphpart
+
+all:     $(PROGRAM)
+
+.cc.o: $(HDR)
+	$(CC) $(CCFLAG) $(INC) -c $*.cc
+
+$(PROGRAM): $(OBJ)
+	$(CC) -o $(PROGRAM) $(OBJ) $(LDFLAGS)
+
 
 plot:
-	python plot.py
+	python3 plot.py
 
 clean:
-	rm -rf *.o graphpart partGrid*
+	rm -rf $(OBJ) $(PROGRAM) partGrid*
