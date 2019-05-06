@@ -20,11 +20,14 @@ module device_data_structure_mod
                 integer, device, dimension(:,:), allocatable :: conn
 
                 real*8, device, dimension(:,:), allocatable :: nx
+                
+                real*8, device, dimension(:), allocatable :: min_dist
 
                 real*8, device, dimension(:,:), allocatable :: prim
                 real*8, device, dimension(:,:), allocatable :: flux_res
 
                 real*8, device, dimension(:,:), allocatable :: q
+                real*8, device, dimension(:,:,:), allocatable :: qm
                 real*8, device, dimension(:,:,:), allocatable :: dq
 
                 integer, device, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
@@ -50,6 +53,7 @@ module device_data_structure_mod
                 allocate(point_d%flux_res(4,max_points))
 
                 allocate(point_d%q(4,max_points))
+                allocate(point_d%qm(2,4,max_points))
 
                 allocate(point_d%dq(2,4,max_points))
         
@@ -74,6 +78,7 @@ module device_data_structure_mod
                 deallocate(point_d%flux_res)
 
                 deallocate(point_d%q)
+                deallocate(point_d%qm)
 
                 deallocate(point_d%dq)
 
@@ -113,6 +118,7 @@ module device_data_structure_mod
                 point_d%nbhs = point%nbhs
                 point_d%conn = point%conn
                 point_d%flag = point%flag_1
+                point_d%min_dist = point%min_dist
                 point_d%xpos_nbhs = point%xpos_nbhs
                 point_d%xneg_nbhs = point%xneg_nbhs
                 point_d%ypos_nbhs = point%ypos_nbhs

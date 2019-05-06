@@ -22,10 +22,9 @@ contains
 
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
-                allocate(point%local_id(max_points))
-                allocate(point%global_id(max_points))
                 allocate(point%flag_1(max_points))
                 allocate(point%flag_2(max_points))
+                allocate(point%min_dist(max_points))
                 allocate(point%nbhs(max_points))
                 allocate(point%conn(max_points,15))
                 allocate(point%nx(max_points))
@@ -40,6 +39,7 @@ contains
                 allocate(point_d%nbhs(max_points))
                 allocate(point_d%conn(max_points,15))
                 allocate(point_d%nx(2,max_points))
+                allocate(point_d%min_dist(max_points))
                 
                 wall_points = 0
                 shape_points = 0
@@ -49,9 +49,9 @@ contains
                 if (format_file==1) then
                         do k = 1, max_points
         
-                                read(101,*) point%local_id(k),point%x(k),&
-                                & point%y(k),point%nx(k),point%ny(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
-                                & (point%conn(k,r),r=1,point%nbhs(k))
+                                read(101,*) point%x(k), point%y(k),point%nx(k),point%ny(k), &
+                                        & point%flag_1(k),point%flag_2(k),point%min_dist(k), &
+                                        & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
                         point%flag_1(k) = point%flag_1(k) - 1
                                 
                         !Storing the count for the point types
@@ -82,8 +82,8 @@ contains
                 elseif (format_file==3) then
                         do k = 1, max_points
         
-                                read(101,*) point%local_id(k),point%x(k),&
-                                & point%y(k),point%left(k),point%right(k),point%flag_1(k),point%flag_2(k),point%nbhs(k),&
+                                read(101,*) point%x(k),&
+                                & point%y(k),point%left(k),point%right(k),point%flag_1(k),point%flag_2(k),point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
                                 
                         !Storing the count for the point types
@@ -105,32 +105,32 @@ contains
                         enddo
                 ! new format from quadtree code
                 elseif (format_file == 2) then
-                        do k = 1, max_points
-        
-                                read(101,*) point%local_id(k),point%x(k), point%y(k),point%left(k),&
-                                        & point%right(k), point%flag_1(k),point%flag_2(k),&
-                                        & dummy, dummy, dummy, dummy, dummy, dummy, point%qtdepth(k), dummy,&
-                                        & dummy, dummy, dummy, dummy, point%nbhs(k),&
-                                        & (point%conn(k,r),r=1,point%nbhs(k))
-                                
-                        !Storing the count for the point types
-                                if(point%flag_1(k) == 0) then
-                                        wall_points = wall_points + 1
-                                else if(point%flag_1(k) == 1) then
-                                        interior_points = interior_points + 1
-                                else if(point%flag_1(k) == 2) then
-                                        outer_points = outer_points + 1
-                                end if
-                                
-                                if(point%flag_2(k) > 0) then
-                                        shape_points = shape_points + 1
-                                elseif(point%flag_2(k) > shapes)then
-                                        print*,"shapes value wrong, check again"
-                                        stop
-                                end if
-        
-                                
-                        enddo
+!                        do k = 1, max_points
+!        
+!                                read(101,*) point%local_id(k),point%x(k), point%y(k),point%left(k),&
+!                                        & point%right(k), point%flag_1(k),point%flag_2(k),&
+!                                        & dummy, dummy, dummy, dummy, dummy, dummy, point%qtdepth(k), dummy,&
+!                                        & dummy, dummy, dummy, dummy, point%nbhs(k),&
+!                                        & (point%conn(k,r),r=1,point%nbhs(k))
+!                                
+!                        !Storing the count for the point types
+!                                if(point%flag_1(k) == 0) then
+!                                        wall_points = wall_points + 1
+!                                else if(point%flag_1(k) == 1) then
+!                                        interior_points = interior_points + 1
+!                                else if(point%flag_1(k) == 2) then
+!                                        outer_points = outer_points + 1
+!                                end if
+!                                
+!                                if(point%flag_2(k) > 0) then
+!                                        shape_points = shape_points + 1
+!                                elseif(point%flag_2(k) > shapes)then
+!                                        print*,"shapes value wrong, check again"
+!                                        stop
+!                                end if
+!        
+!                                
+!                        enddo
                 end if
 
 
@@ -177,10 +177,9 @@ contains
                 
                 deallocate(point%x)
                 deallocate(point%y)
-                deallocate(point%local_id)
-                deallocate(point%global_id)
                 deallocate(point%flag_1)
                 deallocate(point%flag_2)
+                deallocate(point%min_dist)
                 deallocate(point%nbhs)
                 deallocate(point%conn)
                 deallocate(point%nx)

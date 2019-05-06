@@ -10,8 +10,6 @@ module data_structure_mod
         type :: points
 
 		real*8, dimension(:), allocatable :: x,y
-                integer, dimension(:), allocatable :: local_id
-                integer, dimension(:), allocatable :: global_id
                 integer, dimension(:), allocatable :: left,right
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
@@ -22,7 +20,9 @@ module data_structure_mod
 
 		real*8, dimension(:), allocatable :: nx, ny
 
-		real*8, dimension(:,:), allocatable :: prim
+		real*8, dimension(:), allocatable :: min_dist
+
+                real*8, dimension(:,:), allocatable :: prim
 
                 real*8, dimension(:), allocatable :: sensor, D2_dist
 

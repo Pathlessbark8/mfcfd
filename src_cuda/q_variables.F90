@@ -38,12 +38,12 @@ contains
 
         end subroutine
 
-        attributes(global) subroutine eval_q_derivatives(x_d, nbhs_d, conn_d, q_d, dq_d)
+        attributes(global) subroutine eval_q_derivatives(x_d, nbhs_d, conn_d, q_d, qm_d, dq_d)
 
                 implicit none
 
                 ! device variables
-                real*8 :: q_d(:,:), dq_d(:,:,:)
+                real*8 :: q_d(:,:), dq_d(:,:,:), qm_d(:,:,:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 real*8 :: x_d(:,:)
                 ! local variables
@@ -68,10 +68,22 @@ contains
                 sum_delx_delq = 0.d0
                 sum_dely_delq = 0.d0
 
-                do k = 1, nbhs_d(i)
+                qm_d(1, :, i) = q_d(:, i)
+                qm_d(2, :, i) = q_d(:, i)
 
+                do k = 1, nbhs_d(i)
+                        
                         nbh = conn_d(i,k)
 
+                        do r = 1, 4
+                                if (q_d(r, nbh) > qm_d(1, r, i)) then
+                                        qm_d(1, r, i) = q_d(r, nbh)
+                                end if
+                                if (q_d(r, nbh) < qm_d(2, r, i)) then
+                                        qm_d(2, r, i) = q_d(r, nbh)
+                                end if
+                        end do
+                                
                         x_k = x_d(1,nbh)
                         y_k = x_d(2,nbh)
 
