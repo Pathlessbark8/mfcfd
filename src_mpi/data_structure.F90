@@ -5,7 +5,7 @@ module data_structure_mod
         implicit none
 
         integer :: max_points,local_points,ghost_points
-        integer :: wall_points,interior_points,outer_points
+        integer :: wall_points,interior_points,outer_points,shape_points
 
 !       ghost global indices
         integer , dimension(:), allocatable :: pghost
@@ -18,11 +18,9 @@ module data_structure_mod
                 integer, dimension(:), allocatable :: left,right
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
+		real*8, dimension(:), allocatable :: nx,ny
                 integer, dimension(:), allocatable :: nbhs
                 integer, dimension(:,:), allocatable :: conn
-!	!	!	!	!	!	!	
-
-		real*8, dimension(:), allocatable :: nx, ny
 
 		real*8, dimension(:), allocatable :: min_dist
 
@@ -52,7 +50,7 @@ module data_structure_mod
         integer,allocatable,dimension(:) :: wall_points_index
         integer,allocatable,dimension(:) :: outer_points_index
         integer,allocatable,dimension(:) :: interior_points_index
-        integer,allocatable,dimension(:,:) :: shape_points_index
+        integer,allocatable,dimension(:) :: shape_points_index
 
         !iterations
         integer :: it
@@ -97,12 +95,6 @@ module data_structure_mod
 
 !       solution save parameter
         integer :: nsave
-
-!       Time scheme, explicit or implicit
-        integer :: tscheme
-
-!       old format tag
-        integer :: old_format
 
 !       First order flag
         real*8 :: fo_flag

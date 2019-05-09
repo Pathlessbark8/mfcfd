@@ -52,41 +52,10 @@ subroutine readcase()
                             '-nsave',&
                             nsave,set,ierr); CHKERRQ(ierr)
         
-        obj_flag = 0 ! Default : no objective function
-        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-obj_flag',obj_flag,set,ierr)
-
-        old_format = 0 ! Default : new format
-        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-old_format',&
-                            old_format,set,ierr); CHKERRQ(ierr)
-
         fo_flag = 1.0d0 ! Default: second order
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-fo_flag',fo_flag,set,ierr); CHKERRQ(ierr)
         
-        if(obj_flag==0) then
-                if(rank==0)print*,"no objective function chosen"
-        elseif(obj_flag==1) then
-                if(rank==0)print*,"Cl is chosen as the objective function"
-                cl_flag = 1.0d0
-        elseif(obj_flag==2) then
-                if(rank==0)print*,"Cd is chosen as the objective function"
-                cd_flag = 1.0d0
-        elseif(obj_flag==3) then
-                if(rank==0)print*,"Cm is chosen as the objective function"
-                cm_flag = 1.0d0
-        elseif(obj_flag==4) then
-                if(rank==0)print*,"Cl/Cd is chosen as the objective function"
-                cl_cd_flag = 1.0d0
-        elseif(obj_flag==5) then
-                if(rank==0)print*,"Total entropy is chosen as the objective function"
-                ent_flag = 1.0d0
-        elseif(obj_flag==6) then
-                if(rank==0)print*,"Total enstrophy is chosen as the objective function"
-                ens_flag = 1.0d0
-        end if
-
         ! Print paramaters to screen
         if (rank==0) then
                 write(*,*) 'max_iters :', max_iters

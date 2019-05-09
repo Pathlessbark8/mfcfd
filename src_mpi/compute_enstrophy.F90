@@ -1,18 +1,16 @@
 module compute_enstrophy_mod
+#include <petsc/finclude/petscsys.h>
        
         use data_structure_mod
+        use petsc_data_structure_mod
 
         contains
 
-
                 subroutine compute_enstrophy()
-
 
                         implicit none
                         
-                        
                         integer :: i, k, r, nbh
-                
                         real*8 :: x_i, y_i, x_k, y_k
 			real*8 :: delx, dely, dist, weights
 			real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
@@ -20,7 +18,8 @@ module compute_enstrophy_mod
 			real*8 :: det
 			real*8 :: one_by_det
 			real*8 :: du1_dy, du2_dx, temp
-
+                        real*8 :: gtotal_enstrophy
+                        PetscErrorCode :: ierr
 
                         total_enstrophy = 0.d0
 
@@ -78,9 +77,15 @@ module compute_enstrophy_mod
 
                                 total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
 
-
                         enddo
 
+                        call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
+                                & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+
+                        if(rank == 0) then
+                                write(*,*)"total enstrophy :", gtotal_enstrophy
+                        end if
 
         end subroutine
+
 end module compute_enstrophy_mod

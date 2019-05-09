@@ -55,7 +55,7 @@ contains
                         residue = dlog10(res_new/res_old)
                 endif
 
-                ! Primal output
+                ! Print primal output
                 if(mod(it,nsave)==0)call print_primal_output()
 
                 ! End update

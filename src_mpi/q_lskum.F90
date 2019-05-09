@@ -19,7 +19,7 @@ contains
 
                 if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-                if(old_format == 0) call compute_normals()
+                call compute_normals()
                 call generate_connectivity()
 
                 if(rank == 0) then
