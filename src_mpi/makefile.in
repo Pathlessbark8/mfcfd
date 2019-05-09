@@ -6,18 +6,18 @@ include ${PETSC_DIR}/lib/petsc/conf/rules
 #FC = mpiifort
 
 #gcc compiler
-FC = mpif90
+#FC = mpif90
 
 CC = gcc
 
 #flags for intel compiler
-#FFLAGS = -O3 -xHost -ipo -I$(PETSC_DIR)/include
+FFLAGS = -O3 -I$(PETSC_DIR)/include
 
 
 #flags for gcc(profiling)
 #FFLAGS =-march=native -O3 -pg -I$(PETSC_DIR)/include
 #flags for gcc
-FFLAGS =-march=native -O3 -I$(PETSC_DIR)/include
+#FFLAGS =-march=native -O3 -I$(PETSC_DIR)/include
 
 
 

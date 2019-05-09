@@ -22,9 +22,13 @@ contains
                 if(old_format == 0) call compute_normals()
                 call generate_connectivity()
 
+                if(rank == 0) then
+                        write(*,*)'%%%%-Normals and connectivity generated-%%%'
+                        write(*,*)
+                end if
 
                 ! Set U_old to U for first iteration
-                do i=1,max_points
+                do i=1,local_points
                         point%U_old(1,i) = point%prim(1,i)
                         point%U_old(2,i) = point%prim(1,i)*point%prim(2,i)
                         point%U_old(3,i) = point%prim(1,i)*point%prim(3,i)
@@ -32,8 +36,12 @@ contains
                                 &(point%prim(2,i)*point%prim(2,i) +&
                                 &point%prim(3,i)*point%prim(3,i))
                 end do
-
-        
+                
+                if(rank == 0) then
+                        write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+                        write(*,*)
+                end if
+                
                 do it = 1, max_iters
                         
                         call fpi_solver(it)
@@ -42,8 +50,7 @@ contains
                                 write(301, *) it, residue
                         end if
                 enddo
-
-
+                
                 CLOSE(UNIT=301)
 
         end subroutine

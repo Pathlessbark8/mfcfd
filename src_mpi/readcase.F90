@@ -6,10 +6,6 @@ subroutine readcase()
         PetscErrorCode :: ierr
         PetscBool :: set
         character(len=64)  :: string
-        character(len=20)  :: fmt1, fmt2
-
-        if(rank==0) print*,'Reading parameters from case.in'
-
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -26,16 +22,6 @@ subroutine readcase()
         limiter_flag = 1 ! Default limiter => VK
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-limiter_flag',limiter_flag,set,ierr); CHKERRQ(ierr)
-
-        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                              '-tscheme',string,set,ierr); CHKERRQ(ierr)
-        if(trim(string) == 'explicit')then
-                tscheme = 0
-                if (rank==0) print*,"explicit time scheme being used"
-        else if(trim(string) == 'implicit')then
-                tscheme = 1
-                if (rank==0) print*,"implicit time scheme being used"
-        end if
 
         vl_const = 150.0d0 ! Default VK limiter constant
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -101,15 +87,10 @@ subroutine readcase()
         end if
 
         ! Print paramaters to screen
-        fmt1 = "(5x,a11,i14)"
-        fmt2 = "(5x,a11,e14.4)"
         if (rank==0) then
-                write(*,fmt1) 'max_iters =', max_iters
-                write(*,fmt2) 'cfl   =', cfl
-                write(*,fmt2) 'mach   =', mach
-                write(*,fmt2) 'aoa  =', aoa
-                write(*,fmt1) 'shapes  =', shapes
+                write(*,*) 'max_iters :', max_iters
+                write(*,*) 'cfl       :', cfl
+                write(*,*) 'shapes    :', shapes
         end if
-
 
 end subroutine 

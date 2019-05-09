@@ -35,14 +35,14 @@ contains
 
                         local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
 
-!                        if(tscheme== 0) then
+                        if(tscheme== 0) then
                                 LSxp = 0.0d0
                                 LSxn = 0.0d0
                                 LSyn = 0.0d0
                                 Gxpd = 0.0d0
                                 Gxnd = 0.0d0
                                 Gynd = 0.0d0
-!                        end if
+                        end if
 
                         spectral_Ax = dabs(point%prim(2,k)) + local_sos
                         spectral_Ay = dabs(point%prim(3,k)) + local_sos
@@ -70,14 +70,14 @@ contains
 
                         local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
                         
-!                        if(tscheme== 0) then
+                        if(tscheme== 0) then
                                 LSxp = 0.0d0
                                 LSxn = 0.0d0
                                 LSyp = 0.0d0
                                 Gxpd = 0.0d0
                                 Gxnd = 0.0d0
                                 Gypd = 0.0d0
-!                        end if
+                        end if
                         
                         spectral_Ax = dabs(point%prim(2,k)) + local_sos
                         spectral_Ay = dabs(point%prim(3,k)) + local_sos
@@ -134,12 +134,20 @@ contains
                         Dp = 1/point%delta(k) - (LSxp - LSxn) * Ax - (LSyp - LSyn) * Ay
 
                         point%flux_res(:,k) = 1/Dp*(Gxp + Gxn + Gyp + Gyn + Gxpd + Gxnd + Gypd + Gynd)
-                        if(k==1000)print*,Gxpd,Gxnd,Gypd,Gynd, point%flux_res(:,k)
                 
                 enddo
 
-        end subroutine
+                ! Save previous solution
+                do i=1,local_points
+                        point%U_old(1,i) = point%prim(1,i)
+                        point%U_old(2,i) = point%prim(1,i)*point%prim(2,i)
+                        point%U_old(3,i) = point%prim(1,i)*point%prim(3,i)
+                        point%U_old(4,i) = 2.5d0*point%prim(4,i) + 0.5d0*point%prim(1,i)*&
+                                &(point%prim(2,i)*point%prim(2,i) +&
+                                &point%prim(3,i)*point%prim(3,i))
+                end do
 
+        end subroutine
 
 end module flux_residual_mod
 

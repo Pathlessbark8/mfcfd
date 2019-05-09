@@ -80,16 +80,12 @@ contains
        
                         else if(dabs(del_neg) .gt. 10e-6) then                      
                                 if(del_neg .gt. 0.d0) then 
-                                        call maximum(k, r, max_q)
-                                        del_pos = max_q - q
+                                        del_pos = point%qm(1,r,k) - q
                                 else if(del_neg .lt. 0.d0) then
-                                        call minimum(k, r, min_q)               
-                                        del_pos = min_q - q
+                                        del_pos = point%qm(2,r,k) - q
                                 endif
 
-                                call smallest_dist(k, ds)
-
-                                epsi = VL_CONST*ds
+                                epsi = VL_CONST*point%min_dist(k)
                                 epsi = epsi**3.0d0
 
                                 num = (del_pos*del_pos) + (epsi*epsi)  ! Numerator .. 
@@ -112,77 +108,6 @@ contains
                 enddo
 
         end subroutine 
-
-
-
-        subroutine maximum(k, r, max)
-
-                implicit none 
-                
-                integer :: k, r, j, nbh
-		real*8 :: max
-
-                max = point%q(r,k)
-
-                do j = 1, point%nbhs(k)
-                        nbh = point%conn(k,j)
-
-                        if(point%q(r,nbh) .gt. max) then 
-                                max = point%q(r,nbh)
-                        endif
-                enddo
-        end subroutine
-
-
-        subroutine minimum(k, r, min)
-
-                implicit none 
-
-                integer :: k, r, j, nbh
-		real*8 :: min
-
-                min = point%q(r,k)
-
-                do j = 1, point%nbhs(k)
-
-                        nbh = point%conn(k,j)
-
-                        if(point%q(r,nbh) .lt. min) then 
-                                min = point%q(r,nbh)
-                        endif
-                enddo
-        end subroutine!
-
-
-
-        subroutine smallest_dist(k, min_dist)
-
-                implicit none
-
-                integer :: k, j, nbh
-                real*8 :: dx, dy, ds, min_dist
-
-                min_dist = 10000.d0
-
-                do j = 1, point%nbhs(k)
-                        nbh = point%conn(k,j)
-                        dx = point%x(nbh) - point%x(k)
-                        dy = point%y(nbh) - point%y(k)
-
-
-                        ds = dsqrt(dx*dx + dy*dy)
-
-
-                        if(ds .lt. min_dist) then
-                                min_dist = ds
-                         endif
-
-                enddo   
-
-   
-        end subroutine!
-
-
 
 end module
 

@@ -27,7 +27,7 @@ contains
                 write(501,*)local_points
 
                 do i = 1, local_points
-                        write(501,*)point%global_id(i),point%flag_1(i),point%flag_2(i),point%x(i),&
+                        write(501,*)point%flag_1(i),point%flag_2(i),point%x(i),&
                                 point%y(i),point%prim(1,i),point%prim(2,i),point%prim(3,i),&
                                 point%prim(4,i)
                 end do

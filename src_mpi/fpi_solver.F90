@@ -26,25 +26,17 @@ contains
                 !Update the ghost values from the owned process
 
                 call update_begin_dq_ghost()
+                call update_begin_qm_ghost()
                 call func_delta()   
                 call update_end_dq_ghost()
+                call update_end_qm_ghost()
 
                 call cal_flux_residual()
 
-                ! Save previous solution
-                do i=1,max_points
-                        point%U_old(1,i) = point%prim(1,i)
-                        point%U_old(2,i) = point%prim(1,i)*point%prim(2,i)
-                        point%U_old(3,i) = point%prim(1,i)*point%prim(3,i)
-                        point%U_old(4,i) = 2.5d0*point%prim(4,i) + 0.5d0*point%prim(1,i)*&
-                                &(point%prim(2,i)*point%prim(2,i) +&
-                                &point%prim(3,i)*point%prim(3,i))
-                end do
-                
                 call state_update()
                 
+                ! start updating primitive values
                 call update_begin_prim_ghost()
-                call update_end_prim_ghost()
 
                 call objective_function()
 
@@ -66,6 +58,8 @@ contains
                 ! Primal output
                 if(mod(it,nsave)==0)call print_primal_output()
 
+                ! End update
+                call update_end_prim_ghost()
         
         end subroutine
 

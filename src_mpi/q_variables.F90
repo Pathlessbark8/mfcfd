@@ -59,46 +59,58 @@ contains
                                 do i = 1, local_points
 
 
-                                                x_i = point%x(i)
-                                                y_i = point%y(i)
+                                        x_i = point%x(i)
+                                        y_i = point%y(i)
 
-                                                sum_delx_sqr = 0.d0
-                                                sum_dely_sqr = 0.d0
-                                                sum_delx_dely = 0.d0
+                                        sum_delx_sqr = 0.d0
+                                        sum_dely_sqr = 0.d0
+                                        sum_delx_dely = 0.d0
 
-                                                sum_delx_delq = 0.d0
-                                                sum_dely_delq = 0.d0
+                                        sum_delx_delq = 0.d0
+                                        sum_dely_delq = 0.d0
 
-                                                do k = 1, point%nbhs(i)
+                                        point%qm(1, :, i) = point%q(:, i)
+                                        point%qm(2, :, i) = point%q(:, i)
 
-                                                        nbh = point%conn(i,k)
+                                        do k = 1, point%nbhs(i)
 
-                                                        x_k = point%x(nbh)
-                                                        y_k = point%y(nbh)
+                                                nbh = point%conn(i,k)
 
-                                                        delx = x_k - x_i
-                                                        dely = y_k - y_i
+                                                do r = 1, 4
+                                                        if(point%q(r,nbh) > point%qm(1,r,i)) then
+                                                                point%qm(1,r,i) = point%q(r,nbh)
+                                                        end if
+                                                        if(point%q(r,nbh) < point%qm(2,r,i)) then
+                                                                point%qm(2,r,i) = point%q(r,nbh)
+                                                        end if
+                                                end do
 
-                                                        dist = dsqrt(delx*delx + dely*dely)
-                                                        weights = dist**power
+                                                x_k = point%x(nbh)
+                                                y_k = point%y(nbh)
 
-                                                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
-                                                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+                                                delx = x_k - x_i
+                                                dely = y_k - y_i
 
-                                                        sum_delx_dely = sum_delx_dely + delx*dely*weights
+                                                dist = dsqrt(delx*delx + dely*dely)
+                                                weights = dist**power
 
-                                                        sum_delx_delq = sum_delx_delq + weights*delx*(point%q(:,nbh) - point%q(:,i))
-                                                        sum_dely_delq = sum_dely_delq + weights*dely*(point%q(:,nbh) - point%q(:,i))
+                                                sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                                                sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+
+                                                sum_delx_dely = sum_delx_dely + delx*dely*weights
+
+                                                sum_delx_delq = sum_delx_delq + weights*delx*(point%q(:,nbh) - point%q(:,i))
+                                                sum_dely_delq = sum_dely_delq + weights*dely*(point%q(:,nbh) - point%q(:,i))
 
 
-                                                enddo
+                                        enddo
 
-                                                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                                                one_by_det = 1.0d0/det
+                                        det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                                        one_by_det = 1.0d0/det
 
-                                                point%dq(1,:,i) = (sum_delx_delq*sum_dely_sqr&
-                                                       & - sum_dely_delq*sum_delx_dely)*one_by_det
-                                                point%dq(2,:,i) = (sum_dely_delq*sum_delx_sqr&
+                                        point%dq(1,:,i) = (sum_delx_delq*sum_dely_sqr&
+                                               & - sum_dely_delq*sum_delx_dely)*one_by_det
+                                        point%dq(2,:,i) = (sum_dely_delq*sum_delx_sqr&
                                                        &- sum_delx_delq*sum_delx_dely)*one_by_det
 
 

@@ -18,8 +18,6 @@ module data_structure_mod
         type :: points
 
 		real*8, dimension(:), allocatable :: x,y
-                integer, dimension(:), allocatable :: local_id
-                integer, dimension(:), allocatable :: global_id
                 integer, dimension(:), allocatable :: left,right
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
@@ -29,11 +27,14 @@ module data_structure_mod
 
 		real*8, dimension(:), allocatable :: nx, ny
 
-		real*8, dimension(:,:), allocatable :: prim
+		real*8, dimension(:), allocatable :: min_dist
+
+                real*8, dimension(:,:), allocatable :: prim
 		real*8, dimension(:,:), allocatable :: flux_res
 
                 real*8, dimension(:,:), allocatable :: q
 		real*8, dimension(:,:,:), allocatable :: dq
+		real*8, dimension(:,:,:), allocatable :: qm
 
 		real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
 
@@ -42,7 +43,7 @@ module data_structure_mod
                 integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
                 real*8, dimension(:), allocatable  :: delta
-
+                
 ! Implicit data
                 real*8, dimension(:,:), allocatable :: U_old
         end type points
@@ -119,10 +120,11 @@ module data_structure_mod
 
 !   PETSc variables
 
-        PetscMPIInt              :: rank,proc
+        PetscMPIInt          :: rank,proc
         Vec                  :: p_dq
+        Vec                  :: p_qm
         Vec                  :: p_prim
-        PetscLogEvent           :: dq_comm, prim_comm
+        PetscLogEvent        :: dq_comm, prim_comm, qm_comm
 
     contains
 
@@ -139,6 +141,7 @@ module data_structure_mod
 
                 allocate(point%dq(2,4,max_points))
 
+                allocate(point%qm(2,4,max_points))
 
                 allocate(point%entropy(max_points))
                 allocate(point%vorticity(max_points))
@@ -178,8 +181,8 @@ module data_structure_mod
 
 
                 deallocate(point%q)
-
                 deallocate(point%dq)
+                deallocate(point%qm)
 
 
                 deallocate(point%entropy)
@@ -213,11 +216,17 @@ module data_structure_mod
         subroutine init_petsc()
                 implicit none
                 PetscErrorCode       :: ierr
-                if (rank==0) print*,'Setting up parallel vectors'
+                if(rank == 0) then
+                        write(*,*) '%%%%%%%-Setting up parallel vectors-%%%%%%%'
+                        write(*,*)
+                end if
                 pghost = pghost - 1
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,point%dq(1,1,1),p_dq,ierr)
+                
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
+                        &PETSC_DECIDE,ghost_points,pghost,point%qm(1,1,1),p_qm,ierr)
                 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,point%prim(1,1),p_prim,ierr)
@@ -226,6 +235,7 @@ module data_structure_mod
                 plen = plen/4
 
                 call PetscLogEventRegister('dq_comm',  0,dq_comm,ierr);
+                call PetscLogEventRegister('qm_comm',  0,qm_comm,ierr);
                 call PetscLogEventRegister('prim_comm',  0,prim_comm,ierr);
 
         end subroutine 
@@ -237,6 +247,7 @@ module data_structure_mod
                     
 
                 call VecDestroy(p_dq,ierr)
+                call VecDestroy(p_qm,ierr)
                 call VecDestroy(p_prim,ierr)
 
         end subroutine 
@@ -260,6 +271,14 @@ module data_structure_mod
 
         end subroutine 
 
+        subroutine update_begin_qm_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateBegin(p_qm,INSERT_VALUES,SCATTER_FORWARD,ierr)
+
+        end subroutine 
 
         subroutine update_end_dq_ghost()
                 implicit none
@@ -272,6 +291,17 @@ module data_structure_mod
 
         end subroutine 
 
+        subroutine update_end_qm_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call PetscLogEventBegin(qm_comm, ierr)
+                call VecGhostUpdateEnd(p_qm,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call PetscLogEventEnd(qm_comm, ierr)
+
+        end subroutine 
+        
         subroutine update_end_prim_ghost()
                 implicit none
                 PetscErrorCode      :: ierr

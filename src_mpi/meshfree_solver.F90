@@ -11,13 +11,10 @@ program meshfree_solver
         use q_lskum_mod
         use compute_force_coeffs_mod
 
-
         implicit none
         real*8  :: totaltime,runtime
         PetscErrorCode  :: ierr
 
-
-!
         call PetscInitialize('case.in', ierr)
         if(ierr /= 0) stop "Unable to initialize PETSc"
         call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr)
@@ -29,14 +26,30 @@ program meshfree_solver
         
         totaltime = MPI_Wtime()
 
+        if(rank == 0) then
+                write(*,*)
+                write(*,*)'%%%%%%%%%%%%%-MPI Meshfree Code-%%%%%%%%%%%'
+                write(*,*)
+        end if
+
 !       Read the case file
 
+        if(rank == 0) then
+                write(*,*)'%%%%%%%%%%%-Reading the case file-%%%%%%%%%'
+                write(*,*)
+        end if
+        
         call readcase()
 
 !	Reading the input data ..
 
+        if(rank == 0) then
+                write(*,*)'%%%%%%%%%%%%-Reading point data-%%%%%%%%%%%'
+                write(*,*)
+        end if
+        
         call read_input_point_data()
-
+        
 !       Allocate solution variables
 
         call allocate_soln()
@@ -45,12 +58,18 @@ program meshfree_solver
 
         if(proc .ne. 1)call init_petsc()
         if(proc==1) plen = max_points
-        if(rank==0) print*,'No of points:',plen
+        if(rank == 0) then
+                write(*,*) 'Number of points:         ', plen
+                write(*,*)
+        end if
 
 !	Assign the initial conditions for the primitive variables ..	
 
         call initial_conditions()
-        if(rank==0)print*,'solution initialised'
+        if(rank == 0) then
+                write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+                write(*,*)
+        end if
        
 !	Primal fixed point iterative solver ..
         
@@ -61,17 +80,20 @@ program meshfree_solver
 !       Save solution one last time
         call print_primal_output()
 
-
 !       destroy petsc vectors and deallocate point/solution vectors
         call dest_petsc()
         call deallocate_soln()
         call dealloc_points()
 
         totaltime = MPI_Wtime() - totaltime
-        if(rank==0)print*,'Simulation completed!!!'
-        if(rank==0)print*,'runtime:',runtime
-        if(rank==0)print*,'totaltime:',totaltime
-        
+
+        if(rank == 0) then
+                write(*,*)
+                write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
+                write(*,*) 'Run time:  ',runtime,'seconds'
+                write(*,*) 'Total time:',totaltime,'seconds'
+        end if
+
 !       stop petsc
         call PetscFinalize(ierr)
 

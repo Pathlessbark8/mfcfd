@@ -17,7 +17,6 @@ contains
                 character(len=64) :: part_grid
                 character(len=10) :: itos
 
-                if (rank==0) print*,'Reading points'
                 part_grid = 'partGrid'
                 if (proc>1) part_grid = 'partGrid'//trim(itos(2,rank))
 
@@ -28,14 +27,13 @@ contains
                 read(101,*) max_points, local_points, ghost_points
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
-                allocate(point%local_id(max_points))
-                allocate(point%global_id(max_points))
                 allocate(point%flag_1(max_points))
                 allocate(point%flag_2(max_points))
                 allocate(point%nbhs(max_points))
                 allocate(point%conn(max_points,15))
                 allocate(point%nx(max_points))
                 allocate(point%ny(max_points))
+                allocate(point%min_dist(max_points))
                 allocate(point%left(max_points))
                 allocate(point%right(max_points))
 
@@ -46,8 +44,8 @@ contains
                 if(old_format == 0) then
                         do k = 1, local_points
         
-                                read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
-                                & point%y(k),point%left(k),point%right(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
+                                read(101,*) point%x(k), point%y(k),point%left(k),point%right(k), &
+                                & point%flag_1(k),point%flag_2(k), point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
                                 
                         !Storing the count for the point types
@@ -69,8 +67,9 @@ contains
                 else
                         do k = 1, local_points
         
-                                read(101,*) point%local_id(k),point%global_id(k),point%x(k),&
-                                & point%y(k),point%nx(k),point%ny(k), point%flag_1(k),point%flag_2(k),point%nbhs(k),&
+                                read(101,*) point%x(k),&
+                                & point%y(k),point%nx(k),point%ny(k), point%flag_1(k), &
+                                & point%flag_2(k), point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
                                 
                         !Storing the count for the point types
@@ -81,7 +80,7 @@ contains
                                 else if(point%flag_1(k) == 3) then
                                         outer_points = outer_points + 1
                                 end if
-        
+                                point%flag_1(k) = point%flag_1(k) - 1
                                 
                         enddo
                 end if
@@ -92,51 +91,29 @@ contains
                 allocate(outer_points_index(outer_points))
 
 
-                if(old_format == 0)then
-                        wall_temp = 0
-                        interior_temp = 0
-                        outer_temp = 0
-                        !Storing indices of the point definitions
-                        do k = 1,local_points
-                                if(point%flag_1(k) == 0) then
-                                        wall_temp = wall_temp+1
-                                        wall_points_index(wall_temp) = k
-                                else if(point%flag_1(k) == 1) then
-                                        interior_temp = interior_temp+1 
-                                        interior_points_index(interior_temp) = k
-                                else if(point%flag_1(k) == 2) then
-                                        outer_temp = outer_temp+1
-                                        outer_points_index(outer_temp) = k
-                                end if
-                        end do
-                else
-                        wall_temp = 0
-                        interior_temp = 0
-                        outer_temp = 0
-                        !Storing indices of the point definitions
-                        do k = 1,local_points
-                                if(point%flag_1(k) == 1) then
-                                        wall_temp = wall_temp+1
-                                        wall_points_index(wall_temp) = k
-                                else if(point%flag_1(k) == 2) then
-                                        interior_temp = interior_temp+1 
-                                        interior_points_index(interior_temp) = k
-                                else if(point%flag_1(k) == 3) then
-                                        outer_temp = outer_temp+1
-                                        outer_points_index(outer_temp) = k
-                                end if
-                        end do
-                end if
-
-
-                        
+                wall_temp = 0
+                interior_temp = 0
+                outer_temp = 0
+                !Storing indices of the point definitions
+                do k = 1,local_points
+                        if(point%flag_1(k) == 0) then
+                                wall_temp = wall_temp+1
+                                wall_points_index(wall_temp) = k
+                        else if(point%flag_1(k) == 1) then
+                                interior_temp = interior_temp+1 
+                                interior_points_index(interior_temp) = k
+                        else if(point%flag_1(k) == 2) then
+                                outer_temp = outer_temp+1
+                                outer_points_index(outer_temp) = k
+                        end if
+                end do
 
                 if (proc > 1) then
                         allocate(pghost(ghost_points))
 
                         do k=local_points+1,max_points
-                                read(101,*) point%local_id(k),pghost(k-local_points),&
-                                & point%x(k),point%y(k)
+                                read(101,*) pghost(k-local_points),&
+                                & point%x(k),point%y(k), point%min_dist(k)
 
                         end do
                 end if
@@ -151,14 +128,13 @@ contains
                 
                 deallocate(point%x)
                 deallocate(point%y)
-                deallocate(point%local_id)
-                deallocate(point%global_id)
                 deallocate(point%flag_1)
                 deallocate(point%flag_2)
                 deallocate(point%nbhs)
                 deallocate(point%conn)
                 deallocate(point%nx)
                 deallocate(point%ny)
+                deallocate(point%min_dist)
                 deallocate(point%left)
                 deallocate(point%right)
 
