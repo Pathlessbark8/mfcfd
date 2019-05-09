@@ -1,6 +1,7 @@
 module compute_force_coeffs_mod
 
         use data_structure_mod
+        use petsc_data_structure_mod
 
         contains
 

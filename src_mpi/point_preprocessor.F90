@@ -1,6 +1,7 @@
 module point_preprocessor_mod
 
         use data_structure_mod
+        use petsc_data_structure_mod
 
 contains
 
@@ -36,6 +37,7 @@ contains
                 allocate(point%min_dist(max_points))
                 allocate(point%left(max_points))
                 allocate(point%right(max_points))
+                allocate(point%original_id(local_points))
 
                 wall_points = 0
                 interior_points = 0
@@ -44,9 +46,9 @@ contains
                 if(old_format == 0) then
                         do k = 1, local_points
         
-                                read(101,*) point%x(k), point%y(k),point%left(k),point%right(k), &
-                                & point%flag_1(k),point%flag_2(k), point%min_dist(k), point%nbhs(k),&
-                                & (point%conn(k,r),r=1,point%nbhs(k))
+                                read(101,*) ,point%original_id(k), point%x(k), point%y(k), &
+                                & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
+                                & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
                                 
                         !Storing the count for the point types
                                 if(point%flag_1(k) == 0) then
@@ -67,7 +69,7 @@ contains
                 else
                         do k = 1, local_points
         
-                                read(101,*) point%x(k),&
+                                read(101,*) point%original_id(k), point%x(k),&
                                 & point%y(k),point%nx(k),point%ny(k), point%flag_1(k), &
                                 & point%flag_2(k), point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
@@ -137,6 +139,7 @@ contains
                 deallocate(point%min_dist)
                 deallocate(point%left)
                 deallocate(point%right)
+                deallocate(point%original_id)
 
                 deallocate(wall_points_index)
                 deallocate(interior_points_index)

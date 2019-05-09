@@ -1,6 +1,7 @@
 subroutine readcase()
 #include <petsc/finclude/petscsys.h>
         use petscsys
+        use petsc_data_structure_mod
         use data_structure_mod
         implicit none
         PetscErrorCode :: ierr

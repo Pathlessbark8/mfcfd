@@ -6,6 +6,7 @@ program meshfree_solver
         use petscsys
         use parameter_mod
         use data_structure_mod
+        use petsc_data_structure_mod
         use point_preprocessor_mod
         use initial_conditions_mod
         use q_lskum_mod
