@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 int main(int argc, char *argv[]){
     int numPart;
     Graph g;
@@ -15,15 +14,24 @@ int main(int argc, char *argv[]){
     {
        for(int i=1; i<argc; ++i)
        {
-          if(strcmp(argv[i],"-quadtree") == 0)
-             g.format = 1;
-          else if(strcmp(argv[i],"-legacy") == 0)
-             g.format = 2;
-          else if(strcmp(argv[i],"-restart") == 0)
-             g.format = 3;
-          else if(strcmp(argv[i],"-cuda") == 0)
-             g.gpu = true;
-          else
+          if(strcmp(argv[i],"-quadtree") == 0){
+		  g.format = 1;
+	  }
+          else if(strcmp(argv[i],"-legacy") == 0){
+		  g.format = 2;
+	  }
+          else if(strcmp(argv[i],"-restart") == 0){
+		  g.format = 3;
+	  }
+          else if(strcmp(argv[i],"-cuda") == 0){
+		  if(g.format == 1){
+			  g.gpu = 1;
+		  }
+		  else if(g.format == 2){
+			  g.gpu = 2;
+		  }
+	  }
+	  else
           {
             assert(atoi(argv[i]) > 0);
             numPart = atoi(argv[i]);
@@ -50,12 +58,17 @@ int main(int argc, char *argv[]){
     g.partition(numPart);
 
     // Choose output format
-    if (g.gpu){ // gpu output
-	    g.write_output_gpu();
+    if (g.gpu == 1){ // gpu output for quadtree
+	    cout << " Writing quadtree cuda output " << endl;
+	    g.write_output_gpu_quad();
+    }
+    else if (g.gpu == 2){ // gpu output for legacy
+	    cout << " Writing legacy cuda output " << endl;
+	    g.write_output_gpu_legacy();
     }else { // All other formats
+	    cout << " Writing general output " << endl;
 	    g.write_output(); 
     }
-
 
     return 0;
 }

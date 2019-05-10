@@ -35,10 +35,10 @@ class Graph{
 		vector<idx_t> xadjVec;
 		vector<idx_t> adjncyVec;
 		int format;
-		bool gpu;
+		int gpu;
 		
 		// read file and build graph
-		Graph(){ format = 0; gpu = false; };
+		Graph(){ format = 0; gpu = 0; };
 
 		void read_point_create_graph_legacy();
 		void read_point_create_graph_quad();
@@ -46,7 +46,8 @@ class Graph{
 		void cal_min_dist();
 		void partition(int);
 		string getfileName(int, int );
-		void write_output_gpu();
+		void write_output_gpu_legacy();
+		void write_output_gpu_quad();
 		void write_output();
 		 
 };
