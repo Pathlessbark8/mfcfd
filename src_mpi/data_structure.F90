@@ -25,6 +25,7 @@ module data_structure_mod
 		real*8, dimension(:), allocatable :: min_dist
 
                 real*8, dimension(:,:), allocatable :: prim
+                real*8, dimension(:,:), allocatable :: prim_old
 		real*8, dimension(:,:), allocatable :: flux_res
 
                 real*8, dimension(:,:), allocatable :: q
@@ -112,6 +113,7 @@ module data_structure_mod
                 implicit none
 
                 allocate(point%prim(4,max_points))
+                allocate(point%prim_old(4,max_points))
 
                 allocate(point%flux_res(4,max_points))
 
@@ -155,6 +157,7 @@ module data_structure_mod
                 implicit none
 
                 deallocate(point%prim)
+                deallocate(point%prim_old)
 
                 deallocate(point%flux_res)
                 deallocate(point%U_old)

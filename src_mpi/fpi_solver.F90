@@ -15,28 +15,37 @@ contains
 
                 implicit none
                 
-                integer :: t, i
+                integer :: t, i, rk
                 PetscErrorCode :: ierr
 
+                do i =1, local_points
+                        point%prim_old(:, i) = point%prim(:, i)
+                end do
 
-                call eval_q_variables()
-                
-                call eval_q_derivatives()
+                ! Perform 4-stage, 3-order SSPRK update
+                do rk = 1, 4
 
-                !Update the ghost values from the owned process
+                        call eval_q_variables()
+                        
+                        call eval_q_derivatives()
 
-                call update_begin_dq_ghost()
-                call update_begin_qm_ghost()
-                call func_delta()   
-                call update_end_dq_ghost()
-                call update_end_qm_ghost()
+                        !Update the ghost values from the owned process
 
-                call cal_flux_residual()
+                        call update_begin_dq_ghost()
+                        call update_begin_qm_ghost()
+                        call func_delta()   
+                        call update_end_dq_ghost()
+                        call update_end_qm_ghost()
 
-                call state_update()
-                
-                ! start updating primitive values
-                call update_begin_prim_ghost()
+                        call cal_flux_residual()
+
+                        call state_update(rk)
+                        
+                        ! start updating primitive values
+                        call update_begin_prim_ghost()
+                        call update_end_prim_ghost()
+
+                end do
 
                 call objective_function()
 
@@ -58,9 +67,6 @@ contains
                 ! Print primal output
                 if(mod(it,nsave)==0)call print_primal_output()
 
-                ! End update
-                call update_end_prim_ghost()
-        
         end subroutine
 
 end module fpi_solver_mod

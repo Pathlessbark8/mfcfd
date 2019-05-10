@@ -19,7 +19,7 @@ contains
                 character(len=10) :: itos
 
                 part_grid = 'partGrid'
-                if (proc>1) part_grid = 'partGrid'//trim(itos(2,rank))
+                if (proc>1) part_grid = 'partGrid'//trim(itos(4,rank))
 
                 OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
