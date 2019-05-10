@@ -1,6 +1,6 @@
 ## MFpre
 
-Welcome to MFpre. This is a PreProcessor code developed to perform domain decomposition for the parallel meshfree Compressible flow solver. The code is developed using the routines available in the open-source graph partitioning tool [METIS](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview). This is a private repository, contact the owner if your'e interested in contributing to the code.
+Welcome to MFpre. This is a PreProcessor code developed to perform domain decomposition for the parallel meshfree Compressible flow solver. The code is developed using the routines available in the open-source graph partitioning tool [METIS](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview).
 
 ### Running the program
 
