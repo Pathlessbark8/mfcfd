@@ -17,7 +17,6 @@ typedef struct point {
     idx_t id;
     double x, y;
     int left, right;
-    double nx, ny;
     double min_dist;
     idx_t flag1, flag2;
 } point;
@@ -36,18 +35,18 @@ class Graph{
 		vector<idx_t> xadjVec;
 		vector<idx_t> adjncyVec;
 		int format;
+		bool gpu;
 		
 		// read file and build graph
-		Graph(){ format = 0; };
+		Graph(){ format = 0; gpu = false; };
 
 		void read_point_create_graph_legacy();
-		void read_point_create_graph_legacy1();
 		void read_point_create_graph_quad();
 		void read_point_create_graph_restart();
 		void cal_min_dist();
 		void partition(int);
 		string getfileName(int, int );
-		void write_output_legacy();
+		void write_output_gpu();
 		void write_output();
 		 
 };

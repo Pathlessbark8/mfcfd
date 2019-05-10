@@ -9,33 +9,7 @@
 
 using namespace std;
 
-
 void Graph::read_point_create_graph_legacy(){
-	ifstream infile("point-input");
-	assert(infile.is_open());
-	string line;
-	nvtxs = 0;
-	xadjVec.push_back(adjncyVec.size());
-	while(getline(infile, line)){
-		nvtxs++;
-		istringstream iss(line);
-		point temp ;
-		iss >> temp.id >> temp.x >> temp.y
-			>> temp.nx >> temp.ny 
-        	        >> temp.flag1 >> temp.flag2;
-		temp.min_dist = 10000;
-		ptVec.push_back(temp);
-		int neighborId;
-		int neighborCount;
-		iss >> neighborCount;
-		while(iss >> neighborId){
-	                adjncyVec.push_back(neighborId-1);
-		}
-		xadjVec.push_back(adjncyVec.size());
-	}
-}
-
-void Graph::read_point_create_graph_legacy1(){
 	ifstream infile("point-input");
 	assert(infile.is_open());
 	string line;
@@ -71,7 +45,7 @@ void Graph::read_point_create_graph_quad(){
 		istringstream iss(line);
 		point temp ;
 		iss >> temp.id >> temp.x >> temp.y
-			>> temp.nx >> temp.ny 
+			>> temp.left >> temp.right
         	        >> temp.flag1 >> temp.flag2;
 		temp.min_dist = 10000;
 		ptVec.push_back(temp);
@@ -96,7 +70,7 @@ void Graph::read_point_create_graph_restart(){
 		istringstream iss(line);
 		point temp ;
 		iss >> temp.id >> temp.x >> temp.y
-			>> temp.nx >> temp.ny 
+			>> temp.left >> temp.right
         	        >> temp.flag1 >> temp.flag2;
 		temp.min_dist = 10000;
 		ptVec.push_back(temp);

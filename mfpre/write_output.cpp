@@ -15,23 +15,26 @@ string Graph::getfileName(int partID, int nParts){
         if(nParts == 1)
 		return "partGrid";
         else {
-		if(partID > -1 && partID < 10)
+		if(partID > -1 && partID < 10){
+			return "partGrid000" + s;
+		}
+		else if(partID > 99 && partID < 1000){
 			return "partGrid0" + s;
+		}
 		else 
-			return "partGrid0" + s;
+			return "partGrid00" + s;
 	}
-	
 }
 
 
-void Graph::write_output_legacy(){
+void Graph::write_output_gpu(){
 	
 	/*  writing output routine  */
         // create files and write basic info
 	for(int i=0; i<nParts; i++){
 		string filename = getfileName(i, nParts);
 		ofstream outfile (filename.c_str());
-		outfile << totalPoints[i]+ghosts[i].size() << " "<< totalPoints[i] << " " << ghosts[i].size() << endl;
+		outfile << totalPoints[i]+ghosts[i].size() << endl;
 	}
 
         // local nodes
@@ -41,8 +44,8 @@ void Graph::write_output_legacy(){
 		fstream write;
 		write.open(filename.c_str(), fstream::app);
 		write << fixed;
-		write << ptVec[i].id << " " << setprecision(20)  << " " << ptVec[i].x << " " << ptVec[i].y 
-			<< " " << ptVec[i].nx << " " << ptVec[i].ny<< " " << ptVec[i].flag1 << " " << ptVec[i].flag2 << " " << ptVec[i].min_dist << " ";
+		write << setprecision(20)  << " " << ptVec[i].x << " " << ptVec[i].y 
+			<< " " << inputToLoc[partnId][ptVec[i].left] << " " << inputToLoc[partnId][ptVec[i].right] << " " << ptVec[i].flag1 << " " << ptVec[i].flag2 << " " << ptVec[i].min_dist << " ";
 		write << xadjVec[i+1]-xadjVec[i] << " ";
 		for(idx_t j=xadjVec[i]; j<xadjVec[i+1]; j++){
 			write << inputToLoc[partnId][adjncyVec[j]+1] << " ";
@@ -109,5 +112,4 @@ void Graph::write_output(){
 		}
 		write.close(); 
 	}
-	
 }
