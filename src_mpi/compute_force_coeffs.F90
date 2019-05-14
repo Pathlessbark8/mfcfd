@@ -27,7 +27,7 @@ module compute_force_coeffs_mod
                         PetscErrorCode :: ierr
 
                         cp_file = 'cp/'//'cp-file'
-                        if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(2,rank))
+                        if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(4,rank))
 
                         OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 

@@ -16,6 +16,14 @@ subroutine readcase()
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-max_iters',max_iters,set,ierr); CHKERRQ(ierr)
 
+        tfinal = 1.0d20 ! Default final time: large value
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-tfinal',tfinal,set,ierr); CHKERRQ(ierr)
+
+        timestep = 0 ! Default steady
+        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                            '-timestep',timestep,set,ierr); CHKERRQ(ierr)
+
         power = 0.0d0 ! Default power
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-power',power,set,ierr); CHKERRQ(ierr)
@@ -58,9 +66,10 @@ subroutine readcase()
         
         ! Print paramaters to screen
         if (rank==0) then
-                write(*,*) 'max_iters :', max_iters
-                write(*,*) 'cfl       :', cfl
-                write(*,*) 'shapes    :', shapes
+                write(*,*) 'max_iters   :', max_iters
+                write(*,*) 'cfl         :', cfl
+                write(*,*) 'shapes      :', shapes
+                write(*,*) 'timestep    :', shapes
         end if
 
 end subroutine 

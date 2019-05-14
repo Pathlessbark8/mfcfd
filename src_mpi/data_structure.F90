@@ -68,6 +68,10 @@ module data_structure_mod
         real*8 :: CFL
 
         integer :: max_iters
+
+!Unsteady variables
+        real*8 :: t, tfinal, dtg
+        integer :: timestep
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..

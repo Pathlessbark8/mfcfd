@@ -1,6 +1,8 @@
 module state_update_mod
+#include <petsc/finclude/petscsys.h>
 
         use data_structure_mod
+        use petsc_data_structure_mod
         use flux_residual_mod
 
         contains
@@ -197,16 +199,15 @@ module state_update_mod
 
                 integer :: i, k, r
 		real*8 :: delta_t
-		real*8 :: min_dist
+		real*8 :: min_dist, lmin = 1.0d0, gmin
 		real*8 :: x_i, y_i, x_k, y_k
 		real*8 :: u1, u2, rho, pr, mod_u
 		real*8 :: dist
 		real*8 :: min_delt 
+                PetscErrorCode :: ierr
 
                 do i = 1,local_points
                         min_delt = 1.0d0
-
-
                         do r = 1, point%nbhs(i)
                                 k = point%conn(i,r)
 
@@ -238,6 +239,19 @@ module state_update_mod
                         point%delta(i) = min_delt
                 end do
 
+                if(timestep == 1) then
+                        do i = 1, local_points
+                                if (point%delta(i).lt.lmin) lmin=point%delta(i)
+                        end do
+                        call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
+                                & PETSC_COMM_WORLD, ierr)
+                        call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+                                 & ierr)
+
+                        dtg = gmin
+                        if(t+dtg > tfinal) dtg = tfinal - t
+                        point%delta = dtg
+                end if
 
         end subroutine
 

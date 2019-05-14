@@ -41,13 +41,21 @@ contains
                         write(*,*)'%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
                         write(*,*)
                 end if
+
+                t = 0.0d0
                 
                 do it = 1, max_iters
                         
                         call fpi_solver(it)
+                        t = t + dtg
                         if (rank==0) then
-                                write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
-                                write(301, *) it, residue
+                                if(timestep == 0) then
+                                        write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
+                                        write(301, *) it, residue
+                                elseif(timestep == 1) then
+                                        write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'time:',t
+                                        write(301, *) it, t, dtg
+                                end if
                         end if
                 enddo
                 
