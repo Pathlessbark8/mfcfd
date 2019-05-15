@@ -30,20 +30,25 @@ CONTAINS
       pointd%prim_old(:, i) = pointd%prim(:, i)
       point%prim_old(:, i) = point%prim(:, i)
     END DO
-! Perform 4-stage, 3-order SSPRK update
-    CALL EVAL_Q_VARIABLES_D()
-    CALL EVAL_Q_DERIVATIVES_D()
-    call update_begin_dq_ghost()
-    call update_begin_qm_ghost()
+      
     CALL FUNC_DELTA_D()
-    call update_end_dq_ghost()
-    call update_end_qm_ghost()
     
+! Perform 4-stage, 3-order SSPRK update
     DO rk=1,4
+      CALL EVAL_Q_VARIABLES_D()
+      CALL EVAL_Q_DERIVATIVES_D()
+   
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
+      
       CALL CAL_FLUX_RESIDUAL_D()
       CALL STATE_UPDATE_D(rk)
+    
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
     END DO
-    call update_begin_prim_ghost()
     CALL OBJECTIVE_FUNCTION_D()
 
     call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
@@ -60,7 +65,6 @@ CONTAINS
     ELSE
       residue = DLOG10(res_new/res_old)
     END IF
-    call update_end_prim_ghost()
   END SUBROUTINE FPI_SOLVER_D
 
   SUBROUTINE FPI_SOLVER(t)

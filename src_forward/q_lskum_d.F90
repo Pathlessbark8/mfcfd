@@ -22,6 +22,8 @@ CONTAINS
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
+    if(proc == 1)pointd%x(80)=1.0
+    if(rank == 1)pointd%x(8)=1.0
     CALL COMPUTE_NORMALS_D()
     if(rank == 0) then
             write(*,*)'%%%%-Normals and connectivity generated-%%%'

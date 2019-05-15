@@ -90,6 +90,10 @@ program meshfree_solver
         end if
         runtime = MPI_Wtime() - runtime
 
+    if(proc == 1)print*,pointb%x(80)
+    if(rank == 1)print*,pointb%x(8)
+
+
 !       Write solution
         call print_output()
 

@@ -112,18 +112,22 @@ CONTAINS
       sum_delx_delq = 0.d0
       CALL PUSHREAL8ARRAY(sum_dely_delq, 4)
       sum_dely_delq = 0.d0
+      CALL PUSHREAL8ARRAY(point%qm(1, :, i), 4)
       point%qm(1, :, i) = point%q(:, i)
+      CALL PUSHREAL8ARRAY(point%qm(2, :, i), 4)
       point%qm(2, :, i) = point%q(:, i)
       DO k=1,point%nbhs(i)
         nbh = point%conn(i, k)
         DO r=1,4
           IF (point%q(r, nbh) .GT. point%qm(1, r, i)) THEN
+            CALL PUSHREAL8(point%qm(1, r, i))
             point%qm(1, r, i) = point%q(r, nbh)
             CALL PUSHCONTROL1B(0)
           ELSE
             CALL PUSHCONTROL1B(1)
           END IF
           IF (point%q(r, nbh) .LT. point%qm(2, r, i)) THEN
+            CALL PUSHREAL8(point%qm(2, r, i))
             point%qm(2, r, i) = point%q(r, nbh)
             CALL PUSHCONTROL1B(1)
           ELSE
@@ -214,18 +218,22 @@ CONTAINS
         DO r=4,1,-1
           CALL POPCONTROL1B(branch)
           IF (branch .NE. 0) THEN
+            CALL POPREAL8(point%qm(2, r, i))
             pointb%q(r, nbh) = pointb%q(r, nbh) + pointb%qm(2, r, i)
             pointb%qm(2, r, i) = 0.0_8
           END IF
           CALL POPCONTROL1B(branch)
           IF (branch .EQ. 0) THEN
+            CALL POPREAL8(point%qm(1, r, i))
             pointb%q(r, nbh) = pointb%q(r, nbh) + pointb%qm(1, r, i)
             pointb%qm(1, r, i) = 0.0_8
           END IF
         END DO
       END DO
+      CALL POPREAL8ARRAY(point%qm(2, :, i), 4)
       pointb%q(:, i) = pointb%q(:, i) + pointb%qm(2, :, i)
       pointb%qm(2, :, i) = 0.0_8
+      CALL POPREAL8ARRAY(point%qm(1, :, i), 4)
       pointb%q(:, i) = pointb%q(:, i) + pointb%qm(1, :, i)
       pointb%qm(1, :, i) = 0.0_8
       CALL POPREAL8ARRAY(sum_dely_delq, 4)

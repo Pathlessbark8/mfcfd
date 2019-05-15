@@ -119,10 +119,7 @@ CONTAINS
         implicit none
 
         if(obj_flag == 0) then
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%-No objective function chosen-%%%%%%'
-                        write(*,*)
-                end if
+                SETERRA(PETSC_COMM_WORLD,1,'Choose an objective function')
         elseif(obj_flag == 1) then
                 clb = 1.0
                 if(rank == 0) then

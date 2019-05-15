@@ -26,12 +26,14 @@ CONTAINS
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
-    CALL EVAL_Q_VARIABLES()
-    CALL PUSHREAL8ARRAY(point%qm, 2*4*max_points)
-    CALL EVAL_Q_DERIVATIVES()
     CALL FUNC_DELTA()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,4
+      CALL PUSHREAL8ARRAY(point%q, 4*max_points)
+      CALL EVAL_Q_VARIABLES()
+      CALL PUSHREAL8ARRAY(point%qm, 2*4*max_points)
+      CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
+      CALL EVAL_Q_DERIVATIVES()
       CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL()
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
@@ -43,11 +45,13 @@ CONTAINS
       CALL STATE_UPDATE_B(rk)
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_B()
+      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
+      CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
+      CALL EVAL_Q_DERIVATIVES_B()
+      CALL POPREAL8ARRAY(point%q, 4*max_points)
+      CALL EVAL_Q_VARIABLES_B()
     END DO
     CALL FUNC_DELTA_B()
-    CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
-    CALL EVAL_Q_DERIVATIVES_B()
-    CALL EVAL_Q_VARIABLES_B()
     DO i=local_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
       pointb%prim_old(:, i) = 0.0_8
@@ -62,11 +66,11 @@ CONTAINS
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
-    CALL EVAL_Q_VARIABLES()
-    CALL EVAL_Q_DERIVATIVES()
     CALL FUNC_DELTA()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,4
+      CALL EVAL_Q_VARIABLES()
+      CALL EVAL_Q_DERIVATIVES()
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)
     END DO

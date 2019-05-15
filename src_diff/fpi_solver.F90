@@ -19,14 +19,14 @@ contains
                         point%prim_old(:, i) = point%prim(:, i)
                 end do
 
-                call eval_q_variables()
-                
-                call eval_q_derivatives()
-
                 call func_delta()   
                 
                 ! Perform 4-stage, 3-order SSPRK update
                 do rk = 1, 4
+                        
+                        call eval_q_variables()
+                
+                        call eval_q_derivatives()
 
                         call cal_flux_residual()
 

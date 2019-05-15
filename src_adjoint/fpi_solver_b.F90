@@ -36,57 +36,62 @@ CONTAINS
       pointb%x_res(2, i) = pointb%y(i)
     END DO
     
-    CALL EVAL_Q_VARIABLES()
-    CALL PUSHREAL8ARRAY(point%qm, 2*4*max_points)
-    CALL EVAL_Q_DERIVATIVES()
-    call update_begin_dq_ghost()
-    call update_begin_qm_ghost()
     CALL FUNC_DELTA()
-    call update_end_dq_ghost()
-    call update_end_qm_ghost()
+    
     ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,4
+      CALL PUSHREAL8ARRAY(point%q, 4*max_points)
+      CALL EVAL_Q_VARIABLES()
+      CALL PUSHREAL8ARRAY(point%qm, 2*4*max_points)
+      CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
+      CALL EVAL_Q_DERIVATIVES()
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
       CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL()
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE(rk)
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
     END DO
-    call update_begin_prim_ghost()
-    call update_end_prim_ghost()
     
     ! Adjoint begins
     CALL OBJECTIVE_FUNCTION_B()
-    
   
     DO rk=4,1,-1
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE_B(rk)
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_B()
+      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
+      CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
+      call update_begin_dqb_ghost()
+      call update_begin_qmb_ghost()
+      call update_end_dqb_ghost()
+      call update_end_qmb_ghost()
+      CALL EVAL_Q_DERIVATIVES_B()
+      do j = local_points+1, max_points 
+        pointb%dq(:, :, j) = 0.0d0
+        pointb%qm(:, :, j) = 0.0d0
+      end do
+      CALL POPREAL8ARRAY(point%q, 4*max_points)
+      call update_begin_qb_ghost()
+      call update_end_qb_ghost()
+      CALL EVAL_Q_VARIABLES_B()
+      do j = local_points+1, max_points 
+        pointb%q(:, j) = 0.0d0
+      end do
     END DO
+    
     do j = local_points+1, max_points 
       pointb%prim(:, j) = 0.0d0
     end do
    
     CALL FUNC_DELTA_B()
-    CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
-    call update_begin_dqb_ghost()
-    call update_begin_qmb_ghost()
-    call update_end_dqb_ghost()
-    call update_end_qmb_ghost()
-    CALL EVAL_Q_DERIVATIVES_B()
-    do j = local_points+1, max_points 
-      pointb%dq(:, :, j) = 0.0d0
-      pointb%qm(:, :, j) = 0.0d0
-    end do
-    call update_begin_qb_ghost()
-    call update_end_qb_ghost()
     call update_begin_primb_ghost()
     call update_end_primb_ghost()
-    CALL EVAL_Q_VARIABLES_B()
-    do j = local_points+1, max_points 
-      pointb%q(:, j) = 0.0d0
-    end do
     
     DO i=local_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
@@ -105,7 +110,7 @@ CONTAINS
     adj_res = dsqrt(adj_res)/plen
     if(t == max_iters) then
         adj_res_old = adj_res
-    elseif(t .ne. 1) then
+    else
         adj_res = dlog10(adj_res/adj_res_old)
     end if
 
@@ -119,25 +124,26 @@ CONTAINS
       point%prim_old(:, i) = point%prim(:, i)
     END DO
 ! Perform 4-stage, 3-order SSPRK update
-    CALL EVAL_Q_VARIABLES()
-    CALL EVAL_Q_DERIVATIVES()
-
-    call update_begin_dq_ghost()
-    call update_begin_qm_ghost()
-
+      
     CALL FUNC_DELTA()
-
-    call update_end_dq_ghost()
-    call update_end_qm_ghost()
     
     DO rk=1,4
     
+      CALL EVAL_Q_VARIABLES()
+      CALL EVAL_Q_DERIVATIVES()
+
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
+      
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)
 
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
     END DO
     
-    call update_begin_prim_ghost()
     
     CALL OBJECTIVE_FUNCTION()
     
@@ -155,7 +161,6 @@ CONTAINS
       residue = DLOG10(res_new/res_old)
     END IF
     
-    call update_end_prim_ghost()
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
