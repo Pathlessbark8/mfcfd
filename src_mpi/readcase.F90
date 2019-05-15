@@ -36,9 +36,9 @@ subroutine readcase()
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-vl_const',vl_const,set,ierr); CHKERRQ(ierr)
    
-        initial_conditions_flag = 0 ! Default : use initial conditions
+        restart = 0 ! Default : use initial conditions
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-initial_conditions_flag',initial_conditions_flag,set,ierr)&
+                            '-restart',restart,set,ierr)&
                             ; CHKERRQ(ierr)
    
         interior_points_normal_flag = 0 ! Default : use nx as 0.0 and ny as 1.0
@@ -55,7 +55,7 @@ subroutine readcase()
                             '-solution_restart',&
                             solution_restart,set,ierr); CHKERRQ(ierr)
 
-        nsave = 1000 ! Default : saving solution count
+        nsave = 1000000 ! Default : saving solution count
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-nsave',&
                             nsave,set,ierr); CHKERRQ(ierr)
@@ -66,10 +66,13 @@ subroutine readcase()
         
         ! Print paramaters to screen
         if (rank==0) then
-                write(*,*) 'max_iters   :', max_iters
-                write(*,*) 'cfl         :', cfl
-                write(*,*) 'shapes      :', shapes
-                write(*,*) 'timestep    :', shapes
+                write(*,*) 'max_iters    :', max_iters
+                write(*,*) 'cfl          :', cfl
+                write(*,*) 'shapes       :', shapes
+                write(*,*) 'timestep     :', timestep
+                write(*,*) 'nsave        :', nsave
+                write(*,*) 'limiter_flag :', limiter_flag
+                if(limiter_flag == 1)write(*,*) 'vl_const     :', vl_const
         end if
 
 end subroutine 

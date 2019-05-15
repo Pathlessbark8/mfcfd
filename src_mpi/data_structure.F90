@@ -54,7 +54,7 @@ module data_structure_mod
         integer,allocatable,dimension(:) :: shape_points_index
 
         !iterations
-        integer :: it
+        integer :: it, itr
 
 
         real*8  :: res_old, res_new, residue, max_res
@@ -88,7 +88,7 @@ module data_structure_mod
         integer :: limiter_flag
         real*8 :: VL_CONST  ! Venkatakrishnan limiter constant ..
 
-        integer :: initial_conditions_flag
+        integer :: restart
 
 !       Interior points normal flag ..
 !       If flag is zero => nx = 0.0 and ny = 1.0

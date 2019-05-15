@@ -22,29 +22,30 @@ contains
                         point%prim_old(:, i) = point%prim(:, i)
                 end do
 
-                call eval_q_variables()
-                
-                call eval_q_derivatives()
-
-                !Update the ghost values from the owned process
-
-                call update_begin_dq_ghost()
-                call update_begin_qm_ghost()
                 call func_delta()   
-                call update_end_dq_ghost()
-                call update_end_qm_ghost()
 
                 ! Perform 4-stage, 3-order SSPRK update
                 do rk = 1, 4
+                
+                        call eval_q_variables()
+                
+                        call eval_q_derivatives()
+                
+                        !Update the ghost values from the owned process
+                        call update_begin_dq_ghost()
+                        call update_begin_qm_ghost()
+                        call update_end_dq_ghost()
+                        call update_end_qm_ghost()
                 
                         call cal_flux_residual()
 
                         call state_update(rk)
 
+                        ! start updating primitive values
+                        call update_begin_prim_ghost()
+                        call update_end_prim_ghost()
                 end do
                 
-                ! start updating primitive values
-                call update_begin_prim_ghost()
 
                 call objective_function()
 
@@ -56,7 +57,7 @@ contains
 
                 res_new = dsqrt(gsum_res_sqr)/plen
 
-                if(t .le. 2) then
+                if(t .le. 2 .and. restart == 0) then
                         res_old = res_new
                         residue = 0.d0
                 else 
@@ -64,9 +65,15 @@ contains
                 endif
 
                 ! Print primal output
-                if(mod(it,nsave)==0)call print_primal_output()
+                if(mod(it,nsave)==0) then
+                        if(rank == 0) then
+                                write(*,*)
+                                write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+                                write(*,*)
+                        end if
+                        call print_primal_output()
+                end if
                 
-                call update_end_prim_ghost()
 
         end subroutine
 

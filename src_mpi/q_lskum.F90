@@ -43,8 +43,9 @@ contains
                 end if
 
                 t = 0.0d0
+                if(restart == 0)itr = 0
                 
-                do it = 1, max_iters
+                do it = itr+1, itr+max_iters
                         
                         call fpi_solver(it)
                         t = t + dtg
