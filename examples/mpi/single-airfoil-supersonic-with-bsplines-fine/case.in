@@ -1,5 +1,0 @@
--cfl 0.4
--max_iters 10000
--shapes 1
--obj_flag 0
--tscheme explicit

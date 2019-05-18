@@ -1,0 +1,5 @@
+-cfl 0.5
+-max_iters 100
+-shapes 1
+-nsave 10000
+-vl_const 1000

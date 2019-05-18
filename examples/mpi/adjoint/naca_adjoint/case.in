@@ -1,0 +1,7 @@
+-cfl 0.5
+-max_iters 100000
+-shapes 1
+-ad_mode 1
+-obj_flag 1
+-vl_const 1000
+-chkpts 100
