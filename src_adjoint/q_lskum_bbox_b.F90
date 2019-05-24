@@ -28,6 +28,7 @@ CONTAINS
     if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
     if(rank==0)OPEN(UNIT=302,FILE="residue_b",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
+    if(restart == 0) itr = 0    
 
     call set_obj()
     CALL COMPUTE_NORMALS()
@@ -37,7 +38,7 @@ CONTAINS
             write(*,*)
     end if
 
-    DO it=1,max_iters
+    DO it=1+itr,max_iters+itr
       CALL PUSHREAL8ARRAY(point%delta, max_points)
       CALL PUSHREAL8ARRAY(point%qm, 2*4*max_points)
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
@@ -68,7 +69,7 @@ CONTAINS
             write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
             write(*,*)
     end if
-    DO it=max_iters,1,-1
+    DO it=max_iters+itr,1+itr,-1
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL POPREAL8ARRAY(point%prim_old, 4*max_points)
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)

@@ -21,10 +21,8 @@ contains
 
                 OPEN(UNIT=501,FILE=trim(sfile))
                 
-                write(501,*)local_points
-
                 do i = 1, local_points
-                        write(501,'(i6, 4e30.20)')point%original_id(i), point%x(i),&
+                        write(501,'(i8, 4e30.20)')point%original_id(i), point%x(i),&
                                 point%y(i),pointb%x(i), pointb%y(i)
                 end do
 

@@ -108,7 +108,7 @@ CONTAINS
     call MPI_Bcast(adj_res, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
                   ierr)
     adj_res = dsqrt(adj_res)/plen
-    if(t == max_iters) then
+    if(t == max_iters+itr) then
         adj_res_old = adj_res
     else
         adj_res = dlog10(adj_res/adj_res_old)
@@ -154,7 +154,7 @@ CONTAINS
                   ierr)
 
     res_new = DSQRT(gsum_res_sqr)/plen
-    IF (t .LE. 2) THEN
+    IF (t .LE. 2 .and. restart == 0) THEN
       res_old = res_new
       residue = 0.d0
     ELSE

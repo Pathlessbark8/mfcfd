@@ -72,7 +72,7 @@ module data_structure_mod_diff
         integer,allocatable,dimension(:) :: shape_points_index
 
         !iterations
-        integer :: it
+        integer :: it, itr, restart
 
 
         real*8  :: res_old, res_new, residue, max_res

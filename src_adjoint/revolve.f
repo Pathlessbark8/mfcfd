@@ -344,7 +344,7 @@ C     ..
 
 C--------------------------------------------------------------------*
 
-      INTEGER FUNCTION REVOLV(CHECK,CAPO,FINE,SNAPS,INFO)
+      INTEGER FUNCTION REVOLV(CHECK,CAPO,FINE,SNAPS,INFO,SF,PFS)
 
 C     (CAPO ,FINE) is the time range currently under consideration
 C     .. Parameters ..
@@ -352,8 +352,9 @@ C     .. Parameters ..
       PARAMETER (CHEKUP=401,REPSUP=401)
       INTEGER TAKSHT,ADVAN,FSTURN,YUTURN
       PARAMETER (TAKSHT=1,ADVAN=2,FSTURN=3,YUTURN=4)
-      INTEGER RESTRE,TRMATE,ERROR
+      INTEGER RESTRE,TRMATE,ERROR,PFS
       PARAMETER (RESTRE=5,TRMATE=6,ERROR=7)
+      REAL SF
 C     ..
 C     .. Scalar Arguments ..
       INTEGER CAPO,CHECK,FINE,INFO,REPS,SNAPS
@@ -398,7 +399,7 @@ C
           IF ((CHECK.EQ. (-1)) .OR. (CAPO.EQ.CH(0))) THEN
               CHECK = CHECK - 1
               IF (INFO.GT.0) THEN
-*                  WRITE (*,FMT=*)
+c                  WRITE (*,FMT=*)
 can                  WRITE (*,FMT=9000) NUMADV
 can                  WRITE (*,FMT=9010) NUMTKS
 can                  WRITE (*,FMT=9020) NUMCMD
@@ -474,12 +475,14 @@ can                  WRITE (*,FMT=9020) NUMCMD
 
                       END IF
 
-*                      WRITE (*,FMT=9030) NUM
-*                      WRITE (*,FMT=9040) DBLE(NUM)/ (FINE-CAPO)
+c                      WRITE (*,FMT=9030) NUM
+c                      WRITE (*,FMT=9040) DBLE(NUM)/ (FINE-CAPO)
+                      SF = DBLE(NUM)/ (FINE-CAPO)
+                      PFS = NUM
 can                      if(mymp .eq. 1) WRITE (*,FMT=9030) NUM
 can                      if(mymp .eq. 1) WRITE (*,FMT=9040) 
 can     +                                  DBLE(NUM)/ (FINE-CAPO)
-*                      WRITE (*,FMT=*)
+c                      WRITE (*,FMT=*)
                   END IF
 
               END IF

@@ -3,7 +3,7 @@ include ${PETSC_DIR}/lib/petsc/conf/rules
 
 
 #Intel compiler
-#FC = mpiifort
+FC = mpifort
 
 #gcc compiler
 #FC = mpif90

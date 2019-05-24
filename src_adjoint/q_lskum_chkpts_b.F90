@@ -24,6 +24,7 @@ CONTAINS
     INTEGER :: t, i, r, ijk, k
     INTEGER :: ii1
     integer :: pflag = 1
+    real :: SF
 !
 !
 !     Declaration for running the revolve algorithm ...
@@ -41,7 +42,7 @@ CONTAINS
 ! 
 !     .. External Functions ..                                                  
 !                                                                               
-      INTEGER :: REVOLV, ADJUST
+      INTEGER :: REVOLV, ADJUST, PFS
       EXTERNAL REVOLV, ADJUST
 !                                                                               
       intrinsic cpu_time 
@@ -67,6 +68,7 @@ CONTAINS
 !       End of the declaraion for the revolve algorithm ..          
 !
 !       Some initialisations for the revolve alogorithm ..                      
+      if(restart == 0)itr = 0
       ITIMS = 1
       ITIME = max_iters
       new_itime = ITIME - ITIMS + 1 
@@ -100,7 +102,7 @@ CONTAINS
 !
    10 CONTINUE
       OLDCAPO = CAPO
-      WHATDO = REVOLV(CHECK,CAPO,FINE,SNAPS,INFO)
+      WHATDO = REVOLV(CHECK,CAPO,FINE,SNAPS,INFO,SF,PFS)
 
 !  
 !                                                                             
@@ -132,6 +134,13 @@ CONTAINS
 !
           do ijk=OLDCAPO, CAPO-1
                   ITIM = ijk+ITIMS
+                  ITIM = ITIM + itr
+                  if(rank == 0 .and. ITIM == itr+1) then
+                          write (*,*)
+                          write (*,*) 'prediction of needed forward steps :', PFS
+                          write (*,*) 'slowdown factor :', SF
+                          write (*,*)
+                  end if
                   CALL FPI_SOLVER(ITIM)
                   if (rank==0 .and. pflag == 1) then
                        write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
@@ -148,6 +157,7 @@ CONTAINS
       IF ((WHATDO.EQ.FSTURN) .AND. (INFO.GT.2)) THEN
 !
            ITIM = CAPO + ITIMS
+           ITIM = ITIM + itr
 
            pointb%x = 0.0_8
            pointb%y = 0.0_8
@@ -190,6 +200,7 @@ CONTAINS
       IF ((WHATDO.EQ.YUTURN) .AND. (INFO.GT.2)) THEN
 !
            ITIM = CAPO + ITIMS
+           ITIM = ITIM + itr
            CALL FPI_SOLVER_B(ITIM)
            if (rank==0) then
              write(*,*)'adjoint iterations:',itim, 'adjoint residue:', adj_res
@@ -301,10 +312,7 @@ CONTAINS
         implicit none
 
         if(obj_flag == 0) then
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%-No objective function chosen-%%%%%%'
-                        write(*,*)
-                end if
+                SETERRA(PETSC_COMM_WORLD,1,'Choose an objective function')
         elseif(obj_flag == 1) then
                 clb = 1.0
                 if(rank == 0) then
