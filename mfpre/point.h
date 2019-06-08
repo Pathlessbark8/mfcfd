@@ -17,6 +17,8 @@ typedef struct point {
     idx_t id;
     double x, y;
     int left, right;
+    int qtdepth;
+    int nx, ny;
     double min_dist;
     idx_t flag1, flag2;
 } point;

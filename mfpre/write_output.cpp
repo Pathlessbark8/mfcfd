@@ -44,7 +44,7 @@ void Graph::write_output_gpu_legacy(){
 		fstream write;
 		write.open(filename.c_str(), fstream::app);
 		write << fixed;
-		write << setprecision(20)  << " " << ptVec[i].x << " " << ptVec[i].y 
+		write << setprecision(20)  << ptVec[i].x << " " << ptVec[i].y 
 			<< " " << inputToLoc[partnId][ptVec[i].left] << " " << inputToLoc[partnId][ptVec[i].right] << " " << ptVec[i].flag1 << " " << ptVec[i].flag2 << " " << ptVec[i].min_dist << " ";
 		write << xadjVec[i+1]-xadjVec[i] << " ";
 		for(idx_t j=xadjVec[i]; j<xadjVec[i+1]; j++){
@@ -63,7 +63,7 @@ void Graph::write_output_gpu_legacy(){
 		set<int>::iterator itr;
 		write << fixed << setprecision(20);
 		for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
-			write  << inputToGlob[*itr] << " " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
+			write  << inputToGlob[*itr] << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
 			write << endl;
 		}
 		write.close(); 
@@ -88,8 +88,8 @@ void Graph::write_output_gpu_quad(){
 		fstream write;
 		write.open(filename.c_str(), fstream::app);
 		write << fixed;
-		write << setprecision(20)  << " " << ptVec[i].x << " " << ptVec[i].y 
-			<< " " << inputToLoc[partnId][ptVec[i].left] << " " << inputToLoc[partnId][ptVec[i].right] << " " << ptVec[i].flag1 << " " << ptVec[i].flag2 << " " << ptVec[i].min_dist << " ";
+		write << setprecision(20)  << ptVec[i].x << " " << ptVec[i].y 
+			<< " " << inputToLoc[partnId][ptVec[i].left] << " " << inputToLoc[partnId][ptVec[i].right] << " " << ptVec[i].flag1 << " " << ptVec[i].flag2 << " " << ptVec[i].nx << " "<< ptVec[i].ny <<" "<< ptVec[i].qtdepth << " "<<ptVec[i].min_dist << " ";
 		write << xadjVec[i+1]-xadjVec[i] << " ";
 		for(idx_t j=xadjVec[i]; j<xadjVec[i+1]; j++){
 			write << inputToLoc[partnId][adjncyVec[j]+1] << " ";
@@ -107,7 +107,7 @@ void Graph::write_output_gpu_quad(){
 		set<int>::iterator itr;
 		write << fixed << setprecision(20);
 		for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
-			write  << inputToGlob[*itr] << " " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
+			write  << inputToGlob[*itr] << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
 			write << endl;
 		}
 		write.close(); 
@@ -132,7 +132,7 @@ void Graph::write_output(){
 		fstream write;
 		write.open(filename.c_str(), fstream::app);
 		write << fixed;
-		write << ptVec[i].id << " " << setprecision(20)  << " " << ptVec[i].x << " " << ptVec[i].y 
+		write << ptVec[i].id  << setprecision(20) << " " << ptVec[i].x << " " << ptVec[i].y 
 			<< " " << inputToLoc[partnId][ptVec[i].left] << " " << inputToLoc[partnId][ptVec[i].right]<< " " << ptVec[i].flag1 << " " << ptVec[i].flag2 << " " << ptVec[i].min_dist << " ";
 		write << xadjVec[i+1]-xadjVec[i] << " ";
 		for(idx_t j=xadjVec[i]; j<xadjVec[i+1]; j++){
@@ -151,7 +151,7 @@ void Graph::write_output(){
 		set<int>::iterator itr;
 		write << fixed << setprecision(20);
 		for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
-			write << inputToGlob[*itr] << " " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
+			write << inputToGlob[*itr] << "  " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
 			write << endl;
 		}
 		write.close(); 

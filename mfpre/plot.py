@@ -12,8 +12,8 @@ for fname in filelist:
     X = []
     Y = []
     for i in range(1, num+1):
-        X.append(float(data[i].split(' ')[2]))
-        Y.append(float(data[i].split(' ')[3]))
-    plt.scatter(X, Y, s=1.5,marker=".")
+        X.append(float(data[i].split(' ')[1]))
+        Y.append(float(data[i].split(' ')[2]))
+    plt.scatter(X, Y, s=1.8,marker=".")
 
 plt.show()

@@ -46,7 +46,7 @@ void Graph::read_point_create_graph_quad(){
 		point temp ;
 		iss >> temp.id >> temp.x >> temp.y
 			>> temp.left >> temp.right
-        	        >> temp.flag1 >> temp.flag2;
+        	        >> temp.flag1 >> temp.flag2 >> temp.nx >> temp.ny >> temp.qtdepth;
 		temp.min_dist = 10000;
 		ptVec.push_back(temp);
 		int neighborId;
