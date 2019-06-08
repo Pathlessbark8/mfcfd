@@ -57,7 +57,7 @@ module data_structure_mod
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
         integer :: max_res_point
-	real*8, dimension(shapes)  :: Cl, Cd, Cm
+	real*8, dimension(shapes)  :: Cl, Cd, Cm, ClCd
 	real*8  :: total_entropy, total_enstrophy
         integer :: plen
 

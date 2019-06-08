@@ -66,6 +66,7 @@ module compute_force_coeffs_mod
 
                         Cl = V*dcos(theta) - H*dsin(theta)
                         Cd = H*dcos(theta) + V*dsin(theta)
+                        ClCd = Cl/Cd
                         Cm = pitch_mom
 
                 end subroutine 
