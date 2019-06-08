@@ -62,11 +62,11 @@ module device_data_structure_mod
                 allocate(point_d%ypos_nbhs(max_points))
                 allocate(point_d%yneg_nbhs(max_points))
 
-                allocate(point_d%xpos_conn(max_points,15))
-                allocate(point_d%xneg_conn(max_points,15))
+                allocate(point_d%xpos_conn(max_points,10))
+                allocate(point_d%xneg_conn(max_points,10))
 
-                allocate(point_d%ypos_conn(max_points,15))
-                allocate(point_d%yneg_conn(max_points,15))
+                allocate(point_d%ypos_conn(max_points,10))
+                allocate(point_d%yneg_conn(max_points,10))
 
         end subroutine
 

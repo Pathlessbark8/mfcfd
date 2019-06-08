@@ -89,30 +89,7 @@ module point_normals_mod
 
                 enddo
 
-        
-
-
-!	The below lines of code are temporary. In future
-!	when we want the normals of the interior points
-!	to be taken into account then we need to evaluate 
-!	the normals here ..
-!
-                do i = 1, interior_points
-
-                        k = interior_points_index(i)
-
-                        point%nx(k) = 0.0d0
-                        point%ny(k) = 1.0d0
-
-                enddo
-
-
-!	Suppose the normals of the interior points are available
-!	and we still want to do upwinding along the cartesian coordinates
-!	then the following portion of the code ensures it ..
-
-
-                if(interior_points_normal_flag .eq. 0) then
+                if(interior_normal_flag .eq. 1) then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
                                 point%nx(k) = 0.d0

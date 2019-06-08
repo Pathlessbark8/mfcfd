@@ -5,6 +5,7 @@ module data_structure_mod
 
         implicit none
 
+        integer :: max_points
         integer :: wall_points,interior_points,outer_points,shape_points
 
         type :: points
@@ -67,11 +68,11 @@ module data_structure_mod
                 allocate(point%ypos_nbhs(max_points))
                 allocate(point%yneg_nbhs(max_points))
 
-                allocate(point%xpos_conn(max_points,15))
-                allocate(point%xneg_conn(max_points,15))
+                allocate(point%xpos_conn(max_points,10))
+                allocate(point%xneg_conn(max_points,10))
 
-                allocate(point%ypos_conn(max_points,15))
-                allocate(point%yneg_conn(max_points,15))
+                allocate(point%ypos_conn(max_points,10))
+                allocate(point%yneg_conn(max_points,10))
 
                 allocate(Cl(shapes))
                 allocate(Cd(shapes))

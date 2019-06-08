@@ -1,4 +1,4 @@
 #pgi compiler
 FC = pgfortran
 
-FFLAGS =-O3 -Mcuda=rdc -Mcuda=lineinfo
+FFLAGS =-O3 -Mcuda=rdc -Mipa=fast,inline

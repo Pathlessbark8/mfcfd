@@ -14,11 +14,11 @@ contains
                 character(len=64) :: grid
                 real*8 :: dummy
 
-                grid = 'point'
+                grid = 'partGrid'
 
                 OPEN(UNIT=101,FILE=trim(grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
-                !TODO: Add asserts
+                read(101,*) max_points
 
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
@@ -45,14 +45,14 @@ contains
                 shape_points = 0
                 interior_points = 0
                 outer_points = 0
-                !TODO old format(should retire)
+                ! legacy format
                 if (format_file==1) then
                         do k = 1, max_points
         
-                                read(101,*) point%x(k), point%y(k),point%nx(k),point%ny(k), &
-                                        & point%flag_1(k),point%flag_2(k),point%min_dist(k), &
-                                        & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
-                        point%flag_1(k) = point%flag_1(k) - 1
+                                read(101,*) point%x(k),&
+                                & point%y(k),point%left(k),point%right(k), &
+                                & point%flag_1(k),point%flag_2(k),point%min_dist(k), &
+                                & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
                                 
                         !Storing the count for the point types
                                 if(point%flag_1(k) == 0) then
@@ -64,26 +64,22 @@ contains
                                 end if
         
                                 if(point%flag_2(k) > 0) then
+                                        if(point%flag_2(k) > shapes)then
+                                                print*,"shapes value wrong, check again"
+                                                stop
+                                        end if
                                         shape_points = shape_points + 1
-                                elseif(point%flag_2(k) > shapes)then
-                                        print*,"shapes value wrong, check again"
-                                        stop
                                 end if
                                 
                         enddo
-                        do k =2,wall_points
-                                point%left(k) = k-1
-                                point%right(k) = k+1
-                        end do
-                        point%left(1) = wall_points+1
-                        point%right(1) = 2
-                        point%left(wall_points+1) = wall_points
-                        point%right(wall_points+1) = 1
-                elseif (format_file==3) then
+                ! new format from quadtree code
+                elseif (format_file == 2) then
                         do k = 1, max_points
         
                                 read(101,*) point%x(k),&
-                                & point%y(k),point%left(k),point%right(k),point%flag_1(k),point%flag_2(k),point%min_dist(k), point%nbhs(k),&
+                                & point%y(k),point%left(k),point%right(k),point%flag_1(k), &
+                                & point%flag_2(k), point%nx(k), point%ny(k), &
+                                & point%qtdepth(k), point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
                                 
                         !Storing the count for the point types
@@ -96,41 +92,14 @@ contains
                                 end if
         
                                 if(point%flag_2(k) > 0) then
+                                        if(point%flag_2(k) > shapes)then
+                                                print*,"shapes value wrong, check again"
+                                                stop
+                                        end if
                                         shape_points = shape_points + 1
-                                elseif(point%flag_2(k) > shapes)then
-                                        print*,"shapes value wrong, check again"
-                                        stop
                                 end if
                                 
                         enddo
-                ! new format from quadtree code
-                elseif (format_file == 2) then
-!                        do k = 1, max_points
-!        
-!                                read(101,*) point%local_id(k),point%x(k), point%y(k),point%left(k),&
-!                                        & point%right(k), point%flag_1(k),point%flag_2(k),&
-!                                        & dummy, dummy, dummy, dummy, dummy, dummy, point%qtdepth(k), dummy,&
-!                                        & dummy, dummy, dummy, dummy, point%nbhs(k),&
-!                                        & (point%conn(k,r),r=1,point%nbhs(k))
-!                                
-!                        !Storing the count for the point types
-!                                if(point%flag_1(k) == 0) then
-!                                        wall_points = wall_points + 1
-!                                else if(point%flag_1(k) == 1) then
-!                                        interior_points = interior_points + 1
-!                                else if(point%flag_1(k) == 2) then
-!                                        outer_points = outer_points + 1
-!                                end if
-!                                
-!                                if(point%flag_2(k) > 0) then
-!                                        shape_points = shape_points + 1
-!                                elseif(point%flag_2(k) > shapes)then
-!                                        print*,"shapes value wrong, check again"
-!                                        stop
-!                                end if
-!        
-!                                
-!                        enddo
                 end if
 
 

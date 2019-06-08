@@ -1,14 +1,13 @@
 module flux_residual_mod
-#include "limiter.h"
 
         use device_data_structure_mod
 
 
 contains
 
-        attributes(global) subroutine cal_flux_residual(x_d, nx_d, flag_d, dist_d, nbhs_d, &
-                & conn_d, xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, &
-                & xneg_conn_d, ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d)
+        attributes(global) subroutine cal_flux_residual(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
+                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+                & ypos_conn_d, yneg_conn_d, prim_d, q_d, dq_d, flux_res_d)
 
                 implicit none
 
@@ -17,13 +16,14 @@ contains
                 integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
                 integer :: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+                real*8 :: prim_d(:,:), q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: i, r, k
                 real*8 :: Gxp(4), Gxn(4), Gyp(4), Gyn(4)
                 ! delta t variables
                 real*8 :: delta_t, delta_d
+                real*8 :: min_dist
                 real*8 :: x_i, y_i, x_k, y_k
                 real*8 :: u1, u2, rho, pr, mod_u
                 real*8 :: dist
@@ -66,14 +66,14 @@ contains
 
                 if (flag_d(i) == 0) then
 
-                        call wall_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, dist_d, xpos_nbhs_d, &
-                                & xpos_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call wall_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, dq_d)
 
-                        call wall_dGx_neg(i, Gxn, x_d, nx_d, nbhs_d, conn_d, dist_d, xneg_nbhs_d, &
-                                & xneg_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call wall_dGx_neg(i, Gxn, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, dq_d)
                         
-                        call wall_dGy_neg(i, Gyn, x_d, nx_d, nbhs_d, conn_d, dist_d, yneg_nbhs_d, &
-                                & yneg_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call wall_dGy_neg(i, Gyn, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, dq_d)
                         
                         flux_res_d(:,i) = Gxp + Gxn + Gyn
                         flux_res_d(:,i) = 2.0d0 * delta_d * flux_res_d(:,i)
@@ -82,14 +82,14 @@ contains
 
                 if (flag_d(i) == 2) then
 
-                        call outer_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, dist_d, xpos_nbhs_d, &
-                                & xpos_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call outer_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, dq_d)
 
-                        call outer_dGx_neg(i, Gxn, x_d, nx_d, nbhs_d, conn_d, dist_d, xneg_nbhs_d, &
-                                & xneg_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call outer_dGx_neg(i, Gxn, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, dq_d)
                         
-                        call outer_dGy_pos(i, Gyp, x_d, nx_d, nbhs_d, conn_d, dist_d, ypos_nbhs_d, &
-                                & ypos_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call outer_dGy_pos(i, Gyp, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, dq_d)
                         
                         flux_res_d(:,i) = delta_d * (Gxp + Gxn + Gyp)
                 end if
@@ -97,17 +97,17 @@ contains
 
                 if (flag_d(i) == 1) then
 
-                        call interior_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, dist_d, xpos_nbhs_d, &
-                                & xpos_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call interior_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, dq_d)
 
-                        call interior_dGx_neg(i, Gxn, x_d, nx_d, nbhs_d, conn_d, dist_d, xneg_nbhs_d, &
-                                & xneg_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call interior_dGx_neg(i, Gxn, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, dq_d)
                         
-                        call interior_dGy_pos(i, Gyp, x_d, nx_d, nbhs_d, conn_d, dist_d, ypos_nbhs_d, &
-                                & ypos_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call interior_dGy_pos(i, Gyp, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, dq_d)
                         
-                        call interior_dGy_neg(i, Gyn, x_d, nx_d, nbhs_d, conn_d, dist_d, yneg_nbhs_d, &
-                                & yneg_conn_d, prim_d, q_d, qm_d, dq_d)
+                        call interior_dGy_neg(i, Gyn, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, dq_d)
                         
                         flux_res_d(:,i) = delta_d * (Gxp + Gxn + Gyp + Gyn)
                 end if
@@ -115,16 +115,16 @@ contains
 
         end subroutine
         
-        attributes(device) subroutine wall_dGx_pos(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, xpos_nbhs_d, xpos_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine wall_dGx_pos(i, G, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
                 integer :: xpos_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -187,37 +187,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
-
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxII(G_i, nx, ny, u1, u2, rho, pr)
@@ -239,16 +214,16 @@ contains
 
         end subroutine
 
-        attributes(device) subroutine wall_dGx_neg(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, xneg_nbhs_d, xneg_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine wall_dGx_neg(i, G, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer :: xneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -311,36 +286,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxI(G_i, nx, ny, u1, u2, rho, pr)
@@ -362,16 +313,16 @@ contains
 
         end subroutine
 
-        attributes(device) subroutine wall_dGy_neg(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, yneg_nbhs_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine wall_dGy_neg(i, G, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: yneg_nbhs_d(:)
                 integer :: yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -434,36 +385,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)
@@ -485,16 +412,16 @@ contains
 
         end subroutine
 
-        attributes(device) subroutine outer_dGx_pos(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, xpos_nbhs_d, xpos_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine outer_dGx_pos(i, G, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
                 integer :: xpos_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -557,36 +484,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxIII(G_i, nx, ny, u1, u2, rho, pr)
@@ -608,16 +511,16 @@ contains
 
         end subroutine
 
-        attributes(device) subroutine outer_dGx_neg(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, xneg_nbhs_d, xneg_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine outer_dGx_neg(i, G, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer :: xneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -680,36 +583,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_quad_GxIV(G_i, nx, ny, u1, u2, rho, pr)
@@ -731,16 +610,16 @@ contains
 
         end subroutine
         
-        attributes(device) subroutine outer_dGy_pos(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, ypos_nbhs_d, ypos_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine outer_dGy_pos(i, G, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: ypos_nbhs_d(:)
                 integer :: ypos_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -803,36 +682,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyp(G_i, nx, ny, u1, u2, rho, pr)
@@ -854,16 +709,16 @@ contains
 
         end subroutine
         
-        attributes(device) subroutine interior_dGx_pos(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, xpos_nbhs_d, xpos_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine interior_dGx_pos(i, G, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
                 integer :: xpos_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -926,36 +781,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gxp(G_i, nx, ny, u1, u2, rho, pr)
@@ -977,16 +808,16 @@ contains
 
         end subroutine
 
-        attributes(device) subroutine interior_dGx_neg(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, xneg_nbhs_d, xneg_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine interior_dGx_neg(i, G, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
                 integer :: xneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -1049,36 +880,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gxn(G_i, nx, ny, u1, u2, rho, pr)
@@ -1100,16 +907,16 @@ contains
 
         end subroutine
         
-        attributes(device) subroutine interior_dGy_pos(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, ypos_nbhs_d, ypos_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine interior_dGy_pos(i, G, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: ypos_nbhs_d(:)
                 integer :: ypos_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -1172,36 +979,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyp(G_i, nx, ny, u1, u2, rho, pr)
@@ -1223,16 +1006,16 @@ contains
 
         end subroutine
         
-        attributes(device) subroutine interior_dGy_neg(i, G, x_d, nx_d, nbhs_d, conn_d, &
-                & dist_d, yneg_nbhs_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d)
+        attributes(device) subroutine interior_dGy_neg(i, G, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, dq_d)
 
                 ! device variables
                 integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: yneg_nbhs_d(:)
                 integer :: yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:)
+                real*8 :: q_d(:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
@@ -1295,36 +1078,12 @@ contains
 
                         qtilde_i = q_d(:,i) - 0.5d0*fo_flag*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*fo_flag*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#ifdef VENKAT
-                        call venkat_limiter(qtilde_i, phi_i, i, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
-                        call venkat_limiter(qtilde_k, phi_k, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+                        
+                        call venkat_limiter(qtilde_i, phi_i, i, q_d, nbhs_d, conn_d, x_d, dist_d)
+                        call venkat_limiter(qtilde_k, phi_k, k, q_d, nbhs_d, conn_d, x_d, dist_d)
                         
                         qtilde_i = q_d(:,i) - 0.5d0*phi_i*(delx*dq_d(1,:,i) + dely*dq_d(2,:,i))
                         qtilde_k = q_d(:,k) - 0.5d0*phi_k*(delx*dq_d(1,:,k) + dely*dq_d(2,:,k))
-#endif
-#ifdef MINMAX
-                        call max_q_value(i, maxi, q_d, nbhs_d, conn_d)
-                        call min_q_value(i, mini, q_d, nbhs_d, conn_d)
-
-                        do r = 1, 4
-                                if( qtilde_i(r) .gt. maxi(r) ) then
-                                        qtilde_i(r) = maxi(r)
-                                endif
-
-                                if( qtilde_i(r) .lt. mini(r) ) then
-                                        qtilde_i(r) = mini(r)
-                                endif
-
-                                if( qtilde_k(r) .gt. maxi(r) ) then
-                                        qtilde_k(r) = maxi(r)
-                                endif
-
-                                if( qtilde_k(r) .lt. mini(r) ) then
-                                        qtilde_k(r) = mini(r)
-                                endif
-                        enddo
-                        
-#endif
                         
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)
@@ -1346,15 +1105,13 @@ contains
 
         end subroutine
 
-#ifdef VENKAT
-
-        attributes(device) subroutine venkat_limiter(qtilde, phi, k, q_d, qm_d, nbhs_d, conn_d, x_d, dist_d)
+        attributes(device) subroutine venkat_limiter(qtilde, phi, k, q_d, nbhs_d, conn_d, x_d, dist_d)
 
 
                 implicit none
 
                 ! device variables
-                real*8 :: q_d(:,:), x_d(:,:), dist_d(:), qm_d(:,:,:)
+                real*8 :: q_d(:,:), x_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 ! local variables
                 integer :: r, k
@@ -1371,13 +1128,11 @@ contains
 
                         else if(dabs(del_neg) .gt. 10e-6) then
                                 if(del_neg .gt. 0.d0) then
-!                                        call maximum(k, r, max_q, q_d, nbhs_d, conn_d)
-                                        !del_pos = max_q - q
-                                        del_pos = qm_d(1, r, k) - q
+                                        call maximum(k, r, max_q, q_d, nbhs_d, conn_d)
+                                        del_pos = max_q - q
                                 else if(del_neg .lt. 0.d0) then
-!                                        call minimum(k, r, min_q, q_d, nbhs_d, conn_d)
-                                        del_pos = qm_d(2, r, k) - q
-                                        !del_pos = min_q - q
+                                        call minimum(k, r, min_q, q_d, nbhs_d, conn_d)
+                                        del_pos = min_q - q
                                 endif
 
                                 !call smallest_dist(k, ds, x_d, nbhs_d, conn_d)
@@ -1407,135 +1162,51 @@ contains
 
         end subroutine
 
-!        attributes(device) subroutine maximum(k, r, max, q_d, nbhs_d, conn_d)
-!
-!                implicit none
-!
-!                ! device variables
-!                real*8 :: q_d(:,:)
-!                integer :: nbhs_d(:), conn_d(:,:)
-!                ! local variables
-!                integer :: k, r, j, nbh
-!                real*8 :: max
-!
-!                max = q_d(r,k)
-!
-!                do j = 1, nbhs_d(k)
-!                        nbh = conn_d(k,j)
-!
-!                        if(q_d(r,nbh) .gt. max) then
-!                                max = q_d(r,nbh)
-!                        endif
-!                enddo
-!                call syncthreads()
-!        end subroutine
-
-!        attributes(device) subroutine minimum(k, r, min, q_d, nbhs_d, conn_d)
-!
-!                implicit none
-!
-!                ! device variables
-!                real*8 :: q_d(:,:)
-!                integer :: nbhs_d(:), conn_d(:,:)
-!                ! local variables
-!                integer :: k, r, j, nbh
-!                real*8 :: min
-!
-!                min = q_d(r,k)
-!
-!                do j = 1, nbhs_d(k)
-!                        nbh = conn_d(k,j)
-!
-!                        if(q_d(r,nbh) .lt. min) then
-!                                min = q_d(r,nbh)
-!                        endif
-!                enddo
-!                call syncthreads()
-!        end subroutine
-
-       ! attributes(device) subroutine smallest_dist(k, min_dist, x_d, nbhs_d, conn_d)
-
-       !         implicit none
-       !         ! device variables
-       !         real*8 :: x_d(:,:)
-       !         integer :: nbhs_d(:), conn_d(:,:)
-       !         ! local variables
-       !         integer :: k, j, nbh
-       !         real*8 :: dx, dy, ds, min_dist
-
-       !         min_dist = 10000.d0
-
-       !         do j = 1, nbhs_d(k)
-       !                 nbh = conn_d(k,j)
-       !                 dx = x_d(1,nbh) - x_d(1,k)
-       !                 dy = x_d(2,nbh) - x_d(2,k)
-
-       !                 ds = dsqrt(dx*dx + dy*dy)
-
-       !                 if(ds .lt. min_dist) then
-       !                         min_dist = ds
-       !                  endif
-
-       !         enddo
-       !         call syncthreads()
-
-       ! end subroutine
-
-#endif
-
-#ifdef MINMAX
-
-        attributes(device) subroutine max_q_value(i, maxi, q_d, nbhs_d, conn_d)
+        attributes(device) subroutine maximum(k, r, max, q_d, nbhs_d, conn_d)
 
                 implicit none
+
                 ! device variables
                 real*8 :: q_d(:,:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 ! local variables
-                integer i, j, k, r
-                real*8 :: maxi(4)
+                integer :: k, r, j, nbh
+                real*8 :: max
 
-                maxi = q_d(:,i)
+                max = q_d(r,k)
 
-                do j = 1, nbhs_d(i)
+                do j = 1, nbhs_d(k)
+                        nbh = conn_d(k,j)
 
-                        k = conn_d(i,j)
-
-                        do r = 1, 4
-                                if( maxi(r) < q_d(r,k) ) then
-                                        maxi(r) = q_d(r,k)
-                                endif
-                        enddo
+                        if(q_d(r,nbh) .gt. max) then
+                                max = q_d(r,nbh)
+                        endif
                 enddo
-
+                call syncthreads()
         end subroutine
 
-        attributes(device) subroutine min_q_value(i, mini, q_d, nbhs_d, conn_d)
+        attributes(device) subroutine minimum(k, r, min, q_d, nbhs_d, conn_d)
 
                 implicit none
+
                 ! device variables
                 real*8 :: q_d(:,:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 ! local variables
-                integer i, j, k, r
-                real*8 :: mini(4)
+                integer :: k, r, j, nbh
+                real*8 :: min
 
-                mini = q_d(:,i)
+                min = q_d(r,k)
 
-                do j = 1, nbhs_d(i)
+                do j = 1, nbhs_d(k)
+                        nbh = conn_d(k,j)
 
-                        k = conn_d(i,j)
-
-                        do r = 1, 4
-                                if( mini(r) > q_d(r,k) ) then
-                                        mini(r) = q_d(r,k)
-                                endif
-                        enddo
+                        if(q_d(r,nbh) .lt. min) then
+                                min = q_d(r,nbh)
+                        endif
                 enddo
-
+                call syncthreads()
         end subroutine
-
-#endif
 
         attributes(device) subroutine qtilde_to_primitive(qtilde, u1, u2, rho, pr)
 

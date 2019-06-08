@@ -27,7 +27,7 @@ contains
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-                if(format_file == 2 .or. format_file == 3) call compute_normals()
+                call compute_normals()
                 call generate_connectivity()
                 write(*,*)'%%%%-Normals and connectivity generated-%%%'
                 write(*,*)
@@ -59,14 +59,14 @@ contains
                         call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
 
                         call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                & point_d%conn, point_d%q, point_d%qm, point_d%dq)
+                                & point_d%conn, point_d%q, point_d%dq)
 
                         call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                 & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
                                 & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
                                 & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
                                 & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
-                                & point_d%q, point_d%qm, point_d%dq, point_d%flux_res)
+                                & point_d%q, point_d%dq, point_d%flux_res)
 
                         call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                 & point_d%nbhs, point_d%conn, point_d%prim, point_d%flux_res, sum_res_sqr_d)
