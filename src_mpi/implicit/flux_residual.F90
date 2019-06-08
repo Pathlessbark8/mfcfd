@@ -35,14 +35,12 @@ contains
 
                         local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
 
-                        if(tscheme== 0) then
-                                LSxp = 0.0d0
-                                LSxn = 0.0d0
-                                LSyn = 0.0d0
-                                Gxpd = 0.0d0
-                                Gxnd = 0.0d0
-                                Gynd = 0.0d0
-                        end if
+                        LSxp = 0.0d0
+                        LSxn = 0.0d0
+                        LSyn = 0.0d0
+                        Gxpd = 0.0d0
+                        Gxnd = 0.0d0
+                        Gynd = 0.0d0
 
                         spectral_Ax = dabs(point%prim(2,k)) + local_sos
                         spectral_Ay = dabs(point%prim(3,k)) + local_sos
@@ -70,14 +68,12 @@ contains
 
                         local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
                         
-                        if(tscheme== 0) then
-                                LSxp = 0.0d0
-                                LSxn = 0.0d0
-                                LSyp = 0.0d0
-                                Gxpd = 0.0d0
-                                Gxnd = 0.0d0
-                                Gypd = 0.0d0
-                        end if
+                        LSxp = 0.0d0
+                        LSxn = 0.0d0
+                        LSyp = 0.0d0
+                        Gxpd = 0.0d0
+                        Gxnd = 0.0d0
+                        Gypd = 0.0d0
                         
                         spectral_Ax = dabs(point%prim(2,k)) + local_sos
                         spectral_Ay = dabs(point%prim(3,k)) + local_sos
@@ -95,15 +91,6 @@ contains
 
                         k = interior_points_index(i)
                         
-                        LSxp = 0.0d0
-                        LSxn = 0.0d0
-                        LSyp = 0.0d0
-                        LSyn = 0.0d0
-                        Gxpd = 0.0d0
-                        Gxnd = 0.0d0
-                        Gypd = 0.0d0
-                        Gynd = 0.0d0
-
                         call interior_dGx_pos(Gxp, Gxpd, LSxp, k) 
 
                         call interior_dGx_neg(Gxn, Gxnd, LSxn, k) 
@@ -114,16 +101,14 @@ contains
 
                         local_sos = dsqrt(gamma*point%prim(4,k)/point%prim(1,k))
                         
-                        if(tscheme== 0) then
-                                LSxp = 0.0d0
-                                LSxn = 0.0d0
-                                LSyp = 0.0d0
-                                LSyn = 0.0d0
-                                Gxpd = 0.0d0
-                                Gxnd = 0.0d0
-                                Gypd = 0.0d0
-                                Gynd = 0.0d0
-                        end if
+                        !LSxp = 0.0d0
+                        !LSxn = 0.0d0
+                        !LSyp = 0.0d0
+                        !LSyn = 0.0d0
+                        !Gxpd = 0.0d0
+                        !Gxnd = 0.0d0
+                        !Gypd = 0.0d0
+                        !Gynd = 0.0d0
                         
                         spectral_Ax = dabs(point%prim(2,k)) + local_sos
                         spectral_Ay = dabs(point%prim(3,k)) + local_sos

@@ -34,7 +34,7 @@ module compute_entropy_mod
                                 & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
                         if(rank == 0) then
-                                write(*,*)"total entropy :", gtotal_entropy
+                                !write(*,*)"total entropy :", gtotal_entropy
                         end if
 
                 end subroutine 

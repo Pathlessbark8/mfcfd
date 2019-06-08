@@ -83,7 +83,7 @@ module compute_enstrophy_mod
                                 & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
                         if(rank == 0) then
-                                write(*,*)"total enstrophy :", gtotal_enstrophy
+                                !write(*,*)"total enstrophy :", gtotal_enstrophy
                         end if
 
         end subroutine

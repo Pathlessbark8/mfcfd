@@ -22,21 +22,16 @@ module compute_force_coeffs_mod
 			real*8, dimension(shapes) :: H, V, pitch_mom
 			real*8, dimension(shapes) :: lCl, lCd, lCm
 			real*8 :: nx, ny
-                        character(len=64) :: cp_file, clcdcm_file
+                        character(len=64) :: cp_file
                         character(len=10) :: itos
                         PetscErrorCode :: ierr
 
-                        clcdcm_file = 'clcdcm-file'
                         cp_file = 'cp/'//'cp-file'
                         if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(4,rank))
 
                         OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                        if(rank==0) OPEN(UNIT=202,FILE='clcdcm')
 
-                        if(rank == 0) then
-                                OPEN(UNIT=202,FILE=trim(clcdcm_file),FORM="FORMATTED", &
-                                        & STATUS="REPLACE",ACTION="WRITE")
-                        end if
-                        
                         temp = 0.5d0*rho_inf*Mach*Mach
 
                         H = 0.d0
@@ -98,7 +93,6 @@ module compute_force_coeffs_mod
                                 do j = 1, shapes
                                         write(202,'(i4,3e30.20)') j, Cl, Cd, Cm
                                 end do
-                                CLOSE(UNIT=202)
                         end if
 
                         CLOSE(UNIT=201)

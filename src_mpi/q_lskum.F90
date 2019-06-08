@@ -18,7 +18,6 @@ contains
                 integer :: i
 
                 if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-
                 call compute_normals()
                 call generate_connectivity()
 

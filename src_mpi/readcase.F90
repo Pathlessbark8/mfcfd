@@ -50,11 +50,6 @@ subroutine readcase()
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-shapes',shapes,set,ierr); CHKERRQ(ierr)
         
-        solution_restart = 0 ! Default : no restart
-        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                            '-solution_restart',&
-                            solution_restart,set,ierr); CHKERRQ(ierr)
-
         nsave = 1000000 ! Default : saving solution count
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-nsave',&

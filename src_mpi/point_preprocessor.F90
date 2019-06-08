@@ -51,11 +51,11 @@ contains
                         & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
                         
                 !Storing the count for the point types
-                        if(point%flag_1(k) == 1) then
+                        if(point%flag_1(k) == 0) then
                                 wall_points = wall_points + 1
-                        else if(point%flag_1(k) == 2) then
+                        else if(point%flag_1(k) == 1) then
                                 interior_points = interior_points + 1
-                        else if(point%flag_1(k) == 3) then
+                        else if(point%flag_1(k) == 2) then
                                 outer_points = outer_points + 1
                         end if
 
@@ -79,13 +79,13 @@ contains
                 shape_temp = 0
                 !Storing indices of the point definitions
                 do k = 1,local_points
-                        if(point%flag_1(k) == 1) then
+                        if(point%flag_1(k) == 0) then
                                 wall_temp = wall_temp+1
                                 wall_points_index(wall_temp) = k
-                        else if(point%flag_1(k) == 2) then
+                        else if(point%flag_1(k) == 1) then
                                 interior_temp = interior_temp+1 
                                 interior_points_index(interior_temp) = k
-                        else if(point%flag_1(k) == 3) then
+                        else if(point%flag_1(k) == 2) then
                                 outer_temp = outer_temp+1
                                 outer_points_index(outer_temp) = k
                         end if

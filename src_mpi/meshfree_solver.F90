@@ -45,6 +45,7 @@ program meshfree_solver
 !	Reading the input data ..
 
         if(rank == 0) then
+                write(*,*)
                 write(*,*)'%%%%%%%%%%%%-Reading point data-%%%%%%%%%%%'
                 write(*,*)
         end if

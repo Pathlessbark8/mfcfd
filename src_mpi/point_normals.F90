@@ -121,7 +121,6 @@ module point_normals_mod
                         enddo
                 endif
 
-
         end subroutine 
 
 end module 
