@@ -84,6 +84,7 @@ CONTAINS
       end if
 
       total_enstrophyb = 0.0_8
+      clcdb = 0.0d0
       cdb = 0.0_8
       clb = 0.0_8
       cmb = 0.0_8
@@ -149,6 +150,12 @@ CONTAINS
                 total_enstrophyb = 1.0
                 if(rank == 0) then
                         write(*,*)'%%-objective function = total enstrophy-%%%'
+                        write(*,*)
+                end if
+        elseif(obj_flag == 6) then
+                clcdb = 1.0
+                if(rank == 0) then
+                        write(*,*)'%%%%%%%-objective function = Cl/Cd-%%%%%%%%'
                         write(*,*)
                 end if
         else

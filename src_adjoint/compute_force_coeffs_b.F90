@@ -2,14 +2,16 @@
 !  Tapenade 3.14 (r7079) -  5 Oct 2018 09:56
 !
 MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
+#include <petsc/finclude/petscsys.h>
 
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
 
 CONTAINS
 !  Differentiation of compute_cl_cd_cm in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cd cl cm point.x point.y point.nx
-!                point.ny point.prim
+!   gradient     of useful results: clcd cd cl cm point.x point.y
+!                point.nx point.ny point.prim
 !   with respect to varying inputs: point.x point.y point.nx point.ny
 !                point.prim
   SUBROUTINE COMPUTE_CL_CD_CM_B()
@@ -22,7 +24,7 @@ CONTAINS
     REAL*8 :: lxb, lyb, mxb, myb, rxb, ryb
     REAL*8 :: ds1, ds2, ds
     REAL*8 :: ds1b, ds2b, dsb
-    REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
+    REAL*8, DIMENSION(shapes) :: h, v, pitch_mom, lcl, lcd
     REAL*8, DIMENSION(shapes) :: hb, vb, pitch_momb
     REAL*8 :: nx, ny
     REAL*8 :: nxb, nyb
@@ -37,7 +39,10 @@ CONTAINS
     REAL*8 :: tempb4
     REAL*8 :: tempb5
     REAL*8 :: tempb6
+    PetscErrorCode :: ierr
     temp = 0.5d0*rho_inf*mach*mach
+    h = 0.d0
+    v = 0.d0
     DO j=1,shape_points
       m = shape_points_index(j)
       r = point%right(m)
@@ -56,12 +61,28 @@ CONTAINS
       ds2 = DSQRT(ds2)
       CALL PUSHREAL8(ds)
       ds = 0.5d0*(ds1+ds2)
+      nx = point%nx(m)
+      ny = point%ny(m)
       CALL PUSHREAL8(cp)
       cp = point%prim(4, m) - pr_inf
       cp = -(cp/temp)
+      h(point%flag_2(m)) = h(point%flag_2(m)) + cp*nx*ds
+      v(point%flag_2(m)) = v(point%flag_2(m)) + cp*ny*ds
     END DO
+    lcl = v*DCOS(theta) - h*DSIN(theta)
+    lcd = h*DCOS(theta) + v*DSIN(theta)
+    call MPI_Reduce(lCl, Cl , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+             & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lCd, Cd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+             & PETSC_COMM_WORLD, ierr)
+    call MPI_Bcast(cl, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+                  ierr)
+    call MPI_Bcast(cd, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+                  ierr)
     pitch_momb = 0.0_8
     pitch_momb = cmb
+    clb = clb + clcdb/cd
+    cdb = cdb - cl*clcdb/cd**2
     hb = 0.0_8
     vb = 0.0_8
     hb = DCOS(theta)*cdb - DSIN(theta)*clb
@@ -138,6 +159,9 @@ CONTAINS
     REAL*8 :: ds1, ds2, ds
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
     REAL*8 :: nx, ny
+    INTRINSIC DSQRT
+    INTRINSIC DCOS
+    INTRINSIC DSIN
     temp = 0.5d0*rho_inf*mach*mach
     h = 0.d0
     v = 0.d0
@@ -168,8 +192,8 @@ CONTAINS
     END DO
     cl = v*DCOS(theta) - h*DSIN(theta)
     cd = h*DCOS(theta) + v*DSIN(theta)
+    clcd = cl/cd
     cm = pitch_mom
-
   END SUBROUTINE COMPUTE_CL_CD_CM
 
 END MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF

@@ -78,8 +78,8 @@ module data_structure_mod_diff
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
         integer :: max_res_point
-	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, cfv
-	real*8, allocatable, dimension(:)  :: Clb, Cdb, Cmb
+	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, ClCd, cfv
+	real*8, allocatable, dimension(:)  :: Clb, Cdb, Cmb, ClCdb
 	real*8  :: total_entropy, total_enstrophy
 	real*8  :: total_entropyb, total_enstrophyb
         integer :: plen
@@ -175,6 +175,7 @@ module data_structure_mod_diff
                 allocate(point%delta(max_points))
 
                 allocate(Cl(shapes))
+                allocate(ClCd(shapes))
                 allocate(Cd(shapes))
                 allocate(Cm(shapes))
                 allocate(cfv(shapes))
@@ -198,6 +199,7 @@ module data_structure_mod_diff
                 allocate(pointb%delta(max_points))
 
                 allocate(Clb(shapes))
+                allocate(ClCdb(shapes))
                 allocate(Cdb(shapes))
                 allocate(Cmb(shapes))
 
@@ -241,6 +243,7 @@ module data_structure_mod_diff
                 deallocate(point%delta)
 
                 deallocate(Cl)
+                deallocate(ClCd)
                 deallocate(Cd)
                 deallocate(Cm)
                 deallocate(cfv)
@@ -264,6 +267,7 @@ module data_structure_mod_diff
                 deallocate(pointb%delta)
 
                 deallocate(Clb)
+                deallocate(ClCdb)
                 deallocate(Cdb)
                 deallocate(Cmb)
 
