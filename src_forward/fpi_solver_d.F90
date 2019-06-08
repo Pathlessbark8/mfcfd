@@ -59,7 +59,7 @@ CONTAINS
 
     result1 = DSQRT(gsum_res_sqr)
     res_new = result1/plen
-    IF (t .LE. 2) THEN
+    IF (t .LE. 2 .and. restart == 0) THEN
       res_old = res_new
       residue = 0.d0
     ELSE

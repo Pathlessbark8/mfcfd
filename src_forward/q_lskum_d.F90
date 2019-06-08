@@ -22,15 +22,16 @@ CONTAINS
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
-    if(proc == 1)pointd%x(80)=1.0
-    if(rank == 1)pointd%x(8)=1.0
+    if(rank==22)pointd%x(10)=1.0    
+    !if(rank==22)point%x(10)=point%x(10)-1E-7  
     CALL COMPUTE_NORMALS_D()
+
+    CALL GENERATE_CONNECTIVITY()
+    
     if(rank == 0) then
             write(*,*)'%%%%-Normals and connectivity generated-%%%'
             write(*,*)
     end if
-
-    CALL GENERATE_CONNECTIVITY()
 ! Set U_old to U for first iteration
     DO i=1,local_points
       point%u_old(1, i) = point%prim(1, i)
@@ -43,6 +44,7 @@ CONTAINS
     total_enstrophyd = 0.0_8
     cdd = 0.0_8
     cld = 0.0_8
+    clcdd = 0.0_8
     cmd = 0.0_8
     total_entropyd = 0.0_8
     pointd%prim = 0.0_8
@@ -53,7 +55,8 @@ CONTAINS
     pointd%qm = 0.0_8
     pointd%vorticity_sqr = 0.0_8
     pointd%delta = 0.0_8
-    DO it=1,max_iters
+    if(restart == 0)itr = 0
+    DO it=itr+1, itr+max_iters
       CALL FPI_SOLVER_D(it)
       if (rank==0) then
         write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue

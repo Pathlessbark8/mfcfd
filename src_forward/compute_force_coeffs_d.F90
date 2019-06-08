@@ -101,24 +101,27 @@ CONTAINS
     lcmd = pitch_momd
     lcm = pitch_mom
 
-    call MPI_Reduce(lCl, Cl , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+    call MPI_Reduce(lcl, cl , shapes, MPI_DOUBLE, MPI_SUM, 0, &
             & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lCld, Cld , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+    call MPI_Reduce(lcld, cld , shapes, MPI_DOUBLE, MPI_SUM, 0, &
             & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lCd, Cd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+    call MPI_Reduce(lcd, cd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
             & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lCdd, Cdd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+    call MPI_Reduce(lcdd, cdd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
             & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+    call MPI_Reduce(lcm, cm , shapes, MPI_DOUBLE, MPI_SUM, 0, &
             & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lCmd, Cmd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+    call MPI_Reduce(lcmd, cmd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
             & PETSC_COMM_WORLD, ierr)
 
     if(rank == 0) then
+            clcdd = (cld*cd-cl*cdd)/cd**2
+            clcd = cl/cd
             do j = 1, shapes
-                    write(*,*)"shape :", j, "Cl: ", Cl, "Cld: ", Cld
-                    write(*,*)"shape :", j, "Cd: ", Cd, "Cdd: ", Cdd
-                    write(*,*)"shape :", j, "Cm: ", Cm, "Cmd: ", Cmd
+                    write(*,*)"shape:", j, "Cl:  ", Cl,   "Cld:  ", Cld
+                    write(*,*)"shape:", j, "Cd:  ", Cd,   "Cdd:  ", Cdd
+                    write(*,*)"shape:", j, "Cm:  ", Cm,   "Cmd:  ", Cmd
+                    write(*,*)"shape:", j, "ClCd:", ClCd, "ClCdd:", ClCdd
             end do
     end if
 
