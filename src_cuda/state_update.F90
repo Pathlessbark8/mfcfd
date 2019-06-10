@@ -23,6 +23,8 @@ module state_update_mod
 
                 k = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
+                if(k > mp_d) return
+
                 sum_res_sqr(k) = 0.0d0
                 
                 if (flag_d(k) == 0) then

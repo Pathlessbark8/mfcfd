@@ -13,8 +13,7 @@ program meshfree_solver
 
         implicit none
         integer :: istat, i, nDevices=0
-        real*8  :: start,finish
-        real*8  :: startr,finishr
+        real*8  :: start,finish, runtime
         type(cudaDeviceProp) :: prop
         
         call cpu_time(start)
@@ -60,9 +59,7 @@ program meshfree_solver
         write(*,*)
        
 !	Primal fixed point iterative solver ..
-        call cpu_time(startr) 
-        call q_lskum()
-        call cpu_time(finishr) 
+        call q_lskum(runtime)
 
 !       Compute sensor values
         call compute_adapt_sensor()
@@ -80,7 +77,7 @@ program meshfree_solver
 
         call cpu_time(finish) 
         write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
-        write(*,*) 'Run time:  ',finishr-startr,'seconds'
+        write(*,*) 'Run time:  ',runtime,'seconds'
         write(*,*) 'Total time:',finish-start,'seconds'
 
 end program meshfree_solver

@@ -38,11 +38,6 @@ module device_data_structure_mod
         
         type(points_d) :: point_d
 
-        save
-
-        integer, device,allocatable,dimension(:) :: wall_points_index_d
-        integer, device,allocatable,dimension(:) :: outer_points_index_d
-        integer, device,allocatable,dimension(:) :: interior_points_index_d
     contains
 
         subroutine allocate_device_soln()

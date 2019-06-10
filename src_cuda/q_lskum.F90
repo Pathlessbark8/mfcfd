@@ -16,14 +16,15 @@ module q_lskum_mod
 
 contains
 
-        subroutine q_lskum()
+        subroutine q_lskum(time)
 
                 implicit none
 
                 ! Grid and block dim
                 type(dim3) :: grid , tBlock
-                integer :: istat, stat
+                integer :: istat
                 integer :: i
+                real*8 :: start, finish, time
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
@@ -31,6 +32,8 @@ contains
                 call generate_connectivity()
                 write(*,*)'%%%%-Normals and connectivity generated-%%%'
                 write(*,*)
+
+                call cpu_time(start)
 
                 ! Transfer from host device
                 call host_to_device()
@@ -110,16 +113,20 @@ contains
                 it = it - 1
                 
                 call device_to_host()
-                
+
                 write(*,*)
                 write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
                 write(*,*)
 
-                stat = cudaDeviceSynchronize()
-                if (stat .ne. 0) then
-                        print*, cudaGetErrorString(stat) 
-                        stop stat 
+                istat = cudaDeviceSynchronize()
+                if (istat .ne. 0) then
+                        print*, cudaGetErrorString(istat) 
+                        stop istat 
                 endif
+
+                call cpu_time(finish)
+
+                time = finish - start
 
                 CLOSE(UNIT=301)
 

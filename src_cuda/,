@@ -90,13 +90,13 @@ module point_normals_mod
 
                 enddo
 
-                if(interior_normal_flag .eq. 0) then
+                if(interior_points_normal_flag .eq. 0) then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
                                 point%nx(k) = 0.d0
                                 point%ny(k) = 1.d0
                         enddo
-                elseif(interior_normal_flag == 1) then
+                elseif(interior_points_normal_flag == 1) then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
                                 point%nx(k) = 1.d0

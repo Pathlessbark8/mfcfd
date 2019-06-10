@@ -17,6 +17,8 @@ contains
 
                         i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
+                        if(i > mp_d) return
+
                         rho = prim_d(1,i)
                         u1 = prim_d(2,i)
                         u2 = prim_d(3,i)
@@ -57,6 +59,8 @@ contains
                 real*8 :: one_by_det
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
 
                 x_i = x_d(1,i)
                 y_i = x_d(2,i)

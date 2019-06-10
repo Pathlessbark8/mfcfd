@@ -30,6 +30,8 @@ contains
                 real*8 :: min_delt
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
                 
                 min_delt = 1.0d0
 
@@ -161,7 +163,6 @@ contains
                 do j = 1, xpos_nbhs_d(i)
 
                         k = xpos_conn_d(i,j)
-
 
                         x_k = x_d(1,k)
                         y_k = x_d(2,k)

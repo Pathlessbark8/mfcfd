@@ -102,16 +102,10 @@ contains
                         enddo
                 end if
 
-
                 allocate(wall_points_index(wall_points))
                 allocate(shape_points_index(shape_points))
                 allocate(interior_points_index(interior_points))
                 allocate(outer_points_index(outer_points))
-
-                !Device variables
-                allocate(wall_points_index_d(wall_points))
-                allocate(interior_points_index_d(interior_points))
-                allocate(outer_points_index_d(outer_points))
 
                 wall_temp = 0
                 shape_temp = 0
