@@ -18,6 +18,7 @@ module data_structure_mod
                 integer, dimension(:), allocatable :: left,right
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
+                integer, dimension(:), allocatable :: qtdepth 
 		real*8, dimension(:), allocatable :: nx,ny
                 integer, dimension(:), allocatable :: nbhs
                 integer, dimension(:,:), allocatable :: conn
@@ -63,6 +64,7 @@ module data_structure_mod
 	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, cfv
 	real*8  :: total_entropy, total_enstrophy
         integer :: plen
+        integer :: format
 
 !The parameter CFL is the CFL number for stability ..
         real*8 :: CFL

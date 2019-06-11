@@ -19,11 +19,10 @@ module point_normals_mod
 !Finding the normals for the points on the shapes ..   
 
                 do i = 1, wall_points
+                        
                         m = wall_points_index(i)
                         l = point%left(m)
                         r = point%right(m)
-
-                        
                         
                         lx = point%x(l)
                         ly = point%y(l)
@@ -51,13 +50,13 @@ module point_normals_mod
                         point%nx(m) = nx
                         point%ny(m) = ny
 
-
                 enddo
                                 
 
 !	Finding the normals for the outer boundary points ..
 
                 do i = 1, outer_points
+                 
                         m = outer_points_index(i)
                         l = point%left(m)
                         r = point%right(m)
@@ -90,13 +89,13 @@ module point_normals_mod
 
                 enddo
 
-                if(interior_normal_flag .eq. 0) then
+                if(interior_points_normal_flag == 0 .and. format_file .ne. 'quadtree') then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
                                 point%nx(k) = 0.d0
                                 point%ny(k) = 1.d0
                         enddo
-                elseif(interior_normal_flag == 1) then
+                elseif(interior_points_normal_flag == 1 .and. format_file .ne. 'quadtree') then
                         do i = 1, interior_points
                                 k = interior_points_index(i)
                                 point%nx(k) = 1.d0

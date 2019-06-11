@@ -50,6 +50,7 @@ class Graph{
 		string getfileName(int, int );
 		void write_output_gpu_legacy();
 		void write_output_gpu_quad();
-		void write_output();
+		void write_output_legacy();
+		void write_output_quad();
 		 
 };

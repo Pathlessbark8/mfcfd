@@ -1,0 +1,4 @@
+&input_parameters 
+        cfl = 0.5
+        max_iters = 1000
+/

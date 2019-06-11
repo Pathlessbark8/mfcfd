@@ -14,7 +14,7 @@ contains
                 character(len=64) :: grid
                 real*8 :: dummy
 
-                grid = 'partGrid'
+                grid = 'point/partGrid'
 
                 OPEN(UNIT=101,FILE=trim(grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
@@ -46,7 +46,7 @@ contains
                 interior_points = 0
                 outer_points = 0
                 ! legacy format
-                if (format_file==1) then
+                if (format_file == 'legacy') then
                         do k = 1, max_points
         
                                 read(101,*) point%x(k),&
@@ -73,7 +73,7 @@ contains
                                 
                         enddo
                 ! new format from quadtree code
-                elseif (format_file == 2) then
+                elseif (format_file == 'quadtree') then
                         do k = 1, max_points
         
                                 read(101,*) point%x(k),&

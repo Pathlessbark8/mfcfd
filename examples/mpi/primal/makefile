@@ -25,6 +25,12 @@ implicit:
 	mv src/execname .
 	@echo "Built explicit solver"
 
+point:
+	cp -r $(MF_DIR)/mfpre .
+	cd mfpre && make -f makefile 
+	cp mfpre/graphpart .
+	rm -rf mfpre
+
 clean:
-	rm -rf src
-	rm -f execname
+	rm -rf src point
+	rm -f execname graphpart

@@ -103,7 +103,7 @@ contains
                         write(*,*) "iterations:", it, "residue:", residue
                         write(301,*) it, residue
 
-                        if(mod(it,savesol) == 0) then
+                        if(mod(it,nsave) == 0) then
                                 write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
                                 call device_to_host()
                                 call print_primal_output()

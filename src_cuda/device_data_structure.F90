@@ -57,11 +57,11 @@ module device_data_structure_mod
                 allocate(point_d%ypos_nbhs(max_points))
                 allocate(point_d%yneg_nbhs(max_points))
 
-                allocate(point_d%xpos_conn(max_points,10))
-                allocate(point_d%xneg_conn(max_points,10))
+                allocate(point_d%xpos_conn(max_points,15))
+                allocate(point_d%xneg_conn(max_points,15))
 
-                allocate(point_d%ypos_conn(max_points,10))
-                allocate(point_d%yneg_conn(max_points,10))
+                allocate(point_d%ypos_conn(max_points,15))
+                allocate(point_d%yneg_conn(max_points,15))
 
         end subroutine
 
@@ -98,7 +98,7 @@ module device_data_structure_mod
                 cfl_d = cfl
                 power_d = power
                 vl_d = vl_const
-                fo_flag = first_order_flag
+                fo_flag = f_o_flag
                 qinf1_d = q_inf(1)
                 qinf2_d = q_inf(2)
                 qinf3_d = q_inf(3)

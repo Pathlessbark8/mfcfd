@@ -53,7 +53,93 @@ module data_structure_mod
 
         real*8 :: res_old
 
+        !The parameter CFL is the CFL number for stability ..
+        real*8 :: CFL = 0.0d0
+
+        integer :: max_iters = 10000000
+!
+!       The parameter power is used to specify the weights 
+!       in the LS formula for the derivatives ..
+!       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
+!       For example, power = -2.0 implies that
+!       power = -2.0 => weights = 1/d^2
+!       power = -4.0 => weights = 1/d^4
+!
+        real*8 :: power = 0.0d0
+!
+        real*8 :: VL_CONST = 150.0d0  ! Venkatakrishnan limiter constant ..
+
+!       Restart solution parameter
+        character(len=20)  :: restart_solution = 'no'
+        integer :: solution_restart
+
+!       format tag
+        character(len=20)  :: format_file = 'legacy'
+
+!       First order flag
+        character(len=20)  :: first_order_flag = 'second'
+        real*8 :: f_o_flag
+
+!       No of shapes
+        integer :: shapes = 1
+
+!       save frequency
+        integer :: nsave = 10000000
+
+!       Interior normal flag
+        integer :: interior_points_normal_flag = 0
+
+!       Block input
+        integer :: blockx = 32, blocky = 1, blockz = 1
+
+        namelist / input_parameters /   &
+                      shapes, &
+                             cfl, &
+                       max_iters, &
+                          blockx, &
+                          blocky, &
+                          blockz, &
+                          vl_const, &
+                          power, &
+                          restart_solution, &
+                          first_order_flag, &
+                          format_file, &
+                          nsave, &
+                          interior_points_normal_flag
+
+
     contains
+
+        subroutine readnml()
+
+                implicit none
+                integer :: os
+
+
+                open(unit=10,file='input.nml',form='formatted',status='old',iostat=os)
+                read(unit=10,nml=input_parameters)
+
+                close(10)
+                write(*,*) 'Limiter:', 'venkat'
+                write(*,*)
+                write(*,*) '%%%%%%%%%%%%%%-Nml file info-%%%%%%%%%%%%%%'
+                write(*,nml=input_parameters)
+                write(*,*)
+
+                if(first_order_flag == 'second') then
+                        f_o_flag = 1.0d0
+                elseif(first_order_flag == 'first') then
+                        f_o_flag = 0.0d0
+                end if
+
+                if(restart_solution == 'no') then
+                        solution_restart = 0
+                elseif(restart_solution == 'yes') then
+                        solution_restart = 1
+                end if
+
+        end subroutine
+
 
         subroutine allocate_soln()
                 implicit none
@@ -68,11 +154,11 @@ module data_structure_mod
                 allocate(point%ypos_nbhs(max_points))
                 allocate(point%yneg_nbhs(max_points))
 
-                allocate(point%xpos_conn(max_points,10))
-                allocate(point%xneg_conn(max_points,10))
+                allocate(point%xpos_conn(max_points,15))
+                allocate(point%xneg_conn(max_points,15))
 
-                allocate(point%ypos_conn(max_points,10))
-                allocate(point%yneg_conn(max_points,10))
+                allocate(point%ypos_conn(max_points,15))
+                allocate(point%yneg_conn(max_points,15))
 
                 allocate(Cl(shapes))
                 allocate(Cd(shapes))

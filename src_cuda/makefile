@@ -33,7 +33,7 @@ device_data_structure.o: device_data_structure.F90 parameter.o data_structure.o
 initial_conditions.o: initial_conditions.F90 data_structure.o parameter.o
 	$(FC) $(FFLAGS) -c  initial_conditions.F90
 
-q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o q_variables.o state_update.o
+q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o q_variables.o state_update.o flux_residual.o post_processing.o
 	$(FC) $(FFLAGS) -c  q_lskum.F90
 
 point_normals.o: point_normals.F90 data_structure.o

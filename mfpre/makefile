@@ -25,4 +25,4 @@ plot:
 	python3 plot.py
 
 clean:
-	rm -rf $(OBJ) $(PROGRAM) partGrid*
+	rm -rf $(OBJ) $(PROGRAM) point
