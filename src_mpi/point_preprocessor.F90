@@ -133,6 +133,18 @@ contains
                 if (proc > 1) then
                         allocate(pghost(ghost_points))
 
+                        do k= 1, ghost_points
+                                read(101,*) pghost(k),&
+                                & point%x(local_points + k),point%y(local_points + k), &
+                                & point%min_dist(local_points + k)
+
+                        end do
+                end if
+
+
+                if (proc > 1) then
+                        allocate(pghost(ghost_points))
+
                         do k=local_points+1,max_points
                                 read(101,*) pghost(k-local_points),&
                                 & point%x(k),point%y(k), point%min_dist(k)
@@ -165,7 +177,7 @@ contains
                 deallocate(interior_points_index)
                 deallocate(outer_points_index)
                 
-                if(proc>1) deallocate(pghost)
+                if(allocated(pghost)) deallocate(pghost)
 
         end subroutine
 

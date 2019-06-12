@@ -18,8 +18,8 @@ contains
                 character(len=64) :: part_grid
                 character(len=10) :: itos
 
-                part_grid = 'partGrid'
-                if (proc>1) part_grid = 'partGrid'//trim(itos(4,rank))
+                part_grid = 'point/partGrid'
+                if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
                 OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
 
@@ -56,18 +56,20 @@ contains
                         & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
                         
                 !Storing the count for the point types
-                        if(point%flag_1(k) == 1) then
+                        if(point%flag_1(k) == 0) then
                                 wall_points = wall_points + 1
-                        else if(point%flag_1(k) == 2) then
+                        else if(point%flag_1(k) == 1) then
                                 interior_points = interior_points + 1
-                        else if(point%flag_1(k) == 3) then
+                        else if(point%flag_1(k) == 2) then
                                 outer_points = outer_points + 1
                         end if
 
-                        if(point%flag_2(k) > 0)then
+                        if(point%flag_2(k) > 0) then
+                                if(point%flag_2(k) > shapes)then
+                                        print*,"shapes value wrong, check again"
+                                        stop
+                                end if
                                 shape_points = shape_points + 1
-                        elseif(point%flag_2(k) > shapes)then
-                                SETERRA(PETSC_COMM_WORLD,1,'shapes error')
                         end if
                         
                 enddo
@@ -77,23 +79,23 @@ contains
                 allocate(outer_points_index(outer_points))
                 allocate(shape_points_index(shape_points))
 
-
                 wall_temp = 0
                 interior_temp = 0
                 outer_temp = 0
                 shape_temp = 0
                 !Storing indices of the point definitions
                 do k = 1,local_points
-                        if(point%flag_1(k) == 1) then
+                        if(point%flag_1(k) == 0) then
                                 wall_temp = wall_temp+1
                                 wall_points_index(wall_temp) = k
-                        else if(point%flag_1(k) == 2) then
+                        else if(point%flag_1(k) == 1) then
                                 interior_temp = interior_temp+1 
                                 interior_points_index(interior_temp) = k
-                        else if(point%flag_1(k) == 3) then
+                        else if(point%flag_1(k) == 2) then
                                 outer_temp = outer_temp+1
                                 outer_points_index(outer_temp) = k
                         end if
+
 
                         if(point%flag_2(k) > 0) then
                                 shape_temp = shape_temp+1
@@ -104,9 +106,10 @@ contains
                 if (proc > 1) then
                         allocate(pghost(ghost_points))
 
-                        do k=local_points+1,max_points
-                                read(101,*) pghost(k-local_points),&
-                                & point%x(k),point%y(k), point%min_dist(k)
+                        do k= 1, ghost_points
+                                read(101,*) pghost(k),&
+                                & point%x(local_points + k),point%y(local_points + k), &
+                                & point%min_dist(local_points + k)
 
                         end do
                 end if
@@ -140,7 +143,7 @@ contains
                 deallocate(interior_points_index)
                 deallocate(outer_points_index)
                 
-                if(proc>1) deallocate(pghost)
+                if(allocated(pghost)) deallocate(pghost)
 
         end subroutine
 

@@ -69,8 +69,4 @@ contains
 
         end subroutine
 
-
-
-
-
 end module initial_conditions_mod

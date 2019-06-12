@@ -88,6 +88,9 @@ module data_structure_mod_diff
         real*8 :: CFL
 
         integer :: max_iters
+
+! File format
+        integer :: format
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..

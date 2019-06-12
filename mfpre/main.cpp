@@ -60,7 +60,6 @@ int main(int argc, char *argv[]){
     // Creating a directory 
     if (mkdir("point", 0777) == -1) 
         cerr << "Error :  " << strerror(errno) << endl; 
-  
     else
         cout << " Directory created " << endl; 
 

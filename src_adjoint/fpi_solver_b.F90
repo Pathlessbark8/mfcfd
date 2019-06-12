@@ -144,7 +144,6 @@ CONTAINS
       call update_end_prim_ghost()
     END DO
     
-    
     CALL OBJECTIVE_FUNCTION()
     
     call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &

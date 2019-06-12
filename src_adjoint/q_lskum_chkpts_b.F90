@@ -313,9 +313,7 @@ CONTAINS
   subroutine set_obj()
         implicit none
 
-        if(obj_flag == 0) then
-                SETERRA(PETSC_COMM_WORLD,1,'Choose an objective function')
-        elseif(obj_flag == 1) then
+        if(obj_flag == 1) then
                 clb = 1.0
                 if(rank == 0) then
                         write(*,*)'%%%%%%%%%-objective function = Cl-%%%%%%%%%'
@@ -351,8 +349,6 @@ CONTAINS
                         write(*,*)'%%%%%%%-objective function = Cl/Cd-%%%%%%%%'
                         write(*,*)
                 end if
-        else
-                SETERRA(PETSC_COMM_WORLD,1,'Invalid objective function, check again')
         end if
   
   end subroutine
