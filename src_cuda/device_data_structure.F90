@@ -9,7 +9,7 @@ module device_data_structure_mod
         implicit none
 
         integer, constant :: mp_d, fo_flag
-        real*8, constant :: cfl_d, power_d, vl_d
+        real*8, constant :: cfl_d, power_d, vl_d, eu_d
         real*8, constant :: qinf1_d, qinf2_d, qinf3_d, qinf4_d
 
         type :: points_d
@@ -24,10 +24,11 @@ module device_data_structure_mod
                 real*8, device, dimension(:), allocatable :: min_dist
 
                 real*8, device, dimension(:,:), allocatable :: prim
+                real*8, device, dimension(:,:), allocatable :: prim_old
                 real*8, device, dimension(:,:), allocatable :: flux_res
 
                 real*8, device, dimension(:,:), allocatable :: q
-                real*8, device, dimension(:,:,:), allocatable :: qm
+                real*8, device, dimension(:), allocatable :: delta
                 real*8, device, dimension(:,:,:), allocatable :: dq
 
                 integer, device, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
@@ -44,11 +45,12 @@ module device_data_structure_mod
                 implicit none
 
                 allocate(point_d%prim(4,max_points))
+                allocate(point_d%prim_old(4,max_points))
 
                 allocate(point_d%flux_res(4,max_points))
 
                 allocate(point_d%q(4,max_points))
-                allocate(point_d%qm(2,4,max_points))
+                allocate(point_d%delta(max_points))
 
                 allocate(point_d%dq(2,4,max_points))
         
@@ -69,18 +71,19 @@ module device_data_structure_mod
                 implicit none
 
                 deallocate(point_d%prim)
+                deallocate(point_d%prim_old)
 
                 deallocate(point_d%flux_res)
 
                 deallocate(point_d%q)
-                deallocate(point_d%qm)
+                deallocate(point_d%delta)
 
                 deallocate(point_d%dq)
 
                 deallocate(point_d%xpos_nbhs)
                 deallocate(point_d%xneg_nbhs)
-                deallocate(point_d%ypos_nbhs)
                 deallocate(point_d%yneg_nbhs)
+                deallocate(point_d%ypos_nbhs)
 
                 deallocate(point_d%xpos_conn)
                 deallocate(point_d%xneg_conn)
@@ -99,6 +102,7 @@ module device_data_structure_mod
                 power_d = power
                 vl_d = vl_const
                 fo_flag = f_o_flag
+                eu_d = euler
                 qinf1_d = q_inf(1)
                 qinf2_d = q_inf(2)
                 qinf3_d = q_inf(3)

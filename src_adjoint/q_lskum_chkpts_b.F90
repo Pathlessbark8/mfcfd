@@ -23,7 +23,7 @@ CONTAINS
 !		
     INTEGER :: t, i, r, ijk, k
     INTEGER :: ii1
-    integer :: pflag = 1
+    integer :: pflag = 1, iflag = 1
     real :: SF
 !
 !
@@ -135,11 +135,12 @@ CONTAINS
           do ijk=OLDCAPO, CAPO-1
                   ITIM = ijk+ITIMS
                   ITIM = ITIM + itr
-                  if(rank == 0 .and. ITIM == itr+1) then
+                  if(rank == 0 .and. iflag == 1) then
                           write (*,*)
                           write (*,*) 'prediction of needed forward steps :', PFS
                           write (*,*) 'slowdown factor :', SF
                           write (*,*)
+                          iflag = 0
                   end if
                   CALL FPI_SOLVER(ITIM)
                   if (rank==0 .and. pflag == 1) then

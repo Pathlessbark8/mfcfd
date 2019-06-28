@@ -23,9 +23,9 @@ implicit:
 	cp parameter.F90 src/
 	cd src && make -j -f makefile execname 
 	mv src/execname .
-	@echo "Built explicit solver"
+	@echo "Built implicit solver"
 
-point:
+input:
 	cp -r $(MF_DIR)/mfpre .
 	cd mfpre && make -f makefile 
 	cp mfpre/graphpart .

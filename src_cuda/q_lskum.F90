@@ -24,6 +24,7 @@ contains
                 type(dim3) :: grid , tBlock
                 integer :: istat
                 integer :: i
+                integer :: rk
                 real*8 :: start, finish, time
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
@@ -59,20 +60,28 @@ contains
 
                 do it = itr+1, itr+max_iters
 
-                        call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
+                        call eval_timestep<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                        & point_d%conn, point_d%delta, point_d%prim, point_d%prim_old)
 
-                        call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                & point_d%conn, point_d%q, point_d%dq)
+                        do rk = 1, rks
 
-                        call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
-                                & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
-                                & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
-                                & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
-                                & point_d%q, point_d%dq, point_d%flux_res)
+                                call eval_q_variables<<<grid, tBlock>>>(point_d%prim, point_d%q)
 
-                        call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
-                                & point_d%nbhs, point_d%conn, point_d%prim, point_d%flux_res, sum_res_sqr_d)
+                                call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                                        & point_d%conn, point_d%q, point_d%dq)
+
+                                call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                                        & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
+                                        & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
+                                        & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
+                                        & point_d%q, point_d%dq, point_d%flux_res)
+
+                                call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
+                                        & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
+                                        & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
+
+                        end do
 
                         istat = cudaGetLastError() 
 

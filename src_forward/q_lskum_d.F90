@@ -22,8 +22,6 @@ CONTAINS
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
-    if(rank==22)pointd%x(10)=1.0    
-    !if(rank==22)point%x(10)=point%x(10)-1E-7  
     CALL COMPUTE_NORMALS_D()
 
     CALL GENERATE_CONNECTIVITY()

@@ -21,51 +21,11 @@ contains
                 ! local variables
                 integer :: i, r, k
                 real*8 :: Gxp(4), Gxn(4), Gyp(4), Gyn(4)
-                ! delta t variables
-                real*8 :: delta_t, delta_d
-                real*8 :: min_dist
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: u1, u2, rho, pr, mod_u
-                real*8 :: dist
-                real*8 :: min_delt
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
                 if(i > mp_d) return
                 
-                min_delt = 1.0d0
-
-                do r = 1, nbhs_d(i)
-                        k = conn_d(i,r)
-
-                        rho = prim_d(1,k)
-                        u1 = prim_d(2,k)
-                        u2 = prim_d(3,k)
-                        pr = prim_d(4,k)
-
-                        x_i = x_d(1,i)
-                        y_i = x_d(2,i)
-
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
-
-                        dist = (x_k - x_i)*(x_k - x_i) + (y_k - y_i)*(y_k - y_i)
-                        dist = dsqrt(dist)
-
-                        mod_u = dsqrt(u1*u1 + u2*u2)
-
-                        delta_t = dist/(mod_u + 3.0d0*dsqrt(pr/rho))
-
-                        delta_t = cfl_d*delta_t
-
-                        if(min_delt > delta_t) then
-                                min_delt = delta_t
-                        endif
-
-                enddo
-                delta_d = min_delt
-                call syncthreads()
-
                 if (flag_d(i) == 0) then
 
                         call wall_dGx_pos(i, Gxp, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
@@ -78,7 +38,7 @@ contains
                                 & yneg_conn_d, dist_d, q_d, dq_d)
                         
                         flux_res_d(:,i) = Gxp + Gxn + Gyn
-                        flux_res_d(:,i) = 2.0d0 * delta_d * flux_res_d(:,i)
+                        flux_res_d(:,i) = 2.0d0 * flux_res_d(:,i)
                 end if
                 call syncthreads()
 
@@ -93,7 +53,7 @@ contains
                         call outer_dGy_pos(i, Gyp, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
                                 & ypos_conn_d, dist_d, q_d, dq_d)
                         
-                        flux_res_d(:,i) = delta_d * (Gxp + Gxn + Gyp)
+                        flux_res_d(:,i) = (Gxp + Gxn + Gyp)
                 end if
                 call syncthreads()
 
@@ -111,7 +71,7 @@ contains
                         call interior_dGy_neg(i, Gyn, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
                                 & yneg_conn_d, dist_d, q_d, dq_d)
                         
-                        flux_res_d(:,i) = delta_d * (Gxp + Gxn + Gyp + Gyn)
+                        flux_res_d(:,i) = (Gxp + Gxn + Gyp + Gyn)
                 end if
                 call syncthreads()
 

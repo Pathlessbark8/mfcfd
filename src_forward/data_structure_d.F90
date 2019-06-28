@@ -20,6 +20,8 @@ module data_structure_mod_diff
 		real*8, dimension(:), allocatable :: nx,ny
                 integer, dimension(:), allocatable :: nbhs
                 integer, dimension(:,:), allocatable :: conn
+                
+                integer, dimension(:), allocatable :: qtdepth
 
 		real*8, dimension(:), allocatable :: min_dist
 
@@ -73,6 +75,9 @@ module data_structure_mod_diff
         !iterations
         integer :: it, itr, restart
 
+        integer :: timestep
+        real*8 :: tfinal
+
 
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
@@ -82,6 +87,7 @@ module data_structure_mod_diff
 	real*8  :: total_entropy, total_enstrophy
 	real*8  :: total_entropyd, total_enstrophyd
         integer :: plen
+        integer :: format
 
 !The parameter CFL is the CFL number for stability ..
         real*8 :: CFL

@@ -10,7 +10,7 @@
 using namespace std;
 
 void Graph::read_point_create_graph_legacy(){
-	ifstream infile("point-input");
+	ifstream infile(file);
 	assert(infile.is_open());
 	string line;
 	nvtxs = 0;
@@ -35,7 +35,7 @@ void Graph::read_point_create_graph_legacy(){
 }
 
 void Graph::read_point_create_graph_quad(){
-	ifstream infile("point-input");
+	ifstream infile(file);
 	assert(infile.is_open());
 	string line;
 	nvtxs = 0;
@@ -60,7 +60,7 @@ void Graph::read_point_create_graph_quad(){
 }
 
 void Graph::read_point_create_graph_restart(){
-	ifstream infile("point-input");
+	ifstream infile(file);
 	assert(infile.is_open());
 	string line;
 	nvtxs = 0;

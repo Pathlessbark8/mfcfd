@@ -2,7 +2,7 @@ ifndef MF_DIR
 	$(error directory not set)
 endif
 
-SRCDIR=$(MF_DIR)/src_mpi
+SRCDIR=$(MF_DIR)/src_forward
 
 all:
 	@echo "make explicit or implicit"

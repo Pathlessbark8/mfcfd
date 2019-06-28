@@ -32,52 +32,84 @@ contains
                 allocate(point%flag_2(max_points))
                 allocate(point%nx(max_points))
                 allocate(point%ny(max_points))
+                allocate(point%qtdepth(max_points))
                 allocate(point%nbhs(max_points))
                 allocate(point%conn(max_points,15))
                 allocate(point%min_dist(max_points))
                 allocate(point%left(max_points))
                 allocate(point%right(max_points))
                 allocate(point%original_id(local_points))
+
                 allocate(pointb%x(max_points))
                 allocate(pointb%y(max_points))
                 allocate(pointb%x_res(2, max_points))
                 allocate(pointb%nx(max_points))
                 allocate(pointb%ny(max_points))
-
                 wall_points = 0
                 interior_points = 0
                 outer_points = 0
                 shape_points = 0
 
-                do k = 1, local_points
-        
-                        read(101,*) ,point%original_id(k), point%x(k), point%y(k), &
-                        & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
-                        & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
-                        
-                !Storing the count for the point types
-                        if(point%flag_1(k) == 0) then
-                                wall_points = wall_points + 1
-                        else if(point%flag_1(k) == 1) then
-                                interior_points = interior_points + 1
-                        else if(point%flag_1(k) == 2) then
-                                outer_points = outer_points + 1
-                        end if
+                if(format == 1) then
 
-                        if(point%flag_2(k) > 0) then
-                                if(point%flag_2(k) > shapes)then
-                                        print*,"shapes value wrong, check again"
-                                        stop
-                                end if
-                                shape_points = shape_points + 1
-                        end if
+
+                        do k = 1, local_points
                         
-                enddo
+                                read(101,*)point%original_id(k), point%x(k), point%y(k), &
+                                & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
+                                & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
+
+                        !Storing the count for the point types
+                                if(point%flag_1(k) == 0) then
+                                        wall_points = wall_points + 1
+                                else if(point%flag_1(k) == 1) then
+                                        interior_points = interior_points + 1
+                                else if(point%flag_1(k) == 2) then
+                                        outer_points = outer_points + 1
+                                end if
+
+                                if(point%flag_2(k) > 0) then
+                                        if(point%flag_2(k) > shapes)then
+                                                SETERRA(PETSC_COMM_WORLD,1,'shapes value wrong, check again')
+                                        end if
+                                        shape_points = shape_points + 1
+                                end if
+
+                        enddo
+                else if(format == 2) then ! quadtree format
+                        do k = 1, local_points
+                        
+                                read(101,*)point%original_id(k), point%x(k), point%y(k), &
+                                & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
+                                & point%nx(k), point%ny(k), point%qtdepth(k),point%min_dist(k), &
+                                & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
+                                
+                        !Storing the count for the point types
+                                if(point%flag_1(k) == 0) then
+                                        wall_points = wall_points + 1
+                                else if(point%flag_1(k) == 1) then
+                                        interior_points = interior_points + 1
+                                else if(point%flag_1(k) == 2) then
+                                        outer_points = outer_points + 1
+                                end if
+                        
+                                if(point%flag_2(k) > 0) then
+                                          if(point%flag_2(k) > shapes)then
+                                                  print*,"shapes value wrong, check again"
+                                                  stop
+                                          end if
+                                          shape_points = shape_points + 1
+                                end if
+                        
+                        enddo
+
+                end if
 
                 allocate(wall_points_index(wall_points))
                 allocate(interior_points_index(interior_points))
                 allocate(outer_points_index(outer_points))
                 allocate(shape_points_index(shape_points))
+
 
                 wall_temp = 0
                 interior_temp = 0
@@ -95,7 +127,6 @@ contains
                                 outer_temp = outer_temp+1
                                 outer_points_index(outer_temp) = k
                         end if
-
 
                         if(point%flag_2(k) > 0) then
                                 shape_temp = shape_temp+1
@@ -128,21 +159,22 @@ contains
                 deallocate(point%nx)
                 deallocate(point%ny)
                 deallocate(point%nbhs)
+                deallocate(point%qtdepth)
                 deallocate(point%conn)
                 deallocate(point%min_dist)
                 deallocate(point%left)
                 deallocate(point%right)
                 deallocate(point%original_id)
-                deallocate(pointb%x)
-                deallocate(pointb%y)
-                deallocate(pointb%nx)
-                deallocate(pointb%ny)
-                deallocate(pointb%x_res)
 
                 deallocate(wall_points_index)
                 deallocate(interior_points_index)
                 deallocate(outer_points_index)
                 
+                deallocate(pointb%x)
+                deallocate(pointb%y)
+                deallocate(pointb%x_res)
+                deallocate(pointb%nx)
+                deallocate(pointb%ny)
                 if(allocated(pghost)) deallocate(pghost)
 
         end subroutine

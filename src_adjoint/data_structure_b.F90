@@ -21,7 +21,9 @@ module data_structure_mod_diff
                 integer, dimension(:), allocatable :: nbhs
                 integer, dimension(:,:), allocatable :: conn
 
-		real*8, dimension(:), allocatable :: min_dist
+                integer, dimension(:), allocatable :: qtdepth
+
+                real*8, dimension(:), allocatable :: min_dist
 
                 real*8, dimension(:,:), allocatable :: prim
                 real*8, dimension(:,:), allocatable :: prim_old

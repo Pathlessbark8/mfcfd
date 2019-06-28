@@ -47,6 +47,11 @@ module data_structure_mod
         !iterations
         integer :: it, itr
 
+        !Flag for time stepping
+        integer :: rks = 1
+        real*8 :: euler = 2.0d0
+        character(len=20)  :: tscheme = 'first'
+
         real*8, allocatable, dimension(:)  :: Cl, Cd, Cm
 
         real*8 :: total_entropy
@@ -75,6 +80,7 @@ module data_structure_mod
 
 !       format tag
         character(len=20)  :: format_file = 'legacy'
+        integer :: file_format = 1
 
 !       First order flag
         character(len=20)  :: first_order_flag = 'second'
@@ -105,7 +111,10 @@ module data_structure_mod
                           first_order_flag, &
                           format_file, &
                           nsave, &
-                          interior_points_normal_flag
+                          interior_points_normal_flag, &
+                          tscheme, &
+                          mach, &
+                          aoa
 
 
     contains
@@ -138,6 +147,20 @@ module data_structure_mod
                         solution_restart = 1
                 end if
 
+                if(tscheme == 'first') then
+                        rks = 1
+                        euler = 2.0d0
+                elseif(tscheme == 'ssprk43') then
+                        rks = 4
+                        euler = 1.0d0
+                end if
+
+                if(format_file == 'legacy') then
+                        file_format = 1
+                elseif(format_file == 'quadtree') then
+                        file_format = 2
+                        interior_points_normal_flag = 100000
+                end if
         end subroutine
 
 

@@ -46,7 +46,7 @@ contains
                 interior_points = 0
                 outer_points = 0
                 ! legacy format
-                if (format_file == 'legacy') then
+                if (file_format == 1) then
                         do k = 1, max_points
         
                                 read(101,*) point%x(k),&
@@ -73,7 +73,7 @@ contains
                                 
                         enddo
                 ! new format from quadtree code
-                elseif (format_file == 'quadtree') then
+                elseif (file_format == 2) then
                         do k = 1, max_points
         
                                 read(101,*) point%x(k),&

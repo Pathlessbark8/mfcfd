@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 filelist=[]
-for file in glob.glob("partGrid*"):
+for file in glob.glob("point/partGrid*"):
     filelist.append(file)
 
 for fname in filelist:

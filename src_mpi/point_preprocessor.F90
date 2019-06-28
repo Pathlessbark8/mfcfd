@@ -50,7 +50,7 @@ contains
 
                         do k = 1, local_points
                         
-                                read(101,*) ,point%original_id(k), point%x(k), point%y(k), &
+                                read(101,*)point%original_id(k), point%x(k), point%y(k), &
                                 & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
                                 & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
 
@@ -64,18 +64,17 @@ contains
                                 end if
 
                                 if(point%flag_2(k) > 0) then
-                                          if(point%flag_2(k) > shapes)then
-                                                  print*,"shapes value wrong, check again"
-                                                  stop
-                                          end if
-                                          shape_points = shape_points + 1
+                                        if(point%flag_2(k) > shapes)then
+                                                SETERRA(PETSC_COMM_WORLD,1,'shapes value wrong, check again')
+                                        end if
+                                        shape_points = shape_points + 1
                                 end if
 
                         enddo
                 else if(format == 2) then ! quadtree format
                         do k = 1, local_points
                         
-                                read(101,*) ,point%original_id(k), point%x(k), point%y(k), &
+                                read(101,*)point%original_id(k), point%x(k), point%y(k), &
                                 & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
                                 & point%nx(k), point%ny(k), point%qtdepth(k),point%min_dist(k), &
                                 & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
@@ -137,17 +136,6 @@ contains
                                 read(101,*) pghost(k),&
                                 & point%x(local_points + k),point%y(local_points + k), &
                                 & point%min_dist(local_points + k)
-
-                        end do
-                end if
-
-
-                if (proc > 1) then
-                        allocate(pghost(ghost_points))
-
-                        do k=local_points+1,max_points
-                                read(101,*) pghost(k-local_points),&
-                                & point%x(k),point%y(k), point%min_dist(k)
 
                         end do
                 end if

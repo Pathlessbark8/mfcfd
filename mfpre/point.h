@@ -18,7 +18,7 @@ typedef struct point {
     double x, y;
     int left, right;
     int qtdepth;
-    int nx, ny;
+    double nx, ny;
     double min_dist;
     idx_t flag1, flag2;
 } point;
@@ -38,9 +38,11 @@ class Graph{
 		vector<idx_t> adjncyVec;
 		int format;
 		int gpu;
+		string file;
+		bool use_gpu;
 		
 		// read file and build graph
-		Graph(){ format = 0; gpu = 0; };
+		Graph(){ format = 0; gpu = 0; use_gpu = false;};
 
 		void read_point_create_graph_legacy();
 		void read_point_create_graph_quad();

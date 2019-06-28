@@ -18,10 +18,6 @@ program meshfree_solver
         if(ierr /= 0) stop "Unable to initialize PETSc"
         call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr)
         call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr)
-        if(rank==0) then
-                call execute_command_line('mkdir -p solution')
-                call execute_command_line('mkdir -p cp')
-        end if
         
         totaltime = MPI_Wtime()
 

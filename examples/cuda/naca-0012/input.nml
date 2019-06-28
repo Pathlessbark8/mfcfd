@@ -1,4 +1,6 @@
 &input_parameters 
-        cfl = 0.5
-        max_iters = 1000
+        cfl = 0.2
+        max_iters = 10
+	vl_const = 650
+	format_file = 'quadtree'
 /
