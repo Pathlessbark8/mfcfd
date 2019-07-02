@@ -100,10 +100,23 @@ module generate_connectivity_mod
                                 point%yneg_conn(i,count) = nbh;
         
                         endif
-                                
 
                 enddo
 
+                if(point%xpos_nbhs(i) == 0) then
+                        print*,"xpos zero for interior point number:", i
+                        stop
+                elseif(point%xneg_nbhs(i) == 0) then
+                        print*,"xneg zero for interior point number:", i
+                        stop
+                elseif(point%ypos_nbhs(i) == 0) then
+                        print*,"ypos zero for interior point number:", i
+                        stop
+                elseif(point%yneg_nbhs(i) == 0) then
+                        print*,"yneg zero for interior point number:", i
+                        stop
+                end if
+                
         end subroutine
 
 subroutine get_wall_boundary_neighbours(i, nx, ny)
@@ -163,6 +176,17 @@ subroutine get_wall_boundary_neighbours(i, nx, ny)
                         point%yneg_conn(i,count) = nbh;
 
                 enddo
+                
+                if(point%xpos_nbhs(i) == 0) then
+                        print*,"xpos zero for wall point number:", i
+                        stop
+                elseif(point%xneg_nbhs(i) == 0) then
+                        print*,"xneg zero for wall point number:", i
+                        stop
+                elseif(point%yneg_nbhs(i) == 0) then
+                        print*,"yneg zero for wall point number:", i
+                        stop
+                end if
 
         end subroutine
 
@@ -224,8 +248,18 @@ subroutine get_outer_boundary_neighbours(i, nx, ny)
                         count = point%ypos_nbhs(i);
                         point%ypos_conn(i,count) = nbh;
 
-
                 enddo
+
+                if(point%xpos_nbhs(i) == 0) then
+                        print*,"xpos zero for outer point number:", i
+                        stop
+                elseif(point%xneg_nbhs(i) == 0) then
+                        print*,"xneg zero for outer point number:", i
+                        stop
+                elseif(point%ypos_nbhs(i) == 0) then
+                        print*,"ypos zero for outer point number:", i
+                        stop
+                end if
 
         end subroutine
 

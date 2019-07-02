@@ -82,8 +82,8 @@ module data_structure_mod
         character(len=20)  :: format_file = 'legacy'
         integer :: file_format = 1
 
-!       First order flag
-        character(len=20)  :: first_order_flag = 'second'
+!       solution accuracy
+        character(len=20)  :: solution_accuracy = 'second'
         real*8 :: f_o_flag
 
 !       No of shapes
@@ -108,7 +108,7 @@ module data_structure_mod
                           vl_const, &
                           power, &
                           restart_solution, &
-                          first_order_flag, &
+                          solution_accuracy, &
                           format_file, &
                           nsave, &
                           interior_points_normal_flag, &
@@ -135,9 +135,9 @@ module data_structure_mod
                 write(*,nml=input_parameters)
                 write(*,*)
 
-                if(first_order_flag == 'second') then
+                if(solution_accuracy == 'second') then
                         f_o_flag = 1.0d0
-                elseif(first_order_flag == 'first') then
+                elseif(solution_accuracy == 'first') then
                         f_o_flag = 0.0d0
                 end if
 

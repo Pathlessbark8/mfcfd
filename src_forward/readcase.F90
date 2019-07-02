@@ -7,7 +7,7 @@ subroutine readcase()
         PetscErrorCode :: ierr
         PetscBool :: set
         character(len=64) :: format_file, time, limiter, restart_solution
-        character(len=64) :: first_order_flag
+        character(len=64) :: solution_accuracy
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -72,13 +72,13 @@ subroutine readcase()
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-nsave', nsave,set,ierr); CHKERRQ(ierr)
         
-        first_order_flag = 'second' ! Default: second order
+        solution_accuracy = 'second' ! Default: second order
         call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                              '-first_order_flag',first_order_flag,set,ierr); CHKERRQ(ierr)
+                              '-solution_accuracy',solution_accuracy,set,ierr); CHKERRQ(ierr)
         
-        if(trim(first_order_flag) == 'second') then
+        if(trim(solution_accuracy) == 'second') then
                 fo_flag = 1.0d0
-        elseif(trim(first_order_flag) == 'first') then
+        elseif(trim(solution_accuracy) == 'first') then
                 fo_flag = 0.0d0
         end if
         
