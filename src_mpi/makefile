@@ -7,14 +7,14 @@ include makefile.in
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure.o petsc_data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o miscellaneous.o readcase.o post_processing.o objective_function.o compute_force_coeffs.o compute_entropy.o compute_enstrophy.o 
+objects=meshfree_solver.o parameter.o data_structure.o petsc_data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o readcase.o post_processing.o objective_function.o compute_force_coeffs.o compute_entropy.o compute_enstrophy.o q_lskum_petsc.o
 
 
 execname: $(objects)  
 	$(FC)  -o execname $(FFLAGS) $(objects) $(PETSC_LIB)
 
 
-meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o petsc_data_structure.o parameter.o initial_conditions.o q_lskum.o post_processing.o compute_force_coeffs.o
+meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o petsc_data_structure.o parameter.o q_lskum.o post_processing.o compute_force_coeffs.o q_lskum_petsc.o
 	$(FC) $(FFLAGS) -c  meshfree_solver.F90 
 
 point_preprocessor.o: point_preprocessor.F90 data_structure.o petsc_data_structure.o
@@ -38,8 +38,11 @@ utilities.o: utilities.F90
 initial_conditions.o: initial_conditions.F90 data_structure.o parameter.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  initial_conditions.F90
 
-q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o fpi_solver.o 
+q_lskum.o: q_lskum.F90 data_structure.o point_normals.o generate_connectivity.o fpi_solver.o initial_conditions.o
 	$(FC) $(FFLAGS) -c  q_lskum.F90
+
+q_lskum_petsc.o: q_lskum_petsc.F90 data_structure.o point_normals.o generate_connectivity.o initial_conditions.o petsc_data_structure.o state_update.o
+	$(FC) $(FFLAGS) -c  q_lskum_petsc.F90
 
 point_normals.o: point_normals.F90 data_structure.o
 	$(FC) $(FFLAGS) -c  point_normals.F90
@@ -89,11 +92,9 @@ compute_enstrophy.o: compute_enstrophy.F90 data_structure.o petsc_data_structure
 compute_entropy.o: compute_entropy.F90 data_structure.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  compute_entropy.F90
 
-miscellaneous.o: miscellaneous.F90
-	$(FC) $(FFLAGS) -c  miscellaneous.F90
-
 post_processing.o: data_structure.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  post_processing.F90
+
 clean::
 	rm -rf *.mod execname *.o
 

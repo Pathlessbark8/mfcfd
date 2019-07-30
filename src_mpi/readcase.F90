@@ -7,12 +7,18 @@ subroutine readcase()
         PetscErrorCode :: ierr
         PetscBool :: set
         character(len=64) :: format_file, time, limiter, restart_solution
-        character(len=64) :: solution_accuracy
+        character(len=64) :: solution_accuracy, tscheme, run_option
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-cfl',cfl,set,ierr); CHKERRQ(ierr)
 
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                                 '-mach',mach,set,ierr); CHKERRQ(ierr)
+
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                                 '-aoa',aoa,set,ierr); CHKERRQ(ierr)
+        
         max_iters = 10000000 ! Default iterations
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                             '-max_iters',max_iters,set,ierr); CHKERRQ(ierr)
@@ -29,6 +35,28 @@ subroutine readcase()
                 timestep = 0
         elseif(trim(time) == 'unsteady') then
                 timestep = 1
+        end if
+
+        run_option = 'normal' ! Default normal run 
+        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                              '-run_option',run_option,set,ierr); CHKERRQ(ierr)
+
+        if(trim(run_option) == 'normal') then
+                runop = 1
+        elseif(trim(run_option) == 'petsc') then
+                runop = 2
+        end if
+        
+        tscheme = 'first' ! Default first order in time
+        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                              '-tscheme',tscheme,set,ierr); CHKERRQ(ierr)
+
+        if(trim(tscheme) == 'first') then
+                rks = 1
+                euler = 2.0d0
+        elseif(trim(tscheme) == 'ssprk43') then
+                rks = 4
+                euler = 1.0d0
         end if
 
         power = 0.0d0 ! Default power
@@ -97,8 +125,13 @@ subroutine readcase()
                 write(*,*) 'max_iters    :', max_iters
                 write(*,*) 'cfl          :', cfl
                 write(*,*) 'shapes       :', shapes
-                write(*,*) 'timestep     :', timestep
+                write(*,*) 'timestep     :', time
+                write(*,*) 'run_option   :', run_option
+                write(*,*) 'tscheme      :', tscheme
+                write(*,*) 'file format  :', format_file
+                write(*,*) 'accuracy     :', solution_accuracy
                 write(*,*) 'nsave        :', nsave
+                write(*,*) 'power        :', power
                 write(*,*) 'limiter_flag :', limiter_flag
                 if(limiter_flag == 1)write(*,*) 'vl_const     :', vl_const
         end if

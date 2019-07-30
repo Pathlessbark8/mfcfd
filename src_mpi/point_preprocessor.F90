@@ -13,7 +13,7 @@ contains
 
                 implicit none
 
-                integer:: i, k, r
+                integer:: i, k, r, nproc
                 integer :: wall_temp,outer_temp,interior_temp,shape_temp
                 character(len=64) :: part_grid
                 character(len=10) :: itos
@@ -25,7 +25,10 @@ contains
 
                 !TODO: Add asserts
 
-                read(101,*) max_points, local_points, ghost_points
+                read(101,*) nproc, max_points, local_points, ghost_points
+                if(proc .ne. nproc) then
+                        SETERRA(PETSC_COMM_WORLD,1,'check number of partitions and proc')
+                end if
                 allocate(point%x(max_points))
                 allocate(point%y(max_points))
                 allocate(point%flag_1(max_points))

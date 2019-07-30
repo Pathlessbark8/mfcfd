@@ -30,6 +30,7 @@ module data_structure_mod
 		real*8, dimension(:,:), allocatable :: flux_res
 
                 real*8, dimension(:,:), allocatable :: q
+                real*8, dimension(:,:), allocatable :: U
 		real*8, dimension(:,:,:), allocatable :: dq
 		real*8, dimension(:,:,:), allocatable :: qm
 
@@ -57,6 +58,9 @@ module data_structure_mod
         !iterations
         integer :: it, itr
 
+        !Flag for time stepping
+        integer :: rks 
+        real*8 :: euler
 
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
@@ -74,6 +78,9 @@ module data_structure_mod
 !Unsteady variables
         real*8 :: t, tfinal, dtg
         integer :: timestep
+
+!Run option: petsc or normal
+        integer :: runop
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
@@ -126,6 +133,7 @@ module data_structure_mod
                 allocate(point%U_old(4,max_points))
 
                 allocate(point%q(4,max_points))
+                allocate(point%U(4,max_points))
 
                 allocate(point%dq(2,4,max_points))
 
@@ -170,6 +178,7 @@ module data_structure_mod
 
 
                 deallocate(point%q)
+                deallocate(point%U)
                 deallocate(point%dq)
                 deallocate(point%qm)
 

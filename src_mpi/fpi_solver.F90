@@ -25,7 +25,7 @@ contains
                 call func_delta()   
 
                 ! Perform 4-stage, 3-order SSPRK update
-                do rk = 1, 4
+                do rk = 1, rks
                 
                         call eval_q_variables()
                 

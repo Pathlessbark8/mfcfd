@@ -30,7 +30,7 @@ module compute_force_coeffs_mod
                         if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(4,rank))
 
                         OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                        if(rank==0) OPEN(UNIT=202,FILE='clcdcm')
+                        !if(rank==0) OPEN(UNIT=202,FILE='clcdcm')
 
                         temp = 0.5d0*rho_inf*Mach*Mach
 
@@ -91,7 +91,7 @@ module compute_force_coeffs_mod
 
                         if(rank == 0) then
                                 do j = 1, shapes
-                                        write(202,'(i4,3e30.20)') j, Cl, Cd, Cm
+                                        write(*,'(i4,3e30.20)') j, Cl, Cd, Cm
                                 end do
                         end if
 

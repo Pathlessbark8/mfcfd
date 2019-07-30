@@ -23,7 +23,7 @@ contains
                                                 u2 = point%prim(3,k)
                                                 pr = point%prim(4,k)
 
-                                beta = 0.5d0*rho/pr
+                                                beta = 0.5d0*rho/pr
 
                                                 point%q(1,k) = dlog(rho) + (dlog(beta)*2.5d0) - beta*(u1*u1 + u2*u2)
 
