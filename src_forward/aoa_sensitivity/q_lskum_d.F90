@@ -7,6 +7,7 @@ MODULE Q_LSKUM_MOD_DIFF
   USE POINT_NORMALS_MOD_DIFF
   USE GENERATE_CONNECTIVITY_MOD_DIFF
   USE FPI_SOLVER_MOD_DIFF
+  use initial_conditions_mod_diff
   IMPLICIT NONE
 
 CONTAINS
@@ -22,7 +23,15 @@ CONTAINS
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
-    CALL COMPUTE_NORMALS_D()
+
+    !	Assign the initial conditions for the primitive variables ..	
+
+    call initial_conditions_d()
+    if(rank == 0) then
+        write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+        write(*,*)
+    end if
+    CALL COMPUTE_NORMALS()
 
     CALL GENERATE_CONNECTIVITY()
     
@@ -39,25 +48,42 @@ CONTAINS
 &       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
 &       (3, i))
     END DO
-    total_enstrophyd = 0.0_8
-    cdd = 0.0_8
-    cld = 0.0_8
-    clcdd = 0.0_8
-    cmd = 0.0_8
-    total_entropyd = 0.0_8
-    pointd%prim = 0.0_8
-    pointd%prim_old = 0.0_8
-    pointd%flux_res = 0.0_8
-    pointd%q = 0.0_8
-    pointd%dq = 0.0_8
-    pointd%qm = 0.0_8
-    pointd%vorticity_sqr = 0.0_8
-    pointd%delta = 0.0_8
-    if(restart == 0)itr = 0
+
+    IF (restart .EQ. 0) THEN
+      itr = 0
+      total_enstrophyd = 0.0_8
+      clcdd = 0.0_8
+      cdd = 0.0_8
+      cld = 0.0_8
+      cmd = 0.0_8
+      total_entropyd = 0.0_8
+      pointd%prim_old = 0.0_8
+      pointd%flux_res = 0.0_8
+      pointd%q = 0.0_8
+      pointd%dq = 0.0_8
+      pointd%qm = 0.0_8
+      pointd%vorticity_sqr = 0.0_8
+      pointd%delta = 0.0_8
+    ELSE
+      total_enstrophyd = 0.0_8
+      clcdd = 0.0_8
+      cdd = 0.0_8
+      cld = 0.0_8
+      cmd = 0.0_8
+      total_entropyd = 0.0_8
+      pointd%prim_old = 0.0_8
+      pointd%flux_res = 0.0_8
+      pointd%q = 0.0_8
+      pointd%dq = 0.0_8
+      pointd%qm = 0.0_8
+      pointd%vorticity_sqr = 0.0_8
+      pointd%delta = 0.0_8
+    END IF
     DO it=itr+1, itr+max_iters
       CALL FPI_SOLVER_D(it)
       if (rank==0) then
-        write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
+        write(*,'(i8,7e30.20)')it, residue, cl, cld, cd, cdd, cm, cmd
+        !write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
       end if
     END DO
   END SUBROUTINE Q_LSKUM_D

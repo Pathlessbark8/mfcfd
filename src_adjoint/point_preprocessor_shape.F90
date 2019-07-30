@@ -43,10 +43,11 @@ contains
                 allocate(point%right(max_points))
                 allocate(point%original_id(local_points))
 
-                allocate(pointd%x(max_points))
-                allocate(pointd%y(max_points))
-                allocate(pointd%nx(max_points))
-                allocate(pointd%ny(max_points))
+                allocate(pointb%x(max_points))
+                allocate(pointb%y(max_points))
+                allocate(pointb%x_res(2, max_points))
+                allocate(pointb%nx(max_points))
+                allocate(pointb%ny(max_points))
                 wall_points = 0
                 interior_points = 0
                 outer_points = 0
@@ -54,9 +55,10 @@ contains
 
                 if(format == 1) then
 
+
                         do k = 1, local_points
                         
-                                read(101,*) point%original_id(k), point%x(k), point%y(k), &
+                                read(101,*)point%original_id(k), point%x(k), point%y(k), &
                                 & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
                                 & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
 
@@ -80,7 +82,7 @@ contains
                 else if(format == 2) then ! quadtree format
                         do k = 1, local_points
                         
-                                read(101,*) point%original_id(k), point%x(k), point%y(k), &
+                                read(101,*)point%original_id(k), point%x(k), point%y(k), &
                                 & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
                                 & point%nx(k), point%ny(k), point%qtdepth(k),point%min_dist(k), &
                                 & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
@@ -146,7 +148,6 @@ contains
                         end do
                 end if
 
-
                 CLOSE(UNIT=101)
 
         end subroutine 
@@ -172,10 +173,11 @@ contains
                 deallocate(interior_points_index)
                 deallocate(outer_points_index)
                 
-                deallocate(pointd%x)
-                deallocate(pointd%y)
-                deallocate(pointd%nx)
-                deallocate(pointd%ny)
+                deallocate(pointb%x)
+                deallocate(pointb%y)
+                deallocate(pointb%x_res)
+                deallocate(pointb%nx)
+                deallocate(pointb%ny)
                 if(allocated(pghost)) deallocate(pghost)
 
         end subroutine

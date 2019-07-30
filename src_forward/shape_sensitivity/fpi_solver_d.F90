@@ -34,7 +34,7 @@ CONTAINS
     CALL FUNC_DELTA_D()
     
 ! Perform 4-stage, 3-order SSPRK update
-    DO rk=1,4
+    DO rk=1,rks
       CALL EVAL_Q_VARIABLES_D()
       CALL EVAL_Q_DERIVATIVES_D()
    

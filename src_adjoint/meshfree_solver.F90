@@ -7,7 +7,6 @@ program meshfree_solver
         use data_structure_mod_diff
         use petsc_data_structure_mod
         use point_preprocessor_mod
-        use initial_conditions_mod
         use q_lskum_mod_bbox_diff
         use q_lskum_mod_chkpts_diff
         use post_processing_mod
@@ -64,14 +63,6 @@ program meshfree_solver
                 write(*,*)
         end if
 
-!	Assign the initial conditions for the primitive variables ..	
-
-        call initial_conditions()
-        if(rank == 0) then
-                write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
-                write(*,*)
-        end if
-       
 !	Primal fixed point iterative solver ..
         
         runtime = MPI_Wtime()

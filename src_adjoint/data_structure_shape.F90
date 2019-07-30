@@ -20,10 +20,10 @@ module data_structure_mod_diff
 		real*8, dimension(:), allocatable :: nx,ny
                 integer, dimension(:), allocatable :: nbhs
                 integer, dimension(:,:), allocatable :: conn
-                
+
                 integer, dimension(:), allocatable :: qtdepth
 
-		real*8, dimension(:), allocatable :: min_dist
+                real*8, dimension(:), allocatable :: min_dist
 
                 real*8, dimension(:,:), allocatable :: prim
                 real*8, dimension(:,:), allocatable :: prim_old
@@ -49,6 +49,7 @@ module data_structure_mod_diff
 
 		real*8, dimension(:), allocatable :: nx,ny
 		real*8, dimension(:), allocatable :: x,y
+		real*8, dimension(:,:), allocatable :: x_res
 
                 real*8, dimension(:,:), allocatable :: prim
                 real*8, dimension(:,:), allocatable :: prim_old
@@ -62,8 +63,9 @@ module data_structure_mod_diff
 
                 real*8, dimension(:), allocatable  :: delta
         end type points_diff
+
         type(points) :: point
-        type(points_diff) :: pointd
+        type(points_diff) :: pointb
 
         save
 
@@ -75,27 +77,27 @@ module data_structure_mod_diff
         !iterations
         integer :: it, itr, restart
 
-        integer :: timestep
-        real*8 :: tfinal
-
-        !Flag for time stepping
-        integer :: rks 
-        real*8 :: euler
 
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
         integer :: max_res_point
 	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, ClCd, cfv
-	real*8, allocatable, dimension(:)  :: Cld, Cdd, Cmd, ClCdd
+	real*8, allocatable, dimension(:)  :: Clb, Cdb, Cmb, ClCdb
 	real*8  :: total_entropy, total_enstrophy
-	real*8  :: total_entropyd, total_enstrophyd
+	real*8  :: total_entropyb, total_enstrophyb
         integer :: plen
-        integer :: format
 
 !The parameter CFL is the CFL number for stability ..
         real*8 :: CFL
 
         integer :: max_iters
+
+!Flag for time stepping
+        integer :: rks 
+        real*8 :: euler
+
+! File format
+        integer :: format
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
@@ -129,13 +131,21 @@ module data_structure_mod_diff
         real*8 :: fo_flag
 
 !       Objective function
-        real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
         integer :: obj_flag
 
 !       No of shapes
         integer :: shapes
 
-    contains
+!       Adoint mode
+        integer :: ad_mode
+
+!       checkpoints
+        integer :: chkpts
+
+!       adjoint residue
+        real*8 :: adj_res, adj_res_old
+
+   contains
 
         subroutine allocate_soln()
                 implicit none
@@ -175,35 +185,35 @@ module data_structure_mod_diff
                 allocate(point%delta(max_points))
 
                 allocate(Cl(shapes))
-                allocate(Cd(shapes))
                 allocate(ClCd(shapes))
+                allocate(Cd(shapes))
                 allocate(Cm(shapes))
                 allocate(cfv(shapes))
 
         end subroutine
         
-        subroutine allocate_soln_d()
+        subroutine allocate_soln_b()
                 implicit none
 
-                allocate(pointd%prim(4,max_points))
-                allocate(pointd%prim_old(4,max_points))
+                allocate(pointb%prim(4,max_points))
+                allocate(pointb%prim_old(4,max_points))
 
-                allocate(pointd%flux_res(4,max_points))
+                allocate(pointb%flux_res(4,max_points))
 
-                allocate(pointd%q(4,max_points))
+                allocate(pointb%q(4,max_points))
 
-                allocate(pointd%dq(2,4,max_points))
+                allocate(pointb%dq(2,4,max_points))
 
-                allocate(pointd%qm(2,4,max_points))
+                allocate(pointb%qm(2,4,max_points))
 
-                allocate(pointd%delta(max_points))
+                allocate(pointb%delta(max_points))
 
-                allocate(Cld(shapes))
-                allocate(ClCdd(shapes))
-                allocate(Cdd(shapes))
-                allocate(Cmd(shapes))
+                allocate(Clb(shapes))
+                allocate(ClCdb(shapes))
+                allocate(Cdb(shapes))
+                allocate(Cmb(shapes))
 
-                allocate(pointd%vorticity_sqr(max_points))
+                allocate(pointb%vorticity_sqr(max_points))
         end subroutine
 
         subroutine deallocate_soln()
@@ -243,34 +253,34 @@ module data_structure_mod_diff
                 deallocate(point%delta)
 
                 deallocate(Cl)
-                deallocate(Cd)
                 deallocate(ClCd)
+                deallocate(Cd)
                 deallocate(Cm)
                 deallocate(cfv)
 
         end subroutine
 
-        subroutine deallocate_soln_d()
+        subroutine deallocate_soln_b()
                 implicit none
 
-                deallocate(pointd%prim)
-                deallocate(pointd%prim_old)
+                deallocate(pointb%prim)
+                deallocate(pointb%prim_old)
 
-                deallocate(pointd%flux_res)
+                deallocate(pointb%flux_res)
 
-                deallocate(pointd%q)
+                deallocate(pointb%q)
 
-                deallocate(pointd%dq)
+                deallocate(pointb%dq)
 
-                deallocate(pointd%qm)
+                deallocate(pointb%qm)
 
-                deallocate(pointd%delta)
+                deallocate(pointb%delta)
 
-                deallocate(Cld)
-                deallocate(ClCdd)
-                deallocate(Cdd)
-                deallocate(Cmd)
+                deallocate(Clb)
+                deallocate(ClCdb)
+                deallocate(Cdb)
+                deallocate(Cmb)
 
-                deallocate(pointd%vorticity_sqr)
+                deallocate(pointb%vorticity_sqr)
         end subroutine
 end module data_structure_mod_diff

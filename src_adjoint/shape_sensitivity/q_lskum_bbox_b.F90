@@ -8,6 +8,7 @@ MODULE Q_LSKUM_MOD_BBOX_DIFF
   USE POINT_NORMALS_MOD_DIFF
   USE GENERATE_CONNECTIVITY_MOD_DIFF
   USE FPI_SOLVER_MOD_DIFF
+  use initial_conditions_mod
   IMPLICIT NONE
 
 CONTAINS
@@ -29,6 +30,14 @@ CONTAINS
     if(rank==0)OPEN(UNIT=302,FILE="residue_b",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
     if(restart == 0) itr = 0    
+
+    !	Assign the initial conditions for the primitive variables ..	
+
+    call initial_conditions()
+    if(rank == 0) then
+            write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+            write(*,*)
+    end if
 
     call set_obj()
     CALL COMPUTE_NORMALS()

@@ -7,11 +7,17 @@ subroutine readcase()
         PetscErrorCode :: ierr
         PetscBool :: set
         character(len=64) :: format_file, time, limiter, restart_solution
-        character(len=64) :: solution_accuracy
+        character(len=64) :: solution_accuracy, tscheme
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-cfl',cfl,set,ierr); CHKERRQ(ierr)
+
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                                 '-mach',mach,set,ierr); CHKERRQ(ierr)
+        
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                                 '-aoa',aoa,set,ierr); CHKERRQ(ierr)
 
         max_iters = 10000000 ! Default iterations
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -29,6 +35,18 @@ subroutine readcase()
                 timestep = 0
         elseif(trim(time) == 'unsteady') then
                 timestep = 1
+        end if
+
+        tscheme = 'first' ! Default first order in time
+        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                              '-tscheme',tscheme,set,ierr); CHKERRQ(ierr)
+
+        if(trim(tscheme) == 'first') then
+                rks = 1
+                euler = 2.0d0
+        elseif(trim(tscheme) == 'ssprk43') then
+                rks = 4
+                euler = 1.0d0
         end if
 
         power = 0.0d0 ! Default power

@@ -6,12 +6,18 @@ subroutine readcase()
         implicit none
         PetscErrorCode :: ierr
         PetscBool :: set
-        character(len=64) :: format_file, time, limiter, restart_solution
+        character(len=64) :: format_file, time, limiter, restart_solution, tscheme
         character(len=64) :: solution_accuracy, adjoint_mode, objective_function
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-cfl',cfl,set,ierr); CHKERRQ(ierr)
+
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                                 '-mach',mach,set,ierr); CHKERRQ(ierr)
+        
+        call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                                 '-aoa',aoa,set,ierr); CHKERRQ(ierr)
 
         max_iters = 10000000 ! Default iterations
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -28,6 +34,18 @@ subroutine readcase()
                 limiter_flag = 1
         elseif(trim(limiter) == 'minmax') then
                 limiter_flag = 2
+        end if
+
+        tscheme = 'first' ! Default first order in time
+        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                              '-tscheme',tscheme,set,ierr); CHKERRQ(ierr)
+
+        if(trim(tscheme) == 'first') then
+                rks = 1
+                euler = 2.0d0
+        elseif(trim(time) == 'ssprk43') then
+                rks = 4
+                euler = 1.0d0
         end if
 
         vl_const = 150.0d0 ! Default VK limiter constant
@@ -104,6 +122,12 @@ subroutine readcase()
                 obj_flag = 5
         elseif(trim(objective_function) == 'clbycd') then
                 obj_flag = 6
+        elseif(trim(objective_function) == 'dcldalpha') then
+                obj_flag = 7
+        elseif(trim(objective_function) == 'dcddalpha') then
+                obj_flag = 8
+        elseif(trim(objective_function) == 'dcmdalpha') then
+                obj_flag = 9
         else
                 SETERRA(PETSC_COMM_WORLD,1,'Invalid objective function, check again')
         end if

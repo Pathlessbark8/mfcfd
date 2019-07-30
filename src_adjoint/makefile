@@ -7,7 +7,7 @@ AD = adBuffer.o adStack.o revolve.o
 
 # defining the variables
 
-objects=meshfree_solver.o parameter.o data_structure_b.o petsc_data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum_bbox_b.o q_lskum_chkpts_b.o point_normals_b.o  generate_connectivity_b.o fpi_solver_b.o q_variables_b.o flux_residual_b.o wall_fluxes_b.o interior_fluxes_b.o outer_fluxes_b.o split_fluxes_b.o limiters_b.o quadrant_fluxes_b.o state_update_b.o miscellaneous.o readcase.o objective_function_b.o compute_force_coeffs_b.o compute_entropy_b.o compute_enstrophy_b.o post_processing.o 
+objects=meshfree_solver.o parameter.o data_structure_b.o petsc_data_structure.o point_preprocessor.o utilities.o initial_conditions.o q_lskum_bbox_b.o q_lskum_chkpts_b.o point_normals_b.o  generate_connectivity_b.o fpi_solver_b.o q_variables_b.o flux_residual_b.o wall_fluxes_b.o interior_fluxes_b.o outer_fluxes_b.o split_fluxes_b.o limiters_b.o quadrant_fluxes_b.o state_update_b.o readcase.o objective_function_b.o compute_force_coeffs_b.o compute_entropy_b.o compute_enstrophy_b.o post_processing.o 
 
 adBuffer.o : ADFirstAidKit/adBuffer.f
 	$(FC) -c ADFirstAidKit/adBuffer.f
@@ -23,7 +23,7 @@ execname: $(objects) $(AD)
 	$(FC)  -o execname $(FFLAGS) $(objects) $(PETSC_LIB) $(AD)
 
 
-meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure_b.o petsc_data_structure.o parameter.o initial_conditions.o q_lskum_bbox_b.o q_lskum_chkpts_b.o post_processing.o
+meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure_b.o petsc_data_structure.o parameter.o q_lskum_bbox_b.o q_lskum_chkpts_b.o post_processing.o
 	$(FC) $(FFLAGS) -c  meshfree_solver.F90 
 
 point_preprocessor.o: point_preprocessor.F90 data_structure_b.o petsc_data_structure.o
@@ -47,10 +47,10 @@ utilities.o: utilities.F90
 initial_conditions.o: initial_conditions.F90 data_structure_b.o parameter.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  initial_conditions.F90
 
-q_lskum_bbox_b.o: q_lskum_bbox_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o 
+q_lskum_bbox_b.o: q_lskum_bbox_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o initial_conditions.o
 	$(FC) $(FFLAGS) -c  q_lskum_bbox_b.F90
 
-q_lskum_chkpts_b.o: q_lskum_chkpts_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o 
+q_lskum_chkpts_b.o: q_lskum_chkpts_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o initial_conditions.o
 	$(FC) $(FFLAGS) -c  q_lskum_chkpts_b.F90
 
 point_normals_b.o: point_normals_b.F90 data_structure_b.o
@@ -100,9 +100,6 @@ compute_enstrophy_b.o: compute_enstrophy_b.F90 data_structure_b.o petsc_data_str
 
 compute_entropy_b.o: compute_entropy_b.F90 data_structure_b.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  compute_entropy_b.F90
-
-miscellaneous.o: miscellaneous.F90
-	$(FC) $(FFLAGS) -c  miscellaneous.F90
 
 post_processing.o: post_processing.F90 data_structure_b.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  post_processing.F90 

@@ -40,8 +40,8 @@ CONTAINS
 &                             u_oldd)
       temp = u(1)
       IF (rk .NE. 3) THEN
-        ud = ud - 0.5d0*pointd%flux_res(:, k)
-        u = u - 0.5d0*point%flux_res(:, k)
+        ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
+        u = u - 0.5d0*euler*point%flux_res(:, k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
         u = tbt*u_old + obt*(u-0.5d0*point%flux_res(:, k))
@@ -86,8 +86,8 @@ CONTAINS
 &                            (:, k), u_old, u_oldd, nx, nxd, ny, nyd)
       temp = u(1)
       IF (rk .NE. 3) THEN
-        ud = ud - 0.5d0*pointd%flux_res(:, k)
-        u = u - 0.5d0*point%flux_res(:, k)
+        ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
+        u = u - 0.5d0*euler*point%flux_res(:, k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
         u = tbt*u_old + obt*(u-0.5d0*point%flux_res(:, k))
@@ -125,8 +125,8 @@ CONTAINS
 &                             u_oldd)
       temp = u(1)
       IF (rk .NE. 3) THEN
-        ud = ud - 0.5d0*pointd%flux_res(:, k)
-        u = u - 0.5d0*point%flux_res(:, k)
+        ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
+        u = u - 0.5d0*euler*point%flux_res(:, k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
         u = tbt*u_old + obt*(u-0.5d0*point%flux_res(:, k))
