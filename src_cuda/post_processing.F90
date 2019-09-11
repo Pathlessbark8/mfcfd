@@ -21,7 +21,7 @@ contains
 
                 do i = 1, max_points
 
-                        sos = gamma*point%prim(4,i)/point%prim(1,i)
+                        sos = dsqrt(gamma*point%prim(4,i)/point%prim(1,i))
                         vel_mag = point%prim(2,i)*point%prim(2,i) + point%prim(3,i)*point%prim(3,i)
 
                         mach_number = dsqrt(vel_mag/sos)

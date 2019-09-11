@@ -26,7 +26,7 @@ contains
                 allocate(point%flag_2(max_points))
                 allocate(point%min_dist(max_points))
                 allocate(point%nbhs(max_points))
-                allocate(point%conn(max_points,15))
+                allocate(point%conn(max_points,25))
                 allocate(point%nx(max_points))
                 allocate(point%ny(max_points))
                 allocate(point%left(max_points))
@@ -37,7 +37,7 @@ contains
                 allocate(point_d%x(2,max_points))
                 allocate(point_d%flag(max_points))
                 allocate(point_d%nbhs(max_points))
-                allocate(point_d%conn(max_points,15))
+                allocate(point_d%conn(max_points,25))
                 allocate(point_d%nx(2,max_points))
                 allocate(point_d%min_dist(max_points))
                 
@@ -89,6 +89,11 @@ contains
                                         interior_points = interior_points + 1
                                 else if(point%flag_1(k) == 2) then
                                         outer_points = outer_points + 1
+                                end if
+
+                                if(point%nbhs(k) == 0) then
+                                        print*,"No neighbours for point:", k
+                                        stop
                                 end if
         
                                 if(point%flag_2(k) > 0) then

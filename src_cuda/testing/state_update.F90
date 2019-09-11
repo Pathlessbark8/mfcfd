@@ -41,9 +41,9 @@ module state_update_mod
                         temp = U(1)
 
                         if(rk == 1 .or. rk == 2 .or. rk == 4) then
-                                U = U - 0.5d0 * eu_d * delta_d(k) * flux_res_d(:,k)
+                                U = U - 0.5d0 * eu_d * delta_d(k) * 2.0d0 * flux_res_d(:,k)
                         elseif(rk == 3) then
-                                U = tbt * Uold + obt * (U - 0.5d0 * delta_d(k) * flux_res_d(:,k))
+                                U = tbt * Uold + obt * (U - 0.5d0 * delta_d(k) * 2.0d0 * flux_res_d(:,k))
                         end if
 
                         U(3) = 0.d0

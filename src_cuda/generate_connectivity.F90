@@ -119,147 +119,147 @@ module generate_connectivity_mod
                 
         end subroutine
 
-subroutine get_wall_boundary_neighbours(i, nx, ny)
-
-                implicit none
-
-		real*8 :: xi, yi, xk, yk
-		real*8 :: delx, dely, dels, deln
-		real*8 :: nx, ny, tx, ty
-                integer :: i, r, count, nbh
-
-
-                xi = point%x(i)
-                yi = point%y(i)
-
-                tx = ny
-                ty = -nx
-
-                point%xpos_nbhs(i) = 0
-                point%xneg_nbhs(i) = 0
-                point%yneg_nbhs(i) = 0
-
-                do r=1, point%nbhs(i)
-
-                        nbh = point%conn(i,r)
-
-                        xk = point%x(nbh)
-                        yk = point%y(nbh)
-
-                        delx = xk - xi
-                        dely = yk - yi
-
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
-
-                        if(dels .le. 0.0d0) then
-
-                                point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
-
-                                count = point%xpos_nbhs(i);
-                                point%xpos_conn(i,count) = nbh;
-
-                        endif
-
-                        if(dels .ge. 0.0d0) then
-
-                                point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
-
-                                count = point%xneg_nbhs(i);
-                                point%xneg_conn(i,count) = nbh;
-  
-                        endif
-
-                        point%yneg_nbhs(i) = point%yneg_nbhs(i) + 1;
-
-                        count = point%yneg_nbhs(i);
-                        point%yneg_conn(i,count) = nbh;
-
-                enddo
-                
-                if(point%xpos_nbhs(i) == 0) then
-                        print*,"xpos zero for wall point number:", i
-                        stop
-                elseif(point%xneg_nbhs(i) == 0) then
-                        print*,"xneg zero for wall point number:", i
-                        stop
-                elseif(point%yneg_nbhs(i) == 0) then
-                        print*,"yneg zero for wall point number:", i
-                        stop
-                end if
-
+        subroutine get_wall_boundary_neighbours(i, nx, ny)
+        
+                        implicit none
+        
+        		real*8 :: xi, yi, xk, yk
+        		real*8 :: delx, dely, dels, deln
+        		real*8 :: nx, ny, tx, ty
+                        integer :: i, r, count, nbh
+        
+        
+                        xi = point%x(i)
+                        yi = point%y(i)
+        
+                        tx = ny
+                        ty = -nx
+        
+                        point%xpos_nbhs(i) = 0
+                        point%xneg_nbhs(i) = 0
+                        point%yneg_nbhs(i) = 0
+        
+                        do r=1, point%nbhs(i)
+        
+                                nbh = point%conn(i,r)
+        
+                                xk = point%x(nbh)
+                                yk = point%y(nbh)
+        
+                                delx = xk - xi
+                                dely = yk - yi
+        
+                                dels = delx*tx + dely*ty
+                                deln = delx*nx + dely*ny
+        
+                                if(dels .le. 0.0d0) then
+        
+                                        point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
+        
+                                        count = point%xpos_nbhs(i);
+                                        point%xpos_conn(i,count) = nbh;
+        
+                                endif
+        
+                                if(dels .ge. 0.0d0) then
+        
+                                        point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
+        
+                                        count = point%xneg_nbhs(i);
+                                        point%xneg_conn(i,count) = nbh;
+          
+                                endif
+        
+                                point%yneg_nbhs(i) = point%yneg_nbhs(i) + 1;
+        
+                                count = point%yneg_nbhs(i);
+                                point%yneg_conn(i,count) = nbh;
+        
+                        enddo
+                        
+                        if(point%xpos_nbhs(i) == 0) then
+                                print*,"xpos zero for wall point number:", i
+                                stop
+                        elseif(point%xneg_nbhs(i) == 0) then
+                                print*,"xneg zero for wall point number:", i
+                                stop
+                        elseif(point%yneg_nbhs(i) == 0) then
+                                print*,"yneg zero for wall point number:", i
+                                stop
+                        end if
+        
         end subroutine
-
-
-subroutine get_outer_boundary_neighbours(i, nx, ny)
-
-                implicit none
-
-		real*8 :: xi, yi, xk, yk
-		real*8 :: delx, dely, dels, deln
-		real*8 :: nx, ny, tx, ty
-                integer :: i, r, count, nbh
-
-
-                xi = point%x(i)
-                yi = point%y(i)
-
-                tx = ny
-                ty = -nx
-                
-                point%xpos_nbhs(i) = 0
-                point%xneg_nbhs(i) = 0
-                point%ypos_nbhs(i) = 0
-
-                do r=1, point%nbhs(i)
-
-                        nbh = point%conn(i,r)
-
-                        xk = point%x(nbh)
-                        yk = point%y(nbh)
-  
-                        delx = xk - xi
-                        dely = yk - yi
-
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
-
-                        if(dels .le. 0.0d0) then
-
-                                point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
-
-                                count = point%xpos_nbhs(i);
-                                point%xpos_conn(i,count) = nbh;
-
-                        endif
-
-                        if(dels .ge. 0.0d0) then
-
-                                point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
-
-                                count = point%xneg_nbhs(i);
-                                point%xneg_conn(i,count) = nbh;
-
-                        endif
-
-
-                        point%ypos_nbhs(i) = point%ypos_nbhs(i) + 1;
-
-                        count = point%ypos_nbhs(i);
-                        point%ypos_conn(i,count) = nbh;
-
-                enddo
-
-                if(point%xpos_nbhs(i) == 0) then
-                        print*,"xpos zero for outer point number:", i
-                        stop
-                elseif(point%xneg_nbhs(i) == 0) then
-                        print*,"xneg zero for outer point number:", i
-                        stop
-                elseif(point%ypos_nbhs(i) == 0) then
-                        print*,"ypos zero for outer point number:", i
-                        stop
-                end if
+        
+        
+        subroutine get_outer_boundary_neighbours(i, nx, ny)
+        
+                        implicit none
+        
+        		real*8 :: xi, yi, xk, yk
+        		real*8 :: delx, dely, dels, deln
+        		real*8 :: nx, ny, tx, ty
+                        integer :: i, r, count, nbh
+        
+        
+                        xi = point%x(i)
+                        yi = point%y(i)
+        
+                        tx = ny
+                        ty = -nx
+                        
+                        point%xpos_nbhs(i) = 0
+                        point%xneg_nbhs(i) = 0
+                        point%ypos_nbhs(i) = 0
+        
+                        do r=1, point%nbhs(i)
+        
+                                nbh = point%conn(i,r)
+        
+                                xk = point%x(nbh)
+                                yk = point%y(nbh)
+          
+                                delx = xk - xi
+                                dely = yk - yi
+        
+                                dels = delx*tx + dely*ty
+                                deln = delx*nx + dely*ny
+        
+                                if(dels .le. 0.0d0) then
+        
+                                        point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
+        
+                                        count = point%xpos_nbhs(i);
+                                        point%xpos_conn(i,count) = nbh;
+        
+                                endif
+        
+                                if(dels .ge. 0.0d0) then
+        
+                                        point%xneg_nbhs(i) = point%xneg_nbhs(i) + 1;
+        
+                                        count = point%xneg_nbhs(i);
+                                        point%xneg_conn(i,count) = nbh;
+        
+                                endif
+        
+        
+                                point%ypos_nbhs(i) = point%ypos_nbhs(i) + 1;
+        
+                                count = point%ypos_nbhs(i);
+                                point%ypos_conn(i,count) = nbh;
+        
+                        enddo
+        
+                        if(point%xpos_nbhs(i) == 0) then
+                                print*,"xpos zero for outer point number:", i
+                                stop
+                        elseif(point%xneg_nbhs(i) == 0) then
+                                print*,"xneg zero for outer point number:", i
+                                stop
+                        elseif(point%ypos_nbhs(i) == 0) then
+                                print*,"ypos zero for outer point number:", i
+                                stop
+                        end if
 
         end subroutine
 

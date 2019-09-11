@@ -11,7 +11,6 @@ module q_lskum_mod
         use cudafor
         use ieee_arithmetic
 
-
         real*8 :: sum_res_sqr, residue
         real*8, device :: temp
         real*8, device, allocatable :: sum_res_sqr_d(:)
@@ -60,8 +59,6 @@ contains
 
                 if(solution_restart == 0) itr = 0
 
-                istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferL1)
-
                 do it = itr+1, itr+max_iters
 
                         call eval_timestep<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
@@ -74,13 +71,26 @@ contains
                                 call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                         & point_d%conn, point_d%q, point_d%dq)
 
-                                call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                call dGx_pos<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                         & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
-                                        & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
-                                        & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
-                                        & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
+                                        & point_d%xpos_nbhs, point_d%xpos_conn, &
                                         & point_d%q, point_d%dq, point_d%flux_res)
 
+                                call dGx_neg<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                                        & point_d%xneg_nbhs, point_d%xneg_conn, &
+                                        & point_d%q, point_d%dq, point_d%flux_res)
+
+                                call dGy_pos<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                                        & point_d%ypos_nbhs, point_d%ypos_conn, &
+                                        & point_d%q, point_d%dq, point_d%flux_res)
+                                
+                                call dGy_neg<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                                        & point_d%yneg_nbhs, point_d%yneg_conn, &
+                                        & point_d%q, point_d%dq, point_d%flux_res)
+                              
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
                                         & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
@@ -117,7 +127,7 @@ contains
                         write(301,*) it, residue
 
                         if(ieee_is_nan(residue))exit
-        
+                        
                         if(mod(it,nsave) == 0) then
                                 write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
                                 call device_to_host()

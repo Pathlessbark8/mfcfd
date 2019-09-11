@@ -36,8 +36,6 @@ contains
 
                         q_d(4,i) = -two_times_beta
 
-                        call syncthreads()
-
         end subroutine
 
         attributes(global) subroutine eval_q_derivatives(x_d, nbhs_d, conn_d, q_d, dq_d)
@@ -94,7 +92,6 @@ contains
                         sum_dely_delq = sum_dely_delq + weights*dely*(q_d(:,nbh) - q_d(:,i))
 
                 enddo
-                call syncthreads()
 
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
                 one_by_det = 1.0d0/det
@@ -103,8 +100,6 @@ contains
                        & - sum_dely_delq*sum_delx_dely)*one_by_det
                 dq_d(2,:,i) = (sum_dely_delq*sum_delx_sqr&
                                        &- sum_delx_delq*sum_delx_dely)*one_by_det
-
-                call syncthreads()
 
         end subroutine
 
