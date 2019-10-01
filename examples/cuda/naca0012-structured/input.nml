@@ -1,6 +1,7 @@
 &input_parameters 
-        cfl = 0.2
-        max_iters = 10
-	vl_const = 650
-	shapes = 2
+        cfl = 1.0
+        max_iters = 500
+	vl_const = 200
+	format_file = 'quadtree'
+	tscheme = 'ssprk43'
 /
