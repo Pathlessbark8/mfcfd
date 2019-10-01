@@ -4,6 +4,7 @@ module q_lskum_mod
         use point_normals_mod    
         use generate_connectivity_mod
         use fpi_solver_mod
+        use initial_conditions_mod
 
 contains
 
@@ -12,6 +13,8 @@ contains
                 implicit none
 
                 integer :: i
+
+                call initial_conditions()
 
                 call compute_normals()
                 call generate_connectivity()
@@ -25,9 +28,10 @@ contains
                                 &(point%prim(2,i)*point%prim(2,i) +&
                                 &point%prim(3,i)*point%prim(3,i))
                 end do
+
+                if(restart == 0)itr = 0
                 
-                do it = 1, max_iters
-                        
+                do it = itr+1, itr+max_iters                
                         call fpi_solver(it)
                 enddo
                 

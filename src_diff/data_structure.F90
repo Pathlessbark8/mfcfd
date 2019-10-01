@@ -51,8 +51,7 @@ module data_structure_mod
         integer,dimension(wall_points) :: shape_points_index
 
         !iterations
-        integer :: it
-
+        integer :: it, itr, restart
 
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
@@ -60,11 +59,16 @@ module data_structure_mod
 	real*8, dimension(shapes)  :: Cl, Cd, Cm, ClCd
 	real*8  :: total_entropy, total_enstrophy
         integer :: plen
+        integer :: format
 
 !The parameter CFL is the CFL number for stability ..
         real*8 :: CFL
 
         integer :: max_iters
+
+        !Flag for time stepping
+        integer :: rks 
+        real*8 :: euler
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
@@ -87,6 +91,7 @@ module data_structure_mod
 !       If flag is zero => nx = 0.0 and ny = 1.0
 !
         integer :: interior_points_normal_flag
+        
 
 !       Restart solution parameter
         integer :: solution_restart

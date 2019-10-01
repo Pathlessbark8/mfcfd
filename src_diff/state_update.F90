@@ -34,7 +34,7 @@ module state_update_mod
                         temp = U(1)
 
                         if(rk .ne. 3) then
-                                U = U - (0.5d0 * point%flux_res(:,k))
+                                U = U - (0.5d0 * euler * point%flux_res(:,k))
                         else
                                 U = tbt * U_old + obt * (U - 0.5d0 *point%flux_res(:, k))
                         end if
@@ -76,7 +76,7 @@ module state_update_mod
                         temp = U(1)
 
                         if(rk .ne. 3) then
-                                U = U - (0.5d0 * point%flux_res(:,k))
+                                U = U - (0.5d0 * euler * point%flux_res(:,k))
                         else
                                 U = tbt * U_old + obt * (U - 0.5d0 *point%flux_res(:, k))
                         end if
@@ -110,7 +110,7 @@ module state_update_mod
                         temp = U(1)
                         
                         if(rk .ne. 3) then
-                                U = U - (0.5d0 * point%flux_res(:,k))
+                                U = U - (0.5d0 * euler * point%flux_res(:,k))
                         else
                                 U = tbt * U_old + obt * (U - 0.5d0 *point%flux_res(:, k))
                         end if
