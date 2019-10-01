@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
     if (mkdir("point", 0777) == -1) 
         cerr << " point file status:  " << strerror(errno) << endl; 
     else
-        cout << " Directory created " << endl; 
+        cout << " partition directory created " << endl; 
 
     // Choose output format
     if (g.gpu == 1){ // gpu output for quadtree

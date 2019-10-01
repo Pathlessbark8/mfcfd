@@ -23,8 +23,8 @@ void Graph::partition(int n){
         int out = METIS_PartGraphKway(&nvtxs, &nWeights, xadj, adjncy,
                     NULL, NULL, NULL, &nParts, NULL,
                     NULL, NULL, &objval, part);
-        std::cout << " output code: " << out << std::endl;
-        std::cout << " total edge cuts: " << objval << std::endl;
+        std::cout << " Partition status: " << out << std::endl;
+        std::cout << " Total number of edge cuts: " << objval << std::endl;
     }
 
     /*  output processing routine  */
