@@ -1,4 +1,0 @@
--cfl 0.5
--max_iters 1
--chkpts 2
--objective_function clbycd
