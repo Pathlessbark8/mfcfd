@@ -3,7 +3,6 @@
 !
 MODULE Q_LSKUM_MOD_CHKPTS_DIFF
 #include <petsc/finclude/petscsys.h>
-
 !
 !
   USE DATA_STRUCTURE_MOD_DIFF
@@ -54,31 +53,321 @@ CONTAINS
       real*8, allocatable :: q_stor(:, :, :), dq_stor(:, :, :, :)
       real*8, allocatable :: fluxres_stor(:, :, :), delta_stor(:, :)
       real*8, allocatable :: primold_stor(:, :, :)
+      ! for pointd
+      real*8, allocatable :: prim_stord(:, :, :), qm_stord(:, :, :, :)
+      real*8, allocatable :: q_stord(:, :, :), dq_stord(:, :, :, :)
+      real*8, allocatable :: fluxres_stord(:, :, :), delta_stord(:, :)
+      real*8, allocatable :: primold_stord(:, :, :)
       PetscErrorCode :: ierr
 
+      ! Allocate store variables
+
+      allocate( prim_stor(0:chkpts, 4, max_points))
+      allocate( primold_stor(0:chkpts, 4, max_points))
+      allocate( q_stor(0:chkpts, 4, max_points))
+      allocate( fluxres_stor(0:chkpts, 4, max_points))
+      allocate( dq_stor(0:chkpts, 2, 4, max_points))
+      allocate( qm_stor(0:chkpts, 2, 4, max_points))
+      allocate( delta_stor(0:chkpts, max_points))
+!                                                                               
+      allocate( prim_stord(0:chkpts, 4, max_points))
+      allocate( primold_stord(0:chkpts, 4, max_points))
+      allocate( q_stord(0:chkpts, 4, max_points))
+      allocate( fluxres_stord(0:chkpts, 4, max_points))
+      allocate( dq_stord(0:chkpts, 2, 4, max_points))
+      allocate( qm_stord(0:chkpts, 2, 4, max_points))
+      allocate( delta_stord(0:chkpts, max_points))
+!       End of the declaraion for the revolve algorithm ..          
+!
+!       Some initialisations for the revolve alogorithm ..                      
+      if(restart == 0)itr = 0
+    
+      !	Assign the initial conditions for the primitive variables ..	
+
+      call initial_conditions_d()
+      if(rank == 0) then
+              write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+              write(*,*)
+      end if
+      ITIMS = 1
+      ITIME = max_iters
+      new_itime = ITIME - ITIMS + 1 
+      CAPO = 0
+      STEPS = new_itime
+      FINE = STEPS + CAPO
+      CHECK = -1
+!      SNAPS = ADJUST(STEPS)                                                    
+!
+!     Here SNAPS are the no. of checkpoints assigned ..
+!
+      SNAPS = chkpts
+      INFO = 5
+
+      if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+      if(rank==0)OPEN(UNIT=302,FILE="residue_b",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+
+!
+!
+!
+    CALL COMPUTE_NORMALS()
+    CALL GENERATE_CONNECTIVITY()
+    call set_obj()
+    if(rank == 0) then
+            write(*,*)'%%%%-Normals and connectivity generated-%%%'
+            write(*,*)
+    end if
+!
+!   The revolve algorithm starts here ..
+!
+!
+   10 CONTINUE
+      OLDCAPO = CAPO
+      WHATDO = REVOLV(CHECK,CAPO,FINE,SNAPS,INFO,SF,PFS)
+
+!  
+!                                                                             
+!       The below if condition stores the check-points ..                       
+!                                                                               
+      IF ((WHATDO.EQ.TAKSHT) .AND. (INFO.GT.1)) THEN
+!                                                                               
+            do i=1,max_points
+                  delta_stor(check, i) = point%delta(i)
+                  delta_stord(check, i) = pointd%delta(i)
+                  do r = 1, 4
+                    q_stor(check, r, i) = point%q(r,i)
+                    prim_stor(check, r, i) = point%prim(r,i)
+                    primold_stor(check, r, i) = point%prim_old(r,i)
+                    fluxres_stor(check, r, i) = point%flux_res(r,i)
+                    q_stord(check, r, i) = pointd%q(r,i)
+                    prim_stord(check, r, i) = pointd%prim(r,i)
+                    primold_stord(check, r, i) = pointd%prim_old(r,i)
+                    fluxres_stord(check, r, i) = pointd%flux_res(r,i)
+                    do k = 1, 2
+                      dq_stor(check, k, r, i) = point%dq(k , r , i)
+                      qm_stor(check, k, r, i) = point%qm(k , r , i)
+                      dq_stord(check, k, r, i) = pointd%dq(k , r , i)
+                      qm_stord(check, k, r, i) = pointd%qm(k , r , i)
+                    end do
+                  enddo
+            enddo
+     END IF
+!
+!
+!   The below if condition runs the forward mode without 
+!   storing the intermediate values ..
+!                                                                                                                                                  
+      IF ((WHATDO.EQ.ADVAN) .AND. (INFO.GT.2)) THEN
+!          WRITE (*,FMT=9010) CAPO
+!
+          do ijk=OLDCAPO, CAPO-1
+                  ITIM = ijk+ITIMS
+                  ITIM = ITIM + itr
+                  if(rank == 0 .and. iflag == 1) then
+                          write (*,*)
+                          write (*,*) 'prediction of needed forward steps :', PFS
+                          write (*,*) 'slowdown factor :', SF
+                          write (*,*)
+                          iflag = 0
+                  end if
+                  CALL FPI_SOLVER_D(ITIM)
+                  if (rank==0 .and. pflag == 1) then
+                       write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
+                       write(301, *) itim, residue
+                  end if
+          end do
+      END IF
+!
+!
+!   The below if condition runs the first reverse step.
+!   This requires the initialisation of the adjoint vectors ..
+!
+!
+      IF ((WHATDO.EQ.FSTURN) .AND. (INFO.GT.2)) THEN
+!
+           ITIM = CAPO + ITIMS
+           ITIM = ITIM + itr
+
+           pointdb%prim = 0.0_8
+           pointdb%prim_old = 0.0_8
+           pointdb%flux_res = 0.0_8
+           pointdb%q = 0.0_8
+           pointdb%dq = 0.0_8
+           pointdb%qm = 0.0_8
+           pointdb%delta = 0.0_8
+           pointb%x = 0.0_8
+           pointb%y = 0.0_8
+           pointb%nx = 0.0_8
+           pointb%ny = 0.0_8
+           pointb%prim = 0.0_8
+           pointb%prim_old = 0.0_8
+           pointb%flux_res = 0.0_8
+           pointb%q = 0.0_8
+           pointb%dq = 0.0_8
+           pointb%qm = 0.0_8
+           pointb%delta = 0.0_8
+
+
+           if(rank == 0) then
+                write(*,*)
+                write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
+                write(*,*)
+           end if
+           
+           pflag = 0
+!
+           CALL FPI_SOLVER_D_B(ITIM)
+           if (rank==0) then
+             write(*,*)'adjoint iterations:',itim, 'adjoint residue:', adj_res
+             write(302, *) itim, adj_res
+           end if
+
+           cddb = 0.0_8
+           cldb = 0.0_8
+           cmdb = 0.0_8
+!
+      END IF
+!
+!
+!      The below if condition runs the subsequent reverse steps .. 
+!                                                                                                                                                  
+      IF ((WHATDO.EQ.YUTURN) .AND. (INFO.GT.2)) THEN
+!
+           ITIM = CAPO + ITIMS
+           ITIM = ITIM + itr
+           CALL FPI_SOLVER_D_B(ITIM)
+           if (rank==0) then
+             write(*,*)'adjoint iterations:',itim, 'adjoint residue:', adj_res
+             write(302, *) itim, adj_res
+           end if
+
+           cddb = 0.0_8
+           cldb = 0.0_8
+           cmdb = 0.0_8
+!
+      END IF
+!
+!
+!           The below if condition restores the state vectors 
+!             at the check points ..  
+!                                                                                                                                                  
+      IF ((WHATDO.EQ.RESTRE) .AND. (INFO.GT.2)) THEN
+!
+            do i=1,max_points
+                  point%delta(i) = delta_stor(check, i)
+                  pointd%delta(i) = delta_stord(check, i)
+                  do r = 1, 4
+                    point%q(r,i) = q_stor(check, r, i)
+                    point%prim(r,i) = prim_stor(check, r, i)
+                    point%prim_old(r,i) = primold_stor(check, r, i)
+                    point%flux_res(r,i) = fluxres_stor(check, r, i)
+                    pointd%q(r,i) = q_stord(check, r, i)
+                    pointd%prim(r,i) = prim_stord(check, r, i)
+                    pointd%prim_old(r,i) = primold_stord(check, r, i)
+                    pointd%flux_res(r,i) = fluxres_stord(check, r, i)
+                    do k = 1, 2
+                      point%dq(k, r, i) = dq_stor(check, k, r, i)
+                      point%qm(k, r, i) = qm_stor(check, k, r, i)
+                      pointd%dq(k, r, i) = dq_stord(check, k, r, i)
+                      pointd%qm(k, r, i) = qm_stord(check, k, r, i)
+                    end do
+                  enddo
+            enddo
+      
+      END IF
+!
+!
+      IF (WHATDO.EQ.ERROR) THEN
+          WRITE (*,FMT=*) ' irregular termination of treeverse'
+          IF (INFO.EQ.10) THEN
+              WRITE (*,FMT=*) ' number of checkpoints stored exceeds CHEKUP,'
+              WRITE (*,FMT=*) ' increase constant CHEKUP and recompile'
+          END IF
+!
+          IF (INFO.EQ.11) THEN
+              WRITE (*,FMT=*) ' number of checkpoints stored = ', CHECK + 1,' exceeds SNAPS,'
+              WRITE (*,FMT=*) ' ensure SNAPS > 0 and ', 'increase initial FINE'
+          END IF
+
+          IF (INFO.EQ.12) WRITE (*,FMT=*) ' error occurs in NUMFRW'
+          IF (INFO.EQ.13) THEN
+              WRITE (*,FMT=*) ' enhancement of FINE, SNAPS = ', CHECK + 1,'checkpoints stored, increase SNAPS'
+          END IF
+          IF (INFO.EQ.14) THEN
+              WRITE (*,FMT=*) ' number of SNAPS = ',SNAPS, ' exceeds CHEKUP,'
+              WRITE (*,FMT=*) ' increase constant CHEKUP and recompile'
+          END IF
+          IF (INFO.EQ.15) THEN
+              WRITE (*,FMT=*) ' number of reps exceeds REPSUP, '
+              WRITE (*,FMT=*) ' increase constant REPSUP and recompile'
+          END IF
+
+      END IF
+!                                       
+!
+      IF ((WHATDO.EQ.TRMATE) .OR. (WHATDO.EQ.ERROR)) THEN
+          GO TO 20
+      ELSE
+          GO TO 10
+      END IF
+   20 CONTINUE
+!
+!
+ 9000 FORMAT (' takeshot at',I6)
+ 9010 FORMAT (' advance to',I7)
+ 9020 FORMAT (' firsturn at',I6)
+ 9030 FORMAT (' youturn at',I7)
+ 9040 FORMAT (' restore at',I7)
+!                                                                                                                                                  
+!                                                                                                                                                  
+!       End of the revolve algorithm ..      
+!
+    CALL COMPUTE_NORMALS_B()
+    call update_begin_xb_ghost()
+    call update_end_xb_ghost()
+    call update_begin_yb_ghost()
+    call update_end_yb_ghost()
 
 !    
   END SUBROUTINE Q_LSKUM_CHKPTS_B
 !
-  SUBROUTINE Q_LSKUM()
-    IMPLICIT NONE
-!
-!							
-!		
-    INTEGER :: t, i
-!
-    CALL COMPUTE_NORMALS()
-    CALL GENERATE_CONNECTIVITY()
-!
-!			
-    DO t=1,max_iters
-      CALL FPI_SOLVER(t)
-    END DO
-  END SUBROUTINE Q_LSKUM
+!  SUBROUTINE Q_LSKUM()
+!    IMPLICIT NONE
+!!
+!!							
+!!		
+!    INTEGER :: t, i
+!!
+!    CALL COMPUTE_NORMALS()
+!    CALL GENERATE_CONNECTIVITY()
+!!
+!!			
+!    DO t=1,max_iters
+!      CALL FPI_SOLVER(t)
+!    END DO
+!  END SUBROUTINE Q_LSKUM
 
   subroutine set_obj()
         implicit none
-
+        
+        if(obj_flag == 7) then
+                cldb = 1.0
+                if(rank == 0) then
+                        write(*,*)'%%%%-objective function = dCl/dalpha-%%%%%%'
+                        write(*,*)
+                end if
+        elseif(obj_flag == 8) then
+                cddb = 1.0
+                if(rank == 0) then
+                        write(*,*)'%%%%%%objective function = dCd/dalpha-%%%%%'
+                        write(*,*)
+                end if
+        elseif(obj_flag == 9) then
+                cmdb = 1.0
+                if(rank == 0) then
+                        write(*,*)'%%%%%-objective function = dCm/dalpha-%%%%%'
+                        write(*,*)
+                end if
+        end if
   
   end subroutine
 

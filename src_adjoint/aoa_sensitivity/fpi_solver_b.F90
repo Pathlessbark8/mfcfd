@@ -5,7 +5,10 @@
 !  Tapenade 3.14 (r7079) -  5 Oct 2018 09:56
 !
 MODULE FPI_SOLVER_MOD_DIFF_DIFF
+#include <petsc/finclude/petscvec.h>
+
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   USE FLUX_RESIDUAL_MOD_DIFF_DIFF
   USE STATE_UPDATE_MOD_DIFF_DIFF
   USE Q_VARIABLES_MOD_DIFF_DIFF
@@ -33,14 +36,22 @@ CONTAINS
 !                point.delta
   SUBROUTINE FPI_SOLVER_D_B(t)
     IMPLICIT NONE
-    INTEGER :: t, i, rk
+    INTEGER :: t, i, rk, j
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     DOUBLE PRECISION :: result1
+    real*8 :: lresnorm
+    PetscErrorCode :: ierr
     DO i=1,local_points
       pointd%prim_old(:, i) = pointd%prim(:, i)
       point%prim_old(:, i) = point%prim(:, i)
     END DO
+
+    DO i=1,local_points
+      pointb%x_res(1, i) = pointb%x(i)
+      pointb%x_res(2, i) = pointb%y(i)
+    END DO
+
     CALL FUNC_DELTA_D()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
@@ -52,12 +63,22 @@ CONTAINS
       CALL PUSHREAL8ARRAY(pointd%qm, 2*4*max_points)
       CALL PUSHREAL8ARRAY(pointd%dq, 2*4*max_points)
       CALL EVAL_Q_DERIVATIVES_D()
+
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
+
       CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
       CALL PUSHREAL8ARRAY(pointd%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_D()
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
       CALL PUSHREAL8ARRAY(pointd%prim, 4*max_points)
       CALL STATE_UPDATE_D(rk)
+
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
+
     END DO
     CALL OBJECTIVE_FUNCTION_D_B()
     DO rk=rks,1,-1
@@ -71,18 +92,65 @@ CONTAINS
       CALL POPREAL8ARRAY(pointd%qm, 2*4*max_points)
       CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
       CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
+
+      call update_begin_dqb_ghost()
+      call update_begin_qmb_ghost()
+      call update_end_dqb_ghost()
+      call update_end_qmb_ghost()
+
       CALL EVAL_Q_DERIVATIVES_D_B()
+      
+      do j = local_points+1, max_points
+        pointb%dq(:, :, j) = 0.0d0
+        pointb%qm(:, :, j) = 0.0d0
+        pointdb%dq(:, :, j) = 0.0d0
+        pointdb%qm(:, :, j) = 0.0d0
+      end do
+      
       CALL POPREAL8ARRAY(pointd%q, 4*max_points)
       CALL POPREAL8ARRAY(point%q, 4*max_points)
       CALL EVAL_Q_VARIABLES_D_B()
+      
+      do j = local_points+1, max_points
+        pointb%q(:, j) = 0.0d0
+        pointdb%q(:, j) = 0.0d0
+      end do
+
     END DO
+
+    do j = local_points+1, max_points
+      pointb%prim(:, j) = 0.0d0
+      pointdb%prim(:, j) = 0.0d0
+    end do
+
     CALL FUNC_DELTA_D_B()
+
+    call update_begin_primb_ghost()
+    call update_end_primb_ghost()
+
     DO i=local_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
       pointb%prim_old(:, i) = 0.0_8
       pointdb%prim(:, i) = pointdb%prim(:, i) + pointdb%prim_old(:, i)
       pointdb%prim_old(:, i) = 0.0_8
     END DO
+
+    lresnorm = 0.0d0
+    do i = 1, local_points
+        lresnorm = lresnorm + (pointb%x(i) - pointb%x_res(1,i) + &
+                & pointb%y(i) - pointb%x_res(2,i))**2
+    end do
+    call MPI_Reduce(lresnorm, adj_res, 1, MPI_DOUBLE, MPI_SUM, &
+                   0, PETSC_COMM_WORLD, ierr); CHKERRQ(ierr)
+    call MPI_Bcast(adj_res, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+                  ierr)
+    adj_res = dsqrt(adj_res)/plen
+    if(t == max_iters+itr) then
+        adj_res_old = adj_res
+    else
+        adj_res = dlog10(adj_res/adj_res_old)
+    end if
+
   END SUBROUTINE FPI_SOLVER_D_B
 
 !  Differentiation of fpi_solver in forward (tangent) mode (with options fixinterface):
@@ -99,6 +167,7 @@ CONTAINS
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     DOUBLE PRECISION :: result1
+    PetscErrorCode :: ierr
     DO i=1,local_points
       pointd%prim_old(:, i) = pointd%prim(:, i)
       point%prim_old(:, i) = point%prim(:, i)
@@ -108,11 +177,29 @@ CONTAINS
     DO rk=1,rks
       CALL EVAL_Q_VARIABLES_D()
       CALL EVAL_Q_DERIVATIVES_D()
+
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
+
       CALL CAL_FLUX_RESIDUAL_D()
       CALL STATE_UPDATE_D(rk)
+
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
+
     END DO
     CALL OBJECTIVE_FUNCTION_D()
-    result1 = DSQRT(sum_res_sqr)
+
+    call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
+       0, PETSC_COMM_WORLD, ierr)
+
+    call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+      ierr)
+
+
+    result1 = DSQRT(gsum_res_sqr)
     res_new = result1/plen
     IF (t .LE. 2) THEN
       res_old = res_new

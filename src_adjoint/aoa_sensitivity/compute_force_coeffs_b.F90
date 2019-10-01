@@ -5,7 +5,10 @@
 !  Tapenade 3.14 (r7079) -  5 Oct 2018 09:56
 !
 MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF_DIFF
+#include <petsc/finclude/petscsys.h>
+
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
 
 CONTAINS
@@ -165,10 +168,13 @@ CONTAINS
     REAL*8 :: ds1, ds2, ds
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
     REAL*8, DIMENSION(shapes) :: hd, vd, pitch_momd
+    real*8, dimension(shapes) :: lcl, lcd, lcm
+    real*8, dimension(shapes) :: lcld, lcdd, lcmd
     REAL*8 :: nx, ny
     INTRINSIC DSQRT
     INTRINSIC DCOS
     INTRINSIC DSIN
+    PetscErrorCode :: ierr
     temp = 0.5d0*rho_inf*mach*mach
     h = 0.d0
     v = 0.d0
@@ -206,16 +212,30 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
-    cld = vd*DCOS(theta) - v*thetad*DSIN(theta) - hd*DSIN(theta) - h*&
+    lcld = vd*DCOS(theta) - v*thetad*DSIN(theta) - hd*DSIN(theta) - h*&
 &     thetad*DCOS(theta)
-    cl = v*DCOS(theta) - h*DSIN(theta)
-    cdd = hd*DCOS(theta) - h*thetad*DSIN(theta) + vd*DSIN(theta) + v*&
+    lcl = v*DCOS(theta) - h*DSIN(theta)
+    lcdd = hd*DCOS(theta) - h*thetad*DSIN(theta) + vd*DSIN(theta) + v*&
 &     thetad*DCOS(theta)
-    cd = h*DCOS(theta) + v*DSIN(theta)
+    lcd = h*DCOS(theta) + v*DSIN(theta)
     clcdd = (cld*cd-cl*cdd)/cd**2
     clcd = cl/cd
-    cmd = pitch_momd
-    cm = pitch_mom
+    lcmd = pitch_momd
+    lcm = pitch_mom
+
+    call MPI_Reduce(lcl, cl , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcld, cld , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcd, cd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcdd, cdd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcm, cm , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcmd, cmd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+
   END SUBROUTINE COMPUTE_CL_CD_CM_D
 
   SUBROUTINE COMPUTE_CL_CD_CM()
