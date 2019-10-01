@@ -37,7 +37,7 @@ contains
                 allocate(point%ny(max_points))
                 allocate(point%qtdepth(max_points))
                 allocate(point%nbhs(max_points))
-                allocate(point%conn(max_points,15))
+                allocate(point%conn(max_points,20))
                 allocate(point%min_dist(max_points))
                 allocate(point%left(max_points))
                 allocate(point%right(max_points))

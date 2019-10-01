@@ -11,7 +11,7 @@ objects=meshfree_solver.o parameter.o data_structure.o petsc_data_structure.o po
 
 
 execname: $(objects)  
-	$(FC)  -o execname $(FFLAGS) $(objects) $(PETSC_LIB)
+	$(FC)  -o execname $(FFLAGS) $(objects) $(PETSC_LIB) $(LIBS)
 
 
 meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o petsc_data_structure.o parameter.o q_lskum.o post_processing.o compute_force_coeffs.o q_lskum_petsc.o
@@ -47,7 +47,7 @@ q_lskum_petsc.o: q_lskum_petsc.F90 data_structure.o point_normals.o generate_con
 point_normals.o: point_normals.F90 data_structure.o
 	$(FC) $(FFLAGS) -c  point_normals.F90
 
-generate_connectivity.o: generate_connectivity.F90 data_structure.o 
+generate_connectivity.o: generate_connectivity.F90 data_structure.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  generate_connectivity.F90
 
 fpi_solver.o: fpi_solver.F90 data_structure.o q_variables.o flux_residual.o state_update.o objective_function.o post_processing.o 

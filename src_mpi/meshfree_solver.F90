@@ -59,7 +59,7 @@ program meshfree_solver
 !       Initialize Petsc vectors
 
         if(proc .ne. 1)call init_petsc()
-        if(proc==1) plen = max_points
+        if(proc == 1) plen = max_points
         if(rank == 0) then
                 write(*,*) 'Number of points:         ', plen
                 write(*,*)
@@ -68,13 +68,17 @@ program meshfree_solver
 !	Primal fixed point iterative solver ..
         
         runtime = MPI_Wtime()
-        if(runop == 1) then
-                write(*,*)'%%%%%%%%%%%%%-Using inbuilt solvers-%%%%%%%'
-                write(*,*)
+        if(runop == 1)then
+                if(rank == 0) then
+                        write(*,*)'%%%%%%%%%-Using inbuilt solvers-%%%%%%%%%%%'
+                        write(*,*)
+                end if
                 call q_lskum()
         elseif(runop == 2) then
-                write(*,*)'%%%%%%%%%%%%%-Using Petsc solvers-%%%%%%%%%'
-                write(*,*)
+                if(rank == 0) then
+                        write(*,*)'%%%%%%%%%%%%%-Using Petsc solvers-%%%%%%%%%'
+                        write(*,*)
+                end if
                 call q_lskum_petsc()
         end if
         runtime = MPI_Wtime() - runtime

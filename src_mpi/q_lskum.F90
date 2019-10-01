@@ -33,6 +33,7 @@ contains
                 call generate_connectivity()
 
                 if(rank == 0) then
+                        write(*,*)
                         write(*,*)'%%%%-Normals and connectivity generated-%%%'
                         write(*,*)
                 end if
