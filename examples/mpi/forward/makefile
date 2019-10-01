@@ -4,26 +4,23 @@ endif
 
 SRCDIR=$(MF_DIR)/src_forward
 
-all:
-	@echo "make explicit or implicit"
-
-explicit: 
+shape: 
 	rm -rf src
 	cp -r $(SRCDIR) src
-	cd src && cp explicit/* . && make -f makefile clean
+	cd src && cp shape_sensitivity/* . && make -f makefile clean
 	cp parameter.F90 src/
 	cd src && make -j -f makefile execname 
 	mv src/execname .
-	@echo "Built explicit solver"
+	@echo "Built mpi forward solver w.r.t shape"
 
-implicit: 
+aoa:
 	rm -rf src
 	cp -r $(SRCDIR) src
-	cd src && cp implicit/* . && make -f makefile clean
+	cd src && cp aoa_sensitivity/* . && make -f makefile clean
 	cp parameter.F90 src/
 	cd src && make -j -f makefile execname 
 	mv src/execname .
-	@echo "Built implicit solver"
+	@echo "Built mpi forward solver w.r.t aoa"
 
 input:
 	cp -r $(MF_DIR)/mfpre .

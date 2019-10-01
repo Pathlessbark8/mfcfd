@@ -4,26 +4,14 @@ endif
 
 SRCDIR=$(MF_DIR)/src_mpi
 
-all:
-	@echo "make explicit or implicit"
-
-explicit: 
+all: 
 	rm -rf src
 	cp -r $(SRCDIR) src
-	cd src && cp explicit/* . && make -f makefile clean
+	cd src && make -f makefile clean
 	cp parameter.F90 src/
 	cd src && make -j -f makefile execname 
 	mv src/execname .
-	@echo "Built explicit solver"
-
-implicit: 
-	rm -rf src
-	cp -r $(SRCDIR) src
-	cd src && cp implicit/* . && make -f makefile clean
-	cp parameter.F90 src/
-	cd src && make -j -f makefile execname 
-	mv src/execname .
-	@echo "Built implicit solver"
+	@echo "Built mpi solver"
 
 input:
 	cp -r $(MF_DIR)/mfpre .
