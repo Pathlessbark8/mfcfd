@@ -2,16 +2,16 @@ ifndef MF_DIR
 	$(error directory not set)
 endif
 
-SRCDIR=$(MF_DIR)/src_cuda
+SRCDIR=$(MF_DIR)/src_forward
 
-gpu: 
+all: 
 	rm -rf src
 	cp -r $(SRCDIR) src
-	cd src && make -f makefile clean
+	cd src && cp forward/* . && make -f makefile clean
 	cp parameter.F90 src/
 	cd src && make -j -f makefile execname 
 	mv src/execname .
-	@echo "Built gpu solver"
+	@echo "Built mpi forward solver"
 
 input:
 	cp -r $(MF_DIR)/mfpre .
@@ -20,5 +20,5 @@ input:
 	rm -rf mfpre
 
 clean:
-	rm -rf src cpplot_*
-	rm -f execname
+	rm -rf src point
+	rm -f execname graphpart
