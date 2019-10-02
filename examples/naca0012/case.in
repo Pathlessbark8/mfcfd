@@ -1,0 +1,4 @@
+-cfl 0.5
+-max_iters 500000
+-vl_const  1000
+-tscheme ssprk43
