@@ -32,6 +32,7 @@ module data_structure_mod
                 integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
                 real*8, dimension(:), allocatable :: entropy
+
         end type points
 
  
@@ -78,6 +79,9 @@ module data_structure_mod
         character(len=20)  :: restart_solution = 'no'
         integer :: solution_restart
 
+!       Inner Iterations Loop count
+        integer :: inner_iterations = 0
+
 !       format tag
         character(len=20)  :: format_file = 'legacy'
         integer :: file_format = 1
@@ -114,7 +118,8 @@ module data_structure_mod
                           interior_points_normal_flag, &
                           tscheme, &
                           mach, &
-                          aoa
+                          aoa, &
+                          inner_iterations
 
 
     contains
@@ -146,6 +151,8 @@ module data_structure_mod
                 elseif(restart_solution == 'yes') then
                         solution_restart = 1
                 end if
+
+
 
                 if(tscheme == 'first') then
                         rks = 1

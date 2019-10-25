@@ -74,6 +74,14 @@ contains
                                 call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                         & point_d%conn, point_d%q, point_d%qm, point_d%dq)
 
+                                if(inner_iterations /= 0) then
+                                        do i = 1, inner_iterations
+                                                call eval_q_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                                                        & point_d%conn, point_d%q, point_d%dq, point_d%inner)
+                                                call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner)
+                                        end do
+                                end if
+
                                 call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                         & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
                                         & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
