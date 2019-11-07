@@ -28,8 +28,8 @@ module data_structure_mod
                 real*8, dimension(:), allocatable :: sensor, D2_dist
 
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-                integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
-                integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
+                integer*1, dimension(:,:), allocatable :: xpos_conn, xneg_conn
+                integer*1, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
                 real*8, dimension(:), allocatable :: entropy
 

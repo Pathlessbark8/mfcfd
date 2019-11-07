@@ -34,8 +34,8 @@ module device_data_structure_mod
                 real*8, device, dimension(:,:), allocatable :: inner
 
                 integer, device, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-                integer, device, dimension(:,:), allocatable :: xpos_conn, xneg_conn
-                integer, device, dimension(:,:), allocatable :: ypos_conn, yneg_conn
+                integer*1, device, dimension(:,:), allocatable :: xpos_conn, xneg_conn
+                integer*1, device, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
         end type points_d
         

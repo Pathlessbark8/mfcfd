@@ -58,6 +58,8 @@ module generate_connectivity_mod
                         nbh = point%conn(i,r)
                         xk = point%x(nbh)
                         yk = point%y(nbh)
+                        
+                        nbh = find_loc_f90(point%conn, 20, i, nbh)
 
                         delx = xk - xi
                         dely = yk - yi
@@ -145,7 +147,10 @@ module generate_connectivity_mod
         
                                 xk = point%x(nbh)
                                 yk = point%y(nbh)
-        
+
+                                nbh = find_loc_f90(point%conn, 20, i, nbh)
+
+
                                 delx = xk - xi
                                 dely = yk - yi
         
@@ -217,6 +222,9 @@ module generate_connectivity_mod
         
                                 xk = point%x(nbh)
                                 yk = point%y(nbh)
+
+                                nbh = find_loc_f90(point%conn, 20, i, nbh)
+
           
                                 delx = xk - xi
                                 dely = yk - yi
@@ -262,5 +270,18 @@ module generate_connectivity_mod
                         end if
 
         end subroutine
+
+        integer function find_loc_f90(array, pointcount, pidx, nbhvalue)
+                integer, dimension(:,:) :: array
+                integer :: pointcount, pidx, nbhvalue, i
+                do i = 1, pointcount
+                        if (array(pidx, i) == nbhvalue) then
+                                find_loc_f90 = i
+                                return
+                        endif
+                end do
+                print*, "warning could not find point in conn", pidx, nbhvalue
+                stop
+        end function
 
 end module
