@@ -58,7 +58,7 @@ module device_data_structure_mod
                 allocate(point_d%dq(2,4,max_points))
                 allocate(point_d%ddq(3,4,max_points))
                 allocate(point_d%qm(2,4,max_points))
-                allocate(point_d%inner(8,max_points))
+                allocate(point_d%inner(12,max_points))
         
                 allocate(point_d%xpos_nbhs(max_points))
                 allocate(point_d%xneg_nbhs(max_points))
