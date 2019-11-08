@@ -1,0 +1,11 @@
+src/*
+output.dat
+cp-file
+execname
+input.nml
+*.sh
+residue
+*.F90
+tor/*
+point/*
+ai/*
