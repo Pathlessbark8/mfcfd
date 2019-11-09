@@ -30,6 +30,7 @@ module device_data_structure_mod
                 real*8, device, dimension(:,:), allocatable :: q
                 real*8, device, dimension(:), allocatable :: delta
                 real*8, device, dimension(:,:,:), allocatable :: dq
+                real*8, device, dimension(:,:,:), allocatable :: ddq
                 real*8, device, dimension(:,:,:), allocatable :: qm
                 real*8, device, dimension(:,:), allocatable :: inner
 
@@ -55,6 +56,7 @@ module device_data_structure_mod
                 allocate(point_d%delta(max_points))
 
                 allocate(point_d%dq(2,4,max_points))
+                allocate(point_d%ddq(3,4,max_points))
                 allocate(point_d%qm(2,4,max_points))
                 allocate(point_d%inner(8,max_points))
         
@@ -83,6 +85,7 @@ module device_data_structure_mod
                 deallocate(point_d%delta)
 
                 deallocate(point_d%dq)
+                deallocate(point_d%ddq)
 
                 deallocate(point_d%xpos_nbhs)
                 deallocate(point_d%xneg_nbhs)
