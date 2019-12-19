@@ -7,7 +7,7 @@ subroutine readcase()
         PetscErrorCode :: ierr
         PetscBool :: set
         character(len=64) :: format_file, time, limiter, restart_solution
-        character(len=64) :: solution_accuracy, tscheme, run_option
+        character(len=64) :: solution_accuracy, tscheme
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -37,16 +37,6 @@ subroutine readcase()
                 timestep = 1
         end if
 
-        run_option = 'normal' ! Default normal run 
-        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
-                              '-run_option',run_option,set,ierr); CHKERRQ(ierr)
-
-        if(trim(run_option) == 'normal') then
-                runop = 1
-        elseif(trim(run_option) == 'petsc') then
-                runop = 2
-        end if
-        
         tscheme = 'first' ! Default first order in time
         call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                               '-tscheme',tscheme,set,ierr); CHKERRQ(ierr)
@@ -126,7 +116,6 @@ subroutine readcase()
                 write(*,*) 'cfl          :', cfl
                 write(*,*) 'shapes       :', shapes
                 write(*,*) 'timestep     :', time
-                write(*,*) 'run_option   :', run_option
                 write(*,*) 'tscheme      :', tscheme
                 write(*,*) 'file format  :', format_file
                 write(*,*) 'accuracy     :', solution_accuracy

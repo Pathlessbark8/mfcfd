@@ -1,0 +1,9 @@
+src/
+cp/
+point/
+solution/
+residue
+graphpart
+execname
+makefile
+*.swp

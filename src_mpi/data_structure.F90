@@ -79,9 +79,6 @@ module data_structure_mod
         real*8 :: t, tfinal, dtg
         integer :: timestep
 
-!Run option: petsc or normal
-        integer :: runop
-!
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
 !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
