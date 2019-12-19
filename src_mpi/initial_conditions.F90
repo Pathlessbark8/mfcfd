@@ -1,7 +1,6 @@
 module initial_conditions_mod
 
         use data_structure_mod
-        use petsc_data_structure_mod
         use parameter_mod
 
 contains
@@ -34,9 +33,6 @@ contains
                         
                         call restart_sol()
 
-                        call update_begin_prim_ghost()
-                        call update_end_prim_ghost()
-                
                 endif
 
         end subroutine

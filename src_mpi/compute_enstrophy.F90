@@ -1,8 +1,6 @@
 module compute_enstrophy_mod
-#include <petsc/finclude/petscsys.h>
        
         use data_structure_mod
-        use petsc_data_structure_mod
 
         contains
 
@@ -19,7 +17,6 @@ module compute_enstrophy_mod
 			real*8 :: one_by_det
 			real*8 :: du1_dy, du2_dx, temp
                         real*8 :: gtotal_enstrophy
-                        PetscErrorCode :: ierr
 
                         total_enstrophy = 0.d0
 
@@ -79,8 +76,8 @@ module compute_enstrophy_mod
 
                         enddo
 
-                        call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
-                                & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+                        !call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
+                        !        & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
                         if(rank == 0) then
                                 !write(*,*)"total enstrophy :", gtotal_enstrophy

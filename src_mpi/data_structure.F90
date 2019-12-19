@@ -7,11 +7,13 @@ module data_structure_mod
         integer :: max_points,local_points,ghost_points
         integer :: wall_points,interior_points,outer_points,shape_points
 
+!       Rank and processor
+        integer :: rank,proc
+
 !       ghost global indices
         integer , dimension(:), allocatable :: pghost
 
         type :: points
-
 
                 integer, dimension(:), allocatable :: original_id
 		real*8, dimension(:), allocatable :: x,y
@@ -68,20 +70,15 @@ module data_structure_mod
 	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, cfv
 	real*8  :: total_entropy, total_enstrophy
         integer :: plen
-        integer :: format
 
 !The parameter CFL is the CFL number for stability ..
         real*8 :: CFL
 
-        integer :: max_iters
+        integer :: max_iters = 1000000
 
-!Unsteady variables
-        real*8 :: t, tfinal, dtg
-        integer :: timestep
+!       Time scheme
+        character(len=64) :: tscheme = 'first'
 
-!Run option: petsc or normal
-        integer :: runop
-!
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
 !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
@@ -95,22 +92,28 @@ module data_structure_mod
 !       limiter_flag = 2 => min-max limiter     
 !
         integer :: limiter_flag
-        real*8 :: VL_CONST  ! Venkatakrishnan limiter constant ..
+        character(len=64) :: limiter = 'venkat'
+        real*8 :: VL_CONST = 150.d0  ! Venkatakrishnan limiter constant ..
 
+!       Restart solution parameter
+        integer :: solution_restart
         integer :: restart
+        character(len=64) :: restart_solution = 'no'
 
 !       Interior points normal flag ..
 !       If flag is zero => nx = 0.0 and ny = 1.0
 !
-        integer :: interior_points_normal_flag
-
-!       Restart solution parameter
-        integer :: solution_restart
+        integer :: interior_points_normal_flag=0
 
 !       solution save parameter
-        integer :: nsave
+        integer :: nsave=10000000
+
+!       Inpur format file
+        integer :: format
+        character(len=64) :: format_file = 'quadtree'
 
 !       First order flag
+        character(len=64) :: solution_accuracy = 'second'
         real*8 :: fo_flag
 
 !       Objective function
@@ -118,7 +121,24 @@ module data_structure_mod
         integer :: obj_flag
 
 !       No of shapes
-        integer :: shapes
+        integer :: shapes=1
+
+        namelist / input_parameters /   &
+                                shapes, &
+                                cfl, &
+                                max_iters, &
+                                vl_const, &
+                                power, &
+                                restart_solution, &
+                                solution_accuracy, &
+                                format_file, &
+                                nsave, &
+                                interior_points_normal_flag, &
+                                tscheme, &
+                                mach, &
+                                limiter, &
+                                aoa
+
 
     contains
 
@@ -143,20 +163,16 @@ module data_structure_mod
                 allocate(point%vorticity(max_points))
                 allocate(point%vorticity_sqr(max_points))
 
-                
                 allocate(point%xpos_nbhs(max_points))
                 allocate(point%xneg_nbhs(max_points))
                 allocate(point%ypos_nbhs(max_points))
                 allocate(point%yneg_nbhs(max_points))
 
-
                 allocate(point%xpos_conn(max_points,20))
                 allocate(point%xneg_conn(max_points,20))
 
-
                 allocate(point%ypos_conn(max_points,20))
                 allocate(point%yneg_conn(max_points,20))
-
 
                 allocate(point%delta(max_points))
 
@@ -176,17 +192,14 @@ module data_structure_mod
                 deallocate(point%flux_res)
                 deallocate(point%U_old)
 
-
                 deallocate(point%q)
                 deallocate(point%U)
                 deallocate(point%dq)
                 deallocate(point%qm)
 
-
                 deallocate(point%entropy)
                 deallocate(point%vorticity)
                 deallocate(point%vorticity_sqr)
-
                 
                 deallocate(point%xpos_nbhs)
                 deallocate(point%xneg_nbhs)
@@ -210,5 +223,57 @@ module data_structure_mod
                 deallocate(cfv)
 
         end subroutine
+
+        subroutine readcase()
+        
+                implicit none
+
+                integer :: os
+
+                open(unit=10,file='input.nml',form='formatted',status='old',iostat=os)
+                read(unit=10,nml=input_parameters)
+
+                close(10)
+       
+                if(trim(tscheme) == 'first') then
+                        rks = 1
+                        euler = 2.0d0
+                elseif(trim(tscheme) == 'ssprk43') then
+                        rks = 4
+                        euler = 1.0d0
+                end if
+
+                if(trim(limiter) == 'venkat') then
+                        limiter_flag = 1
+                elseif(trim(limiter) == 'minmax') then
+                        limiter_flag = 2
+                end if
+
+                if(trim(restart_solution) == 'same') then
+                        restart = 1
+                elseif(trim(restart_solution) == 'no') then
+                        restart = 0
+                end if
+
+                if(trim(solution_accuracy) == 'second') then
+                        fo_flag = 1.0d0
+                elseif(trim(solution_accuracy) == 'first') then
+                        fo_flag = 0.0d0
+                end if
+                
+                if(trim(format_file) == 'legacy') then
+                        format = 1
+                elseif(trim(format_file) == 'quadtree') then
+                        format = 2
+                end if
+                
+                ! Print paramaters to screen
+                if (rank==0) then
+                        write(*,*) '%%%%%%%%%%%%%%-Nml file info-%%%%%%%%%%%%%%'
+                        write(*,*)
+                        write(*,nml=input_parameters)
+                end if
+
+        end subroutine 
 
 end module data_structure_mod

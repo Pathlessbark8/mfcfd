@@ -1,12 +1,8 @@
 module post_processing_mod
 
-
         use data_structure_mod
-        use petsc_data_structure_mod
-
 
 contains
-
 
         subroutine print_primal_output()
 

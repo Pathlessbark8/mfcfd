@@ -1,5 +1,5 @@
 module fpi_solver_mod
-#include <petsc/finclude/petscsys.h>
+        
         use data_structure_mod
         use flux_residual_mod
         use state_update_mod
@@ -7,16 +7,13 @@ module fpi_solver_mod
         use objective_function_mod
         use post_processing_mod 
 
-
 contains
-
 
         subroutine fpi_solver(t)
 
                 implicit none
                 
-                integer :: t, i, rk
-                PetscErrorCode :: ierr
+                integer :: t, i, rk, ierr
 
                 do i =1, local_points
                         point%prim_old(:, i) = point%prim(:, i)
@@ -31,29 +28,16 @@ contains
                 
                         call eval_q_derivatives()
                 
-                        !Update the ghost values from the owned process
-                        call update_begin_dq_ghost()
-                        call update_begin_qm_ghost()
-                        call update_end_dq_ghost()
-                        call update_end_qm_ghost()
-                
                         call cal_flux_residual()
 
                         call state_update(rk)
 
-                        ! start updating primitive values
-                        call update_begin_prim_ghost()
-                        call update_end_prim_ghost()
                 end do
                 
-
                 call objective_function()
 
-                call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
-                   0, PETSC_COMM_WORLD, ierr)
-
-                call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
-                  ierr)
+                call mpi_allreduce(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, &
+                        & MPI_COMM_WORLD, ierr)
 
                 res_new = dsqrt(gsum_res_sqr)/plen
 
@@ -73,7 +57,6 @@ contains
                         end if
                         call print_primal_output()
                 end if
-                
 
         end subroutine
 

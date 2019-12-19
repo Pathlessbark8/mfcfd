@@ -1,25 +1,20 @@
 program meshfree_solver
 
-#include <petsc/finclude/petscsys.h>
-
-
-        use petscsys
         use parameter_mod
         use data_structure_mod
-        use petsc_data_structure_mod
         use point_preprocessor_mod
         use q_lskum_mod
-        use q_lskum_petsc_mod
         use compute_force_coeffs_mod
 
         implicit none
         real*8  :: totaltime,runtime
-        PetscErrorCode  :: ierr
+        integer :: ierr
 
-        call PetscInitialize('case.in', ierr)
-        if(ierr /= 0) stop "Unable to initialize PETSc"
-        call MPI_Comm_rank(PETSC_COMM_WORLD, rank, ierr)
-        call MPI_Comm_size(PETSC_COMM_WORLD, proc, ierr)
+        call MPI_INIT(ierr)
+        if(ierr /= 0) stop "Unable to initialize MPI"
+        call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+        call MPI_Comm_size(MPI_COMM_WORLD, proc, ierr)
+        
         if(rank==0) then
                 call execute_command_line('mkdir -p solution')
                 call execute_command_line('mkdir -p cp')
@@ -45,7 +40,6 @@ program meshfree_solver
 !	Reading the input data ..
 
         if(rank == 0) then
-                write(*,*)
                 write(*,*)'%%%%%%%%%%%%-Reading point data-%%%%%%%%%%%'
                 write(*,*)
         end if
@@ -58,7 +52,6 @@ program meshfree_solver
 
 !       Initialize Petsc vectors
 
-        if(proc .ne. 1)call init_petsc()
         if(proc == 1) plen = max_points
         if(rank == 0) then
                 write(*,*) 'Number of points:         ', plen
@@ -68,26 +61,13 @@ program meshfree_solver
 !	Primal fixed point iterative solver ..
         
         runtime = MPI_Wtime()
-        if(runop == 1)then
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%%%-Using inbuilt solvers-%%%%%%%%%%%'
-                        write(*,*)
-                end if
-                call q_lskum()
-        elseif(runop == 2) then
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%%%%%%%-Using Petsc solvers-%%%%%%%%%'
-                        write(*,*)
-                end if
-                call q_lskum_petsc()
-        end if
+        call q_lskum()
         runtime = MPI_Wtime() - runtime
 
 !       Save solution one last time
         call print_primal_output()
 
 !       destroy petsc vectors and deallocate point/solution vectors
-        call dest_petsc()
         call deallocate_soln()
         call dealloc_points()
 
@@ -101,6 +81,6 @@ program meshfree_solver
         end if
 
 !       stop petsc
-        call PetscFinalize(ierr)
+        call MPI_Finalize(ierr)
 
 end program meshfree_solver

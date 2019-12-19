@@ -1,7 +1,6 @@
 module generate_connectivity_mod
         
         use data_structure_mod
-        use petsc_data_structure_mod
 
         contains
 

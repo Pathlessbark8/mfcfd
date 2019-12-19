@@ -1,12 +1,8 @@
 module compute_force_coeffs_mod
-#include <petsc/finclude/petscsys.h>
 
         use data_structure_mod
-        use petsc_data_structure_mod
 
         contains
-
-
 
                 subroutine compute_cl_cd_cm()
 
@@ -15,6 +11,7 @@ module compute_force_coeffs_mod
 
                         integer :: i, j, k
                         integer :: l, m, r
+                        integer :: ierr
 			real*8 :: cp, temp
 			real*8 :: lx, ly, mx, my, rx, ry
 			real*8 :: ds1, ds2, ds
@@ -24,7 +21,6 @@ module compute_force_coeffs_mod
 			real*8 :: nx, ny
                         character(len=64) :: cp_file
                         character(len=10) :: itos
-                        PetscErrorCode :: ierr
 
                         cp_file = 'cp/'//'cp-file'
                         if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(4,rank))
@@ -83,11 +79,11 @@ module compute_force_coeffs_mod
                         lCm = pitch_mom
 
                         call MPI_Reduce(lCl, Cl , shapes, MPI_DOUBLE, MPI_SUM, 0, &
-                                & PETSC_COMM_WORLD, ierr)
+                                & MPI_COMM_WORLD, ierr)
                         call MPI_Reduce(lCd, Cd , shapes, MPI_DOUBLE, MPI_SUM, 0, &
-                                & PETSC_COMM_WORLD, ierr)
+                                & MPI_COMM_WORLD, ierr)
                         call MPI_Reduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, 0, &
-                                & PETSC_COMM_WORLD, ierr)
+                                & MPI_COMM_WORLD, ierr)
 
                         if(rank == 0) then
                                 do j = 1, shapes
