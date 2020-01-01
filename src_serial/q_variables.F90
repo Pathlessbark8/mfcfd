@@ -121,7 +121,73 @@ contains
 
                 end subroutine 
 
-                subroutine eval_point_q_derivatives_inner_loop()
+                subroutine eval_q_double_derivatives()
+
+                        implicit none
+
+                        ! local variables
+                        integer :: i
+                        integer :: k, r, nbh
+                        real*8 :: x_i, y_i, x_k, y_k
+                        real*8 :: delx, dely, dist, weights
+                        real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                        real*8 :: sum_delx_del_qx(4), sum_delx_del_qy(4), sum_dely_del_qx(4), sum_dely_del_qy(4)
+                        real*8 :: det, delq, temp
+                        real*8 :: one_by_det
+
+                        do i=1, max_points
+
+                                x_i = point%x(i)
+                                y_i = point%y(i)
+
+                                sum_delx_sqr = 0.d0
+                                sum_dely_sqr = 0.d0
+                                sum_delx_dely = 0.d0
+
+                                sum_delx_del_qx = 0.d0
+                                sum_delx_del_qy = 0.d0
+                                sum_dely_del_qx = 0.d0
+                                sum_dely_del_qy = 0.d0
+
+                                do k = 1, point%nbhs(i)
+
+                                        nbh = point%conn(i,k)
+                                        
+                                        x_k = point%x(nbh)
+                                        y_k = point%y(nbh)
+
+                                        delx = x_k - x_i
+                                        dely = y_k - y_i
+
+                                        dist = dsqrt(delx*delx + dely*dely)
+                                        weights = dist**power
+
+                                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+
+                                        sum_delx_dely = sum_delx_dely + delx*dely*weights
+
+                                        sum_delx_del_qx = sum_delx_del_qx + weights*delx*(point%dq(1,:,nbh) - point%dq(1,:,i))
+                                        sum_delx_del_qy = sum_delx_del_qy + weights*delx*(point%dq(2,:,nbh) - point%dq(2,:,i))
+                                        sum_dely_del_qx = sum_dely_del_qx + weights*dely*(point%dq(1,:,nbh) - point%dq(1,:,i))
+                                        sum_dely_del_qy = sum_dely_del_qy + weights*dely*(point%dq(2,:,nbh) - point%dq(2,:,i))
+
+                                enddo
+
+                                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                                one_by_det = 1.0d0/det
+
+                                point%ddq(1,:,i) = (sum_delx_del_qx*sum_dely_sqr&
+                                & - sum_dely_del_qx*sum_delx_dely)*one_by_det
+                                point%ddq(2,:,i) = (sum_delx_del_qy*sum_dely_sqr&
+                                & - sum_dely_del_qy*sum_delx_dely)*one_by_det
+                                point%ddq(3,:,i) = (sum_dely_del_qy*sum_delx_sqr&
+                                &- sum_delx_del_qy*sum_delx_dely)*one_by_det
+                        end do
+
+                end subroutine
+
+                subroutine eval_dq_inner_loop()
                         implicit none
 
                         integer :: i
@@ -219,6 +285,95 @@ contains
 
                 end subroutine
 
+                subroutine eval_ddq_inner_loop()
+
+                        implicit none
+                        ! local variables
+                        integer :: i
+                        integer :: k, r, nbh
+                        real*8 :: x_i, y_i, x_k, y_k
+                        real*8 :: delx, dely, dist, weights
+                        real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                        real*8 :: det, temp
+                        real*8 :: one_by_det
+                        real*8 :: sum_delx_del_qx(4), sum_dely_del_qy(4), sum_delx_del_qy(4), sum_dely_del_qx(4), dq_x(4), dq_y(4)
+
+                        real*8 :: temp1(4), temp2(4)
+
+                        do i=1,max_points
+
+                                x_i = point%x(i)
+                                y_i = point%y(i)
+
+                                dq_x = point%dq(1, :, i)
+                                dq_y = point%dq(2, :, i)
+                                
+                                sum_delx_sqr = 0.d0
+                                sum_dely_sqr = 0.d0
+                                sum_delx_dely = 0.d0
+
+                                sum_delx_del_qx = 0.d0
+                                sum_delx_del_qy = 0.d0
+                                sum_dely_del_qx = 0.d0
+                                sum_dely_del_qy = 0.d0
+
+                                temp1 = 0.d0
+                                temp2 = 0.d0
+
+                                do k = 1, point%nbhs(i)
+
+                                        nbh = point%conn(i,k)
+                                        
+                                        x_k = point%x(nbh)
+                                        y_k = point%y(nbh)
+
+                                        delx = x_k - x_i
+                                        dely = y_k - y_i
+
+                                        dist = dsqrt(delx*delx + dely*dely)
+                                        weights = dist**power
+
+                                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+
+                                        sum_delx_dely = sum_delx_dely + delx*dely*weights
+
+                                        temp1 = dq_x - 0.5d0 * (delx * point%ddq(1,:,i) + dely * point%ddq(2,:,i))
+                                        temp2 = point%dq(1,:,nbh) - 0.5d0 * (delx * point%ddq(1,:,nbh) + dely * point%ddq(2,:,nbh))
+
+                                        sum_delx_del_qx = sum_delx_del_qx + (weights * delx * (temp2 - temp1))
+
+                                        temp1 = dq_y - 0.5d0 * (delx * point%ddq(3,:,i) + dely * point%ddq(2,:,i))
+                                        temp2 = point%dq(2,:,nbh) - 0.5d0 * (delx * point%ddq(3,:,nbh) + dely * point%ddq(2,:,nbh))
+
+                                        sum_delx_del_qy = sum_delx_del_qy + (weights * delx * (temp2 - temp1))
+
+                                        temp1 = dq_y - 0.5d0 * (delx * point%ddq(1,:,i) + dely * point%ddq(2,:,i))
+                                        temp2 = point%dq(2,:,nbh) - 0.5d0 * (delx * point%ddq(1,:,nbh) + dely * point%ddq(2,:,nbh))
+
+                                        sum_dely_del_qy = sum_dely_del_qy + (weights * dely * (temp2 - temp1))
+
+                                        temp1 = dq_x - 0.5d0 * (delx * point%ddq(3,:,i) + dely * point%ddq(2,:,i))
+                                        temp2 = point%dq(1,:,nbh) - 0.5d0 * (delx * point%ddq(3,:,nbh) + dely * point%ddq(2,:,nbh))
+
+                                        sum_dely_del_qx = sum_dely_del_qx + (weights * dely * (temp2 - temp1))
+                                        
+                                enddo
+
+                                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                                one_by_det = 1.0d0/det
+
+                                point%temp(1,:,i) = (sum_delx_del_qx*sum_dely_sqr&
+                                & - sum_dely_del_qx*sum_delx_dely)*one_by_det
+                                point%temp(2,:,i) = (sum_delx_del_qy*sum_dely_sqr&
+                                & - sum_dely_del_qy*sum_delx_dely)*one_by_det
+                                point%temp(3,:,i) = (sum_dely_del_qy*sum_delx_sqr&
+                                &- sum_delx_del_qy*sum_delx_dely)*one_by_det
+
+                        enddo
+
+                end subroutine
+
                 subroutine eval_update_innerloop_2()
                         do i=1,max_points
                                 point%dq(1,1,i) = point%temp(1,1,i)
@@ -229,6 +384,15 @@ contains
                                 point%dq(2,2,i) = point%temp(2,2,i)
                                 point%dq(2,3,i) = point%temp(2,3,i)
                                 point%dq(2,4,i) = point%temp(2,4,i)
+                        enddo
+
+                end subroutine
+
+                subroutine eval_update_innerloop_3()
+                        do i=1,max_points
+                                point%ddq(1,:,i) = point%temp(1,:,i)
+                                point%ddq(2,:,i) = point%temp(2,:,i)
+                                point%ddq(3,:,i) = point%temp(3,:,i)
                         enddo
 
                 end subroutine

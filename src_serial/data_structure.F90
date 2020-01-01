@@ -34,6 +34,7 @@ module data_structure_mod
 
                 real*8, dimension(:,:,:), allocatable :: qm
                 real*8, dimension(:,:,:), allocatable :: dq
+                real*8, dimension(:,:,:), allocatable :: ddq
                 real*8, dimension(:,:,:), allocatable :: temp
 
                 real*8, dimension(:), allocatable :: sensor, D2_dist
@@ -220,7 +221,8 @@ module data_structure_mod
 
                 allocate(point%q(4,max_points))
                 allocate(point%dq(2,4,max_points))
-                allocate(point%temp(2,4,max_points))
+                allocate(point%ddq(3,4,max_points))
+                allocate(point%temp(3,4,max_points))
                 allocate(point%qm(2,4,max_points))
 
                 allocate(Cl(shapes))

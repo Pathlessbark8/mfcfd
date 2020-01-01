@@ -28,11 +28,17 @@ contains
                 
                         call eval_q_derivatives()
 
+                        call eval_q_double_derivatives()
+
                         if(inner_iterations /= 0) then
                                 do i = 1, inner_iterations
-                                        call eval_point_q_derivatives_inner_loop()
+                                        call eval_dq_inner_loop()
 
                                         call eval_update_innerloop_2()
+
+                                        call eval_ddq_inner_loop()
+
+                                        call eval_update_innerloop_3()
                                 enddo
                         end if
                 
