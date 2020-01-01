@@ -5,6 +5,7 @@ program meshfree_solver
         use point_preprocessor_mod
         use q_lskum_mod
         use compute_force_coeffs_mod
+        use stagnation_values_mod
 
         implicit none
         real*8  :: totaltime,runtime
@@ -44,6 +45,8 @@ program meshfree_solver
 
 !       Save solution one last time
         call print_primal_output()
+
+        call stagnation_pressure()
 
 !       destroy petsc vectors and deallocate point/solution vectors
         call deallocate_soln()
