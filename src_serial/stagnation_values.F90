@@ -43,7 +43,8 @@ module stagnation_values_mod
             implicit none
 
             integer :: i
-            real*8 :: p0_inf, gammaPower, p0, p0_sum, J
+            real*8 :: p0_inf, gammaPower, p0, p0_sum, J, constant, angle, mach_t
+            real*8 :: prim(4)
 
             gammaPower = gamma/(gamma-1)
             p0_inf = pr_inf*((1 + ((gamma - 1)/2)*mach*mach) ** gammaPower)
