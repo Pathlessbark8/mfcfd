@@ -27,6 +27,14 @@ contains
                         call eval_q_variables()
                 
                         call eval_q_derivatives()
+
+                        if(inner_iterations /= 0) then
+                                do i = 1, inner_iterations
+                                        call eval_point_q_derivatives_inner_loop()
+
+                                        call eval_update_innerloop_2()
+                                enddo
+                        end if
                 
                         call cal_flux_residual()
 
