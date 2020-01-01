@@ -47,6 +47,7 @@ program meshfree_solver
         call print_primal_output()
 
         call stagnation_pressure()
+        call objective_function_J()
 
 !       destroy petsc vectors and deallocate point/solution vectors
         call deallocate_soln()

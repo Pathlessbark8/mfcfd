@@ -38,7 +38,7 @@ module stagnation_values_mod
 
         end subroutine
 
-        subroutine objective_function()
+        subroutine objective_function_J()
 
             implicit none
 
