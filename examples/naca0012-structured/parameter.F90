@@ -1,6 +1,4 @@
 module parameter_mod
-
-        use mpi
         
         implicit none
 
