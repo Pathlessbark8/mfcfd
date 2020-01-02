@@ -6,6 +6,8 @@ program meshfree_solver
         use q_lskum_mod
         use compute_force_coeffs_mod
         use file_ops_mod
+        use initial_conditions_mod
+        use post_processing_mod
 
         implicit none
         real*8  :: totaltime,runtime
@@ -35,6 +37,12 @@ program meshfree_solver
 
 !       Initialize Petsc vectors
         write(*,*) 'Number of points:         ', max_points
+        write(*,*)
+
+!       Assign the initial conditions for the primitive variables ..	
+
+        call initial_conditions()
+        write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
         write(*,*)
 
 !	Primal fixed point iterative solver ..

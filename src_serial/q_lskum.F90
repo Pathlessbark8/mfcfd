@@ -8,8 +8,6 @@ module q_lskum_mod
         use point_normals_mod    
         use generate_connectivity_mod
         use fpi_solver_mod
-        use initial_conditions_mod
-        use ieee_arithmetic
 
 contains
 
@@ -20,12 +18,6 @@ contains
                 integer :: i
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-
-!	        Assign the initial conditions for the primitive variables ..	
-
-                call initial_conditions()
-                write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
-                write(*,*)
 
                 call compute_normals()
                 call generate_connectivity()
@@ -48,10 +40,10 @@ contains
                 do it = itr+1, itr+max_iters
                         
                         call fpi_solver(it)
-                        
+
                         write(*,'(a12,i8,a15,e30.20)')'iterations:',it,'residue:',residue
                         write(301, *) it, residue
-                        if(ieee_is_nan(residue))exit
+                        if(residue.ne.residue)exit
                 
                 enddo
                 
