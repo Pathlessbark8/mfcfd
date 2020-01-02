@@ -37,6 +37,8 @@ module data_structure_mod
                 real*8, dimension(:,:,:), allocatable :: ddq
                 real*8, dimension(:,:,:), allocatable :: temp
 
+                real*8, dimension(:,:), allocatable :: phi1, phi2
+
                 real*8, dimension(:), allocatable :: sensor, D2_dist
 
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
@@ -56,6 +58,8 @@ module data_structure_mod
         integer,allocatable,dimension(:) :: shape_points_index
         integer,allocatable,dimension(:) :: outer_points_index
         integer,allocatable,dimension(:) :: interior_points_index
+
+        real*8 :: cost_func
 
         !iterations
         integer :: it, itr
@@ -220,6 +224,8 @@ module data_structure_mod
                 allocate(point%flux_res(4,max_points))
 
                 allocate(point%q(4,max_points))
+                allocate(point%phi1(4,max_points))
+                allocate(point%phi2(4,max_points))
                 allocate(point%dq(2,4,max_points))
                 allocate(point%ddq(3,4,max_points))
                 allocate(point%temp(3,4,max_points))

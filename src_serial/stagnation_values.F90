@@ -43,7 +43,7 @@ module stagnation_values_mod
             implicit none
 
             integer :: i
-            real*8 :: p0_inf, gammaPower, p0, p0_sum, J, constant, angle, mach_t
+            real*8 :: p0_inf, gammaPower, p0, p0_sum, constant, angle, mach_t
             real*8 :: prim(4)
 
             gammaPower = gamma/(gamma-1)
@@ -59,9 +59,9 @@ module stagnation_values_mod
                 p0_sum = p0_sum + (p0_inf - p0) ** 2
             enddo
 
-            J = p0_sum * constant
+            cost_func = p0_sum * constant
 
-            write(*,*) "Objective Function (J)", J
+            write(*,*) "Objective Function (J)", cost_func
 
         end subroutine
 

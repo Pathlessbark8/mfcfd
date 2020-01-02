@@ -6,6 +6,7 @@ module fpi_solver_mod
         use q_variables_mod
         use objective_function_mod
         use post_processing_mod 
+        use stagnation_values_mod
 
 contains
 
@@ -49,6 +50,9 @@ contains
                 end do
                 
                 call objective_function()
+
+                call stagnation_pressure()
+                call objective_function_J()
 
                 res_new = dsqrt(sum_res_sqr)/max_points
 
