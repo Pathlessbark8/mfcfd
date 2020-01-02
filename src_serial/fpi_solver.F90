@@ -5,7 +5,6 @@ module fpi_solver_mod
         use state_update_mod
         use q_variables_mod
         use objective_function_mod
-        use post_processing_mod 
         use stagnation_values_mod
 
 contains
@@ -62,14 +61,6 @@ contains
                 else 
                         residue = dlog10(res_new/res_old)
                 endif
-
-                ! Print primal output
-                if(mod(it,nsave)==0) then
-                        write(*,*)
-                        write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
-                        write(*,*)
-                        call print_primal_output()
-                end if
 
         end subroutine
 
