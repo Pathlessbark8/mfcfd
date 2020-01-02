@@ -17,8 +17,8 @@ module file_ops_mod
         nsave, &
         interior_points_normal_flag, &
         tscheme, &
-        mach, &
-        aoa, &
+        ! mach, &
+        ! aoa, &
         inner_iterations
 
     contains

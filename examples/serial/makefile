@@ -4,18 +4,18 @@ endif
 
 SRCDIR=$(MF_DIR)/src_serial
 
-all: 
+all:
 	rm -rf src
 	cp -r $(SRCDIR) src
-	cd src && make -f makefile clean
+	cd src && make -f makefile.primal clean
 	cp parameter.F90 src/
-	cd src && make -j -f makefile execname 
+	cd src && make -j -f makefile.primal execname
 	mv src/execname .
 	@echo "Built serial solver"
 
 input:
 	cp -r $(MF_DIR)/mfpre .
-	cd mfpre && make -f makefile 
+	cd mfpre && make -f makefile
 	cp mfpre/graphpart .
 	rm -rf mfpre
 
