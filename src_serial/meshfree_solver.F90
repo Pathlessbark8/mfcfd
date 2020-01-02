@@ -5,6 +5,7 @@ program meshfree_solver
         use point_preprocessor_mod
         use q_lskum_mod
         use compute_force_coeffs_mod
+        use file_ops_mod
 
         implicit none
         real*8  :: totaltime,runtime
