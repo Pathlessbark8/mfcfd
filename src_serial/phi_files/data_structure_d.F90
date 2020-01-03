@@ -7,7 +7,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: max_points
   INTEGER :: wall_points, interior_points, outer_points, shape_points
 ! stores location of point
-! stores shape point belongs to 
+! stores shape point belongs to
   TYPE POINTS
       REAL*8, DIMENSION(:), ALLOCATABLE :: x, y
       INTEGER, DIMENSION(:), ALLOCATABLE :: left, right
@@ -55,7 +55,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointd
-  SAVE 
+  SAVE
   INTEGER, DIMENSION(:), ALLOCATABLE :: wall_points_index
   INTEGER, DIMENSION(:), ALLOCATABLE :: shape_points_index
   INTEGER, DIMENSION(:), ALLOCATABLE :: outer_points_index
@@ -79,7 +79,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   REAL*8, SAVE :: cfl=0.0d0
   INTEGER, SAVE :: max_iters=10000000
 !
-!       The parameter power is used to specify the weights 
+!       The parameter power is used to specify the weights
 !       in the LS formula for the derivatives ..
 !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
 !       For example, power = -2.0 implies that
@@ -146,11 +146,33 @@ CONTAINS
     ALLOCATE(point%entropy(max_points))
   END SUBROUTINE ALLOCATE_SOLN
 
+  subroutine allocate_soln_d()
+    implicit none
+    allocate(pointd%prim(4,max_points))
+    allocate(pointd%prim_old(4,max_points))
+    allocate(pointd%flux_res(4,max_points))
+    allocate(pointd%q(4,max_points))
+    allocate(pointd%dq(2,4,max_points))
+    ALLOCATE(pointd%ddq(3, 4, max_points))
+    ALLOCATE(pointd%phi1(4, max_points))
+    ALLOCATE(pointd%phi2(4, max_points))
+    ALLOCATE(pointd%temp(3, 4, max_points))
+    ! allocate(pointd%qm(2,4,max_points))
+    allocate(pointd%delta(max_points))
+    allocate(Cld(shapes))
+    ! allocate(ClCdd(shapes))
+    allocate(Cdd(shapes))
+    allocate(Cmd(shapes))
+    ! allocate(pointd%vorticity_sqr(max_points))
+end subroutine
+
   SUBROUTINE DEALLOCATE_SOLN()
     IMPLICIT NONE
     DEALLOCATE(point%prim)
     DEALLOCATE(point%sensor)
     DEALLOCATE(point%d2_dist)
+    DEALLOCATE(point%phi1)
+    DEALLOCATE(point%phi2)
     DEALLOCATE(point%xpos_nbhs)
     DEALLOCATE(point%xneg_nbhs)
     DEALLOCATE(point%ypos_nbhs)
@@ -165,5 +187,25 @@ CONTAINS
     DEALLOCATE(point%entropy)
   END SUBROUTINE DEALLOCATE_SOLN
 
-END MODULE DATA_STRUCTURE_MOD_DIFF
+  subroutine deallocate_soln_d()
+    implicit none
 
+    deallocate(pointd%prim)
+    deallocate(pointd%prim_old)
+    deallocate(pointd%flux_res)
+    deallocate(pointd%q)
+    deallocate(pointd%dq)
+    DEALLOCATE(point%ddq)
+    DEALLOCATE(pointd%phi1)
+    DEALLOCATE(pointd%phi2)
+    DEALLOCATE(pointd%temp)
+    ! deallocate(pointd%qm)
+    deallocate(pointd%delta)
+    deallocate(Cld)
+    ! deallocate(ClCdd)
+    deallocate(Cdd)
+    deallocate(Cmd)
+    ! deallocate(pointd%vorticity_sqr)
+end subroutine
+
+END MODULE DATA_STRUCTURE_MOD_DIFF

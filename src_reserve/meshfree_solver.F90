@@ -33,8 +33,8 @@ program meshfree_solver
 
 !       Allocate solution variables
 
-        ! call allocate_soln()
-
+        call allocate_soln()
+        call allocate_soln_d()
 !       Initialize Petsc vectors
         ! write(*,*) 'Number of points:         ', max_points
         write(*,*)
@@ -55,7 +55,8 @@ program meshfree_solver
         call print_primal_output()
 
 !       destroy petsc vectors and deallocate point/solution vectors
-        ! call deallocate_soln()
+        call deallocate_soln()
+        call deallocate_soln_d()
         call dealloc_points()
 
         ! totaltime = MPI_Wtime() - totaltime

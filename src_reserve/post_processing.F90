@@ -1,6 +1,6 @@
 module post_processing_mod
 
-        use data_structure_mod
+        use data_structure_mod_diff
 
 contains
 
@@ -16,7 +16,7 @@ contains
                 sfile = 'output.dat'
 
                 OPEN(UNIT=501,FILE=trim(sfile))
-                
+
                 write(501,*)max_points, it, res_old
 
                 do i = 1, max_points

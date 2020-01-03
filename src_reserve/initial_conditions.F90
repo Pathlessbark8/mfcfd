@@ -1,6 +1,6 @@
 module initial_conditions_mod
 
-        use data_structure_mod
+        use data_structure_mod_diff
         use parameter_mod
 
 contains
@@ -8,7 +8,7 @@ contains
         subroutine initial_conditions()
 
                 implicit none
-                
+
                 integer :: k,i
 
                 if(restart == 0) then
@@ -21,14 +21,14 @@ contains
                                 point%prim(3,k) = q_init(3)
                                 point%prim(4,k) = q_init(4)
                         enddo
-                
+
                 elseif(restart == 1) then
-        
+
                         write(*,*)'%%%%%%%%%%%%-Using restart file-%%%%%%%%%%%'
                         write(*,*)
 
                         call setup_case_parameters()
-                        
+
                         call restart_sol()
 
                 endif
@@ -36,7 +36,7 @@ contains
         end subroutine
 
         subroutine restart_sol()
- 
+
                 implicit none
 
                 integer :: i, dummy

@@ -1,9 +1,9 @@
 program meshfree_solver
 
         use parameter_mod
-        use data_structure_mod_diff
+        use data_structure_mod
         use point_preprocessor_mod
-        use q_lskum_mod_diff
+        use q_lskum_mod
         ! use compute_force_coeffs_mod
         use file_ops_mod
         use initial_conditions_mod
@@ -33,10 +33,10 @@ program meshfree_solver
 
 !       Allocate solution variables
 
-        ! call allocate_soln()
-
+        call allocate_soln()
+        ! call allocate_soln_d()
 !       Initialize Petsc vectors
-        ! write(*,*) 'Number of points:         ', max_points
+        write(*,*) 'Number of points:         ', max_points
         write(*,*)
 
 !       Assign the initial conditions for the primitive variables ..
@@ -48,14 +48,15 @@ program meshfree_solver
 !	Primal fixed point iterative solver ..
 
         ! runtime = MPI_Wtime()
-        call q_lskum_d()
+        call q_lskum()
         ! runtime = MPI_Wtime() - runtime
 
 !       Save solution one last time
         call print_primal_output()
 
 !       destroy petsc vectors and deallocate point/solution vectors
-        ! call deallocate_soln()
+        call deallocate_soln()
+        ! call deallocate_soln_d()
         call dealloc_points()
 
         ! totaltime = MPI_Wtime() - totaltime

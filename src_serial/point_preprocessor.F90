@@ -31,7 +31,7 @@ contains
                 allocate(point%left(max_points))
                 allocate(point%right(max_points))
                 allocate(point%qtdepth(max_points))
-                
+
                 wall_points = 0
                 shape_points = 0
                 interior_points = 0
@@ -44,7 +44,7 @@ contains
                                 & point%y(k),point%left(k),point%right(k), &
                                 & point%flag_1(k),point%flag_2(k),point%min_dist(k), &
                                 & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
-                                
+
                         !Storing the count for the point types
                                 if(point%flag_1(k) == 0) then
                                         wall_points = wall_points + 1
@@ -61,7 +61,7 @@ contains
                                         end if
                                         shape_points = shape_points + 1
                                 end if
-                                
+
                         enddo
                 ! new format from quadtree code
                 elseif (file_format == 2) then
@@ -72,7 +72,7 @@ contains
                                 & point%flag_2(k), point%nx(k), point%ny(k), &
                                 & point%qtdepth(k), point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
-                                
+
                         !Storing the count for the point types
                                 if(point%flag_1(k) == 0) then
                                         wall_points = wall_points + 1
@@ -94,7 +94,7 @@ contains
                                         end if
                                         shape_points = shape_points + 1
                                 end if
-                                
+
                         enddo
                 end if
 
@@ -113,13 +113,13 @@ contains
                                 wall_temp = wall_temp+1
                                 wall_points_index(wall_temp) = k
                         else if(point%flag_1(k) == 1) then
-                                interior_temp = interior_temp+1 
+                                interior_temp = interior_temp+1
                                 interior_points_index(interior_temp) = k
                         else if(point%flag_1(k) == 2) then
                                 outer_temp = outer_temp+1
                                 outer_points_index(outer_temp) = k
                         end if
-                        
+
                         if(point%flag_2(k) > 0) then
                                 shape_temp = shape_temp+1
                                 shape_points_index(shape_temp) = k
@@ -128,7 +128,7 @@ contains
 
                 CLOSE(UNIT=101)
 
-        end subroutine 
+        end subroutine
 
         subroutine dealloc_points()
                 implicit none
@@ -152,4 +152,4 @@ contains
 
         end subroutine
 
-end module 
+end module
