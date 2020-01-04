@@ -113,6 +113,7 @@ CONTAINS
     cost_funcd = constant*p0_sumd
     cost_func = p0_sum*constant
     WRITE(*, *) 'Objective Function (J)', cost_func
+    WRITE(*, *) 'Objective Function Derivative(Jd)', cost_funcd
   END SUBROUTINE OBJECTIVE_FUNCTION_J_D
 
   SUBROUTINE OBJECTIVE_FUNCTION_J()
@@ -147,4 +148,3 @@ CONTAINS
   END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF
-

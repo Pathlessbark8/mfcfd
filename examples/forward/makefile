@@ -2,7 +2,7 @@ ifndef MF_DIR
 	$(error directory not set)
 endif
 
-SRCDIR=$(MF_DIR)/src_serial
+SRCDIR=$(MF_DIR)/src_forward
 
 # shape:
 # 	rm -rf src

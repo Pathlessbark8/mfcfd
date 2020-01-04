@@ -26,20 +26,20 @@ CONTAINS
     IMPLICIT NONE
     INTEGER :: i
     OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE') 
+&  action='WRITE')
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *) 
+    WRITE(*, *)
     DO i=1,max_points
       pointd%phi1(:, i) = 0.0_8
       point%phi1(:, i) = 1.0d0
       pointd%phi2(:, i) = 0.0_8
       point%phi2(:, i) = 1.0d0
     END DO
-! point%phi1(80,1) = point%phi1(80,1) + 1e-3
+    ! pointd%phi1(78,1) = 1.0d0
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *) 
+    WRITE(*, *)
     IF (restart .EQ. 0) THEN
       itr = 0
       cost_funcd = 0.0_8
@@ -69,25 +69,25 @@ CONTAINS
       WRITE(301, *) it, residue
       IF (residue .NE. residue) EXIT
     END DO
-    CLOSE(unit=301) 
+    CLOSE(unit=301)
   END SUBROUTINE Q_LSKUM_D
 
   SUBROUTINE Q_LSKUM()
     IMPLICIT NONE
     INTEGER :: i
     OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE') 
+&  action='WRITE')
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *) 
+    WRITE(*, *)
     DO i=1,max_points
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
     END DO
 ! point%phi1(80,1) = point%phi1(80,1) + 1e-3
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *) 
+    WRITE(*, *)
     IF (restart .EQ. 0) itr = 0
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER(it)
@@ -96,8 +96,7 @@ CONTAINS
       WRITE(301, *) it, residue
       IF (residue .NE. residue) GOTO 100
     END DO
- 100 CLOSE(unit=301) 
+ 100 CLOSE(unit=301)
   END SUBROUTINE Q_LSKUM
 
 END MODULE Q_LSKUM_MOD_DIFF
-
