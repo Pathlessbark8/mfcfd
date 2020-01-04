@@ -9,4 +9,6 @@ execname
 *.mod
 *.o
 *.txt
-
+examples/forward/src/*
+examples/adjoint/src/*
+examples/serial/src/*
