@@ -109,6 +109,7 @@ CONTAINS
     gammapower = gamma/(gamma-1)
     p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
     constant = 1/(p0_inf**2*max_points)
+    p0_sum = 0
     DO i=1,max_points
       prim = point%prim(:, i)
       angle = SQRT(gamma*prim(4)/prim(1))
@@ -121,4 +122,3 @@ CONTAINS
   END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF
-

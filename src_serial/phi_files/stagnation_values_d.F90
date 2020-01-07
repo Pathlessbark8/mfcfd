@@ -72,6 +72,7 @@ CONTAINS
     pwr1 = pwx1**gammapower
     p0_inf = pr_inf*pwr1
     constant = 1/(p0_inf**2*max_points)
+    p0_sum = 0
     p0_sumd = 0.0_8
     DO i=1,max_points
       primd = pointd%prim(:, i)
@@ -130,6 +131,7 @@ CONTAINS
     pwr1 = pwx1**gammapower
     p0_inf = pr_inf*pwr1
     constant = 1/(p0_inf**2*max_points)
+    p0_sum = 0
     DO i=1,max_points
       prim = point%prim(:, i)
       arg1 = gamma*prim(4)/prim(1)

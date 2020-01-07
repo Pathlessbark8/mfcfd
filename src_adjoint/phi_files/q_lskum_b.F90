@@ -51,6 +51,7 @@ CONTAINS
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
       CALL PUSHREAL8ARRAY(point%delta, max_points)
       CALL FPI_SOLVER(it)
+      cost_funcb = 1.0d0
       WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
 &     residue
       WRITE(301, *) it, residue
@@ -106,7 +107,13 @@ CONTAINS
       CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
       CALL FPI_SOLVER_B(it)
       cost_funcb = 0.0_8
- 120 CONTINUE
+      ! write(*,*) pointb%phi1(1,80)
+      OPEN(unit=301, file='jderivatives', form='FORMATTED', status='REPLACE', action='WRITE')
+      DO i=1,max_points
+      WRITE(301,*) pointb%phi1(:,i)
+      END DO
+      CLOSE(unit=301)
+      120 CONTINUE
     DO i=max_points,1,-1
       pointb%phi2(:, i) = 0.0_8
       pointb%phi1(:, i) = 0.0_8

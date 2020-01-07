@@ -37,7 +37,7 @@ CONTAINS
       pointd%phi2(:, i) = 0.0_8
       point%phi2(:, i) = 1.0d0
     END DO
-    ! pointd%phi1(78,1) = 1.0d0
+    pointd%phi1(1,78) = 1.0d0
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
     WRITE(*, *)
     IF (restart .EQ. 0) THEN
