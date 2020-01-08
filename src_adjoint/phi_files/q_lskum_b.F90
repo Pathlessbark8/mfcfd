@@ -19,26 +19,24 @@ CONTAINS
 !                point.prim:(loc) point.prim_old:(loc) point.q:(loc)
 !                point.flux_res:(loc) point.dq:(loc) point.ddq:(loc)
 !                point.temp:(loc) point.phi1:out point.phi2:out
-  SUBROUTINE Q_LSKUM_B()
+SUBROUTINE Q_LSKUM_B()
     IMPLICIT NONE
     INTEGER :: i
-    INTEGER :: ad_count
-    INTEGER :: i0
-    INTEGER :: branch
     OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE')
+&  action='WRITE') 
+    cost_funcb = 1.0d0
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *)
+    WRITE(*, *) 
     DO i=1,max_points
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
     END DO
+! point%phi1(80,1) = point%phi1(80,1) + 1e-3
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *)
+    WRITE(*, *) 
     IF (restart .EQ. 0) itr = 0
-    ad_count = 1
     DO it=itr+1,itr+max_iters
       CALL PUSHREAL8ARRAY(point%temp, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
@@ -50,72 +48,48 @@ CONTAINS
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
       CALL PUSHREAL8ARRAY(point%delta, max_points)
       CALL FPI_SOLVER(it)
-      cost_funcb = 1.0d0
       WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
 &     residue
       WRITE(301, *) it, residue
-      IF (residue .NE. residue) THEN
-        GOTO 100
-      ELSE
-        ad_count = ad_count + 1
-      END IF
     END DO
-    CALL PUSHCONTROL1B(0)
-    CALL PUSHINTEGER4(ad_count)
-    GOTO 110
- 100 CALL PUSHCONTROL1B(1)
-    CALL PUSHINTEGER4(ad_count)
- 110 CLOSE(unit=301)
-    CALL POPINTEGER4(ad_count)
-    DO 120 i0=1,ad_count
-      IF (i0 .EQ. 1) THEN
-        CALL POPCONTROL1B(branch)
-        IF (branch .EQ. 0) THEN
-          pointb%delta = 0.0_8
-          pointb%prim = 0.0_8
-          pointb%prim_old = 0.0_8
-          pointb%q = 0.0_8
-          pointb%flux_res = 0.0_8
-          pointb%dq = 0.0_8
-          pointb%ddq = 0.0_8
-          pointb%temp = 0.0_8
-          pointb%phi1 = 0.0_8
-          pointb%phi2 = 0.0_8
-          GOTO 120
-        ELSE
-          pointb%delta = 0.0_8
-          pointb%prim = 0.0_8
-          pointb%prim_old = 0.0_8
-          pointb%q = 0.0_8
-          pointb%flux_res = 0.0_8
-          pointb%dq = 0.0_8
-          pointb%ddq = 0.0_8
-          pointb%temp = 0.0_8
-          pointb%phi1 = 0.0_8
-          pointb%phi2 = 0.0_8
-        END IF
-      END IF
-      CALL POPREAL8ARRAY(point%delta, max_points)
-      CALL POPREAL8ARRAY(point%prim, 4*max_points)
-      CALL POPREAL8ARRAY(point%prim_old, 4*max_points)
-      CALL POPREAL8ARRAY(point%q, 4*max_points)
-      CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
-      CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
-      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
-      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
-      CALL FPI_SOLVER_B(it)
-      cost_funcb = 0.0_8
-      ! write(*,*) pointb%phi1(1,79)
-      120 CONTINUE
-    OPEN(unit=301, file='jderivatives', form='FORMATTED', status='REPLACE', action='WRITE')
+! if(residue.ne.residue)exit
+    CLOSE(unit=301) 
+    pointb%delta = 0.0_8
+    pointb%prim = 0.0_8
+    pointb%prim_old = 0.0_8
+    pointb%q = 0.0_8
+    pointb%flux_res = 0.0_8
+    pointb%dq = 0.0_8
+    pointb%ddq = 0.0_8
+    pointb%temp = 0.0_8
+    pointb%phi1 = 0.0_8
+    pointb%phi2 = 0.0_8
+    ! if(rank == 0) then
+    write(*,*)
+    write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
+    write(*,*)
+    ! end if
+    DO it=itr+max_iters,itr+1,-1
+        CALL POPREAL8ARRAY(point%delta, max_points)
+        CALL POPREAL8ARRAY(point%prim, 4*max_points)
+        CALL POPREAL8ARRAY(point%prim_old, 4*max_points)
+        CALL POPREAL8ARRAY(point%q, 4*max_points)
+        CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
+        CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
+        CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
+        CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+        CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
+        CALL FPI_SOLVER_B(it)
+        cost_funcb = 0.0_8
+    END DO
+    OPEN(unit=301, file='jderivatives_b.dat', form='FORMATTED', status='REPLACE', action='WRITE')
         DO i=1,max_points
-        WRITE(301,*) pointb%phi1(:,i)
+            WRITE(301,*) pointb%phi1(:,i)
         END DO
     CLOSE(unit=301)
     DO i=max_points,1,-1
-        pointb%phi2(:, i) = 0.0_8
-        pointb%phi1(:, i) = 0.0_8
+      pointb%phi2(:, i) = 0.0_8
+      pointb%phi1(:, i) = 0.0_8
     END DO
   END SUBROUTINE Q_LSKUM_B
 

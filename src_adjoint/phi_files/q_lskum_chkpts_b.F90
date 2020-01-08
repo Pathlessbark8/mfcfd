@@ -24,7 +24,7 @@ CONTAINS
     INTEGER :: i
     ! INTEGER :: ad_count
     INTEGER :: i0
-    INTEGER :: branch
+    ! INTEGER :: branch
 
     INTEGER :: t, r, ijk, k
     INTEGER :: ii1
@@ -97,6 +97,8 @@ CONTAINS
     
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
+    cost_funcb = 1.0d0
+    
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
     WRITE(*, *)
     DO i=1,max_points
@@ -155,7 +157,6 @@ CONTAINS
                 iflag = 0
             end if
             CALL FPI_SOLVER(ITIM)
-            cost_funcb = 1.0d0
             if (pflag == 1) then
                 write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
                 write(301, *) itim, residue
@@ -163,13 +164,6 @@ CONTAINS
         end do
     END IF
 
-!     CALL PUSHCONTROL1B(0)
-!     CALL PUSHINTEGER4(ad_count)
-!     GOTO 110
-! 100 CALL PUSHCONTROL1B(1)
-!     CALL PUSHINTEGER4(ad_count)
-! 110 CLOSE(unit=301)
-!     CALL POPINTEGER4(ad_count)
 !   The below if condition runs the first reverse step.
 !   This requires the initialisation of the adjoint vectors ..
 !
@@ -178,31 +172,16 @@ CONTAINS
         !
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
-        ! CALL POPCONTROL1B(branch)
-        ! IF (branch .EQ. 0) THEN
-        !     pointb%delta = 0.0_8
-        !     pointb%prim = 0.0_8
-        !     pointb%prim_old = 0.0_8
-        !     pointb%q = 0.0_8
-        !     pointb%flux_res = 0.0_8
-        !     pointb%dq = 0.0_8
-        !     pointb%ddq = 0.0_8
-        !     pointb%temp = 0.0_8
-        !     pointb%phi1 = 0.0_8
-        !     pointb%phi2 = 0.0_8
-        !     GOTO 120
-        ! ELSE
-            pointb%delta = 0.0_8
-            pointb%prim = 0.0_8
-            pointb%prim_old = 0.0_8
-            pointb%q = 0.0_8
-            pointb%flux_res = 0.0_8
-            pointb%dq = 0.0_8
-            pointb%ddq = 0.0_8
-            pointb%temp = 0.0_8
-            pointb%phi1 = 0.0_8
-            pointb%phi2 = 0.0_8
-        ! END IF
+        pointb%delta = 0.0_8
+        pointb%prim = 0.0_8
+        pointb%prim_old = 0.0_8
+        pointb%q = 0.0_8
+        pointb%flux_res = 0.0_8
+        pointb%dq = 0.0_8
+        pointb%ddq = 0.0_8
+        pointb%temp = 0.0_8
+        pointb%phi1 = 0.0_8
+        pointb%phi2 = 0.0_8
         write(*,*)
         write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
         write(*,*)
@@ -292,10 +271,10 @@ CONTAINS
 !                                                                                                                                                  
 !       End of the revolve algorithm ..   
 
-    OPEN(unit=301, file='jderivatives', form='FORMATTED', status='REPLACE', action='WRITE')
-    DO i=1,max_points
-        WRITE(301,*) pointb%phi1(:,i)
-    END DO
+    OPEN(unit=301, file='jderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+        DO i=1,max_points
+            WRITE(301,*) pointb%phi1(:,i)
+        END DO
     CLOSE(unit=301)
     DO i=max_points,1,-1
         pointb%phi2(:, i) = 0.0_8
