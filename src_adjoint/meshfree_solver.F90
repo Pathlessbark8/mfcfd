@@ -49,7 +49,21 @@ program meshfree_solver
 !	Primal fixed point iterative solver ..
 
         ! runtime = MPI_Wtime()
-        call q_lskum_b()
+        ! call q_lskum_b()
+        if(ad_mode == 0) then ! Black Box approach
+                ! if(rank == 0) then
+                        write(*,*)'%%%%%%%%%-Using Black box approach-%%%%%%%%'
+                        write(*,*)
+                ! end if
+                call q_lskum_b()
+        else
+                ! if(rank == 0) then
+                        write(*,*)'%%%%%%%-Using Checkpointing approach-%%%%%%'
+                        write(*,*)
+                ! end if
+                call q_lskum_chkpts_b()
+        end if
+
         ! call q_lskum_chkpts_b()
         ! runtime = MPI_Wtime() - runtime
 

@@ -115,6 +115,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER, SAVE :: rks=1
 !checkpoints
   INTEGER, SAVE :: chkpts=1
+!Adjoint mode
+  INTEGER :: ad_mode
   REAL*8, SAVE :: euler=2.0d0
   CHARACTER(len=20), SAVE :: tscheme='first'
   REAL*8, DIMENSION(shapes) :: cl, cd, cm
@@ -148,6 +150,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER, SAVE :: file_format=1
 !       solution accuracy
   CHARACTER(len=20), SAVE :: solution_accuracy='second'
+  CHARACTER(len=20), SAVE :: adjoint_mode='checkpoints'
   REAL*8 :: f_o_flag
 !       save frequency
   INTEGER, SAVE :: nsave=10000000

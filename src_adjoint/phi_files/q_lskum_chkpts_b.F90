@@ -22,7 +22,7 @@ CONTAINS
   SUBROUTINE Q_LSKUM_CHKPTS_B()
     IMPLICIT NONE
     INTEGER :: i
-    INTEGER :: ad_count
+    ! INTEGER :: ad_count
     INTEGER :: i0
     INTEGER :: branch
 
@@ -73,8 +73,6 @@ CONTAINS
 
 !   End of the declaraion for the revolve algorithm ..          
 !
-!   Some initialisations for the revolve alogorithm ..                      
-    ! if(restart == 0)itr = 0
 
 !	Assign the initial conditions for the primitive variables ..
 
@@ -109,7 +107,7 @@ CONTAINS
     WRITE(*, *)
 !   Some initialisations for the revolve alogorithm ..  
     IF (restart .EQ. 0) itr = 0
-    ad_count = 1
+    ! ad_count = 1
 
 !   The revolve algorithm starts here ..
 !
@@ -165,13 +163,13 @@ CONTAINS
         end do
     END IF
 
-    CALL PUSHCONTROL1B(0)
-    CALL PUSHINTEGER4(ad_count)
-    GOTO 110
-100 CALL PUSHCONTROL1B(1)
-    CALL PUSHINTEGER4(ad_count)
-110 CLOSE(unit=301)
-    CALL POPINTEGER4(ad_count)
+!     CALL PUSHCONTROL1B(0)
+!     CALL PUSHINTEGER4(ad_count)
+!     GOTO 110
+! 100 CALL PUSHCONTROL1B(1)
+!     CALL PUSHINTEGER4(ad_count)
+! 110 CLOSE(unit=301)
+!     CALL POPINTEGER4(ad_count)
 !   The below if condition runs the first reverse step.
 !   This requires the initialisation of the adjoint vectors ..
 !
@@ -180,8 +178,20 @@ CONTAINS
         !
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
-        CALL POPCONTROL1B(branch)
-        IF (branch .EQ. 0) THEN
+        ! CALL POPCONTROL1B(branch)
+        ! IF (branch .EQ. 0) THEN
+        !     pointb%delta = 0.0_8
+        !     pointb%prim = 0.0_8
+        !     pointb%prim_old = 0.0_8
+        !     pointb%q = 0.0_8
+        !     pointb%flux_res = 0.0_8
+        !     pointb%dq = 0.0_8
+        !     pointb%ddq = 0.0_8
+        !     pointb%temp = 0.0_8
+        !     pointb%phi1 = 0.0_8
+        !     pointb%phi2 = 0.0_8
+        !     GOTO 120
+        ! ELSE
             pointb%delta = 0.0_8
             pointb%prim = 0.0_8
             pointb%prim_old = 0.0_8
@@ -192,22 +202,10 @@ CONTAINS
             pointb%temp = 0.0_8
             pointb%phi1 = 0.0_8
             pointb%phi2 = 0.0_8
-            GOTO 120
-        ELSE
-            pointb%delta = 0.0_8
-            pointb%prim = 0.0_8
-            pointb%prim_old = 0.0_8
-            pointb%q = 0.0_8
-            pointb%flux_res = 0.0_8
-            pointb%dq = 0.0_8
-            pointb%ddq = 0.0_8
-            pointb%temp = 0.0_8
-            pointb%phi1 = 0.0_8
-            pointb%phi2 = 0.0_8
-        END IF
-            write(*,*)
-            write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
-            write(*,*)
+        ! END IF
+        write(*,*)
+        write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
+        write(*,*)
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
