@@ -51,8 +51,6 @@ module file_ops_mod
         solution_restart = 1
         end if
 
-
-
         if(tscheme == 'first') then
         rks = 1
         euler = 2.0d0

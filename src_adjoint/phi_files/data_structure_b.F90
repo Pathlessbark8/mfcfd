@@ -113,6 +113,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: it, itr
 !Flag for time stepping
   INTEGER, SAVE :: rks=1
+!checkpoints
+  INTEGER, SAVE :: chkpts=1
   REAL*8, SAVE :: euler=2.0d0
   CHARACTER(len=20), SAVE :: tscheme='first'
   REAL*8, DIMENSION(shapes) :: cl, cd, cm

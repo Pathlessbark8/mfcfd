@@ -68,6 +68,8 @@ module data_structure_mod
 
         !Flag for time stepping
         integer :: rks = 1
+        !checkpoints
+        integer :: chkpts
         real*8 :: euler = 2.0d0
         character(len=20)  :: tscheme = 'first'
 

@@ -35,7 +35,6 @@ CONTAINS
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
     END DO
-! point%phi1(80,1) = point%phi1(80,1) + 1e-3
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
     WRITE(*, *)
     IF (restart .EQ. 0) itr = 0
@@ -107,16 +106,16 @@ CONTAINS
       CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
       CALL FPI_SOLVER_B(it)
       cost_funcb = 0.0_8
-      ! write(*,*) pointb%phi1(1,80)
-      OPEN(unit=301, file='jderivatives', form='FORMATTED', status='REPLACE', action='WRITE')
-      DO i=1,max_points
-      WRITE(301,*) pointb%phi1(:,i)
-      END DO
-      CLOSE(unit=301)
+      ! write(*,*) pointb%phi1(1,79)
       120 CONTINUE
+    OPEN(unit=301, file='jderivatives', form='FORMATTED', status='REPLACE', action='WRITE')
+        DO i=1,max_points
+        WRITE(301,*) pointb%phi1(:,i)
+        END DO
+    CLOSE(unit=301)
     DO i=max_points,1,-1
-      pointb%phi2(:, i) = 0.0_8
-      pointb%phi1(:, i) = 0.0_8
+        pointb%phi2(:, i) = 0.0_8
+        pointb%phi1(:, i) = 0.0_8
     END DO
   END SUBROUTINE Q_LSKUM_B
 

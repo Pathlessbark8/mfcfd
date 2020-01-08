@@ -11,7 +11,7 @@ objects=meshfree_solver.o parameter.o data_structure_b.o point_preprocessor.o ut
 point_normals_b.o generate_connectivity_b.o fpi_solver_b.o q_variables_b.o flux_residual_b.o wall_fluxes_b.o \
 interior_fluxes_b.o outer_fluxes_b.o limiters_b.o state_update_b.o objective_function_b.o \
 compute_force_coeffs_b.o compute_entropy_b.o post_processing.o split_fluxes_b.o quadrant_fluxes_b.o stagnation_values_b.o \
-file_ops.o
+file_ops.o q_lskum_chkpts_b.o
 #petsc_bata_structure.o
 #compute_enstrophy_b.o
 #readcase.o
@@ -32,7 +32,7 @@ execname: $(objects) $(AD)
 
 SOURCEFILES = $(wildcard $(SRC)
 
-meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure_b.o parameter.o q_lskum_b.o post_processing.o file_ops.o initial_conditions.o  #petsc_bata_structure.o
+meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure_b.o parameter.o q_lskum_b.o post_processing.o file_ops.o initial_conditions.o q_lskum_chkpts_b.o  #petsc_bata_structure.o
 	$(FC) $(FFLAGS) -c  meshfree_solver.F90
 
 parameter.o: parameter.F90
@@ -68,6 +68,9 @@ initial_conditions.o: initial_conditions.F90 parameter.o data_structure_b.o #pet
 
 q_lskum_b.o: q_lskum_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o
 	$(FC) $(FFLAGS) -c  q_lskum_b.F90
+
+q_lskum_chkpts_b.o: q_lskum_chkpts_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o initial_conditions.o
+	$(FC) $(FFLAGS) -c  q_lskum_chkpts_b.F90
 
 # post_processing_b.o: post_processing_b.F90 data_structure_b.o #petsc_bata_structure.o
 #	$(FC) $(FFLAGS) -c  post_processing_b.F90

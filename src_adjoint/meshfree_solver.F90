@@ -4,6 +4,7 @@ program meshfree_solver
         use data_structure_mod_diff
         use point_preprocessor_mod
         use q_lskum_mod_diff
+        use q_lskum_mod_chkpts_diff
         ! use compute_force_coeffs_mod
         use file_ops_mod
         use initial_conditions_mod
@@ -49,6 +50,7 @@ program meshfree_solver
 
         ! runtime = MPI_Wtime()
         call q_lskum_b()
+        ! call q_lskum_chkpts_b()
         ! runtime = MPI_Wtime() - runtime
 
 !       Save solution one last time
