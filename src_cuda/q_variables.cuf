@@ -291,79 +291,137 @@ contains
 
         end subroutine
 
-        ! attributes(global) subroutine eval_dq_derivatives_inner_loop(x_d, nbhs_d, conn_d, q_d, dq_d, inner_d)
+        attributes(global) subroutine eval_dq_derivatives_inner_loop(x_d, nbhs_d, conn_d, q_d, dq_d, ddq_d, inner_d)
 
-        !         implicit none
+                implicit none
 
-        !         ! device variables
-        !         real*8 :: q_d(:,:), dq_d(:,:,:), inner_d(:,:)
-        !         integer :: nbhs_d(:), conn_d(:,:)
-        !         real*8 :: x_d(:,:)
-        !         ! local variables
-        !         integer :: i
-        !         integer :: k, r, nbh
-        !         real*8 :: x_i, y_i, x_k, y_k
-        !         real*8 :: delx, dely, dist, weights
-        !         real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-        !         real*8 :: det, temp
-        !         real*8 :: one_by_det
-        !         real*8 :: sum_delx_delq1, sum_delx_delq2, sum_delx_delq3, sum_delx_delq4, sum_dely_delq1, sum_dely_delq2, sum_dely_delq3, sum_dely_delq4
-        !         real*8 :: q1, q2, q3, q4
+                ! device variables
+                real*8 :: q_d(:,:), dq_d(:,:,:), ddq_d(:,:,:), inner_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
+                real*8 :: x_d(:,:)
+                ! local variables
+                integer :: i
+                integer :: k, r, nbh
+                real*8 :: x_i, y_i, x_k, y_k
+                real*8 :: delx, dely, dist, weights
+                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                real*8 :: det, temp
+                real*8 :: one_by_det
+                real*8 :: sum_delx_del_qx(4), sum_dely_del_qy(4), sum_delx_del_qy(4), sum_dely_del_qx(4), dq_x(4), dq_y(4)
 
-        !         real*8 :: temp1, temp2
+                real*8 :: temp1(4), temp2(4)
 
-        !         i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-        !         if(i > mp_d) return
+                if(i > mp_d) return
 
-        !         x_i = x_d(1,i)
-        !         y_i = x_d(2,i)
+                x_i = x_d(1,i)
+                y_i = x_d(2,i)
 
-        !         sum_delx_sqr = 0.d0
-        !         sum_dely_sqr = 0.d0
-        !         sum_delx_dely = 0.d0
+                dq_x = dq_d(1, :, i)
+                dq_y = dq_d(2, :, i)
+                
+                sum_delx_sqr = 0.d0
+                sum_dely_sqr = 0.d0
+                sum_delx_dely = 0.d0
 
-        !         temp1 = 0.d0
-        !         temp2 = 0.d0
+                sum_delx_del_qx = 0.d0
+                sum_delx_del_qy = 0.d0
+                sum_dely_del_qx = 0.d0
+                sum_dely_del_qy = 0.d0
 
-        ! end subroutine
+                temp1 = 0.d0
+                temp2 = 0.d0
 
-        ! attributes(global) subroutine eval_update_innerloop_2(dq_d, inner_d)
+                do k = 1, nbhs_d(i)
 
-        !         implicit none
+                        nbh = conn_d(i,k)
+                        
+			x_k = x_d(1,nbh)
+                        y_k = x_d(2,nbh)
 
-        !         ! device variables
-        !         real*8 :: dq_d(:,:,:), inner_d(:,:)
+                        delx = x_k - x_i
+                        dely = y_k - y_i
 
-        !         integer :: i
+                        dist = dsqrt(delx*delx + dely*dely)
+                        weights = dist**power_d
 
-        !         i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
 
-        !         if(i > mp_d) return
+                        sum_delx_dely = sum_delx_dely + delx*dely*weights
 
-        !         dq_d(1,:,i) = inner_d(1:4,i)
-        !         dq_d(2,:,i) = inner_d(5:8,i)
+                        temp1 = dq_x - 0.5d0 * (delx * ddq_d(1,:,i) + dely * ddq_d(2,:,i))
+                        temp2 = dq_d(1,:,nbh) - 0.5d0 * (delx * ddq_d(1,:,nbh) + dely * ddq_d(2,:,nbh))
+
+                        sum_delx_del_qx = sum_delx_del_qx + (weights * delx * (temp2 - temp1))
+
+                        temp1 = dq_y - 0.5d0 * (delx * ddq_d(3,:,i) + dely * ddq_d(2,:,i))
+                        temp2 = dq_d(2,:,nbh) - 0.5d0 * (delx * ddq_d(3,:,nbh) + dely * ddq_d(2,:,nbh))
+
+                        sum_delx_del_qy = sum_delx_del_qy + (weights * delx * (temp2 - temp1))
+
+                        temp1 = dq_y - 0.5d0 * (delx * ddq_d(1,:,i) + dely * ddq_d(2,:,i))
+                        temp2 = dq_d(2,:,nbh) - 0.5d0 * (delx * ddq_d(1,:,nbh) + dely * ddq_d(2,:,nbh))
+
+                        sum_dely_del_qy = sum_dely_del_qy + (weights * dely * (temp2 - temp1))
+
+                        temp1 = dq_x - 0.5d0 * (delx * ddq_d(3,:,i) + dely * ddq_d(2,:,i))
+                        temp2 = dq_d(1,:,nbh) - 0.5d0 * (delx * ddq_d(3,:,nbh) + dely * ddq_d(2,:,nbh))
+
+                        sum_dely_del_qx = sum_dely_del_qx + (weights * dely * (temp2 - temp1))
+                        
+                enddo
+
+                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                one_by_det = 1.0d0/det
+
+                inner_d(1:4,i) = (sum_delx_del_qx*sum_dely_sqr&
+                & - sum_dely_del_qx*sum_delx_dely)*one_by_det
+                inner_d(5:8,i) = (sum_delx_del_qy*sum_dely_sqr&
+                & - sum_dely_del_qy*sum_delx_dely)*one_by_det
+                inner_d(9:12,i) = (sum_dely_del_qy*sum_delx_sqr&
+                &- sum_delx_del_qy*sum_delx_dely)*one_by_det
+
+        end subroutine
+
+        attributes(global) subroutine eval_update_innerloop_2(dq_d, inner_d)
+
+                implicit none
+
+                ! device variables
+                real*8 :: dq_d(:,:,:), inner_d(:,:)
+
+                integer :: i
+
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
+
+                dq_d(1,:,i) = inner_d(1:4,i)
+                dq_d(2,:,i) = inner_d(5:8,i)
 
 
-        ! end subroutine
+        end subroutine
 
-        ! attributes(global) subroutine eval_update_innerloop_3(ddq_d, inner_d)
+        attributes(global) subroutine eval_update_innerloop_3(ddq_d, inner_d)
 
-        !         implicit none
+                implicit none
 
-        !         ! device variables
-        !         real*8 :: ddq_d(:,:,:), inner_d(:,:)
+                ! device variables
+                real*8 :: ddq_d(:,:,:), inner_d(:,:)
 
-        !         integer :: i
+                integer :: i
 
-        !         i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-        !         if(i > mp_d) return
+                if(i > mp_d) return
 
-        !         dq_d(1,:,i) = inner_d(1:4,i)
-        !         dq_d(2,:,i) = inner_d(5:8,i)
+                ddq_d(1,:,i) = inner_d(1:4,i)
+                ddq_d(2,:,i) = inner_d(5:8,i)
+                ddq_d(3,:,i) = inner_d(9:12,i)
+                
 
-
-        ! end subroutine
+        end subroutine
 
 end module q_variables_mod

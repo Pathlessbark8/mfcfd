@@ -1,6 +1,5 @@
 module data_structure_mod
 
-
         use parameter_mod
 
         implicit none
@@ -59,6 +58,8 @@ module data_structure_mod
 
         real*8 :: res_old
 
+        real*8 :: cost_func
+
         !The parameter CFL is the CFL number for stability ..
         real*8 :: CFL = 0.0d0
 
@@ -105,7 +106,7 @@ module data_structure_mod
         namelist / input_parameters /   &
                       shapes, &
                              cfl, &
-                       max_iters, &
+                max_iters, &
                           blockx, &
                           blocky, &
                           blockz, &

@@ -8,12 +8,14 @@ module q_lskum_mod
         use point_normals_mod    
         use generate_connectivity_mod
         use post_processing_mod
+        use stagnation_values_mod
         use cudafor
         use ieee_arithmetic
 
 
-        real*8 :: sum_res_sqr, residue
+        real*8 :: sum_res_sqr, residue, temp2
         real*8, device :: temp
+        real*8, device, allocatable :: cost_func_d(:)
         real*8, device, allocatable :: sum_res_sqr_d(:)
 
 contains
@@ -30,6 +32,7 @@ contains
                 real*8 :: start, finish, time
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
                 call compute_normals()
                 call generate_connectivity()
@@ -45,6 +48,7 @@ contains
                 write(*,*)
 
                 allocate(sum_res_sqr_d(max_points))
+                allocate(cost_func_d(max_points))
 
                 tBlock = dim3 (blockx, blocky, blockz)
                 grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
@@ -77,21 +81,21 @@ contains
                                 call eval_q_double_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, point_d%conn, &
                                         & point_d%dq, point_d%ddq)
 
-                                ! if(inner_iterations /= 0) then
-                                !         do i = 1, inner_iterations
+                                if(inner_iterations /= 0) then
+                                        do i = 1, inner_iterations
 
-                                !                 ! call eval_q_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                !                 !         & point_d%conn, point_d%q, point_d%dq, point_d%inner)
+                                                call eval_q_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                                                        & point_d%conn, point_d%q, point_d%dq, point_d%inner)
 
-                                !                 ! call eval_update_innerloop_2<<<grid, tBlock>>>(point_d%dq, point_d%inner)
+                                                call eval_update_innerloop_2<<<grid, tBlock>>>(point_d%dq, point_d%inner)
 
-                                !                 call eval_dq_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                !                         & point_d%conn, point_d%q, point_d%dq, point_d%inner)
+                                                call eval_dq_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                                                        & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner)
 
-                                !                 call eval_update_innerloop_3<<<grid, tBlock>>>(point_d%dq, point_d%inner)
+                                                call eval_update_innerloop_3<<<grid, tBlock>>>(point_d%ddq, point_d%inner)
                                                 
-                                !         end do
-                                ! end if
+                                        end do
+                                end if
 
                                 call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                         & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
@@ -104,7 +108,11 @@ contains
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
                                         & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
 
+
                         end do
+
+                        call objective_function_J<<<grid, tBlock>>>(point_d%prim, cost_func_d)
+
 
                         istat = cudaGetLastError() 
 
@@ -116,12 +124,23 @@ contains
                         ! Residue norm evaluation
                         
                         temp = 0.0
+
                         !$cuf kernel do <<< *, * >>>
                         do i = 1, mp_d
                                 temp = temp + sum_res_sqr_d(i)
                         end do
 
                         sum_res_sqr = temp
+                        
+                        temp2 = 0.0
+                        do i = 1, mp_d
+                                temp2 = temp2 + cost_func_d(i)
+                        end do
+
+                        cost_func = temp2
+
+                        write(*,*) "Objective Function J:", cost_func
+                        write(302,*) it, cost_func
 
                         residue = dsqrt(sum_res_sqr)/max_points
 
@@ -163,6 +182,7 @@ contains
                 time = finish - start
 
                 CLOSE(UNIT=301)
+                CLOSE(UNIT=302)
 
         end subroutine
 

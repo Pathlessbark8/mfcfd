@@ -8,7 +8,7 @@ module device_data_structure_mod
 
         implicit none
 
-        integer, constant :: mp_d, fo_flag
+        integer, constant :: mp_d, fo_flag, gamma_d, mach_d
         real*8, constant :: cfl_d, power_d, vl_d, eu_d
         real*8, constant :: qinf1_d, qinf2_d, qinf3_d, qinf4_d
 
@@ -110,6 +110,8 @@ module device_data_structure_mod
                 vl_d = vl_const
                 fo_flag = f_o_flag
                 eu_d = euler
+                gamma_d = gamma
+                mach_d = mach
                 qinf1_d = q_inf(1)
                 qinf2_d = q_inf(2)
                 qinf3_d = q_inf(3)
