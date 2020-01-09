@@ -14,5 +14,5 @@ examples/adjoint/src/*
 examples/serial/src/*
 examples/adjoint/runs/*
 examples/forward/runs/*
-
+examples/mpi_adjoint/src/*
 
