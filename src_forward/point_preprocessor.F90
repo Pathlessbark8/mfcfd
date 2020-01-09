@@ -8,7 +8,7 @@ contains
 
                 implicit none
 
-                integer:: i, k, r
+                integer:: i, k, r, to_just_run
                 integer :: wall_temp,outer_temp,interior_temp,shape_temp
                 character(len=64) :: grid
                 real*8 :: dummy
@@ -16,7 +16,8 @@ contains
                 grid = 'point/partGrid'
 
                 OPEN(UNIT=101,FILE=trim(grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
-
+                
+                read(101,*) to_just_run
                 read(101,*) max_points
 
                 allocate(point%x(max_points))
@@ -45,7 +46,7 @@ contains
                                 & point%flag_1(k),point%flag_2(k),point%min_dist(k), &
                                 & point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
 
-                        !Storing the count for the point types
+                        ! Storing the count for the point types
                                 if(point%flag_1(k) == 0) then
                                         wall_points = wall_points + 1
                                 else if(point%flag_1(k) == 1) then
@@ -73,7 +74,7 @@ contains
                                 & point%qtdepth(k), point%min_dist(k), point%nbhs(k),&
                                 & (point%conn(k,r),r=1,point%nbhs(k))
 
-                        !Storing the count for the point types
+                        ! Storing the count for the point types
                                 if(point%flag_1(k) == 0) then
                                         wall_points = wall_points + 1
                                 else if(point%flag_1(k) == 1) then

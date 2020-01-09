@@ -5,61 +5,59 @@ module data_structure_mod
 
         implicit none
 
-        integer, parameter :: max_points=9600
-        integer, parameter :: wall_points=159,interior_points=9281,outer_points=160,shape_points=160
-        !       No of shapes
-        integer, parameter :: shapes = 1
+        integer :: max_points
+        integer :: wall_points,interior_points,outer_points,shape_points
 
         type :: points
 
-		real*8, dimension(max_points) :: x,y
-                integer, dimension(max_points) :: left,right
-                integer, dimension(max_points) :: flag_1 ! stores location of point
-                integer, dimension(max_points) :: flag_2 ! stores shape point belongs to
-                integer, dimension(max_points) :: nbhs
-                real*8, dimension(max_points) :: delta
-                integer, dimension(max_points,15) :: conn
+		real*8, dimension(:), allocatable :: x,y
+                integer, dimension(:), allocatable :: left,right
+                integer, dimension(:), allocatable :: flag_1 ! stores location of point
+                integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
+                integer, dimension(:), allocatable :: nbhs
+                real*8, dimension(:), allocatable :: delta
+                integer, dimension(:,:), allocatable :: conn
+                
+                integer, dimension(:), allocatable :: qtdepth
 
-                integer, dimension(max_points) :: qtdepth
+		real*8, dimension(:), allocatable :: nx, ny
 
-		real*8, dimension(max_points) :: nx, ny
+		real*8, dimension(:), allocatable :: min_dist
 
-		real*8, dimension(max_points) :: min_dist
+                real*8, dimension(:,:), allocatable :: prim
+                real*8, dimension(:,:), allocatable :: prim_old
 
-                real*8, dimension(4,max_points) :: prim
-                real*8, dimension(4,max_points) :: prim_old
+                real*8, dimension(:,:), allocatable :: U
 
-                real*8, dimension(4,max_points) :: U
+                real*8, dimension(:,:), allocatable :: q
+                real*8, dimension(:,:), allocatable :: flux_res
 
-                real*8, dimension(4,max_points) :: q
-                real*8, dimension(4,max_points) :: flux_res
+                real*8, dimension(:,:,:), allocatable :: qm
+                real*8, dimension(:,:,:), allocatable :: dq
+                real*8, dimension(:,:,:), allocatable :: ddq
+                real*8, dimension(:,:,:), allocatable :: temp
 
-                real*8, dimension(2,4,max_points) :: qm
-                real*8, dimension(2,4,max_points) :: dq
-                real*8, dimension(3,4,max_points) :: ddq
-                real*8, dimension(3,4,max_points) :: temp
+                real*8, dimension(:,:), allocatable :: phi1, phi2
 
-                real*8, dimension(4,max_points) :: phi1, phi2
+                real*8, dimension(:), allocatable :: sensor, D2_dist
 
-                real*8, dimension(max_points) :: sensor, D2_dist
+                integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
+                integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
+                integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
-                integer, dimension(max_points) :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-                integer, dimension(max_points,15) :: xpos_conn, xneg_conn
-                integer, dimension(max_points,15) :: ypos_conn, yneg_conn
-
-                real*8, dimension(max_points) :: entropy
+                real*8, dimension(:), allocatable :: entropy
 
         end type points
 
-
+ 
         type(points) :: point
 
         save
 
-        integer,dimension(wall_points) :: wall_points_index
-        integer,dimension(shape_points) :: shape_points_index
-        integer,dimension(outer_points) :: outer_points_index
-        integer,dimension(interior_points) :: interior_points_index
+        integer,allocatable,dimension(:) :: wall_points_index
+        integer,allocatable,dimension(:) :: shape_points_index
+        integer,allocatable,dimension(:) :: outer_points_index
+        integer,allocatable,dimension(:) :: interior_points_index
 
         real*8 :: cost_func
 
@@ -68,12 +66,10 @@ module data_structure_mod
 
         !Flag for time stepping
         integer :: rks = 1
-        !checkpoints
-        integer :: chkpts
         real*8 :: euler = 2.0d0
         character(len=20)  :: tscheme = 'first'
 
-        real*8, dimension(shapes) :: Cl, Cd, Cm
+        real*8, allocatable, dimension(:)  :: Cl, Cd, Cm
 
         real*8 :: total_entropy
 
@@ -90,7 +86,7 @@ module data_structure_mod
 
         integer :: max_iters = 10000000
 !
-!       The parameter power is used to specify the weights
+!       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
 !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
 !       For example, power = -2.0 implies that
@@ -116,6 +112,9 @@ module data_structure_mod
         character(len=20)  :: solution_accuracy = 'second'
         real*8 :: f_o_flag
 
+!       No of shapes
+        integer :: shapes = 1
+
 !       save frequency
         integer :: nsave = 10000000
 
@@ -128,74 +127,74 @@ module data_structure_mod
 !       Block input
         integer :: blockx = 32, blocky = 1, blockz = 1
 
-        ! contains
+        contains
 
-        ! subroutine allocate_soln()
-        !         implicit none
+        subroutine allocate_soln()
+                implicit none
 
-        !         allocate(point%sensor(max_points))
-        !         allocate(point%D2_dist(max_points))
-        !         allocate(point%delta(max_points))
+                allocate(point%sensor(max_points))
+                allocate(point%D2_dist(max_points))
+                allocate(point%delta(max_points))
+                
+                allocate(point%xpos_nbhs(max_points))
+                allocate(point%xneg_nbhs(max_points))
+                allocate(point%ypos_nbhs(max_points))
+                allocate(point%yneg_nbhs(max_points))
 
-        !         allocate(point%xpos_nbhs(max_points))
-        !         allocate(point%xneg_nbhs(max_points))
-        !         allocate(point%ypos_nbhs(max_points))
-        !         allocate(point%yneg_nbhs(max_points))
+                allocate(point%xpos_conn(max_points,15))
+                allocate(point%xneg_conn(max_points,15))
 
-        !         allocate(point%xpos_conn(max_points,15))
-        !         allocate(point%xneg_conn(max_points,15))
+                allocate(point%ypos_conn(max_points,15))
+                allocate(point%yneg_conn(max_points,15))
 
-        !         allocate(point%ypos_conn(max_points,15))
-        !         allocate(point%yneg_conn(max_points,15))
+                
+                ! allocate(point%U_old(4,max_points))
+                allocate(point%U(4,max_points))
 
+                allocate(point%prim(4,max_points))
+                allocate(point%prim_old(4,max_points))
 
-        !         ! allocate(point%U_old(4,max_points))
-        !         allocate(point%U(4,max_points))
+                allocate(point%flux_res(4,max_points))
 
-        !         allocate(point%prim(4,max_points))
-        !         allocate(point%prim_old(4,max_points))
+                allocate(point%q(4,max_points))
+                allocate(point%phi1(4,max_points))
+                allocate(point%phi2(4,max_points))
+                allocate(point%dq(2,4,max_points))
+                allocate(point%ddq(3,4,max_points))
+                allocate(point%temp(3,4,max_points))
+                allocate(point%qm(2,4,max_points))
 
-        !         allocate(point%flux_res(4,max_points))
+                allocate(Cl(shapes))
+                allocate(Cd(shapes))
+                allocate(Cm(shapes))
 
-        !         allocate(point%q(4,max_points))
-        !         allocate(point%phi1(4,max_points))
-        !         allocate(point%phi2(4,max_points))
-        !         allocate(point%dq(2,4,max_points))
-        !         allocate(point%ddq(3,4,max_points))
-        !         allocate(point%temp(3,4,max_points))
-        !         allocate(point%qm(2,4,max_points))
+                allocate(point%entropy(max_points))
+        end subroutine
 
-        !         allocate(Cl(shapes))
-        !         allocate(Cd(shapes))
-        !         allocate(Cm(shapes))
+        subroutine deallocate_soln()
+                implicit none
 
-        !         allocate(point%entropy(max_points))
-        ! end subroutine
+                deallocate(point%prim)
+                
+                deallocate(point%sensor)
+                deallocate(point%D2_dist)
 
-        ! subroutine deallocate_soln()
-        !         implicit none
+                deallocate(point%xpos_nbhs)
+                deallocate(point%xneg_nbhs)
+                deallocate(point%ypos_nbhs)
+                deallocate(point%yneg_nbhs)
 
-        !         deallocate(point%prim)
+                deallocate(point%xpos_conn)
+                deallocate(point%xneg_conn)
 
-        !         deallocate(point%sensor)
-        !         deallocate(point%D2_dist)
+                deallocate(point%ypos_conn)
+                deallocate(point%yneg_conn)
 
-        !         deallocate(point%xpos_nbhs)
-        !         deallocate(point%xneg_nbhs)
-        !         deallocate(point%ypos_nbhs)
-        !         deallocate(point%yneg_nbhs)
+                deallocate(Cl)
+                deallocate(Cd)
+                deallocate(Cm)
 
-        !         deallocate(point%xpos_conn)
-        !         deallocate(point%xneg_conn)
-
-        !         deallocate(point%ypos_conn)
-        !         deallocate(point%yneg_conn)
-
-        !         deallocate(Cl)
-        !         deallocate(Cd)
-        !         deallocate(Cm)
-
-        !         deallocate(point%entropy)
-        ! end subroutine
+                deallocate(point%entropy)
+        end subroutine
 
 end module data_structure_mod
