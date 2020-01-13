@@ -3,7 +3,7 @@ module file_ops_mod
     use data_structure_mod_diff
 
     namelist / input_parameters /   &
-    ! shapes, &
+    shapes, &
         cfl, &
         chkpts, &
     max_iters, &

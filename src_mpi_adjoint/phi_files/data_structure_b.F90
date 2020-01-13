@@ -4,109 +4,57 @@
 MODULE DATA_STRUCTURE_MOD_DIFF
   USE PARAMETER_MOD
   IMPLICIT NONE
-! contains
-! subroutine allocate_soln()
-!         implicit none
-!         allocate(point%sensor(max_points))
-!         allocate(point%D2_dist(max_points))
-!         allocate(point%delta(max_points))
-!         allocate(point%xpos_nbhs(max_points))
-!         allocate(point%xneg_nbhs(max_points))
-!         allocate(point%ypos_nbhs(max_points))
-!         allocate(point%yneg_nbhs(max_points))
-!         allocate(point%xpos_conn(max_points,15))
-!         allocate(point%xneg_conn(max_points,15))
-!         allocate(point%ypos_conn(max_points,15))
-!         allocate(point%yneg_conn(max_points,15))
-!         ! allocate(point%U_old(4,max_points))
-!         allocate(point%U(4,max_points))
-!         allocate(point%prim(4,max_points))
-!         allocate(point%prim_old(4,max_points))
-!         allocate(point%flux_res(4,max_points))
-!         allocate(point%q(4,max_points))
-!         allocate(point%phi1(4,max_points))
-!         allocate(point%phi2(4,max_points))
-!         allocate(point%dq(2,4,max_points))
-!         allocate(point%ddq(3,4,max_points))
-!         allocate(point%temp(3,4,max_points))
-!         allocate(point%qm(2,4,max_points))
-!         allocate(Cl(shapes))
-!         allocate(Cd(shapes))
-!         allocate(Cm(shapes))
-!         allocate(point%entropy(max_points))
-! end subroutine
-! subroutine deallocate_soln()
-!         implicit none
-!         deallocate(point%prim)
-!         deallocate(point%sensor)
-!         deallocate(point%D2_dist)
-!         deallocate(point%xpos_nbhs)
-!         deallocate(point%xneg_nbhs)
-!         deallocate(point%ypos_nbhs)
-!         deallocate(point%yneg_nbhs)
-!         deallocate(point%xpos_conn)
-!         deallocate(point%xneg_conn)
-!         deallocate(point%ypos_conn)
-!         deallocate(point%yneg_conn)
-!         deallocate(Cl)
-!         deallocate(Cd)
-!         deallocate(Cm)
-!         deallocate(point%entropy)
-! end subroutine
-  INTEGER, PARAMETER :: max_points=9600
-  INTEGER, PARAMETER :: wall_points=159, interior_points=9281, &
-& outer_points=160, shape_points=160
-!       No of shapes
-  INTEGER, PARAMETER :: shapes=1
+  INTEGER :: max_points
+  INTEGER :: wall_points, interior_points, outer_points, shape_points
 ! stores location of point
 ! stores shape point belongs to
   TYPE POINTS
-      REAL*8, DIMENSION(max_points) :: x, y
-      INTEGER, DIMENSION(max_points) :: left, right
-      INTEGER, DIMENSION(max_points) :: flag_1
-      INTEGER, DIMENSION(max_points) :: flag_2
-      INTEGER, DIMENSION(max_points) :: nbhs
-      REAL*8, DIMENSION(max_points) :: delta
-      INTEGER, DIMENSION(max_points, 15) :: conn
-      INTEGER, DIMENSION(max_points) :: qtdepth
-      REAL*8, DIMENSION(max_points) :: nx, ny
-      REAL*8, DIMENSION(max_points) :: min_dist
-      REAL*8, DIMENSION(4, max_points) :: prim
-      REAL*8, DIMENSION(4, max_points) :: prim_old
-      REAL*8, DIMENSION(4, max_points) :: u
-      REAL*8, DIMENSION(4, max_points) :: q
-      REAL*8, DIMENSION(4, max_points) :: flux_res
-      REAL*8, DIMENSION(2, 4, max_points) :: qm
-      REAL*8, DIMENSION(2, 4, max_points) :: dq
-      REAL*8, DIMENSION(3, 4, max_points) :: ddq
-      REAL*8, DIMENSION(3, 4, max_points) :: temp
-      REAL*8, DIMENSION(4, max_points) :: phi1, phi2
-      REAL*8, DIMENSION(max_points) :: sensor, d2_dist
-      INTEGER, DIMENSION(max_points) :: xpos_nbhs, xneg_nbhs, ypos_nbhs&
-&     , yneg_nbhs
-      INTEGER, DIMENSION(max_points, 15) :: xpos_conn, xneg_conn
-      INTEGER, DIMENSION(max_points, 15) :: ypos_conn, yneg_conn
-      REAL*8, DIMENSION(max_points) :: entropy
+      REAL*8, DIMENSION(:), ALLOCATABLE :: x, y
+      INTEGER, DIMENSION(:), ALLOCATABLE :: left, right
+      INTEGER, DIMENSION(:), ALLOCATABLE :: flag_1
+      INTEGER, DIMENSION(:), ALLOCATABLE :: flag_2
+      INTEGER, DIMENSION(:), ALLOCATABLE :: nbhs
+      REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+      INTEGER, DIMENSION(:, :), ALLOCATABLE :: conn
+      INTEGER, DIMENSION(:), ALLOCATABLE :: qtdepth
+      REAL*8, DIMENSION(:), ALLOCATABLE :: nx, ny
+      REAL*8, DIMENSION(:), ALLOCATABLE :: min_dist
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: u
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1, phi2
+      REAL*8, DIMENSION(:), ALLOCATABLE :: sensor, d2_dist
+      INTEGER, DIMENSION(:), ALLOCATABLE :: xpos_nbhs, xneg_nbhs, &
+&     ypos_nbhs, yneg_nbhs
+      INTEGER, DIMENSION(:, :), ALLOCATABLE :: xpos_conn, xneg_conn
+      INTEGER, DIMENSION(:, :), ALLOCATABLE :: ypos_conn, yneg_conn
+      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy
   END TYPE POINTS
   TYPE POINTS_DIFF
-      REAL*8, DIMENSION(max_points) :: delta
-      REAL*8, DIMENSION(4, max_points) :: prim
-      REAL*8, DIMENSION(4, max_points) :: prim_old
-      REAL*8, DIMENSION(4, max_points) :: q
-      REAL*8, DIMENSION(4, max_points) :: flux_res
-      REAL*8, DIMENSION(2, 4, max_points) :: dq
-      REAL*8, DIMENSION(3, 4, max_points) :: ddq
-      REAL*8, DIMENSION(3, 4, max_points) :: temp
-      REAL*8, DIMENSION(4, max_points) :: phi1
-      REAL*8, DIMENSION(4, max_points) :: phi2
+      REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointb
   SAVE
-  INTEGER, DIMENSION(wall_points) :: wall_points_index
-  INTEGER, DIMENSION(shape_points) :: shape_points_index
-  INTEGER, DIMENSION(outer_points) :: outer_points_index
-  INTEGER, DIMENSION(interior_points) :: interior_points_index
+  INTEGER, DIMENSION(:), ALLOCATABLE :: wall_points_index
+  INTEGER, DIMENSION(:), ALLOCATABLE :: shape_points_index
+  INTEGER, DIMENSION(:), ALLOCATABLE :: outer_points_index
+  INTEGER, DIMENSION(:), ALLOCATABLE :: interior_points_index
   REAL*8 :: cost_func
   REAL*8 :: cost_funcb
 !iterations
@@ -119,7 +67,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: ad_mode
   REAL*8, SAVE :: euler=2.0d0
   CHARACTER(len=20), SAVE :: tscheme='first'
-  REAL*8, DIMENSION(shapes) :: cl, cd, cm
+  REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm
   REAL*8 :: total_entropy
   REAL*8 :: res_old, res_new, residue
   REAL*8 :: max_res
@@ -157,9 +105,105 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       Interior normal flag
   INTEGER, SAVE :: interior_points_normal_flag=0
 !       Restart
+!       No of shapes
+  INTEGER, SAVE :: shapes=1
   INTEGER, SAVE :: restart=0
 !       Block input
   INTEGER, SAVE :: blockx=32
   INTEGER, SAVE :: blocky=1
   INTEGER, SAVE :: blockz=1
+
+contains
+        SUBROUTINE ALLOCATE_SOLN()
+        IMPLICIT NONE
+        ALLOCATE(point%sensor(max_points))
+        ALLOCATE(point%d2_dist(max_points))
+        ALLOCATE(point%delta(max_points))
+        ALLOCATE(point%xpos_nbhs(max_points))
+        ALLOCATE(point%xneg_nbhs(max_points))
+        ALLOCATE(point%ypos_nbhs(max_points))
+        ALLOCATE(point%yneg_nbhs(max_points))
+        ALLOCATE(point%xpos_conn(max_points, 15))
+        ALLOCATE(point%xneg_conn(max_points, 15))
+        ALLOCATE(point%ypos_conn(max_points, 15))
+        ALLOCATE(point%yneg_conn(max_points, 15))
+! allocate(point%U_old(4,max_points))
+        ALLOCATE(point%u(4, max_points))
+        ALLOCATE(point%prim(4, max_points))
+        ALLOCATE(point%prim_old(4, max_points))
+        ALLOCATE(point%flux_res(4, max_points))
+        ALLOCATE(point%q(4, max_points))
+        ALLOCATE(point%phi1(4, max_points))
+        ALLOCATE(point%phi2(4, max_points))
+        ALLOCATE(point%dq(2, 4, max_points))
+        ALLOCATE(point%ddq(3, 4, max_points))
+        ALLOCATE(point%temp(3, 4, max_points))
+        ALLOCATE(point%qm(2, 4, max_points))
+        ALLOCATE(cl(shapes))
+        ALLOCATE(cd(shapes))
+        ALLOCATE(cm(shapes))
+        ALLOCATE(point%entropy(max_points))
+    END SUBROUTINE ALLOCATE_SOLN
+    subroutine allocate_soln_b()
+        implicit none
+        ALLOCATE(pointb%delta(max_points))
+        allocate(pointb%prim(4,max_points))
+        allocate(pointb%prim_old(4,max_points))
+        allocate(pointb%flux_res(4,max_points))
+        allocate(pointb%q(4,max_points))
+        allocate(pointb%dq(2,4,max_points))
+        ALLOCATE(pointb%ddq(3, 4, max_points))
+        ALLOCATE(pointb%phi1(4, max_points))
+        ALLOCATE(pointb%phi2(4, max_points))
+        ALLOCATE(pointb%temp(3, 4, max_points))
+        ! allocate(pointb%qm(2,4,max_points))
+        ! allocate(pointb%delta(max_points))
+        ! allocate(Cld(shapes))
+        ! allocate(ClCdd(shapes))
+        ! allocate(Cdd(shapes))
+        ! allocate(Cmd(shapes))
+        ! allocate(pointd%vorticity_sqr(max_points))
+    end subroutine
+    SUBROUTINE DEALLOCATE_SOLN()
+        IMPLICIT NONE
+        DEALLOCATE(point%prim)
+        DEALLOCATE(point%sensor)
+        DEALLOCATE(point%d2_dist)
+        DEALLOCATE(point%phi1)
+        DEALLOCATE(point%phi2)
+        DEALLOCATE(point%xpos_nbhs)
+        DEALLOCATE(point%xneg_nbhs)
+        DEALLOCATE(point%ypos_nbhs)
+        DEALLOCATE(point%yneg_nbhs)
+        DEALLOCATE(point%xpos_conn)
+        DEALLOCATE(point%xneg_conn)
+        DEALLOCATE(point%ypos_conn)
+        DEALLOCATE(point%yneg_conn)
+        DEALLOCATE(cl)
+        DEALLOCATE(cd)
+        DEALLOCATE(cm)
+        DEALLOCATE(point%entropy)
+      END SUBROUTINE DEALLOCATE_SOLN
+
+      subroutine deallocate_soln_b()
+        implicit none
+    
+        deallocate(pointb%prim)
+        deallocate(pointb%prim_old)
+        deallocate(pointb%flux_res)
+        deallocate(pointb%q)
+        deallocate(pointb%dq)
+        DEALLOCATE(pointb%ddq)
+        DEALLOCATE(pointb%phi1)
+        DEALLOCATE(pointb%phi2)
+        DEALLOCATE(pointb%temp)
+        ! deallocate(pointb%qm)
+        ! deallocate(pointb%delta)
+        ! deallocate(Cld)
+        ! deallocate(ClCdd)
+        ! deallocate(Cdd)
+        ! deallocate(Cmd)
+        ! deallocate(pointd%vorticity_sqr)
+    end subroutine
+
 END MODULE DATA_STRUCTURE_MOD_DIFF
