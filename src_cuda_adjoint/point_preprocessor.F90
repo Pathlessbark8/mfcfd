@@ -16,8 +16,7 @@ contains
                 grid = 'point/partGrid'
 
                 OPEN(UNIT=101,FILE=trim(grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
-                
-                ! read(101,*) to_just_run
+
                 read(101,*) max_points
 
                 allocate(point%x(max_points))
