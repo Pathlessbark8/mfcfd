@@ -14,5 +14,7 @@ examples/adjoint/src/*
 examples/serial/src/*
 examples/adjoint/runs/*
 examples/forward/runs/*
-examples/mpi_adjoint/src/*
-
+examples/cuda/runs/*
+examples/cuda/src/*
+examples/cuda_adjoint/runs/*
+examples/cuda_adjoint/src/*
