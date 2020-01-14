@@ -1,6 +1,6 @@
 &input_parameters 
 	cfl = 0.2
-	max_iters = 20000
+	max_iters = 1
 	mach = 0.63
 	vl_const = 650
 	format_file = 'legacy'
