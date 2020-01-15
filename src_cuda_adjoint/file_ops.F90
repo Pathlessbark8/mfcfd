@@ -18,7 +18,6 @@ module file_ops_mod
         nsave, &
         interior_points_normal_flag, &
         tscheme, &
-        adjoint_mode, &
         mach, &
         aoa, &
         inner_iterations

@@ -65,7 +65,7 @@ program meshfree_solver
         call compute_adapt_sensor()
 
 !       Objective function computation
-        call objective_function()
+        ! call objective_function()
 
 !       Save solution one last time
         call print_primal_output()

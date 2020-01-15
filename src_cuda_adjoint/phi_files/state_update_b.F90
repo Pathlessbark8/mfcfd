@@ -584,7 +584,7 @@ CONTAINS
     s2 = u2_rot*SQRT(beta)
     b2 = EXP(-(s2*s2))/(2.0d0*SQRT(pi*beta))
     CALL PUSHREAL8(s2)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2p = 0.5d0*(1.0d0+result1)
     temp2b = ubarb(4)
     ubarb(4) = 0.0_8
@@ -664,7 +664,7 @@ CONTAINS
     beta = 0.5d0*rho_inf/pr_inf
     s2 = u2_inf_rot*DSQRT(beta)
     b2_inf = DEXP(-(s2*s2))/(2.0d0*DSQRT(pi*beta))
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2n_inf = 0.5d0*(1.0d0-result1)
     rho = prim(1)
     u1 = prim(2)
@@ -677,7 +677,7 @@ CONTAINS
     beta = rho/(2.0d0*pr)
     s2 = u2_rot*SQRT(beta)
     b2 = EXP(-(s2*s2))/(2.0d0*SQRT(pi*beta))
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2p = 0.5d0*(1.0d0+result1)
     ubar(1) = rho_inf*a2n_inf + rho*a2p
     ubar(2) = rho_inf*u1_inf_rot*a2n_inf + rho*u1_rot*a2p

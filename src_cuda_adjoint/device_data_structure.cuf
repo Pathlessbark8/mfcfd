@@ -150,4 +150,31 @@ module device_DATA_STRUCTURE_MOD_DIFF
                 point%prim    = point_d%prim
         end subroutine
 
+        subroutine intermediate_device_to_host()
+                implicit none
+                point%delta = point_d%delta
+                point%q = point_d%q
+                point%prim = point_d%prim
+                point%prim_old = point_d%prim_old
+                point%flux_res = point_d%flux_res
+                point%dq = point_d%dq
+                point%qm = point_d%qm
+                point%ddq = point_d%ddq
+        end subroutine
+
+        subroutine intermediate_host_to_device()
+                implicit none
+               
+                ! transfer from host to device(solution)
+                point_d%delta = point%delta
+                point_d%q = point%q
+                point_d%prim = point%prim
+                point_d%prim_old = point%prim_old
+                point_d%flux_res = point%flux_res
+                point_d%dq = point%dq
+                point_d%qm = point%qm
+                point_d%ddq = point%ddq
+
+        end subroutine
+
 end module device_DATA_STRUCTURE_MOD_DIFF

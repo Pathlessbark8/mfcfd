@@ -60,10 +60,10 @@ CONTAINS
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
     CALL PUSHREAL8(s1)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1neg = 0.5d0*(1.0d0-result1)
     CALL PUSHREAL8(s2)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2neg = 0.5d0*(1.0d0-result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -191,9 +191,9 @@ CONTAINS
     s2 = un*DSQRT(beta)
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1neg = 0.5d0*(1.0d0-result1)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2neg = 0.5d0*(1.0d0-result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -264,10 +264,10 @@ CONTAINS
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
     CALL PUSHREAL8(s1)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1pos = 0.5d0*(1.d0+result1)
     CALL PUSHREAL8(s2)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2neg = 0.5d0*(1.d0-result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -395,9 +395,9 @@ CONTAINS
     s2 = un*DSQRT(beta)
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1pos = 0.5d0*(1.d0+result1)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2neg = 0.5d0*(1.d0-result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -468,10 +468,10 @@ CONTAINS
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
     CALL PUSHREAL8(s1)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1pos = 0.5d0*(1.0d0+result1)
     CALL PUSHREAL8(s2)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -599,9 +599,9 @@ CONTAINS
     s2 = un*DSQRT(beta)
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1pos = 0.5d0*(1.0d0+result1)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -672,10 +672,10 @@ CONTAINS
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
     CALL PUSHREAL8(s1)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1neg = 0.5d0*(1.0d0-result1)
     CALL PUSHREAL8(s2)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -803,9 +803,9 @@ CONTAINS
     s2 = un*DSQRT(beta)
     b1 = 0.5d0*DEXP(-(s1*s1))/DSQRT(pi*beta)
     b2 = 0.5d0*DEXP(-(s2*s2))/DSQRT(pi*beta)
-    result1 = DERF(s1)
+    result1 = ERF(s1)
     a1neg = 0.5d0*(1.0d0-result1)
-    result1 = DERF(s2)
+    result1 = ERF(s2)
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
@@ -928,12 +928,12 @@ CONTAINS
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
 !  result10d = DERF_D(s1, s1d, result10)
     result10d = DEXP(-(s1**2))*(2.d0/SQRT(pi))*s1d
-    result10 = DERF(s1)
+    result10 = ERF(s1)
     a1negd = -(0.5d0*result10d)
     a1neg = 0.5d0*(1.0d0-result10)
 !  result10d = DERF_D(s2, s2d, result10)
     result10d = DEXP(-(s2**2))*(2.d0/SQRT(pi))*s2d
-    result10 = DERF(s2)
+    result10 = ERF(s2)
     a2negd = -(0.5d0*result10d)
     a2neg = 0.5d0*(1.0d0-result10)
 !
@@ -1090,12 +1090,12 @@ CONTAINS
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
 !  result10d = DERF_D(s1, s1d, result10)
     result10d = DEXP(-(s1**2))*(2.d0/SQRT(pi))*s1d
-    result10 = DERF(s1)
+    result10 = ERF(s1)
     a1posd = 0.5d0*result10d
     a1pos = 0.5d0*(1.0d0+result10)
 !  result10d = DERF_D(s2, s2d, result10)
     result10d = DEXP(-(s2**2))*(2.d0/SQRT(pi))*s2d
-    result10 = DERF(s2)
+    result10 = ERF(s2)
     a2negd = -(0.5d0*result10d)
     a2neg = 0.5d0*(1.0d0-result10)
 !
@@ -1253,12 +1253,12 @@ CONTAINS
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
 !  result10d = DERF_D(s1, s1d, result10)
     result10d = DEXP(-(s1**2))*(2.d0/SQRT(pi))*s1d
-    result10 = DERF(s1)
+    result10 = ERF(s1)
     a1posd = 0.5d0*result10d
     a1pos = 0.5d0*(1.0d0+result10)
 !  result10d = DERF_D(s2, s2d, result10)
     result10d = DEXP(-(s2**2))*(2.d0/SQRT(pi))*s2d
-    result10 = DERF(s2)
+    result10 = ERF(s2)
     a2posd = 0.5d0*result10d
     a2pos = 0.5d0*(1.0d0+result10)
 !
@@ -1415,12 +1415,12 @@ CONTAINS
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
 !  result10d = DERF_D(s1, s1d, result10)
     result10d = DEXP(-(s1**2))*(2.d0/SQRT(pi))*s1d
-    result10 = DERF(s1)
+    result10 = ERF(s1)
     a1negd = -(0.5d0*result10d)
     a1neg = 0.5d0*(1.0d0-result10)
 !  result10d = DERF_D(s2, s2d, result10)
     result10d = DEXP(-(s2**2))*(2.d0/SQRT(pi))*s2d
-    result10 = DERF(s2)
+    result10 = ERF(s2)
     a2posd = 0.5d0*result10d
     a2pos = 0.5d0*(1.0d0+result10)
 !
