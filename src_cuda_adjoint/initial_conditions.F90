@@ -1,6 +1,6 @@
 module initial_conditions_mod
 
-        use data_structure_mod_diff
+        use data_structure_mod
         use parameter_mod
 
 contains
@@ -8,12 +8,12 @@ contains
         subroutine initial_conditions()
 
                 implicit none
+                
+                integer :: k,i, dummy
 
-                integer :: k,i
+                call setup_case_parameters()
 
-                if(restart == 0) then
-
-                        call setup_case_parameters()
+                if(solution_restart .eq. 0) then
 
                         do k=1, max_points
                                 point%prim(1,k) = q_init(1)
@@ -21,41 +21,22 @@ contains
                                 point%prim(3,k) = q_init(3)
                                 point%prim(4,k) = q_init(4)
                         enddo
+                else
 
-                elseif(restart == 1) then
+                        write(*,*) '%%%%%%%%%%%%-Using Restart file-%%%%%%%%%%%%'
+                        write(*,*) 
 
-                        write(*,*)'%%%%%%%%%%%%-Using restart file-%%%%%%%%%%%'
-                        write(*,*)
+                        open(unit=105, file="restart.dat", form='formatted', action="read")
+                        read(105,*) dummy, itr, res_old
+                        do k=1, max_points
+                               read(105,*) dummy, dummy, dummy, dummy, &
+                                       & point%prim(1,k), point%prim(2,k), point%prim(3,k), &
+                                       & point%prim(4,k), dummy, dummy, dummy
+                        end do
 
-                        call setup_case_parameters()
-
-                        call restart_sol()
+                        close(unit=105)
 
                 endif
-
-        end subroutine
-
-        subroutine restart_sol()
-
-                implicit none
-
-                integer :: i, dummy
-                character(len=64) :: sfile
-                character(len=10) :: itos
-
-                sfile = 'restart/sol.dat'
-
-                OPEN(UNIT=515,FILE=trim(sfile),form='formatted', action="read")
-
-                read(515,*)dummy, itr, res_old
-
-                do i = 1, max_points
-                        read(515,*)dummy, dummy, dummy, dummy,&
-                                dummy, point%prim(1,i), point%prim(2,i), point%prim(3,i),&
-                                point%prim(4,i)
-                end do
-
-                close(515)
 
         end subroutine
 

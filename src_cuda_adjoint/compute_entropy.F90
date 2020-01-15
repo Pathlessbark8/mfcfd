@@ -12,7 +12,7 @@ module compute_entropy_mod
 
                         integer :: k
 			real*8 :: temp1, temp2
-                        real*8 :: total_entropy
+
 
                         total_entropy = 0.d0
 
@@ -25,8 +25,10 @@ module compute_entropy_mod
                                 point%entropy(k) = dabs(temp1 - temp2)
                                 
                                 total_entropy = total_entropy + dabs(temp1 - temp2)
-                        enddo
+                        enddo 
+
 
                 end subroutine 
+
 
 end module compute_entropy_mod

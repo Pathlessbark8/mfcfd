@@ -1,6 +1,5 @@
 module data_structure_mod
 
-
         use parameter_mod
 
         implicit none
@@ -15,7 +14,6 @@ module data_structure_mod
                 integer, dimension(:), allocatable :: flag_1 ! stores location of point
                 integer, dimension(:), allocatable :: flag_2 ! stores shape point belongs to 
                 integer, dimension(:), allocatable :: nbhs
-                real*8, dimension(:), allocatable :: delta
                 integer, dimension(:,:), allocatable :: conn
                 
                 integer, dimension(:), allocatable :: qtdepth
@@ -25,25 +23,13 @@ module data_structure_mod
 		real*8, dimension(:), allocatable :: min_dist
 
                 real*8, dimension(:,:), allocatable :: prim
-                real*8, dimension(:,:), allocatable :: prim_old
-
-                real*8, dimension(:,:), allocatable :: U
-
-                real*8, dimension(:,:), allocatable :: q
-                real*8, dimension(:,:), allocatable :: flux_res
-
-                real*8, dimension(:,:,:), allocatable :: qm
-                real*8, dimension(:,:,:), allocatable :: dq
-                real*8, dimension(:,:,:), allocatable :: ddq
-                real*8, dimension(:,:,:), allocatable :: temp
-
                 real*8, dimension(:,:), allocatable :: phi1, phi2
 
                 real*8, dimension(:), allocatable :: sensor, D2_dist
 
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
-                integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
-                integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
+                integer*1, dimension(:,:), allocatable :: xpos_conn, xneg_conn
+                integer*1, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
                 real*8, dimension(:), allocatable :: entropy
 
@@ -59,8 +45,6 @@ module data_structure_mod
         integer,allocatable,dimension(:) :: outer_points_index
         integer,allocatable,dimension(:) :: interior_points_index
 
-        real*8 :: cost_func
-
         !iterations
         integer :: it, itr
 
@@ -73,16 +57,12 @@ module data_structure_mod
 
         real*8 :: total_entropy
 
-        real*8 :: res_old, res_new, residue
+        real*8 :: res_old
 
-        real*8 :: max_res
-
-        integer :: max_res_point
-
-        real*8 :: sum_res_sqr
+        real*8 :: cost_func
 
         !The parameter CFL is the CFL number for stability ..
-        real*8 :: cfl = 0.0d0
+        real*8 :: CFL = 0.0d0
 
         integer :: max_iters = 10000000
 !
@@ -121,20 +101,87 @@ module data_structure_mod
 !       Interior normal flag
         integer :: interior_points_normal_flag = 0
 
-!       Restart
-        integer :: restart = 0
-
 !       Block input
         integer :: blockx = 32, blocky = 1, blockz = 1
 
-        contains
+        ! namelist / input_parameters /   &
+        !               shapes, &
+        !                      cfl, &
+        !         max_iters, &
+        !                   blockx, &
+        !                   blocky, &
+        !                   blockz, &
+        !                   vl_const, &
+        !                   power, &
+        !                   restart_solution, &
+        !                   solution_accuracy, &
+        !                   format_file, &
+        !                   nsave, &
+        !                   interior_points_normal_flag, &
+        !                   tscheme, &
+        !                   mach, &
+        !                   aoa, &
+        !                   inner_iterations
+
+
+    contains
+
+        ! subroutine readnml()
+
+        !         implicit none
+        !         integer :: os
+
+
+        !         open(unit=10,file='input.nml',form='formatted',status='old',iostat=os)
+        !         read(unit=10,nml=input_parameters)
+
+        !         close(10)
+        !         write(*,*) 'Limiter:', 'venkat'
+        !         write(*,*)
+        !         write(*,*) '%%%%%%%%%%%%%%-Nml file info-%%%%%%%%%%%%%%'
+        !         write(*,nml=input_parameters)
+        !         write(*,*)
+
+        !         if(solution_accuracy == 'second') then
+        !                 f_o_flag = 1.0d0
+        !         elseif(solution_accuracy == 'first') then
+        !                 f_o_flag = 0.0d0
+        !         end if
+
+        !         if(restart_solution == 'no') then
+        !                 solution_restart = 0
+        !         elseif(restart_solution == 'yes') then
+        !                 solution_restart = 1
+        !         end if
+
+
+
+        !         if(tscheme == 'first') then
+        !                 rks = 1
+        !                 euler = 2.0d0
+        !         elseif(tscheme == 'ssprk43') then
+        !                 rks = 4
+        !                 euler = 1.0d0
+        !         end if
+
+        !         if(format_file == 'legacy') then
+        !                 file_format = 1
+        !         elseif(format_file == 'quadtree') then
+        !                 file_format = 2
+        !                 interior_points_normal_flag = 100000
+        !         end if
+        ! end subroutine
+
 
         subroutine allocate_soln()
                 implicit none
 
+                allocate(point%prim(4,max_points))
+                allocate(point%phi1(4,max_points))
+                allocate(point%phi2(4,max_points))
+
                 allocate(point%sensor(max_points))
                 allocate(point%D2_dist(max_points))
-                allocate(point%delta(max_points))
                 
                 allocate(point%xpos_nbhs(max_points))
                 allocate(point%xneg_nbhs(max_points))
@@ -147,23 +194,6 @@ module data_structure_mod
                 allocate(point%ypos_conn(max_points,15))
                 allocate(point%yneg_conn(max_points,15))
 
-                
-                ! allocate(point%U_old(4,max_points))
-                allocate(point%U(4,max_points))
-
-                allocate(point%prim(4,max_points))
-                allocate(point%prim_old(4,max_points))
-
-                allocate(point%flux_res(4,max_points))
-
-                allocate(point%q(4,max_points))
-                allocate(point%phi1(4,max_points))
-                allocate(point%phi2(4,max_points))
-                allocate(point%dq(2,4,max_points))
-                allocate(point%ddq(3,4,max_points))
-                allocate(point%temp(3,4,max_points))
-                allocate(point%qm(2,4,max_points))
-
                 allocate(Cl(shapes))
                 allocate(Cd(shapes))
                 allocate(Cm(shapes))
@@ -175,7 +205,8 @@ module data_structure_mod
                 implicit none
 
                 deallocate(point%prim)
-                
+                deallocate(point%phi1)
+                deallocate(point%phi2)
                 deallocate(point%sensor)
                 deallocate(point%D2_dist)
 

@@ -51,6 +51,7 @@ module stagnation_values_mod
 
             constant = 1/(p0_inf**2 * max_points)
             p0_sum = 0
+
             do i=1, max_points
                 prim = point%prim(:,i)
                 angle = sqrt(gamma * prim(4)/ prim(1))

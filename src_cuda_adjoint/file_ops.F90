@@ -1,6 +1,6 @@
 module file_ops_mod
 
-    use data_structure_mod_diff
+    use data_structure_mod
 
     namelist / input_parameters /   &
     shapes, &
@@ -19,8 +19,8 @@ module file_ops_mod
         interior_points_normal_flag, &
         tscheme, &
         adjoint_mode, &
-        ! mach, &
-        ! aoa, &
+        mach, &
+        aoa, &
         inner_iterations
 
     contains
@@ -47,11 +47,11 @@ module file_ops_mod
         f_o_flag = 0.0d0
         end if
 
-        if(adjoint_mode == 'checkpoints') then
-            ad_mode = 1
-        elseif(adjoint_mode == 'blackbox') then
-            ad_mode = 0
-        end if
+        ! if(adjoint_mode == 'checkpoints') then
+        !     ad_mode = 1
+        ! elseif(adjoint_mode == 'blackbox') then
+        !     ad_mode = 0
+        ! end if
 
         if(restart_solution == 'no') then
         solution_restart = 0

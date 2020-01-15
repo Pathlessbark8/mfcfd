@@ -58,6 +58,8 @@ module generate_connectivity_mod
                         nbh = point%conn(i,r)
                         xk = point%x(nbh)
                         yk = point%y(nbh)
+                        
+                        nbh = find_loc_f90(point%conn, 20, i, nbh)
 
                         delx = xk - xi
                         dely = yk - yi
@@ -146,6 +148,9 @@ module generate_connectivity_mod
                                 xk = point%x(nbh)
                                 yk = point%y(nbh)
 
+                                nbh = find_loc_f90(point%conn, 20, i, nbh)
+
+
                                 delx = xk - xi
                                 dely = yk - yi
         
@@ -155,10 +160,10 @@ module generate_connectivity_mod
                                 if(dels .le. 0.0d0) then
         
                                         point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
+        
                                         count = point%xpos_nbhs(i);
-
                                         point%xpos_conn(i,count) = nbh;
-                                        
+        
                                 endif
         
                                 if(dels .ge. 0.0d0) then
@@ -174,6 +179,7 @@ module generate_connectivity_mod
         
                                 count = point%yneg_nbhs(i);
                                 point%yneg_conn(i,count) = nbh;
+        
                         enddo
                         
                         if(point%xpos_nbhs(i) == 0) then
@@ -217,6 +223,9 @@ module generate_connectivity_mod
                                 xk = point%x(nbh)
                                 yk = point%y(nbh)
 
+                                nbh = find_loc_f90(point%conn, 20, i, nbh)
+
+          
                                 delx = xk - xi
                                 dely = yk - yi
         

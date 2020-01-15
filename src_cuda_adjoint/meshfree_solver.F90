@@ -1,91 +1,83 @@
 program meshfree_solver
 
+        use cudafor
         use parameter_mod
-        use data_structure_mod_diff
+        use data_structure_mod
         use point_preprocessor_mod
-        use q_lskum_mod_diff
-        use q_lskum_mod_chkpts_diff
-        ! use compute_force_coeffs_mod
-        use file_ops_mod
         use initial_conditions_mod
+        use q_lskum_mod
         use post_processing_mod
+        use objective_function_mod
+        use adaptation_sensors_mod
+        use file_ops_mod
 
         implicit none
-        real*8  :: totaltime,runtime
-        integer :: ierr
-
-        call execute_command_line('mkdir -p solution')
-        call execute_command_line('mkdir -p cp')
-
-        ! totaltime = MPI_Wtime()
+        integer :: istat, i, nDevices=0
+        real*8  :: start,finish, runtime
+        type(cudaDeviceProp) :: prop
+        
+        call cpu_time(start)
 
         write(*,*)
-        write(*,*)'%%%%%%%%%%%%%-Serial Meshfree Code-%%%%%%%%%%%'
+        write(*,*)'%%%%%%%%-CUDA Fortran Meshfree Code-%%%%%%%'
         write(*,*)
+        write(*,*)'%%%%%%%%%%%%%%%-Device info-%%%%%%%%%%%%%%%'
+        istat = cudaGetDeviceCount ( nDevices )
+        do i = 0, nDevices - 1
+                istat = cudaGetDeviceProperties(prop, i)
+                write(*,*)'Device Name:               ', trim(prop%name)
+                write(*,*)'Compute Capability:        ',prop%major, prop%minor
+                write(*,*)'Device number:             ',i
+                write(*,*)'MemoryClockRate(KHz):      ',prop%memoryBusWidth
+                write(*,*)'PeakMemoryBandwidth(GB/s): ',2.0 *prop%memoryClockRate * &
+                        & (prop%memoryBusWidth/8) * 1.e-6
+                write(*,*)
+        end do
 
-!	Reading the input data ..
-
+!       Set up case input
         call readnml()
 
-        write(*,*)'%%%%%%%%%%%%-Reading point data-%%%%%%%%%%%'
-        write(*,*)
-
+!	Reading the input data ..
+        write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%'
         call read_input_point_data()
+        write(*,*) 'Number of points:         ', max_points
+        write(*,*) 'Number of wall points:    ', wall_points
+        write(*,*) 'Number of shape points:   ', shape_points
+        write(*,*) 'Number of interior points:', interior_points
+        write(*,*) 'Number of outer points:   ', outer_points
+        write(*,*)
 
 !       Allocate solution variables
-
         call allocate_soln()
-        call allocate_soln_b()
-!       Initialize Petsc vectors
-        ! write(*,*) 'Number of points:         ', max_points
-        write(*,*)
 
-!       Assign the initial conditions for the primitive variables ..
+!       Allocate device solution variables
+        call allocate_device_soln()
 
+!	Assign the initial conditions for the primitive variables ..	
         call initial_conditions()
-        write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+        write(*,*) '%%%%%%%%%%%-Solution initialized-%%%%%%%%%%'
         write(*,*)
-
+       
 !	Primal fixed point iterative solver ..
+        call q_lskum(runtime)
 
-        ! runtime = MPI_Wtime()
-        ! call q_lskum_b()
-        if(ad_mode == 0) then ! Black Box approach
-                ! if(rank == 0) then
-                        write(*,*)'%%%%%%%%%-Using Black box approach-%%%%%%%%'
-                        write(*,*)
-                ! end if
-                call q_lskum_b()
-        else
-                ! if(rank == 0) then
-                        write(*,*)'%%%%%%%-Using Checkpointing approach-%%%%%%'
-                        write(*,*)
-                ! end if
-                call q_lskum_chkpts_b()
-        end if
+!       Compute sensor values
+        call compute_adapt_sensor()
 
-        ! call q_lskum_chkpts_b()
-        ! runtime = MPI_Wtime() - runtime
+!       Objective function computation
+        call objective_function()
 
 !       Save solution one last time
-        write(*,*) '%%%%%%%%%%%-Primal-%%%%%%%%%%%'
         call print_primal_output()
 
-!       destroy petsc vectors and deallocate point/solution vectors
-        write(*,*) '%%%%%%%%%%%-Dealloc Soln-%%%%%%%%%%%'
+!       Deallocate point/solution vectors
         call deallocate_soln()
-        write(*,*) '%%%%%%%%%%%-Dealloc Backwards Soln-%%%%%%%%%%%'
-        call deallocate_soln_b()
         call dealloc_points()
+        call deallocate_device_soln()
 
-        ! totaltime = MPI_Wtime() - totaltime
-
-        write(*,*)
+        call cpu_time(finish) 
         write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
         write(*,*) 'Run time:  ',runtime,'seconds'
-        write(*,*) 'Total time:',totaltime,'seconds'
-
-!       stop petsc
-        ! call MPI_Finalize(ierr)
+        write(*,*) 'Total time:',finish-start,'seconds'
 
 end program meshfree_solver

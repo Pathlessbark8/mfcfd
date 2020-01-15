@@ -12,18 +12,18 @@ module point_normals_mod
                 double precision :: lx, ly, mx, my, rx, ry
                 double precision :: nx1, nx2, ny1, ny2, nx, ny
                 double precision :: det
-
+                
                 integer:: i, j, k, l, m, r
 
 
-!Finding the normals for the points on the shapes ..
+!Finding the normals for the points on the shapes ..   
 
                 do i = 1, wall_points
-
+                        
                         m = wall_points_index(i)
                         l = point%left(m)
                         r = point%right(m)
-
+                        
                         lx = point%x(l)
                         ly = point%y(l)
 
@@ -51,12 +51,12 @@ module point_normals_mod
                         point%ny(m) = ny
 
                 enddo
-
+                                
 
 !	Finding the normals for the outer boundary points ..
 
                 do i = 1, outer_points
-
+                 
                         m = outer_points_index(i)
                         l = point%left(m)
                         r = point%right(m)
@@ -69,7 +69,7 @@ module point_normals_mod
 
                         rx = point%x(r)
                         ry = point%y(r)
-
+   
                         nx1 = my - ly
                         nx2 = ry - my
 
@@ -103,6 +103,8 @@ module point_normals_mod
                         enddo
                 endif
 
-        end subroutine
+        end subroutine 
 
-end module
+end module 
+
+
