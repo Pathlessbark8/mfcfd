@@ -1,6 +1,6 @@
 module compute_force_coeffs_mod
 
-        use data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
 
         contains
 

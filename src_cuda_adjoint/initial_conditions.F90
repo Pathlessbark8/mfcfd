@@ -1,6 +1,6 @@
 module initial_conditions_mod
 
-        use data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
         use parameter_mod
 
 contains

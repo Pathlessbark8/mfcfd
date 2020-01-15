@@ -69,10 +69,10 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   CHARACTER(len=20), SAVE :: tscheme='first'
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm
   REAL*8 :: total_entropy
-  REAL*8 :: res_old, res_new, residue
+  REAL*8 :: res_old, res_new !, residue
   REAL*8 :: max_res
   INTEGER :: max_res_point
-  REAL*8 :: sum_res_sqr
+  ! REAL*8 :: sum_res_sqr
 !The parameter CFL is the CFL number for stability ..
   REAL*8, SAVE :: cfl=0.0d0
   INTEGER, SAVE :: max_iters=10000000

@@ -1,6 +1,6 @@
 module point_normals_mod
 
-        use data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
 
         contains
 
@@ -106,5 +106,3 @@ module point_normals_mod
         end subroutine 
 
 end module 
-
-

@@ -1,8 +1,8 @@
-module device_data_structure_mod
+module device_DATA_STRUCTURE_MOD_DIFF
 
 
         use parameter_mod
-        use data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
         use cudafor
         use cudadevice
 
@@ -150,4 +150,4 @@ module device_data_structure_mod
                 point%prim    = point_d%prim
         end subroutine
 
-end module device_data_structure_mod
+end module device_DATA_STRUCTURE_MOD_DIFF

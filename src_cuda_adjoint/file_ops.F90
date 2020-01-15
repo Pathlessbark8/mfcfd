@@ -1,6 +1,6 @@
 module file_ops_mod
 
-    use data_structure_mod
+    use DATA_STRUCTURE_MOD_DIFF
 
     namelist / input_parameters /   &
     shapes, &

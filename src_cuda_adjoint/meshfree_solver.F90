@@ -2,7 +2,7 @@ program meshfree_solver
 
         use cudafor
         use parameter_mod
-        use data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
         use point_preprocessor_mod
         use initial_conditions_mod
         use q_lskum_mod

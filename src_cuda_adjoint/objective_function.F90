@@ -1,6 +1,6 @@
 module objective_function_mod
         
-        use data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
         use compute_force_coeffs_mod
         use compute_entropy_mod
 

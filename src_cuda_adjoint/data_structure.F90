@@ -1,4 +1,4 @@
-module data_structure_mod
+module DATA_STRUCTURE_MOD_DIFF
 
         use parameter_mod
 
@@ -228,4 +228,4 @@ module data_structure_mod
                 deallocate(point%entropy)
         end subroutine
 
-end module data_structure_mod
+end module DATA_STRUCTURE_MOD_DIFF

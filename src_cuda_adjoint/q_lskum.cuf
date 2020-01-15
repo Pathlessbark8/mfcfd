@@ -3,8 +3,8 @@ module q_lskum_mod
         use q_variables_mod
         use flux_residual_mod
         use state_update_mod
-        use data_structure_mod
-        use device_data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
+        use device_DATA_STRUCTURE_MOD_DIFF
         use point_normals_mod    
         use generate_connectivity_mod
         use post_processing_mod

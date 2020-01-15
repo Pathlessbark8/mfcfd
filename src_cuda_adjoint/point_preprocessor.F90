@@ -1,7 +1,7 @@
 module point_preprocessor_mod
 
-        use data_structure_mod
-        use device_data_structure_mod
+        use DATA_STRUCTURE_MOD_DIFF
+        use device_DATA_STRUCTURE_MOD_DIFF
 
 contains
 
