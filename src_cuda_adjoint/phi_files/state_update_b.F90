@@ -249,7 +249,7 @@ CONTAINS
     END DO
   END SUBROUTINE STATE_UPDATE_B
 
-  SUBROUTINE STATE_UPDATE(rk)
+  SUBROUTINE STATE_UPDATE_X(rk)
     IMPLICIT NONE
     INTEGER :: i, k, r, rk
     REAL*8 :: delt, u(4), temp, u_old(4)
@@ -341,7 +341,7 @@ CONTAINS
       point%prim(3, k) = u(3)*temp
       point%prim(4, k) = 0.4d0*u(4) - 0.2d0*temp*(u(2)*u(2)+u(3)*u(3))
     END DO
-  END SUBROUTINE STATE_UPDATE
+  END SUBROUTINE STATE_UPDATE_X
 
 !  Differentiation of primitive_to_conserved in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: prim u

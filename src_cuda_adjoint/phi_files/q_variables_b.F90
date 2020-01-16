@@ -48,7 +48,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_Q_VARIABLES_B
 
-  SUBROUTINE EVAL_Q_VARIABLES()
+  SUBROUTINE EVAL_Q_VARIABLES_X()
     IMPLICIT NONE
     INTEGER :: k
     REAL*8 :: rho, u1, u2, pr, beta
@@ -67,7 +67,7 @@ CONTAINS
       point%q(3, k) = two_times_beta*u2
       point%q(4, k) = -two_times_beta
     END DO
-  END SUBROUTINE EVAL_Q_VARIABLES
+  END SUBROUTINE EVAL_Q_VARIABLES_X
 
 !  Differentiation of eval_q_derivatives in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: point.q point.dq
@@ -148,7 +148,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_Q_DERIVATIVES_B
 
-  SUBROUTINE EVAL_Q_DERIVATIVES()
+  SUBROUTINE EVAL_Q_DERIVATIVES_X()
     IMPLICIT NONE
     INTEGER :: i, k, r, nbh
     REAL*8 :: x_i, y_i, x_k, y_k
@@ -197,7 +197,7 @@ CONTAINS
       point%dq(2, :, i) = (sum_dely_delq*sum_delx_sqr-sum_delx_delq*&
 &       sum_delx_dely)*one_by_det
     END DO
-  END SUBROUTINE EVAL_Q_DERIVATIVES
+  END SUBROUTINE EVAL_Q_DERIVATIVES_X
 
 !  Differentiation of eval_q_double_derivatives in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: point.dq point.ddq
@@ -295,7 +295,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_Q_DOUBLE_DERIVATIVES_B
 
-  SUBROUTINE EVAL_Q_DOUBLE_DERIVATIVES()
+  SUBROUTINE EVAL_Q_DOUBLE_DERIVATIVES_X()
     IMPLICIT NONE
 ! local variables
     INTEGER :: i
@@ -347,7 +347,7 @@ CONTAINS
       point%ddq(3, :, i) = (sum_dely_del_qy*sum_delx_sqr-sum_delx_del_qy&
 &       *sum_delx_dely)*one_by_det
     END DO
-  END SUBROUTINE EVAL_Q_DOUBLE_DERIVATIVES
+  END SUBROUTINE EVAL_Q_DOUBLE_DERIVATIVES_X
 
 !  Differentiation of eval_dq_inner_loop in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: point.q point.dq point.temp
@@ -509,7 +509,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_DQ_INNER_LOOP_B
 
-  SUBROUTINE EVAL_DQ_INNER_LOOP()
+  SUBROUTINE EVAL_DQ_INNER_LOOP_X()
     IMPLICIT NONE
     INTEGER :: i
     INTEGER :: k, r, nbh
@@ -600,7 +600,7 @@ CONTAINS
       point%temp(2, 4, i) = one_by_det*(sum_dely_delq4*sum_delx_sqr-&
 &       sum_delx_delq4*sum_delx_dely)
     END DO
-  END SUBROUTINE EVAL_DQ_INNER_LOOP
+  END SUBROUTINE EVAL_DQ_INNER_LOOP_X
 
 !  Differentiation of eval_ddq_inner_loop in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: point.dq point.ddq point.temp
@@ -748,7 +748,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_DDQ_INNER_LOOP_B
 
-  SUBROUTINE EVAL_DDQ_INNER_LOOP()
+  SUBROUTINE EVAL_DDQ_INNER_LOOP_X()
     IMPLICIT NONE
 ! local variables
     INTEGER :: i
@@ -818,7 +818,7 @@ CONTAINS
       point%temp(3, :, i) = (sum_dely_del_qy*sum_delx_sqr-&
 &       sum_delx_del_qy*sum_delx_dely)*one_by_det
     END DO
-  END SUBROUTINE EVAL_DDQ_INNER_LOOP
+  END SUBROUTINE EVAL_DDQ_INNER_LOOP_X
 
 !  Differentiation of eval_update_innerloop_2 in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: point.dq point.temp
@@ -846,7 +846,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_UPDATE_INNERLOOP_2_B
 
-  SUBROUTINE EVAL_UPDATE_INNERLOOP_2()
+  SUBROUTINE EVAL_UPDATE_INNERLOOP_2_X()
     IMPLICIT NONE
     INTEGER :: i
     DO i=1,max_points
@@ -859,7 +859,7 @@ CONTAINS
       point%dq(2, 3, i) = point%temp(2, 3, i)
       point%dq(2, 4, i) = point%temp(2, 4, i)
     END DO
-  END SUBROUTINE EVAL_UPDATE_INNERLOOP_2
+  END SUBROUTINE EVAL_UPDATE_INNERLOOP_2_X
 
 !  Differentiation of eval_update_innerloop_3 in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: point.ddq point.temp
@@ -877,7 +877,7 @@ CONTAINS
     END DO
   END SUBROUTINE EVAL_UPDATE_INNERLOOP_3_B
 
-  SUBROUTINE EVAL_UPDATE_INNERLOOP_3()
+  SUBROUTINE EVAL_UPDATE_INNERLOOP_3_X()
     IMPLICIT NONE
     INTEGER :: i
     DO i=1,max_points
@@ -885,7 +885,7 @@ CONTAINS
       point%ddq(2, :, i) = point%temp(2, :, i)
       point%ddq(3, :, i) = point%temp(3, :, i)
     END DO
-  END SUBROUTINE EVAL_UPDATE_INNERLOOP_3
+  END SUBROUTINE EVAL_UPDATE_INNERLOOP_3_X
 
 !  Differentiation of qtilde_to_primitive in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: u1 u2 pr rho

@@ -121,6 +121,9 @@ contains
                 write(*,*)'%%%%%%%%%-Host to device performed-%%%%%%%%'
                 write(*,*)
 
+                call generate_connectivity_x()
+                write(*,*)'%%%%-Serial connectivity generated-%%%'
+
                 allocate(sum_res_sqr_d(max_points))
                 allocate(cost_func_d(max_points))
 
@@ -215,17 +218,17 @@ contains
                                         & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
                                         & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
                                         & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, &
-                                        & point_d%phi1, point_d%phi1)
+                                        & point_d%phi1, point_d%phi1, point_d%delta)
 
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
                                         & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
 
 
-                        end do
+                        end do                        
 
-!                       call objective_function_J<<<grid, tBlock>>>(point_d%prim, cost_func_d)
-
+                        call device_to_host()
+                        call objective_function_J()
 
                         istat = cudaGetLastError() 
 
@@ -245,15 +248,15 @@ contains
 
                         sum_res_sqr = temp
                         
-                        temp2 = 0.0
-                        do i = 1, mp_d
-                                temp2 = temp2 + cost_func_d(i)
-                        end do
-
-                        cost_func = temp2
-
-                        write(*,*) "Objective Function J:", cost_func
-                        write(302,*) ITIM, cost_func
+!                        temp2 = 0.0
+!                        do i = 1, mp_d
+!                                temp2 = temp2 + cost_func_d(i)
+!                        end do
+!
+!                        cost_func = temp2
+!
+!                        write(*,*) "Objective Function J:", cost_func
+!                        write(302,*) ITIM, cost_func
 
                         residue = dsqrt(sum_res_sqr)/max_points
 
@@ -263,9 +266,11 @@ contains
                         else
                                 residue = dlog10(residue/res_old)
                         end if
+                        if (pflag == 1) then
+                            write(*,*) "iterations:", ITIM, "residue:", residue
+                            write(301,*) ITIM, residue
+                        end if
 
-                        write(*,*) "iterations:", ITIM, "residue:", residue
-                        write(301,*) ITIM, residue
 
                         if(ieee_is_nan(residue))exit
         
@@ -295,13 +300,14 @@ contains
                     pointb%temp = 0.0_8
                     pointb%phi1 = 0.0_8
                     pointb%phi2 = 0.0_8
+                    call intermediate_device_to_host() 
                     write(*,*)
                     write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
                     write(*,*)
                     pflag = 0
                     CALL FPI_SOLVER_B(ITIM)
                     cost_funcb = 0.0_8
-                    ! write(*,*) pointb%phi1(1,79)
+                    write(*,*) pointb%phi1(1,79)
                 END IF
             
                 !      The below if condition runs the subsequent reverse steps .. 
@@ -311,7 +317,7 @@ contains
                     ITIM = ITIM + itr
                     CALL FPI_SOLVER_B(ITIM)
                     cost_funcb = 0.0_8
-                    ! write(*,*) pointb%phi1(1,79)
+                    write(*,*) pointb%phi1(1,79)
                 END IF
             !
             !
@@ -405,8 +411,13 @@ contains
                 CLOSE(UNIT=302)
                 OPEN(unit=301, file='jderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
                 DO i=1,max_points
-                    WRITE(301,*) pointb%phi1(:,i)
+                    WRITE(301,'(4e30.20)') pointb%phi1(1,i), pointb%phi1(2,i), pointb%phi1(3,i), pointb%phi1(4,i)
                 END DO
                 CLOSE(unit=301)
+                
+                DO i=max_points,1,-1
+                    pointb%phi2(:, i) = 0.0_8
+                    pointb%phi1(:, i) = 0.0_8
+                END DO
         end subroutine
 end module q_lskum_mod

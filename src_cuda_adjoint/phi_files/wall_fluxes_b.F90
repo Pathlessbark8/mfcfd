@@ -182,6 +182,7 @@ CONTAINS
 
 !	This subroutine evaluates the wall flux derivative dGs_pos
   SUBROUTINE WALL_DGX_POS(g, i)
+    
     IMPLICIT NONE
     INTEGER :: i, j, k, r
     REAL*8 :: rho, u1, u2, pr
@@ -247,7 +248,7 @@ CONTAINS
     det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
     one_by_det = 1.d0/det
     g = (sum_delx_delf*sum_dely_sqr-sum_dely_delf*sum_delx_dely)*&
-&     one_by_det
+    &     one_by_det
   END SUBROUTINE WALL_DGX_POS
 
 !  Differentiation of wall_dgx_neg in reverse (adjoint) mode (with options fixinterface):
@@ -723,4 +724,3 @@ CONTAINS
   END SUBROUTINE WALL_DGY_NEG
 
 END MODULE WALL_FLUXES_MOD_DIFF
-

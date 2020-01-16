@@ -152,6 +152,7 @@ module device_DATA_STRUCTURE_MOD_DIFF
 
         subroutine intermediate_device_to_host()
                 implicit none
+                
                 point%delta = point_d%delta
                 point%q = point_d%q
                 point%prim = point_d%prim
@@ -164,8 +165,7 @@ module device_DATA_STRUCTURE_MOD_DIFF
 
         subroutine intermediate_host_to_device()
                 implicit none
-               
-                ! transfer from host to device(solution)
+
                 point_d%delta = point%delta
                 point_d%q = point%q
                 point_d%prim = point%prim

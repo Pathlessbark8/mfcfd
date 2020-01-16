@@ -53,6 +53,8 @@ program meshfree_solver
 !       Allocate device solution variables
         call allocate_device_soln()
 
+        call allocate_soln_b()
+
 !	Assign the initial conditions for the primitive variables ..	
         call initial_conditions()
         write(*,*) '%%%%%%%%%%%-Solution initialized-%%%%%%%%%%'
@@ -72,6 +74,7 @@ program meshfree_solver
 
 !       Deallocate point/solution vectors
         call deallocate_soln()
+        call deallocate_soln_b()
         call dealloc_points()
         call deallocate_device_soln()
 

@@ -188,7 +188,7 @@ CONTAINS
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
-        ! write(*,*) pointb%phi1(1,79)
+        write(*,*) pointb%phi1(1,79)
     END IF
 
     !      The below if condition runs the subsequent reverse steps .. 
@@ -198,7 +198,7 @@ CONTAINS
         ITIM = ITIM + itr
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
-        ! write(*,*) pointb%phi1(1,79)
+        write(*,*) pointb%phi1(1,79)
     END IF
 !
 !

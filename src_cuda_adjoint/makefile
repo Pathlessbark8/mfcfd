@@ -31,6 +31,7 @@ all:
 $(TARGET): $(objects) $(AD)
 	$(FC) -o execname $(FFLAGS) $(objects) $(AD)
 
+SOURCEFILES = $(wildcard $(SRC)
 
 meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure_b.o parameter.o initial_conditions.o cuda.o post_processing.o objective_function.o adaptation_sensors.o file_ops.o
 	$(FC) $(FFLAGS) -c  meshfree_solver.F90 

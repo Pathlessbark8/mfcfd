@@ -100,25 +100,25 @@ CONTAINS
     END DO
   END SUBROUTINE OBJECTIVE_FUNCTION_J_B
 
-  SUBROUTINE OBJECTIVE_FUNCTION_J()
-    IMPLICIT NONE
-    INTEGER :: i
-    REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
-    REAL*8 :: prim(4)
-    INTRINSIC SQRT
-    gammapower = gamma/(gamma-1)
-    p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
-    constant = 1/(p0_inf**2*max_points)
-    p0_sum = 0
-    DO i=1,max_points
-      prim = point%prim(:, i)
-      angle = SQRT(gamma*prim(4)/prim(1))
-      mach_t = SQRT(prim(2)**2+prim(3)**2)/angle
-      p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
-      p0_sum = p0_sum + (p0_inf-p0)**2
-    END DO
-    cost_func = p0_sum*constant
-    WRITE(*, *) 'Objective Function (J)', cost_func
-  END SUBROUTINE OBJECTIVE_FUNCTION_J
+  ! SUBROUTINE OBJECTIVE_FUNCTION_J()
+  !   IMPLICIT NONE
+  !   INTEGER :: i
+  !   REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
+  !   REAL*8 :: prim(4)
+  !   INTRINSIC SQRT
+  !   gammapower = gamma/(gamma-1)
+  !   p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
+  !   constant = 1/(p0_inf**2*max_points)
+  !   p0_sum = 0
+  !   DO i=1,max_points
+  !     prim = point%prim(:, i)
+  !     angle = SQRT(gamma*prim(4)/prim(1))
+  !     mach_t = SQRT(prim(2)**2+prim(3)**2)/angle
+  !     p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
+  !     p0_sum = p0_sum + (p0_inf-p0)**2
+  !   END DO
+  !   cost_func = p0_sum*constant
+  !   WRITE(*, *) 'Objective Function (J)', cost_func
+  ! END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF

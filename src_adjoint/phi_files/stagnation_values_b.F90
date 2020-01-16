@@ -32,8 +32,8 @@ CONTAINS
         indexmax = i
       END IF
     END DO
-    WRITE(*, *) 'Stagnation values are ', pmin, ' ', pmax, ' ', pmin/&
-&   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
+!     WRITE(*, *) 'Stagnation values are ', pmin, ' ', pmax, ' ', pmin/&
+! &   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
   END SUBROUTINE STAGNATION_PRESSURE
 
 !  Differentiation of objective_function_j in reverse (adjoint) mode (with options fixinterface):

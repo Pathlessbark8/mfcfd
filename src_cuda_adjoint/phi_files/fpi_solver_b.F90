@@ -31,28 +31,29 @@ CONTAINS
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
       CALL PUSHREAL8ARRAY(point%q, 4*max_points)
-      CALL EVAL_Q_VARIABLES()
+      CALL EVAL_Q_VARIABLES_X()
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
-      CALL EVAL_Q_DERIVATIVES()
+      CALL EVAL_Q_DERIVATIVES_X()
       CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL EVAL_Q_DOUBLE_DERIVATIVES()
+      CALL EVAL_Q_DOUBLE_DERIVATIVES_X()
       IF (inner_iterations .NE. 0) THEN
         DO i=1,inner_iterations
-          CALL EVAL_DQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_2()
-          CALL EVAL_DDQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_3()
+          CALL EVAL_DQ_INNER_LOOP_X()
+          CALL EVAL_UPDATE_INNERLOOP_2_X()
+          CALL EVAL_DDQ_INNER_LOOP_X()
+          CALL EVAL_UPDATE_INNERLOOP_3_X()
         END DO
         CALL PUSHCONTROL1B(0)
       ELSE
         CALL PUSHCONTROL1B(1)
       END IF
       CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
-      CALL CAL_FLUX_RESIDUAL()
+      CALL CAL_FLUX_RESIDUAL_X()
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
-      CALL STATE_UPDATE(rk)
+      CALL STATE_UPDATE_X(rk)
     END DO
     CALL OBJECTIVE_FUNCTION_J_B()
+
     DO rk=rks,1,-1
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE_B(rk)
@@ -74,6 +75,7 @@ CONTAINS
       CALL POPREAL8ARRAY(point%q, 4*max_points)
       CALL EVAL_Q_VARIABLES_B()
     END DO
+    ! write(*,*) pointb%phi1(1,79)
     CALL FUNC_DELTA_B()
     DO i=max_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
@@ -81,41 +83,41 @@ CONTAINS
     END DO
   END SUBROUTINE FPI_SOLVER_B
 
-  SUBROUTINE FPI_SOLVER(t)
-    IMPLICIT NONE
-    INTEGER :: t, i, rk, ierr
-    INTRINSIC DSQRT
-    INTRINSIC DLOG10
-    DO i=1,max_points
-      point%prim_old(:, i) = point%prim(:, i)
-    END DO
-    CALL FUNC_DELTA()
-! Perform 4-stage, 3-order SSPRK update
-    DO rk=1,rks
-      CALL EVAL_Q_VARIABLES()
-      CALL EVAL_Q_DERIVATIVES()
-      CALL EVAL_Q_DOUBLE_DERIVATIVES()
-      IF (inner_iterations .NE. 0) THEN
-        DO i=1,inner_iterations
-          CALL EVAL_DQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_2()
-          CALL EVAL_DDQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_3()
-        END DO
-      END IF
-      CALL CAL_FLUX_RESIDUAL()
-      CALL STATE_UPDATE(rk)
-    END DO
-    CALL OBJECTIVE_FUNCTION()
-    CALL STAGNATION_PRESSURE()
-    CALL OBJECTIVE_FUNCTION_J()
-    res_new = DSQRT(sum_res_sqr)/max_points
-    IF (t .LE. 2 .AND. restart .EQ. 0) THEN
-      res_old = res_new
-      residue = 0.d0
-    ELSE
-      residue = DLOG10(res_new/res_old)
-    END IF
-  END SUBROUTINE FPI_SOLVER
+!   SUBROUTINE FPI_SOLVER(t)
+!     IMPLICIT NONE
+!     INTEGER :: t, i, rk, ierr
+!     INTRINSIC DSQRT
+!     INTRINSIC DLOG10
+!     DO i=1,max_points
+!       point%prim_old(:, i) = point%prim(:, i)
+!     END DO
+!     CALL FUNC_DELTA()
+! ! Perform 4-stage, 3-order SSPRK update
+!     DO rk=1,rks
+!       CALL EVAL_Q_VARIABLES()
+!       CALL EVAL_Q_DERIVATIVES()
+!       CALL EVAL_Q_DOUBLE_DERIVATIVES()
+!       IF (inner_iterations .NE. 0) THEN
+!         DO i=1,inner_iterations
+!           CALL EVAL_DQ_INNER_LOOP()
+!           CALL EVAL_UPDATE_INNERLOOP_2()
+!           CALL EVAL_DDQ_INNER_LOOP()
+!           CALL EVAL_UPDATE_INNERLOOP_3()
+!         END DO
+!       END IF
+!       CALL CAL_FLUX_RESIDUAL()
+!       CALL STATE_UPDATE(rk)
+!     END DO
+!     CALL OBJECTIVE_FUNCTION()
+!     CALL STAGNATION_PRESSURE()
+!     CALL OBJECTIVE_FUNCTION_J()
+!     res_new = DSQRT(sum_res_sqr)/max_points
+!     IF (t .LE. 2 .AND. restart .EQ. 0) THEN
+!       res_old = res_new
+!       residue = 0.d0
+!     ELSE
+!       residue = DLOG10(res_new/res_old)
+!     END IF
+!   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
