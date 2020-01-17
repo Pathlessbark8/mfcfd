@@ -91,6 +91,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       Restart solution parameter
   CHARACTER(len=20), SAVE :: restart_solution='no'
   INTEGER :: solution_restart
+  INTEGER :: phi_load
+  character(len=20)  :: preload_phi = 'no'
 !       Inner Iterations Loop count
   INTEGER, SAVE :: inner_iterations=0
 !       format tag

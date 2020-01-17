@@ -14,6 +14,7 @@ module file_ops_mod
         power, &
         restart_solution, &
         solution_accuracy, &
+        preload_phi, &
         format_file, &
         nsave, &
         interior_points_normal_flag, &
@@ -56,6 +57,12 @@ module file_ops_mod
         solution_restart = 0
         elseif(restart_solution == 'yes') then
         solution_restart = 1
+        end if
+
+        if(preload_phi == 'no') then
+            phi_load = 0
+        elseif(preload_phi == 'yes') then
+            phi_load = 1
         end if
 
         if(tscheme == 'first') then
