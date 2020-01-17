@@ -81,6 +81,10 @@ module data_structure_mod
         character(len=20)  :: restart_solution = 'no'
         integer :: solution_restart
 
+        integer :: phi_load
+
+        character(len=20)  :: preload_phi = 'no'
+
 !       Inner Iterations Loop count
         integer :: inner_iterations = 0
 
@@ -115,6 +119,7 @@ module data_structure_mod
                           power, &
                           restart_solution, &
                           solution_accuracy, &
+                          preload_phi, &
                           format_file, &
                           nsave, &
                           interior_points_normal_flag, &
@@ -154,7 +159,11 @@ module data_structure_mod
                         solution_restart = 1
                 end if
 
-
+                if(preload_phi == 'no') then
+                        phi_load = 0
+                elseif(preload_phi == 'yes') then
+                        phi_load = 1
+                end if
 
                 if(tscheme == 'first') then
                         rks = 1

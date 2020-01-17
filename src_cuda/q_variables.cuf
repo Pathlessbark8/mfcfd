@@ -424,4 +424,35 @@ contains
 
         end subroutine
 
+        attributes(global) subroutine objective_function_J_cuda(prim_d, cost_func_d)
+
+        implicit none
+    
+        real*8 :: p0_inf, gammaPower, p0, p0_sum, constant, angle, mach_t, gamma_d, pr_inf_d, mach_d
+        real*8 :: prim(4), prim_d(:,:), cost_func_d(:)
+
+        integer :: i
+
+        i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+        if(i > mp_d) return
+
+        gammaPower = gamma_d/(gamma_d-1)
+        p0_inf = pr_inf_d*((1 + ((gamma_d - 1)/2)*mach_d*mach_d) ** gammaPower)
+
+        constant = 1/(p0_inf**2 * mp_d)
+        p0_sum = 0
+
+        prim = prim_d(:,i)
+        angle = sqrt(gamma_d * prim(4)/ prim(1))
+        mach_t = sqrt(prim(2)**2 + prim(3)**2)/angle
+        p0 = prim(4)*((1 + ((gamma_d - 1)/2)*mach_t*mach_t) ** gammaPower)
+        p0_sum = ((p0_inf - p0) ** 2) * constant
+
+        cost_func_d(i) = p0_sum
+        
+
+        end subroutine
+
+
 end module q_variables_mod

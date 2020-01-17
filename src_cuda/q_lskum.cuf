@@ -115,10 +115,10 @@ contains
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
                                         & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
 
-
+                                
                         end do
 
-!                       call objective_function_J<<<grid, tBlock>>>(point_d%prim, cost_func_d)
+                        ! call objective_function_J_cuda<<<grid, tBlock>>>(point_d%prim, cost_func_d)
 
 
                         istat = cudaGetLastError() 
@@ -139,14 +139,16 @@ contains
 
                         sum_res_sqr = temp
                         
-                        temp2 = 0.0
-                        do i = 1, mp_d
-                                temp2 = temp2 + cost_func_d(i)
-                        end do
+                        ! temp2 = 0.0
+                        ! do i = 1, mp_d
+                        !         temp2 = temp2 + cost_func_d(i)
+                        ! end do
 
-                        cost_func = temp2
+                        ! cost_func = temp2
 
-                        write(*,*) "Objective Function J:", cost_func
+                        ! write(*,*) "Objective Function J:", cost_func
+                        call device_to_host()
+                        call objective_function_J()
                         write(302,*) it, cost_func
 
                         residue = dsqrt(sum_res_sqr)/max_points

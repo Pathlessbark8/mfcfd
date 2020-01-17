@@ -38,6 +38,22 @@ contains
 
                 endif
 
+                if(phi_load .eq. 1) then
+
+                        write(*,*) '%%%%%%%%%%%%-Loading Phi Vectors-%%%%%%%%%%%%'
+                        write(*,*) 
+
+                        open(unit=105, file="phi_vector.dat", form='formatted', action="read")
+                        do k=1, max_points
+                                read(105,*) point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
+                                        & point%phi1(4,k)
+                                point%phi2(:,k) = point%phi1(:,k)
+                        end do
+
+                        close(unit=105)
+
+                endif
+
         end subroutine
 
 end module initial_conditions_mod
