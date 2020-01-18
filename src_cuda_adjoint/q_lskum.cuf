@@ -307,7 +307,7 @@ contains
                     pflag = 0
                     CALL FPI_SOLVER_B(ITIM)
                     cost_funcb = 0.0_8
-                    write(*,*) pointb%phi1(1,79)
+                    write(*,*) ITIM
                 END IF
             
                 !      The below if condition runs the subsequent reverse steps .. 
@@ -317,7 +317,7 @@ contains
                     ITIM = ITIM + itr
                     CALL FPI_SOLVER_B(ITIM)
                     cost_funcb = 0.0_8
-                    write(*,*) pointb%phi1(1,79)
+                    write(*,*) ITIM
                 END IF
             !
             !
@@ -409,10 +409,11 @@ contains
 
                 CLOSE(UNIT=301)
                 CLOSE(UNIT=302)
-                OPEN(unit=301, file='jderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
-                DO i=1,max_points
-                    WRITE(301,'(4e30.20)') pointb%phi1(1,i), pointb%phi1(2,i), pointb%phi1(3,i), pointb%phi1(4,i)
-                END DO
+                OPEN(unit=301, file='phiderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+                    WRITE(301,*) max_iters, chkpts
+                    DO i=1,max_points
+                        WRITE(301,'(8e30.20)') pointb%phi1(1,i), pointb%phi1(2,i), pointb%phi1(3,i), pointb%phi1(4,i), pointb%phi2(1,i), pointb%phi2(2,i), pointb%phi2(3,i), pointb%phi2(4,i)
+                    END DO
                 CLOSE(unit=301)
                 
                 DO i=max_points,1,-1
