@@ -28,16 +28,16 @@ function main()
             if store > phi2_max_store
                 phi2_max_store = store
                 phi2_max = idx
-            elseif store < phi1_min_store
+            elseif store < phi2_min_store
                 phi2_min_store = store
                 phi2_min = idx
             end
         end
     end
-    println("Max Value for phi1 - ", phi1_max_store, " | Point Number - ", phi1_max)
-    println("Min Value for phi1 - ", phi1_min_store, " | Point Number - ", phi1_min)
-    println("Max Value for phi2 - ", phi2_max_store, " | Point Number - ", phi2_max)
-    println("Min Value for phi2 - ", phi2_min_store, " | Point Number - ", phi2_min)
+    println("Max Φ1 > ", phi1_max_store, " | Point Number - ", phi1_max)
+    println("Min Φ1 > ", phi1_min_store, " | Point Number - ", phi1_min)
+    println("Max Φ2 > ", phi2_max_store, " | Point Number - ", phi2_max)
+    println("Min Φ2 > ", phi2_min_store, " | Point Number - ", phi2_min)
 end
 
 main()

@@ -63,6 +63,8 @@ module file_ops_mod
             phi_load = 0
         elseif(preload_phi == 'yes') then
             phi_load = 1
+        elseif(preload_phi == 'both_yes') then
+            phi_load = 2
         end if
 
         if(tscheme == 'first') then
