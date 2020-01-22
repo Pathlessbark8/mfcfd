@@ -14,7 +14,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), delta_d(:), delta_store
                 integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+                integer:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -91,7 +91,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
-                integer*1 :: xpos_conn_d(:,:)
+                integer :: xpos_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -200,7 +200,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
-                integer*1 :: xneg_conn_d(:,:)
+                integer :: xneg_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -310,7 +310,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: yneg_nbhs_d(:)
-                integer*1 :: yneg_conn_d(:,:)
+                integer :: yneg_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -420,7 +420,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
-                integer*1 :: xpos_conn_d(:,:)
+                integer :: xpos_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -530,7 +530,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
-                integer*1 :: xneg_conn_d(:,:)
+                integer :: xneg_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -639,7 +639,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: ypos_nbhs_d(:)
-                integer*1 :: ypos_conn_d(:,:)
+                integer :: ypos_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -748,7 +748,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xpos_nbhs_d(:)
-                integer*1 :: xpos_conn_d(:,:)
+                integer :: xpos_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -857,7 +857,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: xneg_nbhs_d(:)
-                integer*1 :: xneg_conn_d(:,:)
+                integer :: xneg_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -966,7 +966,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: ypos_nbhs_d(:)
-                integer*1 :: ypos_conn_d(:,:)
+                integer :: ypos_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
@@ -1075,7 +1075,7 @@ contains
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 integer :: yneg_nbhs_d(:)
-                integer*1 :: yneg_conn_d(:,:)
+                integer :: yneg_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
                 real*8 :: phi1_d(:,:), phi2_d(:,:), flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
