@@ -1,0 +1,14 @@
+
+#Intel compiler
+FC = mpifort
+CC = gcc
+#flags for intel compiler
+FFLAGS = -O3 -g
+
+#gcc compiler
+#FC = gfortran
+#CC = gcc
+#flags for gcc(profiling)
+#FFLAGS =-march=native -O3 -pg 
+#flags for gcc
+#FFLAGS =-march=native -O3 -ffree-line-length-512 

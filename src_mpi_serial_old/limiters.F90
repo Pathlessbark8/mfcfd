@@ -78,9 +78,10 @@ contains
                         if(dabs(del_neg) .le. 10e-6) then
                                 phi(r)=1.d0
        
-                        else if(dabs(del_neg) .gt. 10e-6) then                      
+                        else if(dabs(del_neg) .gt. 10e-6) then                   
                                 if(del_neg .gt. 0.d0) then 
                                         del_pos = point%qm(1,r,k) - q
+                                
                                 else if(del_neg .lt. 0.d0) then
                                         del_pos = point%qm(2,r,k) - q
                                 endif

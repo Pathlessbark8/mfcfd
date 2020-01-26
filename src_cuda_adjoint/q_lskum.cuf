@@ -107,10 +107,10 @@ contains
                 write(*,*)'%%%%-Normals and connectivity generated-%%%'
                 write(*,*)
 
-!               write(*,*)'%%%%%%%%%%%%%%%-Setting phi values to 1-%%%%%%%%%%%%%'
+!               write(*,*)'%%%%%%%%%%%%%%%-Setting phi2 value to 0-%%%%%%%%%%%%%'
 !               do i=1,max_points
 !                       point%phi1(:,i) = 1.0d0
-!                       point%phi2(:,i) = 1.0d0
+!                       point%phi2(:,i) = 0.0d0
 !               enddo
 
                 call cpu_time(start)
@@ -409,7 +409,7 @@ contains
 
                 CLOSE(UNIT=301)
                 CLOSE(UNIT=302)
-                OPEN(unit=301, file='phiderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+                OPEN(unit=301, file='phi_vector_d.dat', form='FORMATTED', status='REPLACE', action='WRITE')
                     WRITE(301,*) max_iters, chkpts
                     DO i=1,max_points
                         WRITE(301,'(8e30.20)') pointb%phi1(1,i), pointb%phi1(2,i), pointb%phi1(3,i), pointb%phi1(4,i), pointb%phi2(1,i), pointb%phi2(2,i), pointb%phi2(3,i), pointb%phi2(4,i)

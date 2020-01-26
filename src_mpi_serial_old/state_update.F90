@@ -1,8 +1,6 @@
 module state_update_mod
-#include <petsc/finclude/petscsys.h>
 
         use data_structure_mod
-        use petsc_data_structure_mod
         use flux_residual_mod
 
         contains
@@ -37,8 +35,10 @@ module state_update_mod
 
                         if(rk .ne. 3) then
                                 U = U - (0.5d0 * euler * point%flux_res(:,k))
+                                ! write(*,*) "Here", point%flux_res(:,k)
                         else
                                 U = tbt * U_old + obt * (U - 0.5d0 *point%flux_res(:, k))
+                                ! write(*,*) "Here", point%flux_res(:,k)
                         end if
                         
                         U(3) = 0.d0
@@ -54,6 +54,7 @@ module state_update_mod
                                 max_res = res_sqr
                                 max_res_point = k
                         endif
+
 
                         sum_res_sqr = sum_res_sqr + res_sqr
 
@@ -204,9 +205,8 @@ module state_update_mod
 		real*8 :: u1, u2, rho, pr, mod_u
 		real*8 :: dist
 		real*8 :: min_delt 
-                PetscErrorCode :: ierr
 
-                do i = 1,local_points
+                do i = 1,max_points
                         min_delt = 1.0d0
                         do r = 1, point%nbhs(i)
                                 k = point%conn(i,r)
@@ -223,6 +223,7 @@ module state_update_mod
                                 y_k = point%y(k)
 
                                 dist = (x_k - x_i)*(x_k - x_i) + (y_k - y_i)*(y_k - y_i)
+
                                 dist = dsqrt(dist)
 
                                 mod_u = dsqrt(u1*u1 + u2*u2)
@@ -238,20 +239,6 @@ module state_update_mod
                         enddo
                         point%delta(i) = min_delt
                 end do
-
-                if(timestep == 1) then
-                        do i = 1, local_points
-                                if (point%delta(i).lt.lmin) lmin=point%delta(i)
-                        end do
-                        call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
-                                & PETSC_COMM_WORLD, ierr)
-                        call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
-                                 & ierr)
-
-                        dtg = gmin
-                        if(t+dtg > tfinal) dtg = tfinal - t
-                        point%delta = dtg
-                end if
 
         end subroutine
 

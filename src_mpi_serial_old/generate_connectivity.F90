@@ -1,7 +1,6 @@
 module generate_connectivity_mod
         
         use data_structure_mod
-        use petsc_data_structure_mod
 
         contains
 
@@ -17,7 +16,6 @@ module generate_connectivity_mod
                                         nx = point%nx(i)
                                         ny = point%ny(i)
                                         call get_interior_neighbours(i, nx, ny)
-                                        call check_condition_number(i, nx, ny)
                 enddo
 
                 do k = 1, wall_points
@@ -106,13 +104,17 @@ module generate_connectivity_mod
                 enddo
 
                 if(point%xpos_nbhs(i) == 0) then
-                        print*,"WARNING!!! xpos zero for interior point number:", i,", rank:", rank
+                        print*,"xpos zero for interior point number:", i
+                        stop
                 elseif(point%xneg_nbhs(i) == 0) then
-                        print*,"WARNING!!! xneg zero for interior point number:", i,", rank:", rank
+                        print*,"xneg zero for interior point number:", i
+                        stop
                 elseif(point%ypos_nbhs(i) == 0) then
-                        print*,"WARNING!!! ypos zero for interior point number:", i,", rank:", rank
+                        print*,"ypos zero for interior point number:", i
+                        stop
                 elseif(point%yneg_nbhs(i) == 0) then
-                        print*,"WARNING!!! yneg zero for interior point number:", i,", rank:", rank
+                        print*,"yneg zero for interior point number:", i
+                        stop
                 end if
                 
         end subroutine
@@ -143,7 +145,7 @@ module generate_connectivity_mod
         
                                 xk = point%x(nbh)
                                 yk = point%y(nbh)
-        
+
                                 delx = xk - xi
                                 dely = yk - yi
         
@@ -153,10 +155,10 @@ module generate_connectivity_mod
                                 if(dels .le. 0.0d0) then
         
                                         point%xpos_nbhs(i) = point%xpos_nbhs(i) + 1;
-        
                                         count = point%xpos_nbhs(i);
+
                                         point%xpos_conn(i,count) = nbh;
-        
+                                        
                                 endif
         
                                 if(dels .ge. 0.0d0) then
@@ -172,20 +174,22 @@ module generate_connectivity_mod
         
                                 count = point%yneg_nbhs(i);
                                 point%yneg_conn(i,count) = nbh;
-        
                         enddo
                         
                         if(point%xpos_nbhs(i) == 0) then
-                                print*,"WARNING!!! xpos zero for wall point number:", i,", rank:", rank
+                                print*,"xpos zero for wall point number:", i
+                                stop
                         elseif(point%xneg_nbhs(i) == 0) then
-                                print*,"WARNING!!! xneg zero for wall point number:", i,", rank:", rank
+                                print*,"xneg zero for wall point number:", i
+                                stop
                         elseif(point%yneg_nbhs(i) == 0) then
-                                print*,"WARNING!!! yneg zero for wall point number:", i,", rank:", rank
+                                print*,"yneg zero for wall point number:", i
+                                stop
                         end if
         
         end subroutine
-
-
+        
+        
         subroutine get_outer_boundary_neighbours(i, nx, ny)
         
                         implicit none
@@ -212,7 +216,7 @@ module generate_connectivity_mod
         
                                 xk = point%x(nbh)
                                 yk = point%y(nbh)
-          
+
                                 delx = xk - xi
                                 dely = yk - yi
         
@@ -246,26 +250,29 @@ module generate_connectivity_mod
                         enddo
         
                         if(point%xpos_nbhs(i) == 0) then
-                                print*,"WARNING!!! xpos zero for outer point number:", i,", rank:", rank
+                                print*,"xpos zero for outer point number:", i
+                                stop
                         elseif(point%xneg_nbhs(i) == 0) then
-                                print*,"WARNING!!! xneg zero for outer point number:", i,", rank:", rank
+                                print*,"xneg zero for outer point number:", i
+                                stop
                         elseif(point%ypos_nbhs(i) == 0) then
-                                print*,"WARNING!!! ypos zero for outer point number:", i,", rank:", rank
+                                print*,"ypos zero for outer point number:", i
+                                stop
                         end if
-        
-        end subroutine
-        
-        subroutine check_condition_number(i, nx, ny)
-
-               ! Use lapack_example_aux, Only: nagf_file_print_matrix_real_gen
-               ! Use lapack_interfaces, Only: dbdsqr, dgebrd, dlacpy, dorgbr
-               ! Use lapack_precision, Only: dp
-
-                implicit none
-                
-                integer :: i
-                real*8 :: nx, ny
 
         end subroutine
+
+        integer function find_loc_f90(array, pointcount, pidx, nbhvalue)
+                integer, dimension(:,:) :: array
+                integer :: pointcount, pidx, nbhvalue, i
+                do i = 1, pointcount
+                        if (array(pidx, i) == nbhvalue) then
+                                find_loc_f90 = i
+                                return
+                        endif
+                end do
+                print*, "warning could not find point in conn", pidx, nbhvalue
+                stop
+        end function
 
 end module

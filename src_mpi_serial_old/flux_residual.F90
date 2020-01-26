@@ -35,6 +35,10 @@ contains
 
                         point%flux_res(:,k) = 2.0d0*point%delta(k)*point%flux_res(:,k)
 
+                        
+
+                        
+
                 enddo
 
                 do i = 1, outer_points
