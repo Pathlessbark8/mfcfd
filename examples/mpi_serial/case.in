@@ -1,3 +1,4 @@
--cfl 0.5
+-cfl 0.2
 -max_iters 5
--format_file quadtree
+-format_file legacy
+-vl_const 650

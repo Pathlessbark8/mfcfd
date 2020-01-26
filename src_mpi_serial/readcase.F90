@@ -55,7 +55,7 @@ subroutine readcase()
                 rks = 1
                 euler = 2.0d0
         elseif(trim(tscheme) == 'ssprk43') then
-                rks = 4
+                rks = 3
                 euler = 1.0d0
         end if
 
@@ -114,11 +114,11 @@ subroutine readcase()
         call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                               '-format_file',format_file,set,ierr); CHKERRQ(ierr)
         
-        ! if(trim(format_file) == 'legacy') then
+        if(trim(format_file) == 'legacy') then
                 format = 1
-        ! elseif(trim(format_file) == 'quadtree') then
-                ! format = 2
-        ! end if
+        elseif(trim(format_file) == 'quadtree') then
+                format = 2
+        end if
         
         ! Print paramaters to screen
         if (rank==0) then

@@ -12,8 +12,8 @@ module objective_function_mod
                         implicit none
 
                         call compute_cl_cd_cm()
-                        call compute_entropy()
-                        call compute_enstrophy()
+                        ! call compute_entropy()
+                        ! call compute_enstrophy()
 
                 end subroutine objective_function
 
