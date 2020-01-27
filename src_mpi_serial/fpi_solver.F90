@@ -6,7 +6,7 @@ module fpi_solver_mod
         use q_variables_mod
         use objective_function_mod
         use post_processing_mod 
-
+        use stagnation_values_mod 
 
 contains
 
@@ -66,7 +66,7 @@ contains
                 
 
                 ! call objective_function()
-                ! call objective_function_J()
+                call objective_function_J()
 
                 call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
                    0, PETSC_COMM_WORLD, ierr)
