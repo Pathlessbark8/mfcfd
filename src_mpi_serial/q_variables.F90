@@ -135,7 +135,7 @@ contains
                         real*8 :: det, delq, temp
                         real*8 :: one_by_det
 
-                        do i=1, max_points
+                        do i=1, local_points
 
                                 x_i = point%x(i)
                                 y_i = point%y(i)
@@ -203,7 +203,7 @@ contains
                 
                         real*8 :: temp1, temp2
 
-                        do i = 1, max_points
+                        do i = 1, local_points
         
                                 x_i = point%x(i)
                                 y_i = point%y(i)
@@ -302,7 +302,7 @@ contains
 
                         real*8 :: temp1(4), temp2(4)
 
-                        do i=1,max_points
+                        do i=1,local_points
 
                                 x_i = point%x(i)
                                 y_i = point%y(i)
@@ -377,7 +377,7 @@ contains
                 end subroutine
 
                 subroutine eval_update_innerloop_2()
-                        do i=1,max_points
+                        do i=1,local_points
                                 point%dq(1,1,i) = point%temp(1,1,i)
                                 point%dq(1,2,i) = point%temp(1,2,i)
                                 point%dq(1,3,i) = point%temp(1,3,i)
@@ -391,7 +391,7 @@ contains
                 end subroutine
 
                 subroutine eval_update_innerloop_3()
-                        do i=1,max_points
+                        do i=1,local_points
                                 point%ddq(1,:,i) = point%temp(1,:,i)
                                 point%ddq(2,:,i) = point%temp(2,:,i)
                                 point%ddq(3,:,i) = point%temp(3,:,i)

@@ -8,14 +8,10 @@ objects=meshfree_solver.o parameter.o data_structure_d.o point_preprocessor.o ut
 point_normals_d.o generate_connectivity_d.o fpi_solver_d.o q_variables_d.o flux_residual_d.o wall_fluxes_d.o \
 interior_fluxes_d.o outer_fluxes_d.o limiters_d.o state_update_d.o objective_function_d.o \
 compute_force_coeffs_d.o compute_entropy_d.o post_processing.o split_fluxes_d.o quadrant_fluxes_d.o stagnation_values_d.o \
-file_ops.o
-#petsc_data_structure.o
-#compute_enstrophy_d.o
-#readcase.o
-# quadrant_fluxes_d.o
+file_ops.o petsc_data_structure.o
 
 execname: $(objects)
-	$(FC) -ggdb -Wall -o execname $(FFLAGS) $(objects)
+	$(FC) -ggdb -Wall -o execname $(FFLAGS) $(PETSC_LIB) $(objects)
 	#$(PETSC_LIB)
 
 SOURCEFILES = $(wildcard $(SRC)
@@ -38,21 +34,14 @@ post_processing.o: post_processing.F90 data_structure_d.o #petsc_data_structure.
 file_ops.o: file_ops.F90 data_structure_d.o
 	$(FC) $(FFLAGS) -c file_ops.F90
 
-# petsc_data_structure.o: petsc_data_structure.F90 parameter.o data_structure_d.o
-	# $(FC) $(FFLAGS) -c  petsc_data_structure.F90
-
-# readcase.o: readcase.F90 data_structure_d.o #petsc_data_structure.o
-# 	$(FC) $(FFLAGS) -c  readcase.F90
+petsc_data_structure.o: petsc_data_structure.F90 parameter.o data_structure_d.o
+	$(FC) $(FFLAGS) -c  petsc_data_structure.F90
 
 utilities.o: utilities.F90
 	$(FC) $(FFLAGS) -c  utilities.F90
 
 initial_conditions.o: initial_conditions.F90 parameter.o data_structure_d.o #petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  initial_conditions.F90
-
-# quadrant_fluxes.o: quadrant_fluxes.F90 parameter.o
-# 	$(FC) $(FFLAGS) -c  quadrant_fluxes.F90
-
 
 q_lskum_d.o: q_lskum_d.F90 data_structure_d.o point_normals_d.o generate_connectivity_d.o fpi_solver_d.o
 	$(FC) $(FFLAGS) -c  q_lskum_d.F90

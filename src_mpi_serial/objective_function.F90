@@ -3,7 +3,6 @@ module objective_function_mod
         use data_structure_mod
         use compute_force_coeffs_mod
         use compute_entropy_mod
-        use compute_enstrophy_mod
 
         contains
 
