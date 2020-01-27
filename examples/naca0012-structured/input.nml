@@ -1,5 +1,0 @@
-&input_parameters 
-        cfl = 1.0
-        max_iters = 500
-	vl_const = 200
-/
