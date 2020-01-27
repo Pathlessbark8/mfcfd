@@ -2,7 +2,9 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
+#include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
 
 CONTAINS
@@ -14,20 +16,32 @@ CONTAINS
     REAL*8 :: lx, ly, mx, my, rx, ry
     REAL*8 :: ds1, ds2, ds
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
+    REAL*8, DIMENSION(shapes) :: lcl, lcd, lcm
     REAL*8 :: nx, ny
     CHARACTER(len=64) :: cp_file
+    CHARACTER(len=10) :: itos
+    INTRINSIC TRIM
     INTRINSIC DSQRT
     INTRINSIC DCOS
     INTRINSIC DSIN
-    cp_file = 'cp-file'
+    TYPE(UNKNOWNTYPE) :: proc
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+    petscerrorcode :: ierr
+    cp_file = 'cp/'//'cp-file'
+    IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&
 &  'REPLACE', action='WRITE') 
+!if(rank==0) OPEN(UNIT=202,FILE='clcdcm')
     temp = 0.5d0*rho_inf*mach*mach
     h = 0.d0
     v = 0.d0
     pitch_mom = 0.0d0
     DO j=1,shape_points
-      m = j
+      m = shape_points_index(j)
       r = point%right(m)
       l = point%left(m)
       lx = point%x(l)
@@ -51,11 +65,21 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
-    cl = v*DCOS(theta) - h*DSIN(theta)
-    cd = h*DCOS(theta) + v*DSIN(theta)
-    cm = pitch_mom
+    lcl = v*DCOS(theta) - h*DSIN(theta)
+    lcd = h*DCOS(theta) + v*DSIN(theta)
+    lcm = pitch_mom
+    CALL MPI_REDUCE(lcl, cl, shapes, mpi_double, mpi_sum, 0, &
+&             petsc_comm_world, ierr)
+    CALL MPI_REDUCE(lcd, cd, shapes, mpi_double, mpi_sum, 0, &
+&             petsc_comm_world, ierr)
+    CALL MPI_REDUCE(lcm, cm, shapes, mpi_double, mpi_sum, 0, &
+&             petsc_comm_world, ierr)
+    IF (rank .EQ. 0) THEN
+      DO j=1,shapes
+        WRITE(*, '(i4,3e30.20)') j, cl, cd, cm
+      END DO
+    END IF
     CLOSE(unit=201) 
   END SUBROUTINE COMPUTE_CL_CD_CM
 
 END MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
-

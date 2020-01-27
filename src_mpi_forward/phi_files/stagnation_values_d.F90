@@ -2,7 +2,9 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE STAGNATION_VALUES_MOD_DIFF
+#include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
 
 CONTAINS
@@ -58,6 +60,8 @@ CONTAINS
     REAL*8 :: p0d, p0_sumd, angled, mach_td
     REAL*8 :: prim(4)
     REAL*8 :: primd(4)
+    REAL*8 :: total_p0
+    REAL*8 :: total_p0d
     INTRINSIC SQRT
     REAL*8 :: pwx1
     REAL*8 :: pwx1d
@@ -67,14 +71,20 @@ CONTAINS
     REAL*8 :: arg1d
     REAL*8 :: result1
     REAL*8 :: result1d
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+    petscerrorcode :: ierr
     gammapower = gamma/(gamma-1)
     pwx1 = 1 + (gamma-1)/2*mach*mach
     pwr1 = pwx1**gammapower
     p0_inf = pr_inf*pwr1
-    constant = 1/(p0_inf**2*max_points)
-    p0_sum = 0
+    constant = 1/(p0_inf**2*plen)
+    p0_sum = 0.0d0
     p0_sumd = 0.0_8
-    DO i=1,max_points
+    DO i=1,local_points
       primd = pointd%prim(:, i)
       prim = point%prim(:, i)
       arg1d = (gamma*primd(4)*prim(1)-gamma*prim(4)*primd(1))/prim(1)**2
@@ -111,10 +121,12 @@ CONTAINS
       p0_sumd = p0_sumd - 2*(p0_inf-p0)*p0d
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
-    cost_funcd = constant*p0_sumd
-    cost_func = p0_sum*constant
-    WRITE(*, *) 'Objective Function (J)', cost_func
-    WRITE(*, *) 'Objective Function Derivative(Jd)', cost_funcd
+    CALL TLS_MPI_REDUCE(p0_sum, p0_sumd, total_p0, total_p0d, 1, &
+&                 mpi_double, mpi_double, mpi_sum, 0, 0, &
+&                 petsc_comm_world, ierr)
+    cost_funcd = constant*total_p0d
+    cost_func = total_p0*constant
+    IF (rank .EQ. 0) WRITE(*, *) 'J: ', cost_func
   END SUBROUTINE OBJECTIVE_FUNCTION_J_D
 
   SUBROUTINE OBJECTIVE_FUNCTION_J()
@@ -122,18 +134,25 @@ CONTAINS
     INTEGER :: i
     REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
     REAL*8 :: prim(4)
+    REAL*8 :: total_p0
     INTRINSIC SQRT
     REAL*8 :: pwx1
     REAL*8 :: pwr1
     REAL*8 :: arg1
     REAL*8 :: result1
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+! petscerrorcode :: ierr
     gammapower = gamma/(gamma-1)
     pwx1 = 1 + (gamma-1)/2*mach*mach
     pwr1 = pwx1**gammapower
     p0_inf = pr_inf*pwr1
-    constant = 1/(p0_inf**2*max_points)
-    p0_sum = 0
-    DO i=1,max_points
+    constant = 1/(p0_inf**2*plen)
+    p0_sum = 0.0d0
+    DO i=1,local_points
       prim = point%prim(:, i)
       arg1 = gamma*prim(4)/prim(1)
       angle = SQRT(arg1)
@@ -145,8 +164,10 @@ CONTAINS
       p0 = prim(4)*pwr1
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
-    cost_func = p0_sum*constant
-    WRITE(*, *) 'Objective Function (J)', cost_func
+    CALL MPI_REDUCE(p0_sum, total_p0, 1, mpi_double, mpi_sum, 0, &
+&             petsc_comm_world, ierr)
+    cost_func = total_p0*constant
+    IF (rank .EQ. 0) WRITE(*, *) 'J: ', cost_func
   END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF

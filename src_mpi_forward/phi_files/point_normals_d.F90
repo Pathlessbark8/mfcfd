@@ -62,15 +62,14 @@ CONTAINS
       point%nx(m) = nx
       point%ny(m) = ny
     END DO
-    IF (interior_points_normal_flag .EQ. 0 .AND. format_file .NE. &
-&       'quadtree') THEN
+    IF (interior_points_normal_flag .EQ. 0 .AND. format .NE. 2) THEN
       DO i=1,interior_points
         k = interior_points_index(i)
         point%nx(k) = 0.d0
         point%ny(k) = 1.d0
       END DO
-    ELSE IF (interior_points_normal_flag .EQ. 1 .AND. format_file .NE. &
-&       'quadtree') THEN
+    ELSE IF (interior_points_normal_flag .EQ. 1 .AND. format .NE. 2) &
+&   THEN
       DO i=1,interior_points
         k = interior_points_index(i)
         point%nx(k) = 1.d0

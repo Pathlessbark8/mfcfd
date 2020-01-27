@@ -3,6 +3,7 @@
 !
 MODULE GENERATE_CONNECTIVITY_MOD_DIFF
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
 
 CONTAINS
@@ -15,6 +16,7 @@ CONTAINS
       nx = point%nx(i)
       ny = point%ny(i)
       CALL GET_INTERIOR_NEIGHBOURS(i, nx, ny)
+      CALL CHECK_CONDITION_NUMBER(i, nx, ny)
     END DO
     DO k=1,wall_points
       i = wall_points_index(k)
@@ -36,6 +38,7 @@ CONTAINS
     REAL*8 :: delx, dely, dels, deln
     REAL*8 :: nx, ny, tx, ty
     INTEGER :: i, r, count, nbh
+    TYPE(UNKNOWNTYPE) :: rank
     xi = point%x(i)
     yi = point%y(i)
     tx = ny
@@ -74,17 +77,17 @@ CONTAINS
       END IF
     END DO
     IF (point%xpos_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'xpos zero for interior point number:', i
-      STOP
+      PRINT*, 'WARNING!!! xpos zero for interior point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%xneg_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'xneg zero for interior point number:', i
-      STOP
+      PRINT*, 'WARNING!!! xneg zero for interior point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%ypos_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'ypos zero for interior point number:', i
-      STOP
+      PRINT*, 'WARNING!!! ypos zero for interior point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%yneg_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'yneg zero for interior point number:', i
-      STOP
+      PRINT*, 'WARNING!!! yneg zero for interior point number:', i, &
+&     ', rank:', rank
     END IF
   END SUBROUTINE GET_INTERIOR_NEIGHBOURS
 
@@ -94,6 +97,7 @@ CONTAINS
     REAL*8 :: delx, dely, dels, deln
     REAL*8 :: nx, ny, tx, ty
     INTEGER :: i, r, count, nbh
+    TYPE(UNKNOWNTYPE) :: rank
     xi = point%x(i)
     yi = point%y(i)
     tx = ny
@@ -124,14 +128,14 @@ CONTAINS
       point%yneg_conn(i, count) = nbh
     END DO
     IF (point%xpos_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'xpos zero for wall point number:', i
-      STOP
+      PRINT*, 'WARNING!!! xpos zero for wall point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%xneg_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'xneg zero for wall point number:', i
-      STOP
+      PRINT*, 'WARNING!!! xneg zero for wall point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%yneg_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'yneg zero for wall point number:', i
-      STOP
+      PRINT*, 'WARNING!!! yneg zero for wall point number:', i, &
+&     ', rank:', rank
     END IF
   END SUBROUTINE GET_WALL_BOUNDARY_NEIGHBOURS
 
@@ -141,6 +145,7 @@ CONTAINS
     REAL*8 :: delx, dely, dels, deln
     REAL*8 :: nx, ny, tx, ty
     INTEGER :: i, r, count, nbh
+    TYPE(UNKNOWNTYPE) :: rank
     xi = point%x(i)
     yi = point%y(i)
     tx = ny
@@ -171,30 +176,22 @@ CONTAINS
       point%ypos_conn(i, count) = nbh
     END DO
     IF (point%xpos_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'xpos zero for outer point number:', i
-      STOP
+      PRINT*, 'WARNING!!! xpos zero for outer point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%xneg_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'xneg zero for outer point number:', i
-      STOP
+      PRINT*, 'WARNING!!! xneg zero for outer point number:', i, &
+&     ', rank:', rank
     ELSE IF (point%ypos_nbhs(i) .EQ. 0) THEN
-      PRINT*, 'ypos zero for outer point number:', i
-      STOP
+      PRINT*, 'WARNING!!! ypos zero for outer point number:', i, &
+&     ', rank:', rank
     END IF
   END SUBROUTINE GET_OUTER_BOUNDARY_NEIGHBOURS
 
-  INTEGER FUNCTION FIND_LOC_F90(array, pointcount, pidx, nbhvalue)
+  SUBROUTINE CHECK_CONDITION_NUMBER(i, nx, ny)
     IMPLICIT NONE
-    INTEGER, DIMENSION(:, :) :: array
-    INTEGER :: pointcount, pidx, nbhvalue, i
-    DO i=1,pointcount
-      IF (array(pidx, i) .EQ. nbhvalue) THEN
-        find_loc_f90 = i
-        RETURN
-      END IF
-    END DO
-    PRINT*, 'warning could not find point in conn', pidx, nbhvalue
-    STOP
-  END FUNCTION FIND_LOC_F90
+    INTEGER :: i
+    REAL*8 :: nx, ny
+  END SUBROUTINE CHECK_CONDITION_NUMBER
 
 END MODULE GENERATE_CONNECTIVITY_MOD_DIFF
 

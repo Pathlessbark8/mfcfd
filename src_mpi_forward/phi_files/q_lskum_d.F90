@@ -9,94 +9,213 @@ MODULE Q_LSKUM_MOD_DIFF
   USE POINT_NORMALS_MOD_DIFF
   USE GENERATE_CONNECTIVITY_MOD_DIFF
   USE FPI_SOLVER_MOD_DIFF
+  USE INITIAL_CONDITIONS_MOD
+  USE IEEE_ARITHMETIC
   IMPLICIT NONE
 
 CONTAINS
 !  Differentiation of q_lskum in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: cost_func
 !   with respect to varying inputs: *(point.phi1) *(point.phi2)
-!   RW status of diff variables: cost_func:out *(point.delta):(loc)
-!                *(point.prim):(loc) *(point.prim_old):(loc) *(point.q):(loc)
-!                *(point.flux_res):(loc) *(point.dq):(loc) *(point.ddq):(loc)
+!   RW status of diff variables: cost_func:out t:(loc) *(point.prim):(loc)
+!                *(point.prim_old):(loc) *(point.flux_res):(loc)
+!                *(point.q):(loc) *(point.dq):(loc) *(point.ddq):(loc)
 !                *(point.temp):(loc) *(point.phi1):in-killed *(point.phi2):in-killed
-!   Plus diff mem management of: point.delta:in point.prim:in point.prim_old:in
-!                point.q:in point.flux_res:in point.dq:in point.ddq:in
-!                point.temp:in point.phi1:in point.phi2:in
+!                *(point.delta):(loc) dtg:(loc)
+!   Plus diff mem management of: point.prim:in point.prim_old:in
+!                point.flux_res:in point.q:in point.dq:in point.ddq:in
+!                point.temp:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
-    OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE')
+    EXTERNAL INITIAL_CONDITIONS
+    EXTERNAL IEEE_IS_NAN
+    LOGICAL :: IEEE_IS_NAN
+    INTEGER :: rank
+    IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
+&                   status='REPLACE', action='WRITE') 
+!	        Assign the initial conditions for the primitive variables ..	
+    CALL INITIAL_CONDITIONS()
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) '%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+      WRITE(*, *) 
+    END IF
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *)
-    DO i=1,max_points
-      pointd%phi1(:, i) = 0.0_8
-      point%phi1(:, i) = 1.0d0
-      pointd%phi2(:, i) = 0.0_8
-      point%phi2(:, i) = 1.0d0
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) 
+      WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
+      WRITE(*, *) 
+    END IF
+    DO i=1,local_points
+      pointd%phi1(1, i) = 0.0_8
+      point%phi1(1, i) = 1.0d0
+      pointd%phi1(2, i) = 0.0_8
+      point%phi1(2, i) = 1.0d0
+      pointd%phi1(3, i) = 0.0_8
+      point%phi1(3, i) = 1.0d0
+      pointd%phi1(4, i) = 0.0_8
+      point%phi1(4, i) = 1.0d0
+      pointd%phi2(1, i) = 0.0_8
+      point%phi2(1, i) = 1.0d0
+      pointd%phi2(2, i) = 0.0_8
+      point%phi2(2, i) = 1.0d0
+      pointd%phi2(3, i) = 0.0_8
+      point%phi2(3, i) = 1.0d0
+      pointd%phi2(4, i) = 0.0_8
+      point%phi2(4, i) = 1.0d0
     END DO
-    pointd%phi1(1,78) = 1.0d0
-    WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *)
+    DO i=1,ghost_points
+      pointd%phi1(1, i+local_points) = 0.0_8
+      point%phi1(1, i+local_points) = 1.0d0
+      pointd%phi1(2, i+local_points) = 0.0_8
+      point%phi1(2, i+local_points) = 1.0d0
+      pointd%phi1(3, i+local_points) = 0.0_8
+      point%phi1(3, i+local_points) = 1.0d0
+      pointd%phi1(4, i+local_points) = 0.0_8
+      point%phi1(4, i+local_points) = 1.0d0
+      pointd%phi2(1, i+local_points) = 0.0_8
+      point%phi2(1, i+local_points) = 1.0d0
+      pointd%phi2(2, i+local_points) = 0.0_8
+      point%phi2(2, i+local_points) = 1.0d0
+      pointd%phi2(3, i+local_points) = 0.0_8
+      point%phi2(3, i+local_points) = 1.0d0
+      pointd%phi2(4, i+local_points) = 0.0_8
+      point%phi2(4, i+local_points) = 1.0d0
+    END DO
+! Set U_old to U for first iteration
+    DO i=1,local_points
+      point%u_old(1, i) = point%prim(1, i)
+      point%u_old(2, i) = point%prim(1, i)*point%prim(2, i)
+      point%u_old(3, i) = point%prim(1, i)*point%prim(3, i)
+      point%u_old(4, i) = 2.5d0*point%prim(4, i) + 0.5d0*point%prim(1, i&
+&       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
+&       (3, i))
+    END DO
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+      WRITE(*, *) 
+    END IF
+    t = 0.0d0
     IF (restart .EQ. 0) THEN
       itr = 0
       cost_funcd = 0.0_8
-      pointd%delta = 0.0_8
+      td = 0.0_8
       pointd%prim = 0.0_8
       pointd%prim_old = 0.0_8
-      pointd%q = 0.0_8
       pointd%flux_res = 0.0_8
+      pointd%q = 0.0_8
       pointd%dq = 0.0_8
       pointd%ddq = 0.0_8
       pointd%temp = 0.0_8
+      pointd%delta = 0.0_8
+      dtgd = 0.0_8
     ELSE
       cost_funcd = 0.0_8
-      pointd%delta = 0.0_8
+      td = 0.0_8
       pointd%prim = 0.0_8
       pointd%prim_old = 0.0_8
-      pointd%q = 0.0_8
       pointd%flux_res = 0.0_8
+      pointd%q = 0.0_8
       pointd%dq = 0.0_8
       pointd%ddq = 0.0_8
       pointd%temp = 0.0_8
+      pointd%delta = 0.0_8
+      dtgd = 0.0_8
     END IF
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)
-      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-&     residue
-      WRITE(301, *) it, residue
-      IF (residue .NE. residue) EXIT
+      td = td + dtgd
+      t = t + dtg
+      IF (rank .EQ. 0) THEN
+        IF (timestep .EQ. 0) THEN
+          WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:'&
+&         , residue
+          WRITE(301, *) it, residue
+        ELSE IF (timestep .EQ. 1) THEN
+          WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'time:', t
+          WRITE(301, *) it, t, dtg
+        END IF
+        IF (IEEE_IS_NAN(residue)) EXIT
+      END IF
     END DO
-    CLOSE(unit=301)
+    CLOSE(unit=301) 
   END SUBROUTINE Q_LSKUM_D
 
   SUBROUTINE Q_LSKUM()
     IMPLICIT NONE
     INTEGER :: i
-    OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE')
+    EXTERNAL INITIAL_CONDITIONS
+    EXTERNAL IEEE_IS_NAN
+    LOGICAL :: IEEE_IS_NAN
+    INTEGER :: rank
+    IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
+&                   status='REPLACE', action='WRITE') 
+!	        Assign the initial conditions for the primitive variables ..	
+    CALL INITIAL_CONDITIONS()
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) '%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+      WRITE(*, *) 
+    END IF
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *)
-    DO i=1,max_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) 
+      WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
+      WRITE(*, *) 
+    END IF
+    DO i=1,local_points
+      point%phi1(1, i) = 1.0d0
+      point%phi1(2, i) = 1.0d0
+      point%phi1(3, i) = 1.0d0
+      point%phi1(4, i) = 1.0d0
+      point%phi2(1, i) = 1.0d0
+      point%phi2(2, i) = 1.0d0
+      point%phi2(3, i) = 1.0d0
+      point%phi2(4, i) = 1.0d0
     END DO
-! point%phi1(80,1) = point%phi1(80,1) + 1e-3
-    WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *)
+    DO i=1,ghost_points
+      point%phi1(1, i+local_points) = 1.0d0
+      point%phi1(2, i+local_points) = 1.0d0
+      point%phi1(3, i+local_points) = 1.0d0
+      point%phi1(4, i+local_points) = 1.0d0
+      point%phi2(1, i+local_points) = 1.0d0
+      point%phi2(2, i+local_points) = 1.0d0
+      point%phi2(3, i+local_points) = 1.0d0
+      point%phi2(4, i+local_points) = 1.0d0
+    END DO
+! Set U_old to U for first iteration
+    DO i=1,local_points
+      point%u_old(1, i) = point%prim(1, i)
+      point%u_old(2, i) = point%prim(1, i)*point%prim(2, i)
+      point%u_old(3, i) = point%prim(1, i)*point%prim(3, i)
+      point%u_old(4, i) = 2.5d0*point%prim(4, i) + 0.5d0*point%prim(1, i&
+&       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
+&       (3, i))
+    END DO
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+      WRITE(*, *) 
+    END IF
+    t = 0.0d0
     IF (restart .EQ. 0) itr = 0
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER(it)
-      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-&     residue
-      WRITE(301, *) it, residue
-      IF (residue .NE. residue) GOTO 100
+      t = t + dtg
+      IF (rank .EQ. 0) THEN
+        IF (timestep .EQ. 0) THEN
+          WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:'&
+&         , residue
+          WRITE(301, *) it, residue
+        ELSE IF (timestep .EQ. 1) THEN
+          WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'time:', t
+          WRITE(301, *) it, t, dtg
+        END IF
+        IF (IEEE_IS_NAN(residue)) GOTO 100
+      END IF
     END DO
- 100 CLOSE(unit=301)
+ 100 CLOSE(unit=301) 
   END SUBROUTINE Q_LSKUM
 
 END MODULE Q_LSKUM_MOD_DIFF
+

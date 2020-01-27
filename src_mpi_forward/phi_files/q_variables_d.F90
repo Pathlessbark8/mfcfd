@@ -81,7 +81,7 @@ CONTAINS
     REAL*8 :: one_by_det
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       sum_delx_sqr = 0.d0
@@ -144,7 +144,7 @@ CONTAINS
     REAL*8 :: one_by_det
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       sum_delx_sqr = 0.d0
@@ -206,7 +206,7 @@ CONTAINS
     REAL*8 :: one_by_det
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       sum_delx_sqr = 0.d0
@@ -280,7 +280,7 @@ CONTAINS
     REAL*8 :: one_by_det
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       sum_delx_sqr = 0.d0
@@ -349,7 +349,7 @@ CONTAINS
     REAL*8 :: temp1d, temp2d
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       sum_delx_sqr = 0.d0
@@ -496,7 +496,7 @@ CONTAINS
     REAL*8 :: temp1, temp2
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       sum_delx_sqr = 0.d0
@@ -598,7 +598,7 @@ CONTAINS
     REAL*8 :: temp1d(4), temp2d(4)
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       dq_xd = pointd%dq(1, :, i)
@@ -708,7 +708,7 @@ CONTAINS
     REAL*8 :: temp1(4), temp2(4)
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    DO i=1,max_points
+    DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
       dq_x = point%dq(1, :, i)
@@ -773,7 +773,7 @@ CONTAINS
   SUBROUTINE EVAL_UPDATE_INNERLOOP_2_D()
     IMPLICIT NONE
     INTEGER :: i
-    DO i=1,max_points
+    DO i=1,local_points
       pointd%dq(1, 1, i) = pointd%temp(1, 1, i)
       point%dq(1, 1, i) = point%temp(1, 1, i)
       pointd%dq(1, 2, i) = pointd%temp(1, 2, i)
@@ -796,7 +796,7 @@ CONTAINS
   SUBROUTINE EVAL_UPDATE_INNERLOOP_2()
     IMPLICIT NONE
     INTEGER :: i
-    DO i=1,max_points
+    DO i=1,local_points
       point%dq(1, 1, i) = point%temp(1, 1, i)
       point%dq(1, 2, i) = point%temp(1, 2, i)
       point%dq(1, 3, i) = point%temp(1, 3, i)
@@ -815,7 +815,7 @@ CONTAINS
   SUBROUTINE EVAL_UPDATE_INNERLOOP_3_D()
     IMPLICIT NONE
     INTEGER :: i
-    DO i=1,max_points
+    DO i=1,local_points
       pointd%ddq(1, :, i) = pointd%temp(1, :, i)
       point%ddq(1, :, i) = point%temp(1, :, i)
       pointd%ddq(2, :, i) = pointd%temp(2, :, i)
@@ -828,7 +828,7 @@ CONTAINS
   SUBROUTINE EVAL_UPDATE_INNERLOOP_3()
     IMPLICIT NONE
     INTEGER :: i
-    DO i=1,max_points
+    DO i=1,local_points
       point%ddq(1, :, i) = point%temp(1, :, i)
       point%ddq(2, :, i) = point%temp(2, :, i)
       point%ddq(3, :, i) = point%temp(3, :, i)

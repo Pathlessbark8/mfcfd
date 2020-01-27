@@ -12,10 +12,11 @@ MODULE FLUX_RESIDUAL_MOD_DIFF
 CONTAINS
 !  Differentiation of cal_flux_residual in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.flux_res)
-!   with respect to varying inputs: *(point.delta) *(point.q) *(point.flux_res)
+!   with respect to varying inputs: *(point.flux_res) *(point.q)
 !                *(point.dq) *(point.ddq) *(point.phi1) *(point.phi2)
-!   Plus diff mem management of: point.delta:in point.q:in point.flux_res:in
-!                point.dq:in point.ddq:in point.phi1:in point.phi2:in
+!                *(point.delta)
+!   Plus diff mem management of: point.flux_res:in point.q:in point.dq:in
+!                point.ddq:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE CAL_FLUX_RESIDUAL_D()
     IMPLICIT NONE
     INTEGER :: i, k

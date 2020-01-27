@@ -2,7 +2,9 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE STATE_UPDATE_MOD_DIFF
+#include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
+  USE PETSC_DATA_STRUCTURE_MOD
   USE FLUX_RESIDUAL_MOD_DIFF
   IMPLICIT NONE
 
@@ -40,11 +42,9 @@ CONTAINS
       IF (rk .NE. 3) THEN
         ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
         u = u - 0.5d0*euler*point%flux_res(:, k)
-! write(*,*) "Here", point%flux_res(:,k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
         u = tbt*u_old + obt*(u-0.5d0*point%flux_res(:, k))
-! write(*,*) "Here", point%flux_res(:,k)
       END IF
       ud(3) = 0.0_8
       u(3) = 0.d0
@@ -174,10 +174,8 @@ CONTAINS
       temp = u(1)
       IF (rk .NE. 3) THEN
         u = u - 0.5d0*euler*point%flux_res(:, k)
-! write(*,*) "Here", point%flux_res(:,k)
       ELSE
         u = tbt*u_old + obt*(u-0.5d0*point%flux_res(:, k))
-! write(*,*) "Here", point%flux_res(:,k)
       END IF
       u(3) = 0.d0
       u2_rot = u(2)
@@ -303,9 +301,10 @@ CONTAINS
   END SUBROUTINE CONSERVED_TO_PRIMITIVE
 
 !  Differentiation of func_delta in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: *(point.delta)
-!   with respect to varying inputs: *(point.delta) *(point.prim)
-!   Plus diff mem management of: point.delta:in point.prim:in
+!   variations   of useful results: *(point.delta) dtg lmin
+!   with respect to varying inputs: t *(point.prim) *(point.delta)
+!                dtg lmin
+!   Plus diff mem management of: point.prim:in point.delta:in
 !	This subroutine computes the delta_t (local time step) at a given point ..
   SUBROUTINE FUNC_DELTA_D()
     IMPLICIT NONE
@@ -314,7 +313,9 @@ CONTAINS
     REAL*8 :: delta_td
     REAL*8 :: min_dist
     REAL*8, SAVE :: lmin=1.0d0
+    REAL*8, SAVE :: lmind=0.0_8
     REAL*8 :: gmin
+    REAL*8 :: gmind
     REAL*8 :: x_i, y_i, x_k, y_k
     REAL*8 :: u1, u2, rho, pr, mod_u
     REAL*8 :: u1d, u2d, rhod, prd, mod_ud
@@ -326,7 +327,12 @@ CONTAINS
     REAL*8 :: arg1d
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
-    DO i=1,max_points
+    INTEGER :: mpi_min
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_double
+    petscerrorcode :: ierr
+    DO i=1,local_points
       min_delt = 1.0d0
       min_deltd = 0.0_8
       DO r=1,point%nbhs(i)
@@ -374,6 +380,26 @@ CONTAINS
       pointd%delta(i) = min_deltd
       point%delta(i) = min_delt
     END DO
+    IF (timestep .EQ. 1) THEN
+      DO i=1,local_points
+        IF (point%delta(i) .LT. lmin) THEN
+          lmind = pointd%delta(i)
+          lmin = point%delta(i)
+        END IF
+      END DO
+      CALL TLS_MPI_REDUCE(lmin, lmind, gmin, gmind, 1, mpi_double, &
+&                   mpi_double, mpi_min, 0, 0, petsc_comm_world, ierr)
+      CALL TLS_MPI_BCAST(gmin, gmind, 1, mpi_double, mpi_double, 0, &
+&                  petsc_comm_world, ierr)
+      dtgd = gmind
+      dtg = gmin
+      IF (t + dtg .GT. tfinal) THEN
+        dtgd = -td
+        dtg = tfinal - t
+      END IF
+      pointd%delta = dtgd
+      point%delta = dtg
+    END IF
   END SUBROUTINE FUNC_DELTA_D
 
 !	This subroutine computes the delta_t (local time step) at a given point ..
@@ -391,7 +417,12 @@ CONTAINS
     INTRINSIC DSQRT
     REAL*8 :: arg1
     DOUBLE PRECISION :: result1
-    DO i=1,max_points
+    INTEGER :: mpi_min
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_double
+! petscerrorcode :: ierr
+    DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
         k = point%conn(i, r)
@@ -415,6 +446,17 @@ CONTAINS
       END DO
       point%delta(i) = min_delt
     END DO
+    IF (timestep .EQ. 1) THEN
+      DO i=1,local_points
+        IF (point%delta(i) .LT. lmin) lmin = point%delta(i)
+      END DO
+      CALL MPI_REDUCE(lmin, gmin, 1, mpi_double, mpi_min, 0, &
+&               petsc_comm_world, ierr)
+      CALL MPI_BCAST(gmin, 1, mpi_double, 0, petsc_comm_world, ierr)
+      dtg = gmin
+      IF (t + dtg .GT. tfinal) dtg = tfinal - t
+      point%delta = dtg
+    END IF
   END SUBROUTINE FUNC_DELTA
 
 !  Differentiation of conserved_vector_ubar in forward (tangent) mode (with options fixinterface):
@@ -434,12 +476,12 @@ CONTAINS
     REAL*8 :: nx, ny, tx, ty
     INTRINSIC DSQRT
     INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! EXTERNAL DERF_D
-    ! DOUBLE PRECISION :: DERF
-    ! DOUBLE PRECISION :: DERF_D
-    ! INTRINSIC SQRT
-    ! INTRINSIC EXP
+    EXTERNAL DERF
+    EXTERNAL DERF_D
+    DOUBLE PRECISION :: DERF
+    DOUBLE PRECISION :: DERF_D
+    INTRINSIC SQRT
+    INTRINSIC EXP
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -501,12 +543,7 @@ CONTAINS
     b2d = (-((s2d*s2+s2*s2d)*EXP(-(s2*s2))*2.0d0*result10)-EXP(-(s2*s2))&
 &     *2.0d0*result10d)/(2.0d0*result10)**2
     b2 = EXP(-(s2*s2))/(2.0d0*result10)
-    !
-    ! result1d = DERF_D(s2, s2d, result1)
-    !
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
-    !
+    result1d = DERF_D(s2, s2d, result1)
     a2pd = 0.5d0*result1d
     a2p = 0.5d0*(1.0d0+result1)
     ubard(1) = rhod*a2p + rho*a2pd
@@ -534,12 +571,12 @@ CONTAINS
     REAL*8 :: b2, a2p, temp1, temp2
     REAL*8 :: ubar(4), prim(4)
     REAL*8 :: nx, ny, tx, ty
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC SQRT
-    ! INTRINSIC EXP
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC SQRT
+    INTRINSIC EXP
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     REAL*8 :: result10

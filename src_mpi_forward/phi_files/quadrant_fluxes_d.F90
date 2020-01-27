@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE QUADRANT_FLUXES_MOD_DIFF
-!	This module consists of quadrant split fluxes
+!	This module consists of quadrant split fluxes 
 !	with respect to the x-coordinate direction ..
   USE PARAMETER_MOD
   IMPLICIT NONE
@@ -30,12 +30,12 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    ! DOUBLE PRECISION :: DERF
-    ! DOUBLE PRECISION :: DERF_D
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! EXTERNAL DERF_D
+    DOUBLE PRECISION :: DERF
+    DOUBLE PRECISION :: DERF_D
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    EXTERNAL DERF_D
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -86,25 +86,17 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-
-    ! result1d = DERF_D(s1, s1d, result1)
-    result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
-    result1 = derf(s1)
-
+    result1d = DERF_D(s1, s1d, result1)
     a1negd = -(0.5d0*result1d)
     a1neg = 0.5d0*(1.0d0-result1)
-
-    ! result1d = DERF_D(s2, s2d, result1)
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
-
+    result1d = DERF_D(s2, s2d, result1)
     a2negd = -(0.5d0*result1d)
     a2neg = 0.5d0*(1.0d0-result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
     pr_by_rho = pr/rho
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     gd(1) = (rhod*a2neg+rho*a2negd)*(ut*a1neg-b1) + rho*a2neg*(utd*a1neg&
 &     +ut*a1negd-b1d)
     g(1) = rho*a2neg*(ut*a1neg-b1)
@@ -147,10 +139,10 @@ CONTAINS
     DOUBLE PRECISION :: a1neg, a2neg
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -174,7 +166,7 @@ CONTAINS
     a2neg = 0.5d0*(1.0d0-result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     g(1) = rho*a2neg*(ut*a1neg-b1)
     temp1 = pr_by_rho + ut*ut
     temp2 = temp1*a1neg - ut*b1
@@ -211,12 +203,12 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    ! DOUBLE PRECISION :: DERF
-    ! DOUBLE PRECISION :: DERF_D
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! EXTERNAL DERF_D
+    DOUBLE PRECISION :: DERF
+    DOUBLE PRECISION :: DERF_D
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    EXTERNAL DERF_D
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -267,25 +259,17 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-
-    ! result1d = DERF_D(s1, s1d, result1)
-    result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
-    result1 = derf(s1)
-
+    result1d = DERF_D(s1, s1d, result1)
     a1posd = 0.5d0*result1d
     a1pos = 0.5d0*(1.d0+result1)
-
-    ! result1d = DERF_D(s2, s2d, result1)
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
-
+    result1d = DERF_D(s2, s2d, result1)
     a2negd = -(0.5d0*result1d)
     a2neg = 0.5d0*(1.d0-result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
     pr_by_rho = pr/rho
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     gd(1) = (rhod*a2neg+rho*a2negd)*(ut*a1pos+b1) + rho*a2neg*(utd*a1pos&
 &     +ut*a1posd+b1d)
     g(1) = rho*a2neg*(ut*a1pos+b1)
@@ -328,10 +312,10 @@ CONTAINS
     DOUBLE PRECISION :: a1pos, a2neg
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -355,7 +339,7 @@ CONTAINS
     a2neg = 0.5d0*(1.d0-result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     g(1) = rho*a2neg*(ut*a1pos+b1)
     temp1 = pr_by_rho + ut*ut
     temp2 = temp1*a1pos + ut*b1
@@ -392,12 +376,12 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    ! DOUBLE PRECISION :: DERF
-    ! DOUBLE PRECISION :: DERF_D
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! EXTERNAL DERF_D
+    DOUBLE PRECISION :: DERF
+    DOUBLE PRECISION :: DERF_D
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    EXTERNAL DERF_D
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -448,25 +432,17 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-
-    ! result1d = DERF_D(s1, s1d, result1)
-    result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
-    result1 = derf(s1)
-
+    result1d = DERF_D(s1, s1d, result1)
     a1posd = 0.5d0*result1d
     a1pos = 0.5d0*(1.0d0+result1)
-
-    ! result1d = DERF_D(s2, s2d, result1)
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
-
+    result1d = DERF_D(s2, s2d, result1)
     a2posd = 0.5d0*result1d
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
     pr_by_rho = pr/rho
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     gd(1) = (rhod*a2pos+rho*a2posd)*(ut*a1pos+b1) + rho*a2pos*(utd*a1pos&
 &     +ut*a1posd+b1d)
     g(1) = rho*a2pos*(ut*a1pos+b1)
@@ -509,10 +485,10 @@ CONTAINS
     DOUBLE PRECISION :: a1pos, a2pos
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -536,7 +512,7 @@ CONTAINS
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     g(1) = rho*a2pos*(ut*a1pos+b1)
     temp1 = pr_by_rho + ut*ut
     temp2 = temp1*a1pos + ut*b1
@@ -573,12 +549,12 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    ! DOUBLE PRECISION :: DERF
-    ! DOUBLE PRECISION :: DERF_D
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! EXTERNAL DERF_D
+    DOUBLE PRECISION :: DERF
+    DOUBLE PRECISION :: DERF_D
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    EXTERNAL DERF_D
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -629,25 +605,17 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-
-    ! result1d = DERF_D(s1, s1d, result1)
-    result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
-    result1 = derf(s1)
-
+    result1d = DERF_D(s1, s1d, result1)
     a1negd = -(0.5d0*result1d)
     a1neg = 0.5d0*(1.0d0-result1)
-
-    ! result1d = DERF_D(s2, s2d, result1)
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
-
+    result1d = DERF_D(s2, s2d, result1)
     a2posd = 0.5d0*result1d
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
     pr_by_rho = pr/rho
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     gd(1) = (rhod*a2pos+rho*a2posd)*(ut*a1neg-b1) + rho*a2pos*(utd*a1neg&
 &     +ut*a1negd-b1d)
     g(1) = rho*a2pos*(ut*a1neg-b1)
@@ -690,10 +658,10 @@ CONTAINS
     DOUBLE PRECISION :: a1neg, a2pos
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -717,7 +685,7 @@ CONTAINS
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rho = pr/rho
     u_sqr = ut*ut + un*un
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
     g(1) = rho*a2pos*(ut*a1neg-b1)
     temp1 = pr_by_rho + ut*ut
     temp2 = temp1*a1neg - ut*b1
@@ -770,15 +738,15 @@ CONTAINS
     DOUBLE PRECISION :: arg1d
     REAL*8 :: result10
     REAL*8 :: result10d
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! INTRINSIC SQRT
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    INTRINSIC SQRT
+    EXTERNAL DERF
     DOUBLE PRECISION :: result11
     DOUBLE PRECISION :: arg10
     REAL*8 :: result12
-!
+! 
 !
     tx = ny
     ty = -nx
@@ -861,7 +829,7 @@ CONTAINS
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
 !
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
 !
     gd = 0.d0
     gd(1) = (rhod*a2neg+rho*a2negd)*(ut*a1neg-b1) + rho*a2neg*(utd*a1neg&
@@ -886,7 +854,7 @@ CONTAINS
     temp1 = 7.0d0*pr_by_rho + u_sqr
     temp2d = 0.5d0*((utd*temp1+ut*temp1d)*a1neg+ut*temp1*a1negd)
     temp2 = 0.5d0*ut*temp1*a1neg
-!
+! 
     temp1d = 6.0d0*pr_by_rhod + u_sqrd
     temp1 = 6.0d0*pr_by_rho + u_sqr
     temp3d = 0.5d0*(b1d*temp1+b1*temp1d)
@@ -897,7 +865,7 @@ CONTAINS
     temp4d = 0.5d0*((rhod*un+rho*und)*b2*temp1+rho*un*(b2d*temp1+b2*&
 &     temp1d))
     temp4 = 0.5d0*rho*un*b2*temp1
-!
+!      
     gd(4) = (rhod*a2neg+rho*a2negd)*(temp2-temp3) + rho*a2neg*(temp2d-&
 &     temp3d) - temp4d
     g(4) = rho*a2neg*(temp2-temp3) - temp4
@@ -944,15 +912,15 @@ CONTAINS
     DOUBLE PRECISION :: arg1d
     REAL*8 :: result10
     REAL*8 :: result10d
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! INTRINSIC SQRT
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    INTRINSIC SQRT
+    EXTERNAL DERF
     DOUBLE PRECISION :: result11
     DOUBLE PRECISION :: arg10
     REAL*8 :: result12
-!
+! 
 !
     tx = ny
     ty = -nx
@@ -1034,7 +1002,7 @@ CONTAINS
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
 !
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
 !
     gd = 0.d0
     gd(1) = (rhod*a2neg+rho*a2negd)*(ut*a1pos+b1) + rho*a2neg*(utd*a1pos&
@@ -1088,7 +1056,7 @@ CONTAINS
 !
   SUBROUTINE FLUX_QUAD_GXIII_D(g, gd, u, ud, nx, ny)
     IMPLICIT NONE
-!
+! 
 !
 !
     DOUBLE PRECISION :: g(4), u1, u2, rho, pr, u(4)
@@ -1118,14 +1086,14 @@ CONTAINS
     DOUBLE PRECISION :: arg1d
     REAL*8 :: result10
     REAL*8 :: result10d
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! INTRINSIC SQRT
-    ! EXTERNAL DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    INTRINSIC SQRT
+    EXTERNAL DERF
     DOUBLE PRECISION :: result11
     DOUBLE PRECISION :: arg10
     REAL*8 :: result12
-!
+! 
 !
     tx = ny
     ty = -nx
@@ -1208,7 +1176,7 @@ CONTAINS
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
 !
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
 !
     gd = 0.d0
     gd(1) = (rhod*a2pos+rho*a2posd)*(ut*a1pos+b1) + rho*a2pos*(utd*a1pos&
@@ -1262,7 +1230,7 @@ CONTAINS
 !
   SUBROUTINE FLUX_QUAD_GXIV_D(g, gd, u, ud, nx, ny)
     IMPLICIT NONE
-!
+! 
 !
     DOUBLE PRECISION :: g(4), u1, u2, rho, pr, u(4)
     DOUBLE PRECISION :: gd(4), u1d, u2d, rhod, prd, ud(4)
@@ -1290,15 +1258,15 @@ CONTAINS
     DOUBLE PRECISION :: arg1d
     REAL*8 :: result10
     REAL*8 :: result10d
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! INTRINSIC SQRT
-    ! EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    INTRINSIC SQRT
+    EXTERNAL DERF
     DOUBLE PRECISION :: result11
     DOUBLE PRECISION :: arg10
     REAL*8 :: result12
-!
+! 
 !
     tx = ny
     ty = -nx
@@ -1381,13 +1349,13 @@ CONTAINS
     u_sqrd = utd*ut + ut*utd + und*un + un*und
     u_sqr = ut*ut + un*un
 !
-!	Expressions for the split fluxes ..
+!	Expressions for the split fluxes ..	
 !
     gd = 0.d0
     gd(1) = (rhod*a2pos+rho*a2posd)*(ut*a1neg-b1) + rho*a2pos*(utd*a1neg&
 &     +ut*a1negd-b1d)
     g(1) = rho*a2pos*(ut*a1neg-b1)
-!
+!       
     temp1d = pr_by_rhod + utd*ut + ut*utd
     temp1 = pr_by_rho + ut*ut
     temp2d = temp1d*a1neg + temp1*a1negd - utd*b1 - ut*b1d
@@ -1417,10 +1385,11 @@ CONTAINS
     temp4d = 0.5d0*((rhod*un+rho*und)*b2*temp1+rho*un*(b2d*temp1+b2*&
 &     temp1d))
     temp4 = 0.5d0*rho*un*b2*temp1
-!
+!      
     gd(4) = (rhod*a2pos+rho*a2posd)*(temp2-temp3) + rho*a2pos*(temp2d-&
 &     temp3d) + temp4d
     g(4) = rho*a2pos*(temp2-temp3) + temp4
   END SUBROUTINE FLUX_QUAD_GXIV_D
 
 END MODULE QUADRANT_FLUXES_MOD_DIFF
+
