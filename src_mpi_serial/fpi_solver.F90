@@ -36,6 +36,19 @@ contains
                         call update_begin_qm_ghost()
                         call update_end_dq_ghost()
                         call update_end_qm_ghost()
+
+                        call eval_q_double_derivatives()
+
+                        if(inner_iterations /= 0) then
+                                do i = 1, inner_iterations
+                                        call eval_dq_inner_loop()
+                                        call eval_update_innerloop_2()
+                                        call update_begin_dq_ghost()
+                                        call update_end_dq_ghost()
+                                        call eval_ddq_inner_loop()
+                                        call eval_update_innerloop_3()
+                                enddo
+                        end if
                 
                         call cal_flux_residual()
 

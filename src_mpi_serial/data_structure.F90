@@ -121,6 +121,8 @@ module data_structure_mod
         real*8 :: Cl_flag, Cd_flag, Cm_flag, Cl_Cd_flag, ent_flag, ens_flag
         integer :: obj_flag
 
+        integer :: inner_iterations = 0
+
 !       No of shapes
         integer :: shapes
 

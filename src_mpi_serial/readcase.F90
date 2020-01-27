@@ -55,7 +55,7 @@ subroutine readcase()
                 rks = 1
                 euler = 2.0d0
         elseif(trim(tscheme) == 'ssprk43') then
-                rks = 3
+                rks = 4
                 euler = 1.0d0
         end if
 
@@ -86,6 +86,10 @@ subroutine readcase()
         elseif(trim(restart_solution) == 'no') then
                 restart = 0
         end if
+
+        inner_iterations = 0
+        call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                '-inner_iterations',inner_iterations,set,ierr); CHKERRQ(ierr)
 
         interior_points_normal_flag = 0 ! Default : use nx as 0.0 and ny as 1.0
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -122,17 +126,18 @@ subroutine readcase()
         
         ! Print paramaters to screen
         if (rank==0) then
-                write(*,*) 'max_iters    :', max_iters
-                write(*,*) 'cfl          :', cfl
-                write(*,*) 'shapes       :', shapes
-                write(*,*) 'timestep     :', time
-                write(*,*) 'run_option   :', run_option
-                write(*,*) 'tscheme      :', tscheme
-                write(*,*) 'file format  :', format_file
-                write(*,*) 'accuracy     :', solution_accuracy
-                write(*,*) 'nsave        :', nsave
-                write(*,*) 'power        :', power
-                write(*,*) 'limiter_flag :', limiter_flag
+                write(*,*) 'max_iters           :', max_iters
+                write(*,*) 'cfl                 :', cfl
+                write(*,*) 'shapes              :', shapes
+                write(*,*) 'timestep            :', time
+                write(*,*) 'run_option          :', run_option
+                write(*,*) 'tscheme             :', tscheme
+                write(*,*) 'file format         :', format_file
+                write(*,*) 'accuracy            :', solution_accuracy
+                write(*,*) 'nsave               :', nsave
+                write(*,*) 'power               :', power
+                write(*,*) 'limiter_flag        :', limiter_flag
+                write(*,*) 'inner_iterations    :', inner_iterations
                 if(limiter_flag == 1)write(*,*) 'vl_const     :', vl_const
         end if
 
