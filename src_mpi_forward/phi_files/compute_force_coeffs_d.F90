@@ -20,17 +20,10 @@ CONTAINS
     REAL*8 :: nx, ny
     CHARACTER(len=64) :: cp_file
     CHARACTER(len=10) :: itos
-    INTRINSIC TRIM
     INTRINSIC DSQRT
     INTRINSIC DCOS
     INTRINSIC DSIN
-    TYPE(UNKNOWNTYPE) :: proc
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_sum
-    INTEGER :: mpi_double
-    INTEGER :: rank
-    petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&

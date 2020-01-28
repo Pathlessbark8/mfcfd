@@ -4,10 +4,10 @@ program meshfree_solver
 
         use petscsys        
         use parameter_mod
+        use petsc_data_structure_mod
         use data_structure_mod_diff
         use point_preprocessor_mod
         use q_lskum_mod_diff
-        use file_ops_mod
         use initial_conditions_mod
         use post_processing_mod
 
@@ -39,7 +39,7 @@ program meshfree_solver
                 write(*,*)
         end if
 
-        call readnml()
+        call readcase()
 
         if(rank == 0) then
                 write(*,*)
@@ -67,8 +67,10 @@ program meshfree_solver
 !       Assign the initial conditions for the primitive variables ..
 
         call initial_conditions()
-        write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
-        write(*,*)
+        if(rank == 0) then
+                write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+                write(*,*)
+        endif
 
 !	Primal fixed point iterative solver ..
 
@@ -86,10 +88,12 @@ program meshfree_solver
 
         totaltime = MPI_Wtime() - totaltime
 
-        write(*,*)
-        write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
-        write(*,*) 'Run time:  ',runtime,'seconds'
-        write(*,*) 'Total time:',totaltime,'seconds'
+        if(rank == 0) then
+                write(*,*)
+                write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
+                write(*,*) 'Run time:  ',runtime,'seconds'
+                write(*,*) 'Total time:',totaltime,'seconds'
+        endif
 
 !       stop petsc
         call PetscFinalize(ierr)

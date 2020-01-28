@@ -64,9 +64,15 @@ program meshfree_solver
                 write(*,*) 'Number of points:         ', plen
                 write(*,*)
         end if
+        
+!	Assign the initial conditions for the primitive variables ..	
+        call initial_conditions()
+        if(rank == 0) then
+                write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
+                write(*,*)
+        end if
 
 !	Primal fixed point iterative solver ..
-        
         runtime = MPI_Wtime()
         if(runop == 1)then
                 if(rank == 0) then

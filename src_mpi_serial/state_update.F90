@@ -239,19 +239,19 @@ module state_update_mod
                         point%delta(i) = min_delt
                 end do
 
-                if(timestep == 1) then
-                        do i = 1, local_points
-                                if (point%delta(i).lt.lmin) lmin=point%delta(i)
-                        end do
-                        call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
-                                & PETSC_COMM_WORLD, ierr)
-                        call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
-                                 & ierr)
+                ! if(timestep == 1) then
+                !         do i = 1, local_points
+                !                 if (point%delta(i).lt.lmin) lmin=point%delta(i)
+                !         end do
+                !         call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
+                !                 & PETSC_COMM_WORLD, ierr)
+                !         call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+                !                  & ierr)
 
-                        dtg = gmin
-                        if(t+dtg > tfinal) dtg = tfinal - t
-                        point%delta = dtg
-                end if
+                !         dtg = gmin
+                !         if(t+dtg > tfinal) dtg = tfinal - t
+                !         point%delta = dtg
+                ! end if
 
         end subroutine
 

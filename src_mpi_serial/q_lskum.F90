@@ -21,14 +21,6 @@ contains
 
                 if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
-!	        Assign the initial conditions for the primitive variables ..	
-
-                call initial_conditions()
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
-                        write(*,*)
-                end if
-
                 call compute_normals()
                 call generate_connectivity()
 

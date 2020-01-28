@@ -28,25 +28,10 @@ CONTAINS
     IMPLICIT NONE
     INTEGER :: t, i, rk
     INTEGER :: td
-    EXTERNAL UPDATE_BEGIN_DQ_GHOST
-    EXTERNAL UPDATE_BEGIN_QM_GHOST
-    EXTERNAL UPDATE_END_DQ_GHOST
-    EXTERNAL UPDATE_END_QM_GHOST
-    EXTERNAL UPDATE_BEGIN_DDQ_GHOST
-    EXTERNAL UPDATE_END_DDQ_GHOST
-    EXTERNAL UPDATE_BEGIN_PRIM_GHOST
-    EXTERNAL UPDATE_END_PRIM_GHOST
     INTRINSIC DSQRT
     INTRINSIC DLOG10
-    INTRINSIC MOD
-    EXTERNAL PRINT_PRIMAL_OUTPUT
     DOUBLE PRECISION :: result1
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_sum
-    INTEGER :: mpi_double
-    INTEGER :: rank
- petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       pointd%prim_old(:, i) = pointd%prim(:, i)
       point%prim_old(:, i) = point%prim(:, i)
@@ -110,25 +95,12 @@ CONTAINS
   SUBROUTINE FPI_SOLVER(t)
     IMPLICIT NONE
     INTEGER :: t, i, rk
-    EXTERNAL UPDATE_BEGIN_DQ_GHOST
-    EXTERNAL UPDATE_BEGIN_QM_GHOST
-    EXTERNAL UPDATE_END_DQ_GHOST
-    EXTERNAL UPDATE_END_QM_GHOST
-    EXTERNAL UPDATE_BEGIN_DDQ_GHOST
-    EXTERNAL UPDATE_END_DDQ_GHOST
-    EXTERNAL UPDATE_BEGIN_PRIM_GHOST
-    EXTERNAL UPDATE_END_PRIM_GHOST
+   
     INTRINSIC DSQRT
     INTRINSIC DLOG10
-    INTRINSIC MOD
-    EXTERNAL PRINT_PRIMAL_OUTPUT
+
     DOUBLE PRECISION :: result1
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_sum
-    INTEGER :: mpi_double
-    INTEGER :: rank
-! petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
@@ -178,14 +150,14 @@ CONTAINS
       residue = DLOG10(res_new/res_old)
     END IF
 ! Print primal output
-    IF (MOD(it, nsave) .EQ. 0) THEN
-      IF (rank .EQ. 0) THEN
-        WRITE(*, *) 
-        WRITE(*, *) '%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
-        WRITE(*, *) 
-      END IF
-      CALL PRINT_PRIMAL_OUTPUT()
-    END IF
+    ! IF (MOD(it, nsave) .EQ. 0) THEN
+    !   IF (rank .EQ. 0) THEN
+    !     WRITE(*, *) 
+    !     WRITE(*, *) '%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+    !     WRITE(*, *) 
+    !   END IF
+    !   CALL PRINT_PRIMAL_OUTPUT()
+    ! END IF
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF

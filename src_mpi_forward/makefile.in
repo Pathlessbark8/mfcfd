@@ -5,7 +5,7 @@ include ${PETSC_DIR}/lib/petsc/conf/rules
 FC = mpifort
 CC = icc
 #flags for intel compiler
-#FFLAGS = -O3 -ffree-line-length-512 -I$(PETSC_DIR)/include
+FFLAGS = -O3 -ffree-line-length-512 -I$(PETSC_DIR)/include
 
 #gcc compiler
 #FC = gfortran

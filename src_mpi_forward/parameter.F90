@@ -13,6 +13,33 @@ module parameter_mod
 
 contains
 
+        SUBROUTINE SETUP_CASE_PARAMETERS_D()
+                IMPLICIT NONE
+                INTRINSIC DCOS
+                INTRINSIC DSIN
+            !calculate theta
+                thetad = pi*aoad/180.d0
+                theta = aoa*pi/180.d0
+            !Setup initial conditions
+                q_init(1) = rho_inf
+                q_initd = 0.0_8
+                q_initd(2) = -(mach*thetad*DSIN(theta))
+                q_init(2) = mach*DCOS(theta)
+                q_initd(3) = mach*thetad*DCOS(theta)
+                q_init(3) = mach*DSIN(theta)
+                q_initd(4) = 0.0_8
+                q_init(4) = pr_inf
+            !Setup free stream conditions
+                q_inf(1) = rho_inf
+                q_infd = 0.0_8
+                q_infd(2) = -(mach*thetad*DSIN(theta))
+                q_inf(2) = mach*DCOS(theta)
+                q_infd(3) = mach*thetad*DCOS(theta)
+                q_inf(3) = mach*DSIN(theta)
+                q_infd(4) = 0.0_8
+                q_inf(4) = pr_inf
+        END SUBROUTINE SETUP_CASE_PARAMETERS_D
+
         subroutine setup_case_parameters()
                 implicit none
 

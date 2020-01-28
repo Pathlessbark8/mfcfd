@@ -71,12 +71,7 @@ CONTAINS
     REAL*8 :: arg1d
     REAL*8 :: result1
     REAL*8 :: result1d
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_sum
-    INTEGER :: mpi_double
-    INTEGER :: rank
-    petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     pwx1 = 1 + (gamma-1)/2*mach*mach
     pwr1 = pwx1**gammapower
@@ -121,12 +116,13 @@ CONTAINS
       p0_sumd = p0_sumd - 2*(p0_inf-p0)*p0d
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
-    CALL TLS_MPI_REDUCE(p0_sum, p0_sumd, total_p0, total_p0d, 1, &
-&                 mpi_double, mpi_double, mpi_sum, 0, 0, &
-&                 petsc_comm_world, ierr)
+    CALL MPI_REDUCE(p0_sum, total_p0, 1, mpi_double, mpi_sum, 0, &
+    &             petsc_comm_world, ierr)
+    CALL MPI_REDUCE(p0_sumd, total_p0d, 1, mpi_double, mpi_sum, 0, &
+    &             petsc_comm_world, ierr)
     cost_funcd = constant*total_p0d
     cost_func = total_p0*constant
-    IF (rank .EQ. 0) WRITE(*, *) 'J: ', cost_func
+    IF (rank .EQ. 0) WRITE(*, *) 'J: ', cost_func, 'Jd: ', cost_funcd
   END SUBROUTINE OBJECTIVE_FUNCTION_J_D
 
   SUBROUTINE OBJECTIVE_FUNCTION_J()
@@ -140,12 +136,7 @@ CONTAINS
     REAL*8 :: pwr1
     REAL*8 :: arg1
     REAL*8 :: result1
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_sum
-    INTEGER :: mpi_double
-    INTEGER :: rank
-! petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     pwx1 = 1 + (gamma-1)/2*mach*mach
     pwr1 = pwx1**gammapower

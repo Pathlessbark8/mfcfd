@@ -17,11 +17,7 @@ CONTAINS
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_sum
-    INTEGER :: mpi_double
-    petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     DO k=1,local_points

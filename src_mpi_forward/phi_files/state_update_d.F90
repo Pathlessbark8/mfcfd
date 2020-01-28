@@ -327,11 +327,7 @@ CONTAINS
     REAL*8 :: arg1d
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
-    INTEGER :: mpi_min
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_double
-    petscerrorcode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       min_deltd = 0.0_8
@@ -380,26 +376,26 @@ CONTAINS
       pointd%delta(i) = min_deltd
       point%delta(i) = min_delt
     END DO
-    IF (timestep .EQ. 1) THEN
-      DO i=1,local_points
-        IF (point%delta(i) .LT. lmin) THEN
-          lmind = pointd%delta(i)
-          lmin = point%delta(i)
-        END IF
-      END DO
-      CALL TLS_MPI_REDUCE(lmin, lmind, gmin, gmind, 1, mpi_double, &
-&                   mpi_double, mpi_min, 0, 0, petsc_comm_world, ierr)
-      CALL TLS_MPI_BCAST(gmin, gmind, 1, mpi_double, mpi_double, 0, &
-&                  petsc_comm_world, ierr)
-      dtgd = gmind
-      dtg = gmin
-      IF (t + dtg .GT. tfinal) THEN
-        dtgd = -td
-        dtg = tfinal - t
-      END IF
-      pointd%delta = dtgd
-      point%delta = dtg
-    END IF
+!     IF (timestep .EQ. 1) THEN
+!       DO i=1,local_points
+!         IF (point%delta(i) .LT. lmin) THEN
+!           lmind = pointd%delta(i)
+!           lmin = point%delta(i)
+!         END IF
+!       END DO
+!       CALL TLS_MPI_REDUCE(lmin, lmind, gmin, gmind, 1, mpi_double, &
+! &                   mpi_double, mpi_min, 0, 0, petsc_comm_world, ierr)
+!       CALL TLS_MPI_BCAST(gmin, gmind, 1, mpi_double, mpi_double, 0, &
+! &                  petsc_comm_world, ierr)
+!       dtgd = gmind
+!       dtg = gmin
+!       IF (t + dtg .GT. tfinal) THEN
+!         dtgd = -td
+!         dtg = tfinal - t
+!       END IF
+!       pointd%delta = dtgd
+!       point%delta = dtg
+!     END IF
   END SUBROUTINE FUNC_DELTA_D
 
 !	This subroutine computes the delta_t (local time step) at a given point ..
@@ -417,11 +413,7 @@ CONTAINS
     INTRINSIC DSQRT
     REAL*8 :: arg1
     DOUBLE PRECISION :: result1
-    INTEGER :: mpi_min
-    INTEGER :: petsc_comm_world
-    INTEGER :: ierr
-    INTEGER :: mpi_double
-! petscerrorcode :: ierr
+PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -446,17 +438,17 @@ CONTAINS
       END DO
       point%delta(i) = min_delt
     END DO
-    IF (timestep .EQ. 1) THEN
-      DO i=1,local_points
-        IF (point%delta(i) .LT. lmin) lmin = point%delta(i)
-      END DO
-      CALL MPI_REDUCE(lmin, gmin, 1, mpi_double, mpi_min, 0, &
-&               petsc_comm_world, ierr)
-      CALL MPI_BCAST(gmin, 1, mpi_double, 0, petsc_comm_world, ierr)
-      dtg = gmin
-      IF (t + dtg .GT. tfinal) dtg = tfinal - t
-      point%delta = dtg
-    END IF
+!     IF (timestep .EQ. 1) THEN
+!       DO i=1,local_points
+!         IF (point%delta(i) .LT. lmin) lmin = point%delta(i)
+!       END DO
+!       CALL MPI_REDUCE(lmin, gmin, 1, mpi_double, mpi_min, 0, &
+! &               petsc_comm_world, ierr)
+!       CALL MPI_BCAST(gmin, 1, mpi_double, 0, petsc_comm_world, ierr)
+!       dtg = gmin
+!       IF (t + dtg .GT. tfinal) dtg = tfinal - t
+!       point%delta = dtg
+!     END IF
   END SUBROUTINE FUNC_DELTA
 
 !  Differentiation of conserved_vector_ubar in forward (tangent) mode (with options fixinterface):
@@ -476,12 +468,12 @@ CONTAINS
     REAL*8 :: nx, ny, tx, ty
     INTRINSIC DSQRT
     INTRINSIC DEXP
-    EXTERNAL DERF
-    EXTERNAL DERF_D
-    DOUBLE PRECISION :: DERF
-    DOUBLE PRECISION :: DERF_D
-    INTRINSIC SQRT
-    INTRINSIC EXP
+    ! EXTERNAL DERF
+    ! EXTERNAL DERF_D
+    ! DOUBLE PRECISION :: DERF
+    ! DOUBLE PRECISION :: DERF_D
+    ! INTRINSIC SQRT
+    ! INTRINSIC EXP
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -543,7 +535,12 @@ CONTAINS
     b2d = (-((s2d*s2+s2*s2d)*EXP(-(s2*s2))*2.0d0*result10)-EXP(-(s2*s2))&
 &     *2.0d0*result10d)/(2.0d0*result10)**2
     b2 = EXP(-(s2*s2))/(2.0d0*result10)
-    result1d = DERF_D(s2, s2d, result1)
+    !
+    ! result1d = DERF_D(s2, s2d, result1)
+    !
+    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
+    result1 = derf(s2)
+    !
     a2pd = 0.5d0*result1d
     a2p = 0.5d0*(1.0d0+result1)
     ubard(1) = rhod*a2p + rho*a2pd
@@ -571,12 +568,12 @@ CONTAINS
     REAL*8 :: b2, a2p, temp1, temp2
     REAL*8 :: ubar(4), prim(4)
     REAL*8 :: nx, ny, tx, ty
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
-    DOUBLE PRECISION :: DERF
-    INTRINSIC SQRT
-    INTRINSIC EXP
+    ! INTRINSIC DSQRT
+    ! INTRINSIC DEXP
+    ! EXTERNAL DERF
+    ! DOUBLE PRECISION :: DERF
+    ! INTRINSIC SQRT
+    ! INTRINSIC EXP
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     REAL*8 :: result10

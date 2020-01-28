@@ -149,6 +149,26 @@ CONTAINS
     ALLOCATE(cfv(shapes))
   END SUBROUTINE ALLOCATE_SOLN
 
+  subroutine allocate_soln_d()
+    implicit none
+    allocate(pointd%prim(4,max_points))
+    allocate(pointd%prim_old(4,max_points))
+    allocate(pointd%flux_res(4,max_points))
+    allocate(pointd%q(4,max_points))
+    allocate(pointd%dq(2,4,max_points))
+    ALLOCATE(pointd%ddq(3, 4, max_points))
+    ALLOCATE(pointd%phi1(4, max_points))
+    ALLOCATE(pointd%phi2(4, max_points))
+    ALLOCATE(pointd%temp(3, 4, max_points))
+    ! allocate(pointd%qm(2,4,max_points))
+    allocate(pointd%delta(max_points))
+    ! allocate(Cld(shapes))
+    ! allocate(ClCdd(shapes))
+    ! allocate(Cdd(shapes))
+    ! allocate(Cmd(shapes))
+    ! allocate(pointd%vorticity_sqr(max_points))
+end subroutine
+
   SUBROUTINE DEALLOCATE_SOLN()
     IMPLICIT NONE
     DEALLOCATE(point%prim)
@@ -179,5 +199,25 @@ CONTAINS
     DEALLOCATE(cfv)
   END SUBROUTINE DEALLOCATE_SOLN
 
-END MODULE DATA_STRUCTURE_MOD_DIFF
+  subroutine deallocate_soln_d()
+    implicit none
 
+    deallocate(pointd%prim)
+    deallocate(pointd%prim_old)
+    deallocate(pointd%flux_res)
+    deallocate(pointd%q)
+    deallocate(pointd%dq)
+    DEALLOCATE(pointd%ddq)
+    DEALLOCATE(pointd%phi1)
+    DEALLOCATE(pointd%phi2)
+    DEALLOCATE(pointd%temp)
+    ! deallocate(pointd%qm)
+    deallocate(pointd%delta)
+    ! deallocate(Cld)
+    ! deallocate(ClCdd)
+    ! deallocate(Cdd)
+    ! deallocate(Cmd)
+    ! deallocate(pointd%vorticity_sqr)
+end subroutine
+
+END MODULE DATA_STRUCTURE_MOD_DIFF
