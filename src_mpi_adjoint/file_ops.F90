@@ -5,6 +5,7 @@ module file_ops_mod
     namelist / input_parameters /   &
     shapes, &
         cfl, &
+        chkpts, &
     max_iters, &
         blockx, &
         blocky, &
@@ -17,6 +18,7 @@ module file_ops_mod
         nsave, &
         interior_points_normal_flag, &
         tscheme, &
+        adjoint_mode, &
         ! mach, &
         ! aoa, &
         inner_iterations
@@ -45,13 +47,17 @@ module file_ops_mod
         f_o_flag = 0.0d0
         end if
 
+        if(adjoint_mode == 'checkpoints') then
+            ad_mode = 1
+        elseif(adjoint_mode == 'blackbox') then
+            ad_mode = 0
+        end if
+
         if(restart_solution == 'no') then
         solution_restart = 0
         elseif(restart_solution == 'yes') then
         solution_restart = 1
         end if
-
-
 
         if(tscheme == 'first') then
         rks = 1

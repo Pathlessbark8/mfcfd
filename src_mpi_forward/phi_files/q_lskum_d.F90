@@ -81,6 +81,11 @@ CONTAINS
       point%u_old(4, i) = 2.5d0*point%prim(4, i) + 0.5d0*point%prim(1, i&
 &       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
 &       (3, i))
+    IF (point%original_id(i) .EQ. 78) THEN
+        WRITE(*, *) '%%%%%%%%%%%%%-<<<<<<<<PhiD Value has been set to 1>>>>>>>>-%%%%%%%%%%%%'
+        pointd%phi1(1,i) = 1.0d0
+
+    END IF
     END DO
     IF (rank .EQ. 0) THEN
       WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
