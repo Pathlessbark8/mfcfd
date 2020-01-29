@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_ENTROPY_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -10,13 +10,18 @@ MODULE COMPUTE_ENTROPY_MOD_DIFF
 CONTAINS
   SUBROUTINE COMPUTE_ENTROPY()
     IMPLICIT NONE
+!write(*,*)"total entropy :", gtotal_entropy
     INTEGER :: k
     REAL*8 :: temp1, temp2
     REAL*8 :: gtotal_entropy
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
-    PetscErrorCode :: ierr
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+! PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     DO k=1,local_points
@@ -40,3 +45,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENTROPY
 
 END MODULE COMPUTE_ENTROPY_MOD_DIFF
+

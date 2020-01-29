@@ -99,14 +99,35 @@ CONTAINS
     CALL GENERATE_CONNECTIVITY()
     cost_funcb = 1.0d0
     
-    WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *)
-    DO i=1,max_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
+    IF (rank .EQ. 0) THEN
+        WRITE(*, *) 
+        WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
+        WRITE(*, *) 
+    END IF
+    DO i=1,local_points
+        point%phi1(1, i) = 1.0d0
+        point%phi1(2, i) = 1.0d0
+        point%phi1(3, i) = 1.0d0
+        point%phi1(4, i) = 1.0d0
+        point%phi2(1, i) = 1.0d0
+        point%phi2(2, i) = 1.0d0
+        point%phi2(3, i) = 1.0d0
+        point%phi2(4, i) = 1.0d0
     END DO
-    WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *)
+    DO i=1,ghost_points
+        point%phi1(1, i+local_points) = 1.0d0
+        point%phi1(2, i+local_points) = 1.0d0
+        point%phi1(3, i+local_points) = 1.0d0
+        point%phi1(4, i+local_points) = 1.0d0
+        point%phi2(1, i+local_points) = 1.0d0
+        point%phi2(2, i+local_points) = 1.0d0
+        point%phi2(3, i+local_points) = 1.0d0
+        point%phi2(4, i+local_points) = 1.0d0
+    END DO
+    IF (rank .EQ. 0) THEN
+        WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+        WRITE(*, *) 
+    END IF
 !   Some initialisations for the revolve alogorithm ..  
     IF (restart .EQ. 0) itr = 0
     ! ad_count = 1
@@ -271,42 +292,15 @@ CONTAINS
 !                                                                                                                                                  
 !       End of the revolve algorithm ..   
 
-    OPEN(unit=301, file='jderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
-        DO i=1,max_points
-            WRITE(301,*) pointb%phi1(:,i)
-        END DO
-    CLOSE(unit=301)
+    ! OPEN(unit=301, file='jderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+    !     DO i=1,max_points
+    !         WRITE(301,*) pointb%phi1(:,i)
+    !     END DO
+    ! CLOSE(unit=301)
     DO i=max_points,1,-1
         pointb%phi2(:, i) = 0.0_8
         pointb%phi1(:, i) = 0.0_8
     END DO
 END SUBROUTINE Q_LSKUM_CHKPTS_B
-
-  SUBROUTINE Q_LSKUM()
-    IMPLICIT NONE
-    INTEGER :: i
-    OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE')
-    CALL COMPUTE_NORMALS()
-    CALL GENERATE_CONNECTIVITY()
-    WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *)
-    DO i=1,max_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
-    END DO
-! point%phi1(80,1) = point%phi1(80,1) + 1e-3
-    WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *)
-    IF (restart .EQ. 0) itr = 0
-    DO it=itr+1,itr+max_iters
-      CALL FPI_SOLVER(it)
-      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-&     residue
-      WRITE(301, *) it, residue
-      IF (residue .NE. residue) GOTO 100
-    END DO
- 100 CLOSE(unit=301)
-  END SUBROUTINE Q_LSKUM
 
 END MODULE Q_LSKUM_MOD_CHKPTS_DIFF

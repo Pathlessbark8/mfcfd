@@ -1,20 +1,17 @@
+include ${PETSC_DIR}/lib/petsc/conf/variables
+include ${PETSC_DIR}/lib/petsc/conf/rules
+
 
 #Intel compiler
-#FC = mpifort
-#CC = icc
+FC = mpifort
+CC = gcc
 #flags for intel compiler
-#FFLAGS = -O3 
+FFLAGS = -O3 -ffree-line-length-512 -I$(PETSC_DIR)/include
 
 #gcc compiler
-FC = gfortran
-CC = gcc
+#FC = mpif90
+#CC = gcc
 #flags for gcc(profiling)
-#FFLAGS =-march=native -O3 -pg 
+#FFLAGS =-march=native -O3 -pg -I$(PETSC_DIR)/include
 #flags for gcc
-FFLAGS =-march=native -O3 -ffree-line-length-512 
-
-
-
-
-
-
+#FFLAGS =-march=native -O3 -ffree-line-length-512 -I$(PETSC_DIR)/include

@@ -9,35 +9,57 @@ MODULE Q_LSKUM_MOD_DIFF
   USE POINT_NORMALS_MOD_DIFF
   USE GENERATE_CONNECTIVITY_MOD_DIFF
   USE FPI_SOLVER_MOD_DIFF
+  USE INITIAL_CONDITIONS_MOD
+  USE POST_PROCESSING_MOD
   IMPLICIT NONE
 
 CONTAINS
 !  Differentiation of q_lskum in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: cost_func
-!   with respect to varying inputs: point.phi1 point.phi2
-!   RW status of diff variables: cost_func:in-killed point.delta:(loc)
-!                point.prim:(loc) point.prim_old:(loc) point.q:(loc)
-!                point.flux_res:(loc) point.dq:(loc) point.ddq:(loc)
-!                point.temp:(loc) point.phi1:out point.phi2:out
-SUBROUTINE Q_LSKUM_B()
-    IMPLICIT NONE
+!   with respect to varying inputs: *(point.phi1) *(point.phi2)
+!   RW status of diff variables: cost_func:in-killed *(point.prim):(loc)
+!                *(point.prim_old):(loc) *(point.flux_res):(loc)
+!                *(point.q):(loc) *(point.dq):(loc) *(point.ddq):(loc)
+!                *(point.temp):(loc) *(point.phi1):out *(point.phi2):out
+!                *(point.delta):(loc)
+!   Plus diff mem management of: point.prim:in point.prim_old:in
+!                point.flux_res:in point.q:in point.dq:in point.ddq:in
+!                point.temp:in point.phi1:in point.phi2:in point.delta:in
+  SUBROUTINE Q_LSKUM_B()
     INTEGER :: i
-    OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE') 
-    cost_funcb = 1.0d0
+    IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
+&                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *) 
-    DO i=1,max_points
+    cost_funcb = 1.0d0
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) 
+      WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
+      WRITE(*, *) 
+    END IF
+    DO i=1,local_points
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
+    END DO 
+    DO i=1,ghost_points
+      point%phi1(1, i+local_points) = 1.0d0
+      point%phi1(2, i+local_points) = 1.0d0
+      point%phi1(3, i+local_points) = 1.0d0
+      point%phi1(4, i+local_points) = 1.0d0
+      point%phi2(1, i+local_points) = 1.0d0
+      point%phi2(2, i+local_points) = 1.0d0
+      point%phi2(3, i+local_points) = 1.0d0
+      point%phi2(4, i+local_points) = 1.0d0
     END DO
-! point%phi1(80,1) = point%phi1(80,1) + 1e-3
-    WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *) 
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+      WRITE(*, *) 
+    END IF
+    t = 0.0d0
     IF (restart .EQ. 0) itr = 0
+    ! ad_count = 1
     DO it=itr+1,itr+max_iters
+      CALL PUSHREAL8(gsum_res_sqr)
       CALL PUSHREAL8ARRAY(point%temp, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
@@ -47,12 +69,14 @@ SUBROUTINE Q_LSKUM_B()
       CALL PUSHREAL8ARRAY(point%prim_old, 4*max_points)
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
       CALL PUSHREAL8ARRAY(point%delta, max_points)
+      CALL PUSHREAL8(sum_res_sqr)
       CALL FPI_SOLVER(it)
-      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-&     residue
-      WRITE(301, *) it, residue
+      IF (rank .EQ. 0) THEN
+        WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
+&       residue
+        WRITE(301, *) it, residue
+      END IF
     END DO
-! if(residue.ne.residue)exit
     CLOSE(unit=301) 
     pointb%delta = 0.0_8
     pointb%prim = 0.0_8
@@ -64,10 +88,11 @@ SUBROUTINE Q_LSKUM_B()
     pointb%temp = 0.0_8
     pointb%phi1 = 0.0_8
     pointb%phi2 = 0.0_8
-    ! if(rank == 0) then
-    write(*,*)
-    write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
-    write(*,*)
+    IF (rank .EQ. 0) THEN
+      write(*,*)
+      write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
+      write(*,*)
+    END IF
     ! end if
     DO it=itr+max_iters,itr+1,-1
         CALL POPREAL8ARRAY(point%delta, max_points)
@@ -80,44 +105,26 @@ SUBROUTINE Q_LSKUM_B()
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
+        write(*,*) pointb%phi1(1,78)
         cost_funcb = 0.0_8
     END DO
-    OPEN(unit=301, file='jderivatives_b.dat', form='FORMATTED', status='REPLACE', action='WRITE')
-        DO i=1,max_points
-            WRITE(301,*) pointb%phi1(:,i)
-        END DO
-    CLOSE(unit=301)
-    DO i=max_points,1,-1
-      pointb%phi2(:, i) = 0.0_8
-      pointb%phi1(:, i) = 0.0_8
-    END DO
-  END SUBROUTINE Q_LSKUM_B
+    
+    CALL PRINT_PHI_OUTPUT()
 
-  SUBROUTINE Q_LSKUM()
-    IMPLICIT NONE
-    INTEGER :: i
-    OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
-&  action='WRITE')
-    CALL COMPUTE_NORMALS()
-    CALL GENERATE_CONNECTIVITY()
-    WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
-    WRITE(*, *)
-    DO i=1,max_points
+    DO i=ghost_points,1,-1
+      pointb%phi2(4, i+local_points) = 0.0_8
+      pointb%phi2(3, i+local_points) = 0.0_8
+      pointb%phi2(2, i+local_points) = 0.0_8
+      pointb%phi2(1, i+local_points) = 0.0_8
+      pointb%phi1(4, i+local_points) = 0.0_8
+      pointb%phi1(3, i+local_points) = 0.0_8
+      pointb%phi1(2, i+local_points) = 0.0_8
+      pointb%phi1(1, i+local_points) = 0.0_8
+    END DO
+    DO i=local_points,1,-1
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
     END DO
-! point%phi1(80,1) = point%phi1(80,1) + 1e-3
-    WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
-    WRITE(*, *)
-    IF (restart .EQ. 0) itr = 0
-    DO it=itr+1,itr+max_iters
-      CALL FPI_SOLVER(it)
-      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-&     residue
-      WRITE(301, *) it, residue
-      IF (residue .NE. residue) GOTO 100
-    END DO
- 100 CLOSE(unit=301)
-  END SUBROUTINE Q_LSKUM
+  END SUBROUTINE Q_LSKUM_B
 
 END MODULE Q_LSKUM_MOD_DIFF

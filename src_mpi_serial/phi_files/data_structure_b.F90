@@ -6,6 +6,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   IMPLICIT NONE
   INTEGER :: max_points, local_points, ghost_points
   INTEGER :: wall_points, interior_points, outer_points, shape_points
+!       ghost global indices
   INTEGER, DIMENSION(:), ALLOCATABLE :: pghost
 ! stores location of point
 ! stores shape point belongs to 
@@ -64,7 +65,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: it, itr
 !Flag for time stepping
   INTEGER :: rks
-  INTEGER :: chkpts
   REAL*8 :: euler
   REAL*8 :: cost_func
   REAL*8 :: cost_funcb
@@ -116,7 +116,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER, SAVE :: inner_iterations=0
 !       No of shapes
   INTEGER :: shapes
-  INTEGER :: ad_mode
 
 CONTAINS
   SUBROUTINE ALLOCATE_SOLN()
@@ -149,21 +148,6 @@ CONTAINS
     ALLOCATE(cfv(shapes))
   END SUBROUTINE ALLOCATE_SOLN
 
-  subroutine allocate_soln_b()
-    implicit none
-    ALLOCATE(pointb%delta(max_points))
-    allocate(pointb%prim(4,max_points))
-    allocate(pointb%prim_old(4,max_points))
-    allocate(pointb%flux_res(4,max_points))
-    allocate(pointb%q(4,max_points))
-    allocate(pointb%dq(2,4,max_points))
-    ALLOCATE(pointb%ddq(3, 4, max_points))
-    ALLOCATE(pointb%phi1(4, max_points))
-    ALLOCATE(pointb%phi2(4, max_points))
-    ALLOCATE(pointb%temp(3, 4, max_points))
-  end subroutine
-  
-  
   SUBROUTINE DEALLOCATE_SOLN()
     IMPLICIT NONE
     DEALLOCATE(point%prim)
@@ -194,18 +178,5 @@ CONTAINS
     DEALLOCATE(cfv)
   END SUBROUTINE DEALLOCATE_SOLN
 
-  subroutine deallocate_soln_b()
-    implicit none
-
-    deallocate(pointb%prim)
-    deallocate(pointb%prim_old)
-    deallocate(pointb%flux_res)
-    deallocate(pointb%q)
-    deallocate(pointb%dq)
-    DEALLOCATE(pointb%ddq)
-    DEALLOCATE(pointb%phi1)
-    DEALLOCATE(pointb%phi2)
-    DEALLOCATE(pointb%temp)
-  end subroutine
-  
 END MODULE DATA_STRUCTURE_MOD_DIFF
+

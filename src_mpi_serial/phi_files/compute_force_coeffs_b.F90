@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -20,14 +20,22 @@ CONTAINS
     REAL*8 :: nx, ny
     CHARACTER(len=64) :: cp_file
     CHARACTER(len=10) :: itos
+    INTRINSIC TRIM
     INTRINSIC DSQRT
     INTRINSIC DCOS
     INTRINSIC DSIN
-    PetscErrorCode :: ierr
+    TYPE(UNKNOWNTYPE) :: proc
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+! PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&
 &  'REPLACE', action='WRITE') 
+!if(rank==0) OPEN(UNIT=202,FILE='clcdcm')
     temp = 0.5d0*rho_inf*mach*mach
     h = 0.d0
     v = 0.d0
@@ -75,3 +83,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_CL_CD_CM
 
 END MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
+

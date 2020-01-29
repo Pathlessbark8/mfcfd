@@ -38,6 +38,7 @@ CONTAINS
     REAL*8 :: delx, dely, dels, deln
     REAL*8 :: nx, ny, tx, ty
     INTEGER :: i, r, count, nbh
+    TYPE(UNKNOWNTYPE) :: rank
     xi = point%x(i)
     yi = point%y(i)
     tx = ny
@@ -95,7 +96,8 @@ CONTAINS
     REAL*8 :: xi, yi, xk, yk
     REAL*8 :: delx, dely, dels, deln
     REAL*8 :: nx, ny, tx, ty
-    INTEGER :: i, r, count, nbh  
+    INTEGER :: i, r, count, nbh
+    TYPE(UNKNOWNTYPE) :: rank
     xi = point%x(i)
     yi = point%y(i)
     tx = ny
@@ -143,6 +145,7 @@ CONTAINS
     REAL*8 :: delx, dely, dels, deln
     REAL*8 :: nx, ny, tx, ty
     INTEGER :: i, r, count, nbh
+    TYPE(UNKNOWNTYPE) :: rank
     xi = point%x(i)
     yi = point%y(i)
     tx = ny
@@ -191,3 +194,4 @@ CONTAINS
   END SUBROUTINE CHECK_CONDITION_NUMBER
 
 END MODULE GENERATE_CONNECTIVITY_MOD_DIFF
+

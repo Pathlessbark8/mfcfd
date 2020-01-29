@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE STATE_UPDATE_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   USE FLUX_RESIDUAL_MOD_DIFF
@@ -411,6 +411,18 @@ CONTAINS
 !	This subroutine computes the delta_t (local time step) at a given point ..
   SUBROUTINE FUNC_DELTA_B()
     IMPLICIT NONE
+! if(timestep == 1) then
+!         do i = 1, local_points
+!                 if (point%delta(i).lt.lmin) lmin=point%delta(i)
+!         end do
+!         call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
+!                 & PETSC_COMM_WORLD, ierr)
+!         call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+!                  & ierr)
+!         dtg = gmin
+!         if(t+dtg > tfinal) dtg = tfinal - t
+!         point%delta = dtg
+! end if
     INTEGER :: i, k, r
     REAL*8 :: delta_t
     REAL*8 :: delta_tb
@@ -431,7 +443,7 @@ CONTAINS
     REAL*8 :: tempb1
     INTEGER :: ad_to
     INTEGER :: branch
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -510,6 +522,18 @@ CONTAINS
 !	This subroutine computes the delta_t (local time step) at a given point ..
   SUBROUTINE FUNC_DELTA()
     IMPLICIT NONE
+! if(timestep == 1) then
+!         do i = 1, local_points
+!                 if (point%delta(i).lt.lmin) lmin=point%delta(i)
+!         end do
+!         call MPI_Reduce(lmin, gmin , 1, MPI_DOUBLE, MPI_MIN, 0, &
+!                 & PETSC_COMM_WORLD, ierr)
+!         call MPI_Bcast(gmin, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+!                  & ierr)
+!         dtg = gmin
+!         if(t+dtg > tfinal) dtg = tfinal - t
+!         point%delta = dtg
+! end if
     INTEGER :: i, k, r
     REAL*8 :: delta_t
     REAL*8 :: min_dist
@@ -520,7 +544,7 @@ CONTAINS
     REAL*8 :: dist
     REAL*8 :: min_delt
     INTRINSIC DSQRT
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -561,11 +585,11 @@ CONTAINS
     REAL*8 :: nx, ny, tx, ty
     INTRINSIC DSQRT
     INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! EXTERNAL DERF_B
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC SQRT
-    ! INTRINSIC EXP
+    EXTERNAL DERF
+    EXTERNAL DERF_B
+    DOUBLE PRECISION :: DERF
+    INTRINSIC SQRT
+    INTRINSIC EXP
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     REAL*8 :: temp
@@ -618,8 +642,7 @@ CONTAINS
     ubarb(2) = 0.0_8
     a2pb = a2pb + rho*ubarb(1)
     result1b = 0.5d0*a2pb
-    ! CALL DERF_B(s2, s2b, result1b)
-    s2b = s2b + (2.0d0/dsqrt(pi))*dexp(-s2**2)*result1b
+    CALL DERF_B(s2, s2b, result1b)
     CALL POPREAL8(s2)
     s2b = s2b - EXP(-(s2**2))*2*s2*tempb3
     u2_rotb = a2p*tempb0 + 2*u2_rot*temp1b + temp*s2b + rho*tempb
@@ -649,12 +672,12 @@ CONTAINS
     REAL*8 :: b2, a2p, temp1, temp2
     REAL*8 :: ubar(4), prim(4)
     REAL*8 :: nx, ny, tx, ty
-    ! INTRINSIC DSQRT
-    ! INTRINSIC DEXP
-    ! EXTERNAL DERF
-    ! DOUBLE PRECISION :: DERF
-    ! INTRINSIC SQRT
-    ! INTRINSIC EXP
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC SQRT
+    INTRINSIC EXP
     DOUBLE PRECISION :: result1
     u1_inf = q_inf(2)
     u2_inf = q_inf(3)
@@ -693,3 +716,4 @@ CONTAINS
   END SUBROUTINE CONSERVED_VECTOR_UBAR
 
 END MODULE STATE_UPDATE_MOD_DIFF
+

@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE FPI_SOLVER_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE FLUX_RESIDUAL_MOD_DIFF
   USE STATE_UPDATE_MOD_DIFF
@@ -24,60 +24,73 @@ CONTAINS
 !                point.flux_res:in point.q:in point.dq:in point.ddq:in
 !                point.temp:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE FPI_SOLVER_B(t)
+    USE DIFFSIZES
+!  Hint: ISIZE2OFDrfpoint_q should be the size of dimension 2 of array *point%q
+!  Hint: ISIZE1OFDrfpoint_q should be the size of dimension 1 of array *point%q
+!  Hint: ISIZE3OFDrfpoint_dq should be the size of dimension 3 of array *point%dq
+!  Hint: ISIZE2OFDrfpoint_dq should be the size of dimension 2 of array *point%dq
+!  Hint: ISIZE1OFDrfpoint_dq should be the size of dimension 1 of array *point%dq
+!  Hint: ISIZE3OFDrfpoint_ddq should be the size of dimension 3 of array *point%ddq
+!  Hint: ISIZE2OFDrfpoint_ddq should be the size of dimension 2 of array *point%ddq
+!  Hint: ISIZE1OFDrfpoint_ddq should be the size of dimension 1 of array *point%ddq
+!  Hint: ISIZE2OFDrfpoint_flux_res should be the size of dimension 2 of array *point%flux_res
+!  Hint: ISIZE1OFDrfpoint_flux_res should be the size of dimension 1 of array *point%flux_res
+!  Hint: ISIZE2OFDrfpoint_prim should be the size of dimension 2 of array *point%prim
+!  Hint: ISIZE1OFDrfpoint_prim should be the size of dimension 1 of array *point%prim
     IMPLICIT NONE
-    INTEGER :: t, i, rk, j
+    INTEGER :: t, i, rk
+    EXTERNAL UPDATE_BEGIN_DQ_GHOST
+    EXTERNAL UPDATE_BEGIN_QM_GHOST
+    EXTERNAL UPDATE_END_DQ_GHOST
+    EXTERNAL UPDATE_END_QM_GHOST
+    EXTERNAL UPDATE_BEGIN_DDQ_GHOST
+    EXTERNAL UPDATE_END_DDQ_GHOST
+    EXTERNAL UPDATE_BEGIN_PRIM_GHOST
+    EXTERNAL UPDATE_END_PRIM_GHOST
     INTRINSIC DSQRT
     INTRINSIC DLOG10
+    INTRINSIC MOD
+    EXTERNAL PRINT_PRIMAL_OUTPUT
     INTEGER :: branch
-    PetscErrorCode :: ierr
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+! PetscErrorCode :: ierr
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
     CALL FUNC_DELTA()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
-      CALL PUSHREAL8ARRAY(point%q, 4*max_points)
+      CALL PUSHREAL8ARRAY(point%q, ISIZE1OFDrfpoint_q*ISIZE2OFDrfpoint_q&
+&                  )
       CALL EVAL_Q_VARIABLES()
-
-      CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
+      CALL PUSHREAL8ARRAY(point%dq, ISIZE1OFDrfpoint_dq*&
+&                   ISIZE2OFDrfpoint_dq*ISIZE3OFDrfpoint_dq)
       CALL EVAL_Q_DERIVATIVES()
-      
-      CALL UPDATE_BEGIN_DQ_GHOST()
-      CALL UPDATE_BEGIN_QM_GHOST()
-      CALL UPDATE_END_DQ_GHOST()
-      CALL UPDATE_END_QM_GHOST()
 !Update the ghost values from the owned process
-      CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
+      CALL PUSHREAL8ARRAY(point%ddq, ISIZE1OFDrfpoint_ddq*&
+&                   ISIZE2OFDrfpoint_ddq*ISIZE3OFDrfpoint_ddq)
       CALL EVAL_Q_DOUBLE_DERIVATIVES()
-      
-      CALL UPDATE_BEGIN_DDQ_GHOST()
-      CALL UPDATE_END_DDQ_GHOST()
-      
       IF (inner_iterations .NE. 0) THEN
         DO i=1,inner_iterations
           CALL EVAL_DQ_INNER_LOOP()
           CALL EVAL_UPDATE_INNERLOOP_2()
-
-          CALL UPDATE_BEGIN_DQ_GHOST()
-          CALL UPDATE_END_DQ_GHOST()
-
           CALL EVAL_DDQ_INNER_LOOP()
           CALL EVAL_UPDATE_INNERLOOP_3()
-          CALL UPDATE_BEGIN_DDQ_GHOST()
-          CALL UPDATE_END_DDQ_GHOST()
         END DO
         CALL PUSHCONTROL1B(0)
       ELSE
         CALL PUSHCONTROL1B(1)
       END IF
-
-      CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
+      CALL PUSHREAL8ARRAY(point%flux_res, ISIZE1OFDrfpoint_flux_res*&
+&                   ISIZE2OFDrfpoint_flux_res)
       CALL CAL_FLUX_RESIDUAL()
-
-      CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
+      CALL PUSHREAL8ARRAY(point%prim, ISIZE1OFDrfpoint_prim*&
+&                   ISIZE2OFDrfpoint_prim)
       CALL STATE_UPDATE(rk)
-      CALL UPDATE_BEGIN_PRIM_GHOST()
-      CALL UPDATE_END_PRIM_GHOST()
 ! start updating primitive values
     END DO
 ! call objective_function()
@@ -86,69 +99,32 @@ CONTAINS
     CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
 &            ierr)
     CALL OBJECTIVE_FUNCTION_J_B()
-
     DO rk=rks,1,-1
-      CALL POPREAL8ARRAY(point%prim, 4*max_points)
+      CALL POPREAL8ARRAY(point%prim, ISIZE1OFDrfpoint_prim*&
+&                  ISIZE2OFDrfpoint_prim)
       CALL STATE_UPDATE_B(rk)
-      
-      CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
+      CALL POPREAL8ARRAY(point%flux_res, ISIZE1OFDrfpoint_flux_res*&
+&                  ISIZE2OFDrfpoint_flux_res)
       CALL CAL_FLUX_RESIDUAL_B()
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
         DO i=inner_iterations,1,-1
-
-          CALL UPDATE_BEGIN_DDQB_GHOST()
-          CALL UPDATE_END_DDQB_GHOST()
           CALL EVAL_UPDATE_INNERLOOP_3_B()
           CALL EVAL_DDQ_INNER_LOOP_B()
-          do j = local_points+1, max_points 
-            pointb%ddq(:, :, j) = 0.0d0
-          end do
-
-          CALL UPDATE_BEGIN_DQB_GHOST()
-          CALL UPDATE_END_DQB_GHOST()
           CALL EVAL_UPDATE_INNERLOOP_2_B()
           CALL EVAL_DQ_INNER_LOOP_B()
-          do j = local_points+1, max_points 
-            pointb%dq(:, :, j) = 0.0d0
-          end do
         END DO
       END IF
-      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL UPDATE_BEGIN_DDQB_GHOST()
-      CALL UPDATE_END_DDQB_GHOST()
+      CALL POPREAL8ARRAY(point%ddq, ISIZE1OFDrfpoint_ddq*&
+&                  ISIZE2OFDrfpoint_ddq*ISIZE3OFDrfpoint_ddq)
       CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
-      do j = local_points+1, max_points 
-        pointb%ddq(:, :, j) = 0.0d0
-        ! pointb%qm(:, :, j) = 0.0d0
-      end do
-
-      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
-      CALL UPDATE_BEGIN_DQB_GHOST()
-      CALL UPDATE_END_DQB_GHOST()
+      CALL POPREAL8ARRAY(point%dq, ISIZE1OFDrfpoint_dq*&
+&                  ISIZE2OFDrfpoint_dq*ISIZE3OFDrfpoint_dq)
       CALL EVAL_Q_DERIVATIVES_B()
-      do j = local_points+1, max_points 
-        pointb%dq(:, :, j) = 0.0d0
-        ! pointb%qm(:, :, j) = 0.0d0
-      end do
-
-      CALL POPREAL8ARRAY(point%q, 4*max_points)
-      call update_begin_qb_ghost()
-      call update_end_qb_ghost()
+      CALL POPREAL8ARRAY(point%q, ISIZE1OFDrfpoint_q*ISIZE2OFDrfpoint_q)
       CALL EVAL_Q_VARIABLES_B()
-      do j = local_points+1, max_points 
-        pointb%q(:, j) = 0.0d0
-      end do
     END DO
-
-    do j = local_points+1, max_points 
-      pointb%prim(:, j) = 0.0d0
-    end do
-
     CALL FUNC_DELTA_B()
-    
-    CALL UPDATE_BEGIN_PRIMB_GHOST()
-    CALL UPDATE_END_PRIMB_GHOST()
     DO i=local_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
       pointb%prim_old(:, i) = 0.0_8
@@ -158,9 +134,24 @@ CONTAINS
   SUBROUTINE FPI_SOLVER(t)
     IMPLICIT NONE
     INTEGER :: t, i, rk
+    EXTERNAL UPDATE_BEGIN_DQ_GHOST
+    EXTERNAL UPDATE_BEGIN_QM_GHOST
+    EXTERNAL UPDATE_END_DQ_GHOST
+    EXTERNAL UPDATE_END_QM_GHOST
+    EXTERNAL UPDATE_BEGIN_DDQ_GHOST
+    EXTERNAL UPDATE_END_DDQ_GHOST
+    EXTERNAL UPDATE_BEGIN_PRIM_GHOST
+    EXTERNAL UPDATE_END_PRIM_GHOST
     INTRINSIC DSQRT
     INTRINSIC DLOG10
-    PetscErrorCode :: ierr
+    INTRINSIC MOD
+    EXTERNAL PRINT_PRIMAL_OUTPUT
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+! PetscErrorCode :: ierr
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
@@ -208,6 +199,16 @@ CONTAINS
     ELSE
       residue = DLOG10(res_new/res_old)
     END IF
+! Print primal output
+    IF (MOD(it, nsave) .EQ. 0) THEN
+      IF (rank .EQ. 0) THEN
+        WRITE(*, *) 
+        WRITE(*, *) '%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+        WRITE(*, *) 
+      END IF
+      CALL PRINT_PRIMAL_OUTPUT()
+    END IF
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
+

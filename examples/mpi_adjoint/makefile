@@ -7,9 +7,9 @@ SRCDIR=$(MF_DIR)/src_mpi_adjoint
 phi:
 	rm -rf src
 	cp -r $(SRCDIR) src
-	cd src && cp phi_files/* . && make -f makefile.adjoint clean
+	cd src && cp phi_files/* . && make -f makefile clean
 	cp parameter.F90 src/
-	cd src && make -j -f makefile.adjoint execname
+	cd src && make -j -f makefile execname
 	mv src/execname .
 	@echo "Built mpi adjoint solver w.r.t phi"
 

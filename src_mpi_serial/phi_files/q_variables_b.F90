@@ -75,6 +75,8 @@ CONTAINS
 !   with respect to varying inputs: *(point.q) *(point.dq)
 !   Plus diff mem management of: point.q:in point.dq:in
   SUBROUTINE EVAL_Q_DERIVATIVES_B()
+    USE DIFFSIZES
+!  Hint: ISIZE1OFtemp should be the size of dimension 1 of array temp
     IMPLICIT NONE
     INTEGER :: i, k, r, nbh
     REAL*8 :: x_i, y_i, x_k, y_k
@@ -85,8 +87,8 @@ CONTAINS
     REAL*8 :: det, delq, temp
     REAL*8 :: one_by_det
     INTRINSIC DSQRT
-    REAL*8, DIMENSION(4) :: tempb
-    REAL*8, DIMENSION(4) :: tempb0
+    REAL*8, DIMENSION(ISIZE1OFtemp) :: tempb
+    REAL*8, DIMENSION(ISIZE1OFtemp) :: tempb0
     INTEGER :: ad_to
     DO i=1,local_points
       x_i = point%x(i)
@@ -206,6 +208,8 @@ CONTAINS
 !   with respect to varying inputs: *(point.dq) *(point.ddq)
 !   Plus diff mem management of: point.dq:in point.ddq:in
   SUBROUTINE EVAL_Q_DOUBLE_DERIVATIVES_B()
+    USE DIFFSIZES
+!  Hint: ISIZE1OFtemp should be the size of dimension 1 of array temp
     IMPLICIT NONE
 ! local variables
     INTEGER :: i
@@ -220,10 +224,10 @@ CONTAINS
     REAL*8 :: det, delq, temp
     REAL*8 :: one_by_det
     INTRINSIC DSQRT
-    REAL*8, DIMENSION(4) :: tempb
-    REAL*8, DIMENSION(4) :: tempb0
-    REAL*8, DIMENSION(4) :: tempb1
-    REAL*8, DIMENSION(4) :: tempb2
+    REAL*8, DIMENSION(ISIZE1OFtemp) :: tempb
+    REAL*8, DIMENSION(ISIZE1OFtemp) :: tempb0
+    REAL*8, DIMENSION(ISIZE1OFtemp) :: tempb1
+    REAL*8, DIMENSION(ISIZE1OFtemp) :: tempb2
     INTEGER :: ad_to
     DO i=1,local_points
       x_i = point%x(i)
@@ -966,3 +970,4 @@ CONTAINS
   END SUBROUTINE QTILDE_TO_PRIMITIVE
 
 END MODULE Q_VARIABLES_MOD_DIFF
+

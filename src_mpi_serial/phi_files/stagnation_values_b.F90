@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE STAGNATION_VALUES_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -34,8 +34,8 @@ CONTAINS
         indexmax = i
       END IF
     END DO
-!     WRITE(*, *) 'Stagnation values are ', pmin, ' ', pmax, ' ', pmin/&
-! &   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
+    WRITE(*, *) 'Stagnation values are ', pmin, ' ', pmax, ' ', pmin/&
+&   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
   END SUBROUTINE STAGNATION_PRESSURE
 
 !  Differentiation of objective_function_j in reverse (adjoint) mode (with options fixinterface):
@@ -58,7 +58,12 @@ CONTAINS
     REAL*8 :: temp2
     REAL*8 :: tempb
     REAL*8 :: tempb0
-    PetscErrorCode :: ierr
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+! PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
     constant = 1/(p0_inf**2*plen)
@@ -72,12 +77,13 @@ CONTAINS
       p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
-    CALL MPI_REDUCE(p0_sum, total_p0, 1, mpi_double, mpi_sum, 0, &
+    CALL FW_MPI_REDUCE(p0_sum, total_p0, 1, mpi_double, mpi_sum, 0, &
 &                petsc_comm_world, ierr)
     total_p0b = constant*cost_funcb
     p0_sumb = 0.0_8
-    CALL MPI_REDUCE(p0_sumb, total_p0b, 1, mpi_double, mpi_sum, 0, &
-    &             petsc_comm_world, ierr)
+    CALL BWS_MPI_REDUCE(p0_sum, p0_sumb, total_p0, total_p0b, 1, &
+&                 mpi_double, mpi_double, mpi_sum, 0, 0, &
+&                 petsc_comm_world, ierr)
     DO i=local_points,1,-1
       prim = point%prim(:, i)
       p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
@@ -121,7 +127,12 @@ CONTAINS
     REAL*8 :: prim(4)
     REAL*8 :: total_p0
     INTRINSIC SQRT
-    PetscErrorCode :: ierr
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+    INTEGER :: rank
+! PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
     constant = 1/(p0_inf**2*plen)
@@ -140,3 +151,4 @@ CONTAINS
   END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF
+
