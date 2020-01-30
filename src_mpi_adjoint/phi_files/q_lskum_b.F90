@@ -105,7 +105,7 @@ CONTAINS
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
-        write(*,*) pointb%phi1(1,78)
+        write(*,*) point%x(14), point%y(14), pointb%phi1(1,14)
         cost_funcb = 0.0_8
     END DO
     

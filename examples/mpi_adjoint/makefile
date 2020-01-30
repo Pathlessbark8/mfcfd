@@ -20,5 +20,5 @@ input:
 	rm -rf mfpre
 
 clean:
-	rm -rf src point
+	rm -rf src
 	rm -f execname graphpart

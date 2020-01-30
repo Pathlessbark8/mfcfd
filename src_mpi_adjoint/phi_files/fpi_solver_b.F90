@@ -86,17 +86,22 @@ CONTAINS
     CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
 &            ierr)
     CALL OBJECTIVE_FUNCTION_J_B()
+    CALL UPDATE_BEGIN_PRIMB_GHOST()
+    CALL UPDATE_END_PRIMB_GHOST()
+    ! write(*,*) 'Prim is ', point%x(14), point%y(14), pointb%prim(:,14)
 
     DO rk=rks,1,-1
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE_B(rk)
+
+      CALL UPDATE_BEGIN_PRIMB_GHOST()
+      CALL UPDATE_END_PRIMB_GHOST()
       
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_B()
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
         DO i=inner_iterations,1,-1
-
           CALL UPDATE_BEGIN_DDQB_GHOST()
           CALL UPDATE_END_DDQB_GHOST()
           CALL EVAL_UPDATE_INNERLOOP_3_B()
@@ -104,7 +109,6 @@ CONTAINS
           do j = local_points+1, max_points 
             pointb%ddq(:, :, j) = 0.0d0
           end do
-
           CALL UPDATE_BEGIN_DQB_GHOST()
           CALL UPDATE_END_DQB_GHOST()
           CALL EVAL_UPDATE_INNERLOOP_2_B()
@@ -114,13 +118,13 @@ CONTAINS
           end do
         END DO
       END IF
+      
       CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
       CALL UPDATE_BEGIN_DDQB_GHOST()
       CALL UPDATE_END_DDQB_GHOST()
       CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
       do j = local_points+1, max_points 
         pointb%ddq(:, :, j) = 0.0d0
-        ! pointb%qm(:, :, j) = 0.0d0
       end do
 
       CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
@@ -129,7 +133,6 @@ CONTAINS
       CALL EVAL_Q_DERIVATIVES_B()
       do j = local_points+1, max_points 
         pointb%dq(:, :, j) = 0.0d0
-        ! pointb%qm(:, :, j) = 0.0d0
       end do
 
       CALL POPREAL8ARRAY(point%q, 4*max_points)
@@ -140,13 +143,11 @@ CONTAINS
         pointb%q(:, j) = 0.0d0
       end do
     END DO
-
     do j = local_points+1, max_points 
       pointb%prim(:, j) = 0.0d0
     end do
 
-    CALL FUNC_DELTA_B()
-    
+    CALL FUNC_DELTA_B()  
     CALL UPDATE_BEGIN_PRIMB_GHOST()
     CALL UPDATE_END_PRIMB_GHOST()
     DO i=local_points,1,-1

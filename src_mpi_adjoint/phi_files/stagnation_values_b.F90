@@ -75,9 +75,12 @@ CONTAINS
     CALL MPI_REDUCE(p0_sum, total_p0, 1, mpi_double, mpi_sum, 0, &
 &                petsc_comm_world, ierr)
     total_p0b = constant*cost_funcb
+    ! WRITE(*,*) 'total_p0_b is ' , total_p0b
     p0_sumb = 0.0_8
-    CALL MPI_REDUCE(p0_sumb, total_p0b, 1, mpi_double, mpi_sum, 0, &
-    &             petsc_comm_world, ierr)
+    ! CALL MPI_ALLREDUCE(total_p0b, p0_sumb, 1, mpi_double, mpi_sum, &
+    ! &             petsc_comm_world, ierr)
+    ! WRITE(*,*) 'P0_sumb is ' , p0_sumb
+    p0_sumb = total_p0b
     DO i=local_points,1,-1
       prim = point%prim(:, i)
       p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower

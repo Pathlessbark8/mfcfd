@@ -258,5 +258,4 @@ module petsc_data_structure_mod
 
         ! end subroutine 
 
-
 end module petsc_data_structure_mod

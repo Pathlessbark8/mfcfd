@@ -5,6 +5,10 @@ include makefile.in
 #AD stuff
 AD = adBuffer.o adStack.o revolve.o
 
+ifndef VERBOSE
+.SILENT:
+endif
+
 # defining the variables
 
 objects=meshfree_solver.o parameter.o data_structure_b.o point_preprocessor.o utilities.o initial_conditions.o q_lskum_b.o \
