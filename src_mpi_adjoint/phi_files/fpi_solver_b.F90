@@ -134,13 +134,12 @@ CONTAINS
         pointb%dq(:, :, j) = 0.0d0
       end do
 
+      CALL UPDATE_BEGIN_QB_GHOST()
+      CALL UPDATE_END_QB_GHOST()
       CALL POPREAL8ARRAY(point%q, 4*max_points)
       CALL EVAL_Q_VARIABLES_B()
 
     END DO
-    ! do j = local_points+1, max_points 
-    !   pointb%prim(:, j) = 0.0d0
-    ! end do
 
     CALL FUNC_DELTA_B()  
     DO i=local_points,1,-1
