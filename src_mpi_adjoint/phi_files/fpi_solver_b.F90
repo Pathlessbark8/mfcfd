@@ -86,12 +86,11 @@ CONTAINS
     CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
 &            ierr)
     CALL OBJECTIVE_FUNCTION_J_B()
-    CALL UPDATE_BEGIN_PRIMB_GHOST()
-    CALL UPDATE_END_PRIMB_GHOST()
 
     DO rk=rks,1,-1
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE_B(rk)
+
       ! Doesnt use primb from neighbours
       
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
@@ -118,17 +117,20 @@ CONTAINS
         END DO
       END IF
       
-      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
       CALL UPDATE_BEGIN_DDQB_GHOST()
       CALL UPDATE_END_DDQB_GHOST()
+      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+      CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
       do j = local_points+1, max_points 
         pointb%ddq(:, :, j) = 0.0d0
       end do
 
-      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
       CALL UPDATE_BEGIN_DQB_GHOST()
       CALL UPDATE_END_DQB_GHOST()
+      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
+      ! IF (rank .EQ. 1) THEN
+      !   write(*,*) 'DQ', pointb%dq(:,14)
+      ! END IF
       CALL EVAL_Q_DERIVATIVES_B()
       do j = local_points+1, max_points 
         pointb%dq(:, :, j) = 0.0d0
@@ -137,12 +139,14 @@ CONTAINS
       CALL UPDATE_BEGIN_QB_GHOST()
       CALL UPDATE_END_QB_GHOST()
       CALL POPREAL8ARRAY(point%q, 4*max_points)
-      CALL EVAL_Q_VARIABLES_B()
 
+      CALL EVAL_Q_VARIABLES_B()
+        
     END DO
 
     CALL FUNC_DELTA_B()  
-    DO i=local_points,1,-1
+
+    DO i=max_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
       pointb%prim_old(:, i) = 0.0_8
     END DO

@@ -71,11 +71,11 @@ CONTAINS
       CALL PUSHREAL8ARRAY(point%delta, max_points)
       CALL PUSHREAL8(sum_res_sqr)
       CALL FPI_SOLVER(it)
-!       IF (rank .EQ. 0) THEN
-!         WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-! &       residue
-!         WRITE(301, *) it, residue
-!       END IF
+      IF (rank .EQ. 0) THEN
+        WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
+&       residue
+        WRITE(301, *) it, residue
+      END IF
     END DO
     CLOSE(unit=301) 
     pointb%delta = 0.0_8
@@ -105,9 +105,9 @@ CONTAINS
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
-        IF (rank .EQ. 1) THEN
-        write(*,*) point%x(14), point%y(14), pointb%phi1(1,14)
-        END IF
+        ! IF (rank .EQ. 1) THEN
+        !   write(*,*) point%x(14), point%y(14), pointb%phi1(1,14)
+        ! END IF
         cost_funcb = 0.0_8
     END DO
     
