@@ -178,9 +178,11 @@ CONTAINS
                 iflag = 0
             end if
             CALL FPI_SOLVER(ITIM)
-            if (pflag == 1) then
-                write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
-                write(301, *) itim, residue
+            IF (rank .EQ. 0) THEN
+                if (pflag == 1) then
+                    write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
+                    write(301, *) itim, residue
+                end if
             end if
         end do
     END IF
@@ -203,13 +205,17 @@ CONTAINS
         pointb%temp = 0.0_8
         pointb%phi1 = 0.0_8
         pointb%phi2 = 0.0_8
-        write(*,*)
-        write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
-        write(*,*)
+        IF (rank .EQ. 0) THEN
+            write(*,*)
+            write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
+            write(*,*)
+        END IF
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
-        write(*,*) pointb%phi1(1,78)
+        ! IF (rank .EQ. 1) THEN
+        !     write(*,*) pointb%phi1(:,14), ' is Phi1'
+        ! END IF
     END IF
 
     !      The below if condition runs the subsequent reverse steps .. 
@@ -219,7 +225,9 @@ CONTAINS
         ITIM = ITIM + itr
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
-        write(*,*) pointb%phi1(1,78)
+        ! IF (rank .EQ. 1) THEN
+        !     write(*,*) pointb%phi1(:,14), ' is Phi1'
+        ! END IF
     END IF
 !
 !
