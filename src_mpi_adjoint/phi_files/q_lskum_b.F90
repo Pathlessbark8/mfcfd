@@ -26,7 +26,7 @@ CONTAINS
 !                point.flux_res:in point.q:in point.dq:in point.ddq:in
 !                point.temp:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE Q_LSKUM_B()
-    INTEGER :: i
+    INTEGER :: i, k, nbh, z
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
@@ -37,6 +37,9 @@ CONTAINS
       WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
       WRITE(*, *) 
     END IF
+    ! IF( ANY( point%original_id .EQ. 78 )) then
+    !   WRITE(*, *) 'Rank is ', rank
+    ! END IF
     DO i=1,local_points
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
@@ -105,9 +108,27 @@ CONTAINS
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
-        ! IF (rank .EQ. 1) THEN
-        !   write(*,*) point%x(14), point%y(14), pointb%phi1(1,14)
-        ! END IF
+        IF (rank .EQ. 1) THEN
+          z = 14
+          write(*,*) pointb%phi1(:,z), ' is Phi1'
+          ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+          ! write(*,*) pointb%prim(:,z), ' is Prim'
+          ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+          ! write(*,*) pointb%delta(z), ' is Delta'
+          ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+          ! DO k=1,point%nbhs(z)
+              ! nbh = point%conn(z, k)
+              ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+              ! write(*,*) pointb%delta(nbh), ' is Delta'
+              ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+              ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+              ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+              ! write(*,*) pointb%q(:,nbh), ' is Q'
+              ! write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+              ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+              ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+          ! END DO
+        END IF
         cost_funcb = 0.0_8
     END DO
     

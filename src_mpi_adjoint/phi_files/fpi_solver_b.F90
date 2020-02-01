@@ -25,7 +25,7 @@ CONTAINS
 !                point.temp:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE FPI_SOLVER_B(t)
     IMPLICIT NONE
-    INTEGER :: t, i, rk, j
+    INTEGER :: t, i, rk, j, z, nbh, k
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     INTEGER :: branch
@@ -87,72 +87,280 @@ CONTAINS
 &            ierr)
     CALL OBJECTIVE_FUNCTION_J_B()
 
-    DO rk=rks,1,-1
+    ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+    ! CALL UPDATE_END_PRIMB_GHOST_()
+    ! CALL UPDATE_BEGIN_QB_GHOST_()
+    ! CALL UPDATE_END_QB_GHOST_()
+    ! CALL UPDATE_BEGIN_DQB_GHOST_()
+    ! CALL UPDATE_END_DQB_GHOST_()
+    ! CALL UPDATE_BEGIN_DDQB_GHOST_()
+    ! CALL UPDATE_END_DDQB_GHOST_()
+    CALL UPDATE_BEGIN_PRIMB_GHOST()
+    CALL UPDATE_END_PRIMB_GHOST()
+    do j = local_points+1, max_points 
+      pointb%prim(:, j) = 0.0d0
+      pointb%prim_old(:, j) = 0.0d0
+    end do
+
+      DO rk=rks,1,-1
+      ! IF (rank .EQ. 1) THEN
+      !   z = 14
+      !   write(*,*) rk, 'is rk'
+      !   ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+      !   ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+      !   write(*,*) pointb%prim(:,z), ' is Prim'
+      !   write(*,*) pointb%q(:,z), ' is Q'
+      !   ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+      !   ! write(*,*) pointb%delta(z), ' is Delta'
+      !   ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+      !   ! DO k=1,point%nbhs(z)
+      !       ! nbh = point%conn(z, k)
+      !       ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+      !       ! write(*,*) pointb%delta(nbh), ' is Delta'
+      !       ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+      !       ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+      !       ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+      !       ! write(*,*) pointb%q(:,nbh), ' is Q'
+      !       ! write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+      !       ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+      !       ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+      !   ! END DO
+      ! END IF
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE_B(rk)
-
-      ! Doesnt use primb from neighbours
+      CALL UPDATE_BEGIN_PRIMB_GHOST()
+      CALL UPDATE_END_PRIMB_GHOST()
+      do j = local_points+1, max_points 
+        pointb%prim(:, j) = 0.0d0
+        pointb%prim_old(:, j) = 0.0d0
+      end do
+      ! do j = local_points+1, max_points 
+      !   pointb%prim( :, j) = 0.0d0
+      ! end do
+      ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+      ! CALL UPDATE_END_PRIMB_GHOST_()
       
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_B()
+
       CALL POPCONTROL1B(branch)
-
-      
-      IF (branch .EQ. 0) THEN
-        DO i=inner_iterations,1,-1
-          CALL UPDATE_BEGIN_DDQB_GHOST()
-          CALL UPDATE_END_DDQB_GHOST()
-          CALL EVAL_UPDATE_INNERLOOP_3_B()
-          CALL EVAL_DDQ_INNER_LOOP_B()
-          do j = local_points+1, max_points 
-            pointb%ddq(:, :, j) = 0.0d0
-          end do
-          CALL UPDATE_BEGIN_DQB_GHOST()
-          CALL UPDATE_END_DQB_GHOST()
-          CALL EVAL_UPDATE_INNERLOOP_2_B()
-          CALL EVAL_DQ_INNER_LOOP_B()
-          do j = local_points+1, max_points 
-            pointb%dq(:, :, j) = 0.0d0
-          end do
-        END DO
-      END IF
-      
-      CALL UPDATE_BEGIN_DDQB_GHOST()
-      CALL UPDATE_END_DDQB_GHOST()
-      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+      ! CALL UPDATE_QB()
+      CALL UPDATE_BEGIN_QB_GHOST()
+      CALL UPDATE_END_QB_GHOST()
       do j = local_points+1, max_points 
-        pointb%ddq(:, :, j) = 0.0d0
+        pointb%q(:, j) = 0.0d0
       end do
-
       CALL UPDATE_BEGIN_DQB_GHOST()
       CALL UPDATE_END_DQB_GHOST()
-      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
-      ! IF (rank .EQ. 1) THEN
-      !   write(*,*) 'DQ', pointb%dq(:,14)
-      ! END IF
-      CALL EVAL_Q_DERIVATIVES_B()
       do j = local_points+1, max_points 
         pointb%dq(:, :, j) = 0.0d0
       end do
+      CALL UPDATE_BEGIN_DDQB_GHOST()
+      CALL UPDATE_END_DDQB_GHOST()
+      do j = local_points+1, max_points 
+        pointb%ddq(:, :, j) = 0.0d0
+      end do
+      CALL UPDATE_BEGIN_PHI1B_GHOST()
+      CALL UPDATE_END_PHI1B_GHOST()
+      CALL UPDATE_BEGIN_PHI2B_GHOST()
+      CALL UPDATE_END_PHI2B_GHOST()
+      do j = local_points+1, max_points 
+        pointb%phi1(:, j) = 0.0d0
+        pointb%phi2(:, j) = 0.0d0
+      end do
 
+      do j = local_points+1, max_points 
+        pointb%flux_res(:, j) = 0.0d0
+      end do
+
+      ! IF (branch .EQ. 0) THEN
+      !   DO i=inner_iterations,1,-1
+      !     ! CALL UPDATE_BEGIN_DQB_GHOST_()
+      !     ! CALL UPDATE_END_DQB_GHOST_()
+      !     CALL EVAL_UPDATE_INNERLOOP_3_B()
+      !     do j = local_points+1, max_points 
+      !       pointb%ddq(:, :, j) = 0.0d0
+      !     end do
+      !     ! CALL UPDATE_BEGIN_DQB_GHOST_()
+      !     ! CALL UPDATE_END_DQB_GHOST_()
+
+
+      !     CALL EVAL_DDQ_INNER_LOOP_B()
+      !     do j = local_points+1, max_points 
+      !       pointb%temp(:, :, j) = 0.0d0
+      !     end do
+      !     CALL UPDATE_DQB()
+      !     CALL UPDATE_DDQB()
+
+      !     CALL EVAL_UPDATE_INNERLOOP_2_B()
+      !     do j = local_points+1, max_points 
+      !       pointb%dq(:, :, j) = 0.0d0
+      !     end do
+
+      !     CALL EVAL_DQ_INNER_LOOP_B()
+      !     do j = local_points+1, max_points 
+      !       pointb%temp(:, :, j) = 0.0d0
+      !     end do
+      !     CALL UPDATE_QB()
+      !     CALL UPDATE_DQB()
+      !   END DO
+      ! END IF
+
+    !   IF (rank .EQ. 1) THEN
+    ! !     ! z = 14
+    !   write(*,*) rk, 'is rk-pre-qdb'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+    !   ! write(*,*) pointb%prim(:,z), ' is Prim'
+    !   write(*,*) pointb%q(:,z), ' is Q'
+    !   write(*,*) pointb%ddq(:,:,z), ' is DDQ'
+    !   ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+    !   ! write(*,*) pointb%delta(z), ' is Delta'
+    !   ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+    !   DO k=1,point%nbhs(z)
+    !       nbh = point%conn(z, k)
+    !       ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+    !       ! write(*,*) pointb%delta(nbh), ' is Delta'
+    !       ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+    !       ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+    !       ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+    !       write(*,*) pointb%q(:,nbh), ' is Q'
+    !       write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+    !       ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+    !       ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+    !   END DO
+    !  END IF
+
+      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+      CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+      do j = 1, max_points 
+        pointb%ddq(:, :, j) = 0.0d0
+      end do
+    !   IF (rank .EQ. 1) THEN
+    !     ! z = 14
+    !   write(*,*) rk, 'is rk-qdb-pre-update'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+    !   ! write(*,*) pointb%prim(:,z), ' is Prim'
+    !   write(*,*) pointb%q(:,z), ' is Q'
+    !   write(*,*) pointb%dq(:,:,z), ' is DQ'
+    !   ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+    !   ! write(*,*) pointb%delta(z), ' is Delta'
+    !   ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+    !   DO k=1,point%nbhs(z)
+    !       nbh = point%conn(z, k)
+    !       ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+    !       ! write(*,*) pointb%delta(nbh), ' is Delta'
+    !       ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+    !       ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+    !       ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+    !       ! write(*,*) pointb%q(:,nbh), ' is Q'
+    !       write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+    !       ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+    !       ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+    !   END DO
+    ! END IF
+    CALL UPDATE_BEGIN_DQB_GHOST()
+    CALL UPDATE_END_DQB_GHOST()
+    do j = local_points+1, max_points 
+      pointb%dq(:, :, j) = 0.0d0
+    end do
+    !   IF (rank .EQ. 1) THEN
+    !     ! z = 14
+    !   write(*,*) rk, 'is rk-qdb'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+    !   ! write(*,*) pointb%prim(:,z), ' is Prim'
+    !   write(*,*) pointb%q(:,z), ' is Q'
+    !   write(*,*) pointb%dq(:,:,z), ' is DQ'
+    !   ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+    !   ! write(*,*) pointb%delta(z), ' is Delta'
+    !   ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+    !   DO k=1,point%nbhs(z)
+    !       nbh = point%conn(z, k)
+    !       ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+    !       ! write(*,*) pointb%delta(nbh), ' is Delta'
+    !       ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+    !       ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+    !       ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+    !       ! write(*,*) pointb%q(:,nbh), ' is Q'
+    !       write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+    !       ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+    !       ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+    !   END DO
+    !  END IF
+      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
+      CALL EVAL_Q_DERIVATIVES_B()
+
+    !   ! IF (rank .EQ. 1) THEN
+    !     ! z = 14
+    !   write(*,*) rk, 'is rk-post-qdb'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+    !   ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+    !   ! write(*,*) pointb%prim(:,z), ' is Prim'
+    !   write(*,*) pointb%q(:,z), ' is Q'
+    !   write(*,*) pointb%dq(:,:,z), ' is DQ'
+    !   ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+    !   ! write(*,*) pointb%delta(z), ' is Delta'
+    !   ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+    !   ! DO k=1,point%nbhs(z)
+    !       ! nbh = point%conn(z, k)
+    !       ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+    !       ! write(*,*) pointb%delta(nbh), ' is Delta'
+    !       ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+    !       ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+    !       ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+    !       ! write(*,*) pointb%q(:,nbh), ' is Q'
+    !       ! write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+    !       ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+    !       ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+    !   ! END DO
+    ! !  END IF
+      do j = local_points+1, max_points 
+        pointb%dq(:, :, j) = 0.0d0
+      end do
       CALL UPDATE_BEGIN_QB_GHOST()
       CALL UPDATE_END_QB_GHOST()
+      do j = local_points+1, max_points 
+        pointb%q(:, j) = 0.0d0
+      end do
       CALL POPREAL8ARRAY(point%q, 4*max_points)
-
       CALL EVAL_Q_VARIABLES_B()
-        
+      CALL UPDATE_BEGIN_PRIMB_GHOST()
+      CALL UPDATE_END_PRIMB_GHOST()
+      do j = local_points+1, max_points 
+        pointb%prim(:, j) = 0.0d0
+      end do
+      ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+      ! CALL UPDATE_END_PRIMB_GHOST_()
+
     END DO
 
-    CALL FUNC_DELTA_B()  
+    ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+    ! CALL UPDATE_END_PRIMB_GHOST_()
 
+    CALL FUNC_DELTA_B()  
+    CALL UPDATE_BEGIN_PRIMB_GHOST()
+    CALL UPDATE_END_PRIMB_GHOST()
+    do j = local_points+1, max_points 
+      pointb%prim(:, j) = 0.0d0
+    end do
+    ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+    ! CALL UPDATE_END_PRIMB_GHOST_()
     DO i=max_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
       pointb%prim_old(:, i) = 0.0_8
     END DO
-    CALL UPDATE_BEGIN_PRIMB_GHOST()
-    CALL UPDATE_END_PRIMB_GHOST()
-    
+    ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+    ! CALL UPDATE_END_PRIMB_GHOST_()
+    ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
+    ! CALL UPDATE_END_PRIMB_GHOST_()
+    ! CALL UPDATE_BEGIN_QB_GHOST_()
+    ! CALL UPDATE_END_QB_GHOST_()
+    ! CALL UPDATE_BEGIN_DQB_GHOST_()
+    ! CALL UPDATE_END_DQB_GHOST_()
+    ! CALL UPDATE_BEGIN_DDQB_GHOST_()
+    ! CALL UPDATE_END_DDQB_GHOST_()
   END SUBROUTINE FPI_SOLVER_B
 
   SUBROUTINE FPI_SOLVER(t)
