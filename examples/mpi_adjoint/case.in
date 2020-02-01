@@ -3,5 +3,5 @@
 -format_file legacy
 -vl_const 650
 -inner_iterations 0
--adjoint_mode checkpoints 
+-adjoint_mode blackbox 
 -chkpts 20

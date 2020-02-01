@@ -95,12 +95,6 @@ CONTAINS
     ! CALL UPDATE_END_DQB_GHOST_()
     ! CALL UPDATE_BEGIN_DDQB_GHOST_()
     ! CALL UPDATE_END_DDQB_GHOST_()
-    CALL UPDATE_BEGIN_PRIMB_GHOST()
-    CALL UPDATE_END_PRIMB_GHOST()
-    do j = local_points+1, max_points 
-      pointb%prim(:, j) = 0.0d0
-      pointb%prim_old(:, j) = 0.0d0
-    end do
 
       DO rk=rks,1,-1
       ! IF (rank .EQ. 1) THEN
@@ -160,18 +154,11 @@ CONTAINS
       do j = local_points+1, max_points 
         pointb%ddq(:, :, j) = 0.0d0
       end do
-      CALL UPDATE_BEGIN_PHI1B_GHOST()
-      CALL UPDATE_END_PHI1B_GHOST()
-      CALL UPDATE_BEGIN_PHI2B_GHOST()
-      CALL UPDATE_END_PHI2B_GHOST()
-      do j = local_points+1, max_points 
-        pointb%phi1(:, j) = 0.0d0
-        pointb%phi2(:, j) = 0.0d0
-      end do
 
-      do j = local_points+1, max_points 
-        pointb%flux_res(:, j) = 0.0d0
-      end do
+
+      ! do j = local_points+1, max_points 
+      !   pointb%flux_res(:, j) = 0.0d0
+      ! end do
 
       ! IF (branch .EQ. 0) THEN
       !   DO i=inner_iterations,1,-1
@@ -316,9 +303,7 @@ CONTAINS
     !       ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
     !   ! END DO
     ! !  END IF
-      do j = local_points+1, max_points 
-        pointb%dq(:, :, j) = 0.0d0
-      end do
+
       CALL UPDATE_BEGIN_QB_GHOST()
       CALL UPDATE_END_QB_GHOST()
       do j = local_points+1, max_points 
@@ -347,10 +332,11 @@ CONTAINS
     end do
     ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
     ! CALL UPDATE_END_PRIMB_GHOST_()
-    DO i=max_points,1,-1
+    DO i=local_points,1,-1
       pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
       pointb%prim_old(:, i) = 0.0_8
     END DO
+
     ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
     ! CALL UPDATE_END_PRIMB_GHOST_()
     ! CALL UPDATE_BEGIN_PRIMB_GHOST_()
