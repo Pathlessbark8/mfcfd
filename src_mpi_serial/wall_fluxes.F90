@@ -83,10 +83,10 @@ contains
 
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
-			qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) - &
-                        & (1/6d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) - &
-                        & (1/6d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+			qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
+                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
+                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -104,7 +104,7 @@ contains
                 one_by_det = 1.d0/det
 
                 G = (sum_delx_delf*sum_dely_sqr - sum_dely_delf*sum_delx_dely)*one_by_det
-end subroutine
+        end subroutine
 
 
 
@@ -182,10 +182,10 @@ end subroutine
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) - &
-                        & (1/6d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) - &
-                        & (1/6d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
+                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
+                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -275,10 +275,10 @@ implicit none
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) - &
-                        & (1/6d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) - &
-                        & (1/6d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
+                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
+                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
