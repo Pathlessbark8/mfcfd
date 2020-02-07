@@ -85,12 +85,12 @@ MODULE OUTER_FLUXES_MOD_DIFF
         sum_delx_dely = sum_delx_dely + dels*deln_weights
         CALL PUSHREAL8ARRAY(qtilde_i, 4)
         qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-  &       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, :&
   &       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
   &       i))
         CALL PUSHREAL8ARRAY(qtilde_k, 4)
         qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-  &       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, :&
   &       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
   &       k))
         CALL PUSHREAL8(pr)
@@ -142,28 +142,28 @@ MODULE OUTER_FLUXES_MOD_DIFF
         CALL POPREAL8ARRAY(qtilde_k, 4)
         tempb = -(0.5d0*phi1_k*qtilde_kb)
         temp1 = 2.0*delx*dely
-        tempb0 = -(phi2_k*qtilde_kb/6d0)
+        tempb0 = phi2_k*qtilde_kb/12d0
         pointb%q(:, k) = pointb%q(:, k) + qtilde_kb
         phi1_kb = -(0.5d0*(delx*point%dq(1, :, k)+dely*point%dq(2, :, k))*&
   &       qtilde_kb)
         pointb%dq(1, :, k) = pointb%dq(1, :, k) + delx*tempb
         pointb%dq(2, :, k) = pointb%dq(2, :, k) + dely*tempb
-        phi2_kb = -((delx**2*point%ddq(1, :, k)+temp1*point%ddq(2, :, k)+&
-  &       dely**2*point%ddq(3, :, k))*qtilde_kb/6d0)
+        phi2_kb = (delx**2*point%ddq(1, :, k)+temp1*point%ddq(2, :, k)+&
+&         dely**2*point%ddq(3, :, k))*qtilde_kb/12d0
         pointb%ddq(1, :, k) = pointb%ddq(1, :, k) + delx**2*tempb0
         pointb%ddq(2, :, k) = pointb%ddq(2, :, k) + temp1*tempb0
         pointb%ddq(3, :, k) = pointb%ddq(3, :, k) + dely**2*tempb0
         CALL POPREAL8ARRAY(qtilde_i, 4)
         tempb1 = -(0.5d0*phi1_i*qtilde_ib)
         temp0 = 2.0*delx*dely
-        tempb2 = -(phi2_i*qtilde_ib/6d0)
+        tempb2 = phi2_i*qtilde_ib/12d0
         pointb%q(:, i) = pointb%q(:, i) + qtilde_ib
         phi1_ib = phi1_ib - 0.5d0*(delx*point%dq(1, :, i)+dely*point%dq(2&
   &       , :, i))*qtilde_ib
         pointb%dq(1, :, i) = pointb%dq(1, :, i) + delx*tempb1
         pointb%dq(2, :, i) = pointb%dq(2, :, i) + dely*tempb1
-        phi2_ib = phi2_ib - (delx**2*point%ddq(1, :, i)+temp0*point%ddq(2&
-  &       , :, i)+dely**2*point%ddq(3, :, i))*qtilde_ib/6d0
+        phi2_ib = phi2_ib + (delx**2*point%ddq(1, :, i)+temp0*point%ddq(2&
+  &       , :, i)+dely**2*point%ddq(3, :, i))*qtilde_ib/12d0
         pointb%ddq(1, :, i) = pointb%ddq(1, :, i) + delx**2*tempb2
         pointb%ddq(2, :, i) = pointb%ddq(2, :, i) + temp0*tempb2
         pointb%ddq(3, :, i) = pointb%ddq(3, :, i) + dely**2*tempb2
@@ -230,11 +230,11 @@ MODULE OUTER_FLUXES_MOD_DIFF
         sum_dely_sqr = sum_dely_sqr + deln*deln_weights
         sum_delx_dely = sum_delx_dely + dels*deln_weights
         qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-  &       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, :&
   &       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
   &       i))
         qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-  &       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, :&
   &       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
   &       k))
         CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
@@ -322,12 +322,12 @@ MODULE OUTER_FLUXES_MOD_DIFF
         sum_delx_dely = sum_delx_dely + dels*deln_weights
         CALL PUSHREAL8ARRAY(qtilde_i, 4)
         qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-  &       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, :&
   &       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
   &       i))
         CALL PUSHREAL8ARRAY(qtilde_k, 4)
         qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-  &       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, :&
   &       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
   &       k))
         CALL PUSHREAL8(pr)
@@ -379,28 +379,28 @@ MODULE OUTER_FLUXES_MOD_DIFF
         CALL POPREAL8ARRAY(qtilde_k, 4)
         tempb = -(0.5d0*phi1_k*qtilde_kb)
         temp1 = 2.0*delx*dely
-        tempb0 = -(phi2_k*qtilde_kb/6d0)
+        tempb0 = phi2_k*qtilde_kb/12d0
         pointb%q(:, k) = pointb%q(:, k) + qtilde_kb
         phi1_kb = -(0.5d0*(delx*point%dq(1, :, k)+dely*point%dq(2, :, k))*&
   &       qtilde_kb)
         pointb%dq(1, :, k) = pointb%dq(1, :, k) + delx*tempb
         pointb%dq(2, :, k) = pointb%dq(2, :, k) + dely*tempb
-        phi2_kb = -((delx**2*point%ddq(1, :, k)+temp1*point%ddq(2, :, k)+&
-  &       dely**2*point%ddq(3, :, k))*qtilde_kb/6d0)
+        phi2_kb = (delx**2*point%ddq(1, :, k)+temp1*point%ddq(2, :, k)+&
+&         dely**2*point%ddq(3, :, k))*qtilde_kb/12d0
         pointb%ddq(1, :, k) = pointb%ddq(1, :, k) + delx**2*tempb0
         pointb%ddq(2, :, k) = pointb%ddq(2, :, k) + temp1*tempb0
         pointb%ddq(3, :, k) = pointb%ddq(3, :, k) + dely**2*tempb0
         CALL POPREAL8ARRAY(qtilde_i, 4)
         tempb1 = -(0.5d0*phi1_i*qtilde_ib)
         temp0 = 2.0*delx*dely
-        tempb2 = -(phi2_i*qtilde_ib/6d0)
+        tempb2 = phi2_i*qtilde_ib/12d0
         pointb%q(:, i) = pointb%q(:, i) + qtilde_ib
         phi1_ib = phi1_ib - 0.5d0*(delx*point%dq(1, :, i)+dely*point%dq(2&
   &       , :, i))*qtilde_ib
         pointb%dq(1, :, i) = pointb%dq(1, :, i) + delx*tempb1
         pointb%dq(2, :, i) = pointb%dq(2, :, i) + dely*tempb1
-        phi2_ib = phi2_ib - (delx**2*point%ddq(1, :, i)+temp0*point%ddq(2&
-  &       , :, i)+dely**2*point%ddq(3, :, i))*qtilde_ib/6d0
+        phi2_ib = phi2_ib + (delx**2*point%ddq(1, :, i)+temp0*point%ddq(2&
+  &       , :, i)+dely**2*point%ddq(3, :, i))*qtilde_ib/12d0
         pointb%ddq(1, :, i) = pointb%ddq(1, :, i) + delx**2*tempb2
         pointb%ddq(2, :, i) = pointb%ddq(2, :, i) + temp0*tempb2
         pointb%ddq(3, :, i) = pointb%ddq(3, :, i) + dely**2*tempb2
@@ -467,11 +467,11 @@ MODULE OUTER_FLUXES_MOD_DIFF
         sum_dely_sqr = sum_dely_sqr + deln*deln_weights
         sum_delx_dely = sum_delx_dely + dels*deln_weights
         qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-  &       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, :&
   &       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
   &       i))
         qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-  &       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, :&
   &       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
   &       k))
         CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
@@ -558,12 +558,12 @@ MODULE OUTER_FLUXES_MOD_DIFF
         sum_delx_dely = sum_delx_dely + dels*deln_weights
         CALL PUSHREAL8ARRAY(qtilde_i, 4)
         qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-  &       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, :&
   &       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
   &       i))
         CALL PUSHREAL8ARRAY(qtilde_k, 4)
         qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-  &       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, :&
   &       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
   &       k))
         CALL PUSHREAL8(pr)
@@ -615,28 +615,28 @@ MODULE OUTER_FLUXES_MOD_DIFF
         CALL POPREAL8ARRAY(qtilde_k, 4)
         tempb = -(0.5d0*phi1_k*qtilde_kb)
         temp1 = 2.0*delx*dely
-        tempb0 = -(phi2_k*qtilde_kb/6d0)
+        tempb0 = phi2_k*qtilde_kb/12d0
         pointb%q(:, k) = pointb%q(:, k) + qtilde_kb
         phi1_kb = -(0.5d0*(delx*point%dq(1, :, k)+dely*point%dq(2, :, k))*&
   &       qtilde_kb)
         pointb%dq(1, :, k) = pointb%dq(1, :, k) + delx*tempb
         pointb%dq(2, :, k) = pointb%dq(2, :, k) + dely*tempb
-        phi2_kb = -((delx**2*point%ddq(1, :, k)+temp1*point%ddq(2, :, k)+&
-  &       dely**2*point%ddq(3, :, k))*qtilde_kb/6d0)
+        phi2_kb = (delx**2*point%ddq(1, :, k)+temp1*point%ddq(2, :, k)+&
+&         dely**2*point%ddq(3, :, k))*qtilde_kb/12d0
         pointb%ddq(1, :, k) = pointb%ddq(1, :, k) + delx**2*tempb0
         pointb%ddq(2, :, k) = pointb%ddq(2, :, k) + temp1*tempb0
         pointb%ddq(3, :, k) = pointb%ddq(3, :, k) + dely**2*tempb0
         CALL POPREAL8ARRAY(qtilde_i, 4)
         tempb1 = -(0.5d0*phi1_i*qtilde_ib)
         temp0 = 2.0*delx*dely
-        tempb2 = -(phi2_i*qtilde_ib/6d0)
+        tempb2 = phi2_i*qtilde_ib/12d0
         pointb%q(:, i) = pointb%q(:, i) + qtilde_ib
         phi1_ib = phi1_ib - 0.5d0*(delx*point%dq(1, :, i)+dely*point%dq(2&
   &       , :, i))*qtilde_ib
         pointb%dq(1, :, i) = pointb%dq(1, :, i) + delx*tempb1
         pointb%dq(2, :, i) = pointb%dq(2, :, i) + dely*tempb1
-        phi2_ib = phi2_ib - (delx**2*point%ddq(1, :, i)+temp0*point%ddq(2&
-  &       , :, i)+dely**2*point%ddq(3, :, i))*qtilde_ib/6d0
+        phi2_ib = phi2_ib + (delx**2*point%ddq(1, :, i)+temp0*point%ddq(2&
+  &       , :, i)+dely**2*point%ddq(3, :, i))*qtilde_ib/12d0
         pointb%ddq(1, :, i) = pointb%ddq(1, :, i) + delx**2*tempb2
         pointb%ddq(2, :, i) = pointb%ddq(2, :, i) + temp0*tempb2
         pointb%ddq(3, :, i) = pointb%ddq(3, :, i) + dely**2*tempb2
@@ -702,11 +702,11 @@ MODULE OUTER_FLUXES_MOD_DIFF
         sum_dely_sqr = sum_dely_sqr + deln*deln_weights
         sum_delx_dely = sum_delx_dely + dels*deln_weights
         qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-  &       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, :&
   &       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
   &       i))
         qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-  &       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
+  &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, :&
   &       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
   &       k))
         CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
@@ -723,5 +723,3 @@ MODULE OUTER_FLUXES_MOD_DIFF
     END SUBROUTINE OUTER_DGY_POS
   
   END MODULE OUTER_FLUXES_MOD_DIFF
-  
-  
