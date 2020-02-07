@@ -8,14 +8,12 @@ module q_lskum_mod
         use point_normals_mod    
         use generate_connectivity_mod
         use post_processing_mod
-        use stagnation_values_mod
         use cudafor
         use ieee_arithmetic
 
 
-        real*8 :: sum_res_sqr, residue, temp2
+        real*8 :: sum_res_sqr, residue
         real*8, device :: temp
-        real*8, device, allocatable :: cost_func_d(:)
         real*8, device, allocatable :: sum_res_sqr_d(:)
 
 contains
@@ -49,7 +47,6 @@ contains
                 write(*,*)
 
                 allocate(sum_res_sqr_d(max_points))
-                allocate(cost_func_d(max_points))
 
                 tBlock = dim3 (blockx, blocky, blockz)
                 grid = dim3(ceiling(real(max_points)/ tBlock%x), 1, 1)
@@ -111,9 +108,6 @@ contains
 
 
                         end do
-
-                        call objective_function_J<<<grid, tBlock>>>(point_d%prim, cost_func_d)
-
 
                         istat = cudaGetLastError() 
 

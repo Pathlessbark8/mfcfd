@@ -10,7 +10,7 @@ objects=meshfree_solver.o parameter.o data_structure.o point_preprocessor.o init
 TARGET = execname
 
 all:
-	cat device_data_structure.cuf q_variables.cuf flux_residual.cuf state_update.cuf stagnation_values.cuf q_lskum.cuf > cuda.cuf
+	cat device_data_structure.cuf q_variables.cuf flux_residual.cuf state_update.cuf q_lskum.cuf > cuda.cuf
 	make -f makefile $(TARGET)
 
 
