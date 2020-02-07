@@ -22,6 +22,17 @@ CONTAINS
 SUBROUTINE Q_LSKUM_B()
     IMPLICIT NONE
     INTEGER :: i
+    ! DO i=1,max_points
+    !   point%phi1(:, i) = 1.0d0
+    !   point%phi2(:, i) = 1.0d0
+    ! END DO
+    ! OPEN(unit=302, file='temporary_phi.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+    ! DO i = 1, max_points
+    !         WRITE(302,'(8e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), &
+    !         & point%phi1(4,i) , point%phi2(1,i), point%phi2(2,i), point%phi2(3,i), &
+    !         & point%phi2(4,i)
+    ! END DO
+    ! CLOSE(unit=302)
     OPEN(unit=301, file='residue', form='FORMATTED', status='REPLACE', &
 &  action='WRITE') 
     cost_funcb = 1.0d0
@@ -29,10 +40,6 @@ SUBROUTINE Q_LSKUM_B()
     CALL GENERATE_CONNECTIVITY()
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
     WRITE(*, *) 
-    DO i=1,max_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
-    END DO
 ! point%phi1(80,1) = point%phi1(80,1) + 1e-3
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
     WRITE(*, *) 
@@ -82,6 +89,7 @@ SUBROUTINE Q_LSKUM_B()
         CALL FPI_SOLVER_B(it)
         cost_funcb = 0.0_8
     END DO
+
     OPEN(unit=301, file='jderivatives_b.dat', form='FORMATTED', status='REPLACE', action='WRITE')
         DO i=1,max_points
             WRITE(301,*) pointb%phi1(:,i)

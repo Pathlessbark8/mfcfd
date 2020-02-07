@@ -61,7 +61,7 @@ subroutine readcase()
                 runop = 2
         end if
         
-        tscheme = 'ssprk43' ! Default first order in time
+        tscheme = 'ssprk43' ! Default second order in time
         call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                               '-tscheme',tscheme,set,ierr); CHKERRQ(ierr)
 
@@ -95,7 +95,7 @@ subroutine readcase()
         call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                               '-restart_solution',restart_solution,set,ierr); CHKERRQ(ierr)
    
-        if(trim(restart_solution) == 'same') then
+        if(trim(restart_solution) == 'yes') then
                 restart = 1
         elseif(trim(restart_solution) == 'no') then
                 restart = 0
@@ -154,6 +154,9 @@ subroutine readcase()
                 write(*,*) 'inner_iterations    :', inner_iterations
                 write(*,*) 'adjoint_mode        :', adjoint_mode
                 write(*,*) 'checkpoints         :', chkpts
+                write(*,*) 'mach                :', mach
+                write(*,*) 'aoa                 :', aoa
+                write(*,*) 'power               :', power
                 if(limiter_flag == 1)write(*,*) 'vl_const     :', vl_const
         end if
 

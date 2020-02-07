@@ -32,6 +32,7 @@ CONTAINS
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
     cost_funcb = 1.0d0
+
     IF (rank .EQ. 0) THEN
       WRITE(*, *) 
       WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
@@ -40,20 +41,27 @@ CONTAINS
     ! IF( ANY( point%original_id .EQ. 78 )) then
     !   WRITE(*, *) 'Rank is ', rank
     ! END IF
-    DO i=1,local_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
-    END DO 
-    DO i=1,ghost_points
-      point%phi1(1, i+local_points) = 1.0d0
-      point%phi1(2, i+local_points) = 1.0d0
-      point%phi1(3, i+local_points) = 1.0d0
-      point%phi1(4, i+local_points) = 1.0d0
-      point%phi2(1, i+local_points) = 1.0d0
-      point%phi2(2, i+local_points) = 1.0d0
-      point%phi2(3, i+local_points) = 1.0d0
-      point%phi2(4, i+local_points) = 1.0d0
-    END DO
+    ! DO i=1,local_points
+    !   point%phi1(:, i) = 1.0d0
+    !   point%phi2(:, i) = 1.0d0
+    ! END DO 
+    ! DO i=1,ghost_points
+    !   point%phi1(1, i+local_points) = 1.0d0
+    !   point%phi1(2, i+local_points) = 1.0d0
+    !   point%phi1(3, i+local_points) = 1.0d0
+    !   point%phi1(4, i+local_points) = 1.0d0
+    !   point%phi2(1, i+local_points) = 1.0d0
+    !   point%phi2(2, i+local_points) = 1.0d0
+    !   point%phi2(3, i+local_points) = 1.0d0
+    !   point%phi2(4, i+local_points) = 1.0d0
+    ! END DO
+    ! OPEN(unit=301, file='temporary_phi.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+    ! DO k= 1, max_points
+    !         WRITE(301,'(8e30.20)') point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
+    !         & point%phi1(4,k) , point%phi2(1,k), point%phi2(2,k), point%phi2(3,k), &
+    !         & point%phi2(4,k)
+    ! END DO
+    ! CLOSE(unit=301)
     IF (rank .EQ. 0) THEN
       WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
       WRITE(*, *) 
@@ -108,9 +116,9 @@ CONTAINS
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
-        IF (rank .EQ. 1) THEN
-          z = 14
-          write(*,*) pointb%phi1(:,z), ' is Phi1'
+        ! IF (rank .EQ. 1) THEN
+          ! z = 14
+          ! write(*,*) pointb%phi1(:,z), ' is Phi1'
           ! write(*,*) pointb%phi1(:,z), ' is Phi2'
           ! write(*,*) pointb%prim(:,z), ' is Prim'
           ! write(*,*) pointb%temp(:,:,z), ' is Temp'
@@ -128,26 +136,11 @@ CONTAINS
               ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
               ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
           ! END DO
-        END IF
+        ! END IF
         cost_funcb = 0.0_8
     END DO
-    
     CALL PRINT_PHI_OUTPUT()
 
-    DO i=ghost_points,1,-1
-      pointb%phi2(4, i+local_points) = 0.0_8
-      pointb%phi2(3, i+local_points) = 0.0_8
-      pointb%phi2(2, i+local_points) = 0.0_8
-      pointb%phi2(1, i+local_points) = 0.0_8
-      pointb%phi1(4, i+local_points) = 0.0_8
-      pointb%phi1(3, i+local_points) = 0.0_8
-      pointb%phi1(2, i+local_points) = 0.0_8
-      pointb%phi1(1, i+local_points) = 0.0_8
-    END DO
-    DO i=local_points,1,-1
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
-    END DO
   END SUBROUTINE Q_LSKUM_B
 
 END MODULE Q_LSKUM_MOD_DIFF

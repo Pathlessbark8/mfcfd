@@ -104,26 +104,7 @@ CONTAINS
         WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
         WRITE(*, *) 
     END IF
-    DO i=1,local_points
-        point%phi1(1, i) = 1.0d0
-        point%phi1(2, i) = 1.0d0
-        point%phi1(3, i) = 1.0d0
-        point%phi1(4, i) = 1.0d0
-        point%phi2(1, i) = 1.0d0
-        point%phi2(2, i) = 1.0d0
-        point%phi2(3, i) = 1.0d0
-        point%phi2(4, i) = 1.0d0
-    END DO
-    DO i=1,ghost_points
-        point%phi1(1, i+local_points) = 1.0d0
-        point%phi1(2, i+local_points) = 1.0d0
-        point%phi1(3, i+local_points) = 1.0d0
-        point%phi1(4, i+local_points) = 1.0d0
-        point%phi2(1, i+local_points) = 1.0d0
-        point%phi2(2, i+local_points) = 1.0d0
-        point%phi2(3, i+local_points) = 1.0d0
-        point%phi2(4, i+local_points) = 1.0d0
-    END DO
+
     IF (rank .EQ. 0) THEN
         WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
         WRITE(*, *) 
@@ -170,18 +151,20 @@ CONTAINS
         do ijk=OLDCAPO, CAPO-1
             ITIM = ijk+ITIMS
             ITIM = ITIM + itr
-            if(iflag == 1) then
-                write (*,*)
-                write (*,*) 'prediction of needed forward steps :', PFS
-                write (*,*) 'slowdown factor :', SF
-                write (*,*)
-                iflag = 0
-            end if
+            IF (rank .EQ. 0) THEN
+                if(iflag == 1) then
+                    write (*,*)
+                    write (*,*) 'prediction of needed forward steps :', PFS
+                    write (*,*) 'slowdown factor :', SF
+                    write (*,*)
+                    iflag = 0
+                end if
+            END IF
             CALL FPI_SOLVER(ITIM)
             IF (rank .EQ. 0) THEN
                 if (pflag == 1) then
-                    write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
-                    write(301, *) itim, residue
+                write(*,'(a12,i8,a15,e30.20)')'iterations:',ITIM,'residue:',residue
+                write(301, *) itim, residue
                 end if
             end if
         end do
@@ -213,9 +196,12 @@ CONTAINS
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
-        ! IF (rank .EQ. 1) THEN
-        !     write(*,*) pointb%phi1(:,14), ' is Phi1'
-        ! END IF
+        IF (rank .EQ. 0) THEN
+            ! if (pflag == 1) then
+                write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
+                ! write(301, *) itim, residue
+            ! end if
+        end if
     END IF
 
     !      The below if condition runs the subsequent reverse steps .. 
@@ -225,9 +211,12 @@ CONTAINS
         ITIM = ITIM + itr
         CALL FPI_SOLVER_B(ITIM)
         cost_funcb = 0.0_8
-        ! IF (rank .EQ. 1) THEN
-        !     write(*,*) pointb%phi1(:,14), ' is Phi1'
-        ! END IF
+        IF (rank .EQ. 0) THEN
+            ! if (pflag == 1) then
+                write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
+                ! write(301, *) itim, residue
+            ! end if
+        end if
     END IF
 !
 !
@@ -296,19 +285,11 @@ CONTAINS
     9020 FORMAT (' firsturn at',I6)
     9030 FORMAT (' youturn at',I7)
     9040 FORMAT (' restore at',I7)
-!                                                                                                                                                  
+!                  
+    CALL PRINT_PHI_OUTPUT()                                                                                                                                
 !                                                                                                                                                  
 !       End of the revolve algorithm ..   
 
-    ! OPEN(unit=301, file='jderivatives_c.dat', form='FORMATTED', status='REPLACE', action='WRITE')
-    !     DO i=1,max_points
-    !         WRITE(301,*) pointb%phi1(:,i)
-    !     END DO
-    ! CLOSE(unit=301)
-    DO i=max_points,1,-1
-        pointb%phi2(:, i) = 0.0_8
-        pointb%phi1(:, i) = 0.0_8
-    END DO
 END SUBROUTINE Q_LSKUM_CHKPTS_B
 
 END MODULE Q_LSKUM_MOD_CHKPTS_DIFF

@@ -66,9 +66,9 @@ contains
                                         & point%phi2(4,k)
                         end do
                         close(unit=105)
-
                 endif
 
+        
         end subroutine
 
 end module initial_conditions_mod

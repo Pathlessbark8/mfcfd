@@ -54,9 +54,9 @@ module file_ops_mod
         end if
 
         if(restart_solution == 'no') then
-        solution_restart = 0
+            restart = 0
         elseif(restart_solution == 'yes') then
-        solution_restart = 1
+            restart = 1
         end if
 
         if(tscheme == 'first') then

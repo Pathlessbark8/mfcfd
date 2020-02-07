@@ -108,11 +108,18 @@ contains
                 write(*,*)
 
 !               write(*,*)'%%%%%%%%%%%%%%%-Setting phi2 value to 0-%%%%%%%%%%%%%'
-!               do i=1,max_points
-!                       point%phi1(:,i) = 1.0d0
-!                       point%phi2(:,i) = 0.0d0
-!               enddo
-
+                ! do i=1,max_points
+                !         point%phi1(:,i) = 1.0d0
+                !         point%phi2(:,i) = 1.0d0
+                ! enddo
+                OPEN(unit=301, file='temporary_phi.dat', form='FORMATTED', status='REPLACE', action='WRITE')
+                ! WRITE(301,*) max_iters, chkpts
+                DO k=1,max_points
+                    WRITE(301,'(8e30.20)') point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
+                    & point%phi1(4,k) , point%phi2(1,k), point%phi2(2,k), point%phi2(3,k), &
+                    & point%phi2(4,k)
+                END DO
+                CLOSE(unit=301)
                 call cpu_time(start)
 
                 ! Transfer from host device
@@ -218,7 +225,7 @@ contains
                                         & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
                                         & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
                                         & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, &
-                                        & point_d%phi1, point_d%phi1, point_d%delta)
+                                        & point_d%phi1, point_d%phi2, point_d%delta)
 
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
@@ -271,14 +278,13 @@ contains
                             write(301,*) ITIM, residue
                         end if
 
-
-                        if(ieee_is_nan(residue))exit
+                        ! if(ieee_is_nan(residue))exit
         
-                        if(mod(ITIM,nsave) == 0) then
-                                write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
-                                call device_to_host()
-                                call print_primal_output()
-                        end if
+                        ! if(mod(ITIM,nsave) == 0) then
+                        !         write(*,*)'%%%%%%%%%%%%%-Saving solution-%%%%%%%%%%%%%'
+                        !         call device_to_host()
+                        !         call print_primal_output()
+                        ! end if
                     end do
                 END IF
 
@@ -409,6 +415,7 @@ contains
 
                 CLOSE(UNIT=301)
                 CLOSE(UNIT=302)
+
                 OPEN(unit=301, file='phi_vector_d.dat', form='FORMATTED', status='REPLACE', action='WRITE')
                     WRITE(301,*) max_iters, chkpts
                     DO i=1,max_points

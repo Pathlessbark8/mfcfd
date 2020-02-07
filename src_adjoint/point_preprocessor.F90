@@ -152,4 +152,30 @@ contains
 
         end subroutine
 
+        subroutine read_phi_data()
+
+                implicit none
+
+                integer:: i, k, r
+                character(len=64) :: sfile
+
+                sfile = 'phi_values_split/phi.dat'
+
+                OPEN(UNIT=101,FILE=trim(sfile),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
+
+                allocate(point%phi1(4, max_points))
+                allocate(point%phi2(4, max_points))
+
+
+                do k = 1, max_points
+                
+                        read(101,*) point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
+                        & point%phi1(4,k) , point%phi2(1,k), point%phi2(2,k), point%phi2(3,k), &
+                        & point%phi2(4,k)
+                end do
+                                        
+                CLOSE(UNIT=101)
+        
+        end subroutine 
+
 end module

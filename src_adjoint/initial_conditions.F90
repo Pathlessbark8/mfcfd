@@ -33,13 +33,16 @@ contains
 
                 endif
 
+                
+
         end subroutine
 
         subroutine restart_sol()
 
                 implicit none
 
-                integer :: i, dummy
+                integer :: i
+                real*8 :: dummy
                 character(len=64) :: sfile
                 character(len=10) :: itos
 
@@ -50,9 +53,9 @@ contains
                 read(515,*)dummy, itr, res_old
 
                 do i = 1, max_points
-                        read(515,*)dummy, dummy, dummy, dummy,&
-                                dummy, point%prim(1,i), point%prim(2,i), point%prim(3,i),&
-                                point%prim(4,i)
+                        read(515,*)dummy, dummy, dummy, dummy, &
+                        & point%prim(1,i), point%prim(2,i), point%prim(3,i), &
+                        & point%prim(4,i), dummy, dummy, dummy
                 end do
 
                 close(515)

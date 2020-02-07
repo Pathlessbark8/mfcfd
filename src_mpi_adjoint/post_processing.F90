@@ -48,9 +48,9 @@ contains
                 character(len=10) :: itos
 
                 if(proc==1) then
-                        pfile = 'phistore/phi.dat'
+                        pfile = 'phistore/phid.dat'
                 else
-                        pfile = 'phistore/'//'phi-'//trim(itos(4,rank))//'.dat'
+                        pfile = 'phistore/'//'phid-'//trim(itos(4,rank))//'.dat'
                 end if
 
                 OPEN(UNIT=501,FILE=trim(pfile))

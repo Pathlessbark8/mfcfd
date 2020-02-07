@@ -50,7 +50,15 @@ program meshfree_solver
                 end if
                 
                 call read_input_point_data()
+
+                if(rank == 0) then
+                        write(*,*)
+                        write(*,*)'%%%%%%%%%%%%-Reading phi data-%%%%%%%%%%%'
+                        write(*,*)
+                end if
                 
+                call read_phi_data()
+
         !       Allocate solution variables
         
                 call allocate_soln()
@@ -63,7 +71,6 @@ program meshfree_solver
                         write(*,*) 'Number of points:         ', plen
                         write(*,*)
                 end if
-                
         !	Assign the initial conditions for the primitive variables ..	
                 call initial_conditions()
                 if(rank == 0) then

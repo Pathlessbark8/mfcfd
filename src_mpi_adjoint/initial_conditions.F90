@@ -12,9 +12,15 @@ contains
                 
                 integer :: k,i
 
+                CALL UPDATE_BEGIN_PHI1_GHOST()
+                CALL UPDATE_END_PHI1_GHOST()
+                CALL UPDATE_BEGIN_PHI2_GHOST()
+                CALL UPDATE_END_PHI2_GHOST()
+                
                 if(restart == 0) then
 
                         call setup_case_parameters()
+                        
 
                         do k=1, max_points
                                 point%prim(1,k) = q_init(1)
@@ -45,9 +51,10 @@ contains
  
                 implicit none
 
-                integer :: i, dummy
+                integer :: i
                 character(len=64) :: sfile
                 character(len=10) :: itos
+                real*8 :: dummy
 
                 if(proc==1) then
                         sfile = 'restart/sol.dat'
@@ -61,8 +68,8 @@ contains
 
                 do i = 1, local_points
                         read(515,*)dummy, dummy, dummy, dummy,&
-                                dummy, point%prim(1,i), point%prim(2,i), point%prim(3,i),&
-                                point%prim(4,i)
+                                & point%prim(1,i), point%prim(2,i), point%prim(3,i),&
+                                & point%prim(4,i), dummy, dummy, dummy
                 end do
 
                 close(515)

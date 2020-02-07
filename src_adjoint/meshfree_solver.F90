@@ -31,6 +31,7 @@ program meshfree_solver
         write(*,*)
 
         call read_input_point_data()
+        call read_phi_data()
 
 !       Allocate solution variables
 

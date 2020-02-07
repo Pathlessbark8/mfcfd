@@ -148,6 +148,8 @@ module device_DATA_STRUCTURE_MOD_DIFF
         subroutine device_to_host()
                 implicit none
                 point%prim    = point_d%prim
+                point%phi1    = point_d%phi1
+                point%phi2    = point_d%phi2
         end subroutine
 
         subroutine intermediate_device_to_host()

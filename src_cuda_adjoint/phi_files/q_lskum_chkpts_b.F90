@@ -101,10 +101,10 @@ CONTAINS
     
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
     WRITE(*, *)
-    DO i=1,max_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
-    END DO
+    ! DO i=1,max_points
+    !   point%phi1(:, i) = 1.0d0
+    !   point%phi2(:, i) = 1.0d0
+    ! END DO
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
     WRITE(*, *)
 !   Some initialisations for the revolve alogorithm ..  
@@ -291,10 +291,10 @@ END SUBROUTINE Q_LSKUM_CHKPTS_B
     CALL GENERATE_CONNECTIVITY()
     WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
     WRITE(*, *)
-    DO i=1,max_points
-      point%phi1(:, i) = 1.0d0
-      point%phi2(:, i) = 1.0d0
-    END DO
+    ! DO i=1,max_points
+    !   point%phi1(:, i) = 1.0d0
+    !   point%phi2(:, i) = 1.0d0
+    ! END DO
 ! point%phi1(80,1) = point%phi1(80,1) + 1e-3
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
     WRITE(*, *)

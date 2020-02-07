@@ -14,6 +14,7 @@ module petsc_data_structure_mod
         Vec                  :: p_ddq
         Vec                  :: p_qm
         Vec                  :: p_prim
+        Vec                  :: p_phi1, p_phi2
 
                 ! Adjoint PETSc variables
         Vec                  :: pb_dq, pb_q
@@ -44,6 +45,12 @@ module petsc_data_structure_mod
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,point%prim(1,1),p_prim,ierr)
+                        
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
+                        &PETSC_DECIDE,ghost_points,pghost,point%phi1(1,1),p_phi1,ierr)
+
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
+                        &PETSC_DECIDE,ghost_points,pghost,point%phi2(1,1),p_phi2,ierr)
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,pointb%dq(1,1,1),pb_dq,ierr)
@@ -86,9 +93,13 @@ module petsc_data_structure_mod
                 call VecDestroy(p_ddq,ierr)
                 call VecDestroy(p_qm,ierr)
                 call VecDestroy(p_prim,ierr)
+                call VecDestroy(p_phi1,ierr)
+                call VecDestroy(p_phi2,ierr)
                 call VecDestroy(pb_dq,ierr)
                 call VecDestroy(pb_ddq,ierr)
                 call VecDestroy(pb_prim,ierr)
+                call VecDestroy(pb_phi1,ierr)
+                call VecDestroy(pb_phi2,ierr)
         end subroutine 
 
 
@@ -125,6 +136,22 @@ module petsc_data_structure_mod
                 if (proc==1) return
 
                 call VecGhostUpdateBegin(p_qm,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        end subroutine 
+
+        subroutine update_begin_phi1_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateBegin(p_phi1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        end subroutine 
+
+        subroutine update_begin_phi2_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateBegin(p_phi2,INSERT_VALUES,SCATTER_FORWARD,ierr)
         end subroutine 
 
         !Adjoint Begin Add
@@ -270,6 +297,28 @@ module petsc_data_structure_mod
                 call PetscLogEventBegin(prim_comm, ierr)
                 call VecGhostUpdateEnd(p_prim,INSERT_VALUES,SCATTER_FORWARD,ierr)
                 call PetscLogEventEnd(prim_comm, ierr)
+
+        end subroutine
+
+        subroutine update_end_phi1_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call PetscLogEventBegin(phi_comm, ierr)
+                call VecGhostUpdateEnd(p_phi1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call PetscLogEventEnd(phi_comm, ierr)
+
+        end subroutine
+
+        subroutine update_end_phi2_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call PetscLogEventBegin(phi_comm, ierr)
+                call VecGhostUpdateEnd(p_phi2,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call PetscLogEventEnd(phi_comm, ierr)
 
         end subroutine
 
