@@ -71,6 +71,7 @@ module compute_force_coeffs_mod
                         Cl = V*dcos(theta) - H*dsin(theta)
                         Cd = H*dcos(theta) + V*dsin(theta)
                         Cm = pitch_mom
+                        write(*,*) "Cl: ", Cl, " Cd: ", Cd, " Cm: ", Cm
 
                         CLOSE(UNIT=201)
 

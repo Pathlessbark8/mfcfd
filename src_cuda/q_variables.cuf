@@ -254,23 +254,23 @@ contains
 
                         sum_delx_dely = sum_delx_dely + delx*dely*weights
 
-                        temp1 = q1 - 0.5 * (delx * dq_d(1,1,i) + dely * dq_d(2,1,i))
-                        temp2 = q_d(1,nbh) - 0.5 * (delx * dq_d(1,1,nbh) + dely * dq_d(2,1,nbh))
+                        temp1 = q1 - 0.5d0 * (delx * dq_d(1,1,i) + dely * dq_d(2,1,i))
+                        temp2 = q_d(1,nbh) - 0.5d0 * (delx * dq_d(1,1,nbh) + dely * dq_d(2,1,nbh))
                         sum_delx_delq1 = sum_delx_delq1 + (weights * delx * (temp2 - temp1))
                         sum_dely_delq1 = sum_dely_delq1 + (weights * dely * (temp2 - temp1))
 
-                        temp1 = q2 - 0.5 * (delx * dq_d(1,2,i) + dely * dq_d(2,2,i))
-                        temp2 = q_d(2,nbh) - 0.5 * (delx * dq_d(1,2,nbh) + dely * dq_d(2,2,nbh))
+                        temp1 = q2 - 0.5d0 * (delx * dq_d(1,2,i) + dely * dq_d(2,2,i))
+                        temp2 = q_d(2,nbh) - 0.5d0 * (delx * dq_d(1,2,nbh) + dely * dq_d(2,2,nbh))
                         sum_delx_delq2 = sum_delx_delq2 + (weights * delx * (temp2 - temp1))
                         sum_dely_delq2 = sum_dely_delq2 + (weights * dely * (temp2 - temp1))
 
-                        temp1 = q3 - 0.5 * (delx * dq_d(1,3,i) + dely * dq_d(2,3,i))
-                        temp2 = q_d(3,nbh) - 0.5 * (delx * dq_d(1,3,nbh) + dely * dq_d(2,3,nbh))
+                        temp1 = q3 - 0.5d0 * (delx * dq_d(1,3,i) + dely * dq_d(2,3,i))
+                        temp2 = q_d(3,nbh) - 0.5d0 * (delx * dq_d(1,3,nbh) + dely * dq_d(2,3,nbh))
                         sum_delx_delq3 = sum_delx_delq3 + (weights * delx * (temp2 - temp1))
                         sum_dely_delq3 = sum_dely_delq3 + (weights * dely * (temp2 - temp1))
 
-                        temp1 = q4 - 0.5 * (delx * dq_d(1,4,i) + dely * dq_d(2,4,i))
-                        temp2 = q_d(4,nbh) - 0.5 * (delx * dq_d(1,4,nbh) + dely * dq_d(2,4,nbh))
+                        temp1 = q4 - 0.5d0 * (delx * dq_d(1,4,i) + dely * dq_d(2,4,i))
+                        temp2 = q_d(4,nbh) - 0.5d0 * (delx * dq_d(1,4,nbh) + dely * dq_d(2,4,nbh))
                         sum_delx_delq4 = sum_delx_delq4 + (weights * delx * (temp2 - temp1))
                         sum_dely_delq4 = sum_dely_delq4 + (weights * dely * (temp2 - temp1))
 

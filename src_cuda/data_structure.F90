@@ -23,6 +23,8 @@ module data_structure_mod
 		real*8, dimension(:), allocatable :: min_dist
 
                 real*8, dimension(:,:), allocatable :: prim
+                real*8, dimension(:,:), allocatable :: phi1
+
 
                 real*8, dimension(:), allocatable :: sensor, D2_dist
 

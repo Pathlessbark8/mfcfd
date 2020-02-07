@@ -33,6 +33,7 @@ contains
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
                 call compute_normals()
                 call generate_connectivity()
@@ -102,7 +103,7 @@ contains
                                         & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
                                         & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
                                         & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res)
+                                        & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, point_d%phi1)
 
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
@@ -132,15 +133,15 @@ contains
 
                         sum_res_sqr = temp
                         
-                        temp2 = 0.0
-                        do i = 1, mp_d
-                                temp2 = temp2 + cost_func_d(i)
-                        end do
+                        ! temp2 = 0.0
+                        ! do i = 1, mp_d
+                        !         temp2 = temp2 + cost_func_d(i)
+                        ! end do
 
-                        cost_func = temp2
+                        ! cost_func = temp2
 
-                        write(*,*) "Objective Function J:", cost_func
-                        write(302,*) it, cost_func
+                        ! write(*,*) "Objective Function J:", cost_func
+                        ! write(302,*) it, cost_func
 
                         residue = dsqrt(sum_res_sqr)/max_points
 
@@ -171,6 +172,10 @@ contains
                 write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
                 write(*,*)
 
+                do i=1, max_points
+                        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
+                end do
+
                 istat = cudaDeviceSynchronize()
                 if (istat .ne. 0) then
                         print*, cudaGetErrorString(istat) 
@@ -183,6 +188,7 @@ contains
 
                 CLOSE(UNIT=301)
                 CLOSE(UNIT=302)
+                CLOSE(UNIT=303)
 
         end subroutine
 
