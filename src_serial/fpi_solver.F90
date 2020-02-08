@@ -28,19 +28,18 @@ contains
                 
                         call eval_q_derivatives()
 
-                        call eval_q_double_derivatives()
+!                        if(inner_iterations /= 0) then
+!                                do i = 1, inner_iterations
+                                do i = 1, inner_iterations + 1
 
-                        if(inner_iterations /= 0) then
-                                do i = 1, inner_iterations
-                                        call eval_dq_inner_loop()
+                                        call eval_q_double_derivatives()
 
-                                        call eval_update_innerloop_2()
+                                        call eval_q_inner_loop()
 
-                                        call eval_ddq_inner_loop()
-
-                                        call eval_update_innerloop_3()
+                                        call eval_update_innerloop()
+                                        
                                 enddo
-                        end if
+!                        end if
                 
                         call cal_flux_residual()
 
