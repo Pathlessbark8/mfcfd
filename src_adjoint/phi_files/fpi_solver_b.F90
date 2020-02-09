@@ -12,18 +12,22 @@ MODULE FPI_SOLVER_MOD_DIFF
 
 CONTAINS
 !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cost_func point.delta point.prim
-!                point.prim_old point.q point.flux_res point.dq
-!                point.ddq point.temp point.phi1 point.phi2
-!   with respect to varying inputs: point.delta point.prim point.prim_old
-!                point.q point.flux_res point.dq point.ddq point.temp
-!                point.phi1 point.phi2
+!   gradient     of useful results: cost_func *(point.delta) *(point.prim)
+!                *(point.prim_old) *(point.q) *(point.flux_res)
+!                *(point.dq) *(point.ddq) *(point.temp) *(point.phi1)
+!                *(point.phi2)
+!   with respect to varying inputs: *(point.delta) *(point.prim)
+!                *(point.prim_old) *(point.q) *(point.flux_res)
+!                *(point.dq) *(point.ddq) *(point.temp) *(point.phi1)
+!                *(point.phi2)
+!   Plus diff mem management of: point.delta:in point.prim:in point.prim_old:in
+!                point.q:in point.flux_res:in point.dq:in point.ddq:in
+!                point.temp:in point.phi1:in point.phi2:in
   SUBROUTINE FPI_SOLVER_B(t)
     IMPLICIT NONE
     INTEGER :: t, i, rk, ierr
     INTRINSIC DSQRT
     INTRINSIC DLOG10
-    INTEGER :: branch
     DO i=1,max_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
@@ -34,19 +38,12 @@ CONTAINS
       CALL EVAL_Q_VARIABLES()
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
       CALL EVAL_Q_DERIVATIVES()
-      CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL EVAL_Q_DOUBLE_DERIVATIVES()
-      IF (inner_iterations .NE. 0) THEN
-        DO i=1,inner_iterations
-          CALL EVAL_DQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_2()
-          CALL EVAL_DDQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_3()
-        END DO
-        CALL PUSHCONTROL1B(0)
-      ELSE
-        CALL PUSHCONTROL1B(1)
-      END IF
+      DO i=1,inner_iterations+1
+        CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
+        CALL EVAL_Q_DOUBLE_DERIVATIVES()
+        CALL EVAL_Q_INNER_LOOP()
+        CALL EVAL_UPDATE_INNERLOOP()
+      END DO
       CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL()
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
@@ -58,17 +55,12 @@ CONTAINS
       CALL STATE_UPDATE_B(rk)
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_B()
-      CALL POPCONTROL1B(branch)
-      IF (branch .EQ. 0) THEN
-        DO i=inner_iterations,1,-1
-          CALL EVAL_UPDATE_INNERLOOP_3_B()
-          CALL EVAL_DDQ_INNER_LOOP_B()
-          CALL EVAL_UPDATE_INNERLOOP_2_B()
-          CALL EVAL_DQ_INNER_LOOP_B()
-        END DO
-      END IF
-      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
-      CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+      DO i=inner_iterations+1,1,-1
+        CALL EVAL_UPDATE_INNERLOOP_B()
+        CALL EVAL_Q_INNER_LOOP_B()
+        CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+        CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+      END DO
       CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
       CALL EVAL_Q_DERIVATIVES_B()
       CALL POPREAL8ARRAY(point%q, 4*max_points)
@@ -94,15 +86,14 @@ CONTAINS
     DO rk=1,rks
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
-      CALL EVAL_Q_DOUBLE_DERIVATIVES()
-      IF (inner_iterations .NE. 0) THEN
-        DO i=1,inner_iterations
-          CALL EVAL_DQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_2()
-          CALL EVAL_DDQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_3()
-        END DO
-      END IF
+!                        if(inner_iterations /= 0) then
+!                                do i = 1, inner_iterations
+      DO i=1,inner_iterations+1
+        CALL EVAL_Q_DOUBLE_DERIVATIVES()
+        CALL EVAL_Q_INNER_LOOP()
+        CALL EVAL_UPDATE_INNERLOOP()
+      END DO
+!                        end if
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)
     END DO
@@ -119,4 +110,3 @@ CONTAINS
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
-
