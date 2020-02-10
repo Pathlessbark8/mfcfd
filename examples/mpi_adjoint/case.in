@@ -1,8 +1,9 @@
 -cfl 0.2
--max_iters 1000
+-max_iters 1
 -format_file legacy
 -vl_const 650
--inner_iterations 3
+-inner_iterations 1
 -adjoint_mode blackbox
 -chkpts 160
 -restart_solution no
+-read_phi no

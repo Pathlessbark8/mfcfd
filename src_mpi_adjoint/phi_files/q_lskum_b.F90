@@ -41,20 +41,11 @@ CONTAINS
     ! IF( ANY( point%original_id .EQ. 78 )) then
     !   WRITE(*, *) 'Rank is ', rank
     ! END IF
-    ! DO i=1,local_points
-    !   point%phi1(:, i) = 1.0d0
-    !   point%phi2(:, i) = 1.0d0
-    ! END DO 
-    ! DO i=1,ghost_points
-    !   point%phi1(1, i+local_points) = 1.0d0
-    !   point%phi1(2, i+local_points) = 1.0d0
-    !   point%phi1(3, i+local_points) = 1.0d0
-    !   point%phi1(4, i+local_points) = 1.0d0
-    !   point%phi2(1, i+local_points) = 1.0d0
-    !   point%phi2(2, i+local_points) = 1.0d0
-    !   point%phi2(3, i+local_points) = 1.0d0
-    !   point%phi2(4, i+local_points) = 1.0d0
-    ! END DO
+    DO i=1,max_points
+      point%phi1(:, i) = 1.0d0
+      point%phi2(:, i) = 1.0d0
+    END DO 
+
     ! OPEN(unit=301, file='temporary_phi.dat', form='FORMATTED', status='REPLACE', action='WRITE')
     ! DO k= 1, max_points
     !         WRITE(301,'(8e30.20)') point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
@@ -117,7 +108,7 @@ CONTAINS
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
         ! IF (rank .EQ. 1) THEN
-          ! z = 14
+          ! z = 78
           ! write(*,*) pointb%phi1(:,z), ' is Phi1'
           ! write(*,*) pointb%phi1(:,z), ' is Phi2'
           ! write(*,*) pointb%prim(:,z), ' is Prim'
@@ -125,16 +116,16 @@ CONTAINS
           ! write(*,*) pointb%delta(z), ' is Delta'
           ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
           ! DO k=1,point%nbhs(z)
-              ! nbh = point%conn(z, k)
-              ! write(*,*) pointb%temp(:,:,nbh), ' is Temp'
-              ! write(*,*) pointb%delta(nbh), ' is Delta'
-              ! write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
-              ! write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
-              ! write(*,*) pointb%prim(:,nbh), ' is Prim-k'
-              ! write(*,*) pointb%q(:,nbh), ' is Q'
-              ! write(*,*) pointb%dq(:,:,nbh), ' is DQ'
-              ! write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
-              ! write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+          !     nbh = point%conn(z, k)
+          !     write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+          !     write(*,*) pointb%delta(nbh), ' is Delta'
+          !     write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+          !     write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+          !     write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+          !     write(*,*) pointb%q(:,nbh), ' is Q'
+          !     write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+          !     write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+          !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
           ! END DO
         ! END IF
         cost_funcb = 0.0_8

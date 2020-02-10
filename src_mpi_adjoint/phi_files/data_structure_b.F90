@@ -83,6 +83,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: timestep
 !Run option: petsc or normal
   INTEGER :: runop
+  INTEGER :: read_phi_file
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..

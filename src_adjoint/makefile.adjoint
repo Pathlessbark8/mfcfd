@@ -12,10 +12,7 @@ point_normals_b.o generate_connectivity_b.o fpi_solver_b.o q_variables_b.o flux_
 interior_fluxes_b.o outer_fluxes_b.o limiters_b.o state_update_b.o objective_function_b.o \
 compute_force_coeffs_b.o compute_entropy_b.o post_processing.o split_fluxes_b.o quadrant_fluxes_b.o stagnation_values_b.o \
 file_ops.o q_lskum_chkpts_b.o
-#petsc_bata_structure.o
-#compute_enstrophy_b.o
-#readcase.o
-# quadrant_fluxes_b.o
+
 
 adBuffer.o : ADFirstAidKit/adBuffer.f
 	$(FC) -c ADFirstAidKit/adBuffer.f

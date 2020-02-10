@@ -99,6 +99,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       solution accuracy
   CHARACTER(len=20), SAVE :: solution_accuracy='second'
   CHARACTER(len=20), SAVE :: adjoint_mode='checkpoints'
+  CHARACTER(len=20), SAVE :: read_phi='yes'
   REAL*8 :: f_o_flag
 !       save frequency
   INTEGER, SAVE :: nsave=10000000
@@ -107,6 +108,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       Restart
 !       No of shapes
   INTEGER, SAVE :: shapes=1
+  INTEGER, SAVE :: read_phi_file=0
   INTEGER, SAVE :: restart=0
 !       Block input
   INTEGER, SAVE :: blockx=32

@@ -19,6 +19,7 @@ module file_ops_mod
         interior_points_normal_flag, &
         tscheme, &
         adjoint_mode, &
+        read_phi, &
         ! mach, &
         ! aoa, &
         inner_iterations
@@ -73,6 +74,12 @@ module file_ops_mod
         file_format = 2
         interior_points_normal_flag = 100000
         end if
+
+        if(read_phi == 'yes') then
+            read_phi_file = 1
+        elseif(read_phi == 'no') then
+            read_phi_file = 0
+        endif
 
     end subroutine
 

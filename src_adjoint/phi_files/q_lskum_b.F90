@@ -22,10 +22,7 @@ CONTAINS
 SUBROUTINE Q_LSKUM_B()
     IMPLICIT NONE
     INTEGER :: i
-    ! DO i=1,max_points
-    !   point%phi1(:, i) = 1.0d0
-    !   point%phi2(:, i) = 1.0d0
-    ! END DO
+
     ! OPEN(unit=302, file='temporary_phi.dat', form='FORMATTED', status='REPLACE', action='WRITE')
     ! DO i = 1, max_points
     !         WRITE(302,'(8e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), &
@@ -43,6 +40,10 @@ SUBROUTINE Q_LSKUM_B()
 ! point%phi1(80,1) = point%phi1(80,1) + 1e-3
     WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
     WRITE(*, *) 
+    DO i=1,max_points
+      point%phi1(:, i) = 1.0d0
+      point%phi2(:, i) = 1.0d0
+    END DO
     IF (restart .EQ. 0) itr = 0
     DO it=itr+1,itr+max_iters
       CALL PUSHREAL8ARRAY(point%temp, 3*4*max_points)
@@ -87,6 +88,7 @@ SUBROUTINE Q_LSKUM_B()
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
+        ! write(*,*) pointb%phi1(:,78), ' is Phi1'
         cost_funcb = 0.0_8
     END DO
 

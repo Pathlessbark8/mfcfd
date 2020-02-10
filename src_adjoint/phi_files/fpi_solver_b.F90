@@ -25,7 +25,7 @@ CONTAINS
 !                point.temp:in point.phi1:in point.phi2:in
   SUBROUTINE FPI_SOLVER_B(t)
     IMPLICIT NONE
-    INTEGER :: t, i, rk, ierr
+    INTEGER :: t, i, rk, ierr,z ,nbh,k
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     DO i=1,max_points
@@ -51,6 +51,25 @@ CONTAINS
     END DO
     CALL OBJECTIVE_FUNCTION_J_B()
     DO rk=rks,1,-1
+      ! z = 78
+      ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+      ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+      ! write(*,*) pointb%prim(:,z), ' is Prim'
+      ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+      ! write(*,*) pointb%delta(z), ' is Delta'
+      ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+      ! DO k=1,point%nbhs(z)
+      !     nbh = point%conn(z, k)
+      !     write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+      !     write(*,*) pointb%delta(nbh), ' is Delta'
+      !     write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+      !     write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+      !     write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+      !     write(*,*) pointb%q(:,nbh), ' is Q'
+      !     write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+      !     write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+      !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+      ! END DO
       CALL POPREAL8ARRAY(point%prim, 4*max_points)
       CALL STATE_UPDATE_B(rk)
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
@@ -75,7 +94,7 @@ CONTAINS
 
   SUBROUTINE FPI_SOLVER(t)
     IMPLICIT NONE
-    INTEGER :: t, i, rk, ierr
+    INTEGER :: t, i, rk, ierr, z
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     DO i=1,max_points
@@ -84,6 +103,18 @@ CONTAINS
     CALL FUNC_DELTA()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
+
+      write(*,*) '<<<<<<<<<<<<<<<<<<<<<<<<<<'
+      z = 78
+
+      write(*,*) point%q(:,z), ' is Q'
+      write(*,*) point%prim(:,z), ' is Prim'
+      write(*,*) point%temp(:,:,z), ' is Temp'
+      write(*,*) point%prim_old(:,z), ' is Prim_Old'
+      write(*,*) point%dq(:,:,z), ' is DQ'
+      write(*,*) point%ddq(:,:,z), ' is DDQ'
+      write(*,*) point%flux_res(:,z), ' is Flux Res'
+
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
 !                        if(inner_iterations /= 0) then
@@ -93,6 +124,16 @@ CONTAINS
         CALL EVAL_Q_INNER_LOOP()
         CALL EVAL_UPDATE_INNERLOOP()
       END DO
+
+      write(*,*) '==========================='
+      write(*,*) point%q(:,z), ' is Q'
+      write(*,*) point%prim(:,z), ' is Prim'
+      write(*,*) point%temp(:,:,z), ' is Temp'
+      write(*,*) point%prim_old(:,z), ' is Prim_Old'
+      write(*,*) point%dq(:,:,z), ' is DQ'
+      write(*,*) point%ddq(:,:,z), ' is DDQ'
+      write(*,*) point%flux_res(:,z), ' is Flux Res'
+      write(*,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 !                        end if
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)
