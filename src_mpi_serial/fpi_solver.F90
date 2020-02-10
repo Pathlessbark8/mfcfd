@@ -57,10 +57,6 @@ contains
                         call update_begin_prim_ghost()
                         call update_end_prim_ghost()
                 end do
-                
-
-                ! call objective_function()
-                call objective_function_J()
 
                 call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
                    0, PETSC_COMM_WORLD, ierr)
