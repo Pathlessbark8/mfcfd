@@ -1,5 +1,0 @@
--cfl 0.2
--max_iters 100
--format_file legacy
--vl_const 650
--inner_iterations 1

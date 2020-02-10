@@ -33,8 +33,7 @@ contains
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
 		real*8 :: dist, weights
 		real*8 :: temp, qtilde_i(4), qtilde_k(4)
-		real*8 :: phi1_i(4), phi1_k(4)
-		real*8 :: phi2_i(4), phi2_k(4)
+		real*8 :: phi_i(4), phi_k(4)
 		real*8 :: dels_weights, deln_weights
 		real*8 :: maxi(4), mini(4)
 
@@ -55,18 +54,12 @@ contains
                 tx = ny
                 ty = -nx
 
-                phi1_i = point%phi1(:,i)
-                phi2_i = point%phi2(:,i)
-
                 do j = 1, point%xpos_nbhs(i)
 
                         k = point%xpos_conn(i,j)
 
                         x_k = point%x(k)
                         y_k = point%y(k)
-
-                        phi1_k = point%phi1(:,k)
-                        phi2_k = point%phi2(:,k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -86,10 +79,14 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
-                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
-                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+
+                        call venkat_limiter(qtilde_i, phi_i, i)
+                        call venkat_limiter(qtilde_k, phi_k, k)
+
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -134,8 +131,7 @@ contains
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
 		real*8 :: dist, weights
 		real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: phi1_i(4), phi1_k(4)
-		real*8 :: phi2_i(4), phi2_k(4)
+		real*8 :: phi_i(4), phi_k(4)
 		real*8 :: maxi(4), mini(4)
 		real*8 :: dels_weights, deln_weights
 
@@ -157,18 +153,12 @@ contains
                 tx = ny
                 ty = -nx
 
-                phi1_i = point%phi1(:,i)
-                phi2_i = point%phi2(:,i)
-
                 do j = 1, point%xneg_nbhs(i)
 
                         k = point%xneg_conn(i,j)
 
                         x_k = point%x(k)
                         y_k = point%y(k)
-
-                        phi1_k = point%phi1(:,k)
-                        phi2_k = point%phi2(:,k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -188,10 +178,14 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
-                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
-                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+
+                        call venkat_limiter(qtilde_i, phi_i, i)
+                        call venkat_limiter(qtilde_k, phi_k, k)
+
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -237,8 +231,7 @@ contains
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
 		real*8 :: dist, weights
 		real*8 :: temp, qtilde_i(4), qtilde_k(4)
-		real*8 :: phi1_i(4), phi1_k(4)
-		real*8 :: phi2_i(4), phi2_k(4)
+		real*8 :: phi_i(4), phi_k(4)
 		real*8 :: maxi(4), mini(4)
 		real*8 :: dels_weights, deln_weights
 
@@ -260,18 +253,12 @@ contains
                 tx = ny
                 ty = -nx
 
-                phi1_i = point%phi1(:,i)
-                phi2_i = point%phi2(:,i)
-
                 do j = 1, point%ypos_nbhs(i)
 
                         k = point%ypos_conn(i,j)
 
                         x_k = point%x(k)
                         y_k = point%y(k)
-
-                        phi1_k = point%phi1(:,k)
-                        phi2_k = point%phi2(:,k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -291,10 +278,14 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
-                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
-                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+
+                        call venkat_limiter(qtilde_i, phi_i, i)
+                        call venkat_limiter(qtilde_k, phi_k, k)
+
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -339,8 +330,7 @@ contains
 		real*8 :: sum_delx_delf(4), sum_dely_delf(4)
 		real*8 :: dist, weights
 		real*8 :: temp, qtilde_i(4), qtilde_k(4)
-		real*8 :: phi1_i(4), phi1_k(4)
-		real*8 :: phi2_i(4), phi2_k(4)
+		real*8 :: phi_i(4), phi_k(4)
 		real*8 :: maxi(4), mini(4)
 		real*8 :: dels_weights, deln_weights
 
@@ -361,18 +351,12 @@ contains
                 tx = ny
                 ty = -nx
 
-                phi1_i = point%phi1(:,i)
-                phi2_i = point%phi2(:,i)
-
                 do j = 1, point%yneg_nbhs(i)
 
                         k = point%yneg_conn(i,j)
 
                         x_k = point%x(k)
                         y_k = point%y(k)
-
-                        phi1_k = point%phi1(:,k)
-                        phi2_k = point%phi2(:,k)
 
                         delx = x_k - x_i
                         dely = y_k - y_i
@@ -391,12 +375,14 @@ contains
 
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi1_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + &
-                        &(1/12d0)*phi2_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
-                        &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        call venkat_limiter(qtilde_i, phi_i, i)
+                        call venkat_limiter(qtilde_k, phi_k, k)
 
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)
