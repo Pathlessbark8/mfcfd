@@ -138,6 +138,8 @@ subroutine readcase()
                 write(*,*) 'power               :', power
                 write(*,*) 'limiter_flag        :', limiter_flag
                 write(*,*) 'inner_iterations    :', inner_iterations
+                write(*,*) 'mach                :', mach
+                write(*,*) 'aoa                 :', aoa
                 if(limiter_flag == 1)write(*,*) 'vl_const     :', vl_const
         end if
 
