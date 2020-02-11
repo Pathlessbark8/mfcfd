@@ -104,16 +104,16 @@ CONTAINS
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
 
-      write(*,*) '<<<<<<<<<<<<<<<<<<<<<<<<<<'
-      z = 78
+      ! write(*,*) '<<<<<<<<<<<<<<<<<<<<<<<<<<'
+      ! z = 78
 
-      write(*,*) point%q(:,z), ' is Q'
-      write(*,*) point%prim(:,z), ' is Prim'
-      write(*,*) point%temp(:,:,z), ' is Temp'
-      write(*,*) point%prim_old(:,z), ' is Prim_Old'
-      write(*,*) point%dq(:,:,z), ' is DQ'
-      write(*,*) point%ddq(:,:,z), ' is DDQ'
-      write(*,*) point%flux_res(:,z), ' is Flux Res'
+      ! write(*,*) point%q(:,z), ' is Q'
+      ! write(*,*) point%prim(:,z), ' is Prim'
+      ! write(*,*) point%temp(:,:,z), ' is Temp'
+      ! write(*,*) point%prim_old(:,z), ' is Prim_Old'
+      ! write(*,*) point%dq(:,:,z), ' is DQ'
+      ! write(*,*) point%ddq(:,:,z), ' is DDQ'
+      ! write(*,*) point%flux_res(:,z), ' is Flux Res'
 
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
@@ -125,15 +125,15 @@ CONTAINS
         CALL EVAL_UPDATE_INNERLOOP()
       END DO
 
-      write(*,*) '==========================='
-      write(*,*) point%q(:,z), ' is Q'
-      write(*,*) point%prim(:,z), ' is Prim'
-      write(*,*) point%temp(:,:,z), ' is Temp'
-      write(*,*) point%prim_old(:,z), ' is Prim_Old'
-      write(*,*) point%dq(:,:,z), ' is DQ'
-      write(*,*) point%ddq(:,:,z), ' is DDQ'
-      write(*,*) point%flux_res(:,z), ' is Flux Res'
-      write(*,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+      ! write(*,*) '==========================='
+      ! write(*,*) point%q(:,z), ' is Q'
+      ! write(*,*) point%prim(:,z), ' is Prim'
+      ! write(*,*) point%temp(:,:,z), ' is Temp'
+      ! write(*,*) point%prim_old(:,z), ' is Prim_Old'
+      ! write(*,*) point%dq(:,:,z), ' is DQ'
+      ! write(*,*) point%ddq(:,:,z), ' is DDQ'
+      ! write(*,*) point%flux_res(:,z), ' is Flux Res'
+      ! write(*,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 !                        end if
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)

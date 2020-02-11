@@ -1,7 +1,8 @@
 module split_fluxes_mod
 
 
-        use parameter_mod
+      use parameter_mod
+      use data_structure_mod
 
 contains
 

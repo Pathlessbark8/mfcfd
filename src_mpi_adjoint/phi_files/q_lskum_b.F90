@@ -38,21 +38,12 @@ CONTAINS
       WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
       WRITE(*, *) 
     END IF
-    ! IF( ANY( point%original_id .EQ. 78 )) then
-    !   WRITE(*, *) 'Rank is ', rank
-    ! END IF
+
     DO i=1,max_points
       point%phi1(:, i) = 1.0d0
       point%phi2(:, i) = 1.0d0
     END DO 
 
-    ! OPEN(unit=301, file='temporary_phi.dat', form='FORMATTED', status='REPLACE', action='WRITE')
-    ! DO k= 1, max_points
-    !         WRITE(301,'(8e30.20)') point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
-    !         & point%phi1(4,k) , point%phi2(1,k), point%phi2(2,k), point%phi2(3,k), &
-    !         & point%phi2(4,k)
-    ! END DO
-    ! CLOSE(unit=301)
     IF (rank .EQ. 0) THEN
       WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
       WRITE(*, *) 

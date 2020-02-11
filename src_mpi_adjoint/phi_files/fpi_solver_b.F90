@@ -181,6 +181,9 @@ CONTAINS
       do j = local_points+1, max_points 
         pointb%q(:, j) = 0.0d0
       end do
+      do j = local_points+1, max_points 
+        pointb%dq(:, :, j) = 0.0d0
+      end do
 
       CALL POPREAL8ARRAY(point%q, 4*max_points)
       CALL EVAL_Q_VARIABLES_B()
@@ -218,16 +221,6 @@ CONTAINS
     CALL FUNC_DELTA()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
-      write(*,*) '<<<<<<<<<<<<<<<<<<<<<<<<<<'
-      z = 78
-
-      write(*,*) point%q(:,z), ' is Q'
-      write(*,*) point%prim(:,z), ' is Prim'
-      write(*,*) point%temp(:,:,z), ' is Temp'
-      write(*,*) point%prim_old(:,z), ' is Prim_Old'
-      write(*,*) point%dq(:,:,z), ' is DQ'
-      write(*,*) point%ddq(:,:,z), ' is DDQ'
-      write(*,*) point%flux_res(:,z), ' is Flux Res'
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
 !Update the ghost values from the owned process
@@ -250,16 +243,6 @@ CONTAINS
         CALL UPDATE_BEGIN_DDQ_GHOST()
         CALL UPDATE_END_DDQ_GHOST()
       END DO
-
-      write(*,*) '==========================='
-      write(*,*) point%q(:,z), ' is Q'
-      write(*,*) point%prim(:,z), ' is Prim'
-      write(*,*) point%temp(:,:,z), ' is Temp'
-      write(*,*) point%prim_old(:,z), ' is Prim_Old'
-      write(*,*) point%dq(:,:,z), ' is DQ'
-      write(*,*) point%ddq(:,:,z), ' is DDQ'
-      write(*,*) point%flux_res(:,z), ' is Flux Res'
-      write(*,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)

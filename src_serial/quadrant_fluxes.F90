@@ -4,7 +4,8 @@ module quadrant_fluxes_mod
 !	with respect to the x-coordinate direction ..
 
        
-        use parameter_mod
+      use parameter_mod
+      use data_structure_mod
 
 contains
 

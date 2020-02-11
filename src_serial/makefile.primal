@@ -11,7 +11,7 @@ objects=meshfree_solver.o data_structure.o point_preprocessor.o parameter.o util
 
 
 execname: $(objects)  
-	$(FC) -ggdb -Wall -o execname $(FFLAGS) $(objects) $(LIBS)
+	$(FC) -o execname $(FFLAGS) $(objects) $(LIBS)
 
 
 meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure.o q_lskum.o post_processing.o compute_force_coeffs.o file_ops.o initial_conditions.o
@@ -50,13 +50,13 @@ q_variables.o: q_variables.F90 data_structure.o
 flux_residual.o: flux_residual.F90 data_structure.o interior_fluxes.o wall_fluxes.o outer_fluxes.o
 	$(FC) $(FFLAGS) -c  flux_residual.F90
 
-quadrant_fluxes.o: quadrant_fluxes.F90
+quadrant_fluxes.o: quadrant_fluxes.F90 data_structure.o parameter.o
 	$(FC) $(FFLAGS) -c  quadrant_fluxes.F90
 
 wall_fluxes.o: wall_fluxes.F90 quadrant_fluxes.o split_fluxes.o data_structure.o q_variables.o limiters.o
 	$(FC) $(FFLAGS) -c  wall_fluxes.F90
 
-split_fluxes.o: split_fluxes.F90
+split_fluxes.o: split_fluxes.F90 data_structure.o parameter.o
 	$(FC) $(FFLAGS) -c  split_fluxes.F90
 
 interior_fluxes.o: interior_fluxes.F90 split_fluxes.o data_structure.o q_variables.o limiters.o

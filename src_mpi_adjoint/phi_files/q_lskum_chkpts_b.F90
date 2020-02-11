@@ -98,7 +98,10 @@ CONTAINS
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
     cost_funcb = 1.0d0
-    
+    DO i=1,max_points
+        point%phi1(:, i) = 1.0d0
+        point%phi2(:, i) = 1.0d0
+      END DO 
     IF (rank .EQ. 0) THEN
         WRITE(*, *) 
         WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'

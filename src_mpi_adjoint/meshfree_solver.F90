@@ -12,6 +12,7 @@ program meshfree_solver
         
                 implicit none
                 real*8  :: totaltime,runtime
+                ! integer :: iterate
                 PetscErrorCode  :: ierr
         
                 call PetscInitialize('case.in', ierr)
