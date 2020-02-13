@@ -16,7 +16,7 @@ module objective_function_mod
             call compute_entropy()
             call compute_enstrophy()
             call objective_function_J()
-            vector_cost_func = Cl + Cd + Cm + ClCd + total_entropy + total_enstrophy
+            vector_cost_func = Cl + Cd + Cm + total_entropy + total_enstrophy
         end subroutine objective_function
 
 end module objective_function_mod
