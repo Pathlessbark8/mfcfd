@@ -89,11 +89,11 @@ module compute_force_coeffs_mod
                         call MPI_Reduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, 0, &
                                 & PETSC_COMM_WORLD, ierr)
 
-                        if(rank == 0) then
-                                do j = 1, shapes
-                                        write(*,'(i4,3e30.20)') j, Cl, Cd, Cm
-                                end do
-                        end if
+                        ! if(rank == 0) then
+                        !         do j = 1, shapes
+                        !                 write(*,'(i4,3e30.20)') j, Cl, Cd, Cm
+                        !         end do
+                        ! end if
 
                         CLOSE(UNIT=201)
 

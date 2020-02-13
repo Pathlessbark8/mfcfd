@@ -36,8 +36,6 @@ module data_structure_mod
                 real*8, dimension(:,:,:), allocatable :: ddq
                 real*8, dimension(:,:,:), allocatable :: temp
 
-                real*8, dimension(:,:), allocatable :: phi1, phi2
-
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
                 integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
                 integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
@@ -146,9 +144,6 @@ module data_structure_mod
                 allocate(point%ddq(3,4,max_points))
                 allocate(point%temp(3,4,max_points))
 
-                allocate(point%phi1(4,max_points))
-                allocate(point%phi2(4,max_points))
-
                 allocate(point%entropy(max_points))
                 allocate(point%xpos_nbhs(max_points))
                 allocate(point%xneg_nbhs(max_points))
@@ -190,9 +185,6 @@ module data_structure_mod
                 deallocate(point%ddq)
                 deallocate(point%temp)
 
-                deallocate(point%phi1)
-                deallocate(point%phi2)
-                
                 deallocate(point%entropy)
                 deallocate(point%xpos_nbhs)
                 deallocate(point%xneg_nbhs)
