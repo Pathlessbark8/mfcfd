@@ -20,6 +20,7 @@ examples/cuda_adjoint/runs/*
 examples/cuda_adjoint/src/*
 objective
 *.dat
-case.in
+*.in
 examples/mpi_adjoint/phi_values_split/*
 partGrid*
+makefile

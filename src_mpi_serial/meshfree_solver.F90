@@ -9,7 +9,6 @@ program meshfree_solver
         use petsc_data_structure_mod
         use point_preprocessor_mod
         use q_lskum_mod
-        use q_lskum_petsc_mod
         use compute_force_coeffs_mod
 
         implicit none
@@ -80,12 +79,6 @@ program meshfree_solver
                         write(*,*)
                 end if
                 call q_lskum()
-        elseif(runop == 2) then
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%%%%%%%-Using Petsc solvers-%%%%%%%%%'
-                        write(*,*)
-                end if
-                call q_lskum_petsc()
         end if
         runtime = MPI_Wtime() - runtime
 

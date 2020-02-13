@@ -1,8 +1,8 @@
-ifndef MF_DIR
-	$(error directory not set)
-endif
+# ifndef MF_DIR
+	# $(error directory not set)
+# endif
 
-SRCDIR=$(MF_DIR)/src_mpi_serial
+SRCDIR=/home/kumar/FORTRAN/sensitivity_mfcfd/src_mpi_serial
 
 all:
 	rm -rf src
