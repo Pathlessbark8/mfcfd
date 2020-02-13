@@ -6,7 +6,6 @@ module fpi_solver_mod
         use q_variables_mod
         use objective_function_mod
         use post_processing_mod 
-        use stagnation_values_mod 
 
 contains
 
@@ -38,11 +37,6 @@ contains
                         call update_end_qm_ghost()
 
                                 do i = 1, inner_iterations
-                                        ! call eval_q_double_derivatives()
-
-                                        ! call update_begin_ddq_ghost()
-                                        ! call update_end_ddq_ghost()
-
                                         call eval_q_inner_loop()
                                         call eval_update_innerloop()
                                         call update_begin_dq_ghost()

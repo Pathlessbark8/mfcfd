@@ -79,8 +79,8 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
@@ -178,8 +178,8 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
@@ -278,8 +278,8 @@ contains
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
@@ -375,8 +375,8 @@ contains
 
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
 
-                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)

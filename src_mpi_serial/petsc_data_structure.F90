@@ -11,10 +11,9 @@ module petsc_data_structure_mod
 
         PetscMPIInt          :: rank,proc
         Vec                  :: p_dq
-        Vec                  :: p_ddq
         Vec                  :: p_qm
         Vec                  :: p_prim
-        PetscLogEvent        :: dq_comm, ddq_comm, prim_comm, qm_comm
+        PetscLogEvent        :: dq_comm, prim_comm, qm_comm
 
     contains
 
@@ -32,9 +31,6 @@ module petsc_data_structure_mod
                 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,point%qm(1,1,1),p_qm,ierr)
-                
-                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,3*4,3*4*local_points,&
-                        &PETSC_DECIDE,ghost_points,pghost,point%ddq(1,1,1),p_ddq,ierr)
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,point%prim(1,1),p_prim,ierr)
@@ -43,7 +39,6 @@ module petsc_data_structure_mod
                 plen = plen/4
 
                 call PetscLogEventRegister('dq_comm',  0,dq_comm,ierr);
-                call PetscLogEventRegister('ddq_comm',  0,ddq_comm,ierr);
                 call PetscLogEventRegister('qm_comm',  0,qm_comm,ierr);
                 call PetscLogEventRegister('prim_comm',  0,prim_comm,ierr);
 
@@ -54,9 +49,7 @@ module petsc_data_structure_mod
                 PetscErrorCode      :: ierr
                 if (proc==1) return
                     
-
                 call VecDestroy(p_dq,ierr)
-                call VecDestroy(p_ddq,ierr)
                 call VecDestroy(p_qm,ierr)
                 call VecDestroy(p_prim,ierr)
 
@@ -69,15 +62,6 @@ module petsc_data_structure_mod
                 if (proc==1) return
 
                 call VecGhostUpdateBegin(p_dq,INSERT_VALUES,SCATTER_FORWARD,ierr)
-
-        end subroutine 
-
-        subroutine update_begin_ddq_ghost()
-                implicit none
-                PetscErrorCode      :: ierr
-                if (proc==1) return
-
-                call VecGhostUpdateBegin(p_ddq,INSERT_VALUES,SCATTER_FORWARD,ierr)
 
         end subroutine 
 
@@ -107,17 +91,6 @@ module petsc_data_structure_mod
                 call PetscLogEventBegin(dq_comm, ierr)
                 call VecGhostUpdateEnd(p_dq,INSERT_VALUES,SCATTER_FORWARD,ierr)
                 call PetscLogEventEnd(dq_comm, ierr)
-
-        end subroutine 
-
-        subroutine update_end_ddq_ghost()
-                implicit none
-                PetscErrorCode      :: ierr
-                if (proc==1) return
-
-                call PetscLogEventBegin(ddq_comm, ierr)
-                call VecGhostUpdateEnd(p_ddq,INSERT_VALUES,SCATTER_FORWARD,ierr)
-                call PetscLogEventEnd(ddq_comm, ierr)
 
         end subroutine 
 

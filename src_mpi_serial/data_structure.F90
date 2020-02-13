@@ -33,9 +33,9 @@ module data_structure_mod
                 real*8, dimension(:,:), allocatable :: U
 		real*8, dimension(:,:,:), allocatable :: dq
 		real*8, dimension(:,:,:), allocatable :: qm
-                real*8, dimension(:,:,:), allocatable :: ddq
+                ! real*8, dimension(:,:,:), allocatable :: ddq
                 real*8, dimension(:,:,:), allocatable :: temp
-
+                real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
                 integer, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
                 integer, dimension(:,:), allocatable :: xpos_conn, xneg_conn
                 integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
@@ -44,7 +44,6 @@ module data_structure_mod
                 
 ! Implicit data
                 real*8, dimension(:,:), allocatable :: U_old
-                real*8, dimension(:), allocatable :: entropy
         end type points
  
         type(points) :: point
@@ -141,10 +140,13 @@ module data_structure_mod
                 allocate(point%dq(2,4,max_points))
 
                 allocate(point%qm(2,4,max_points))
-                allocate(point%ddq(3,4,max_points))
+                ! allocate(point%ddq(3,4,max_points))
                 allocate(point%temp(3,4,max_points))
 
                 allocate(point%entropy(max_points))
+                allocate(point%vorticity(max_points))
+                allocate(point%vorticity_sqr(max_points))
+
                 allocate(point%xpos_nbhs(max_points))
                 allocate(point%xneg_nbhs(max_points))
                 allocate(point%ypos_nbhs(max_points))
@@ -182,8 +184,11 @@ module data_structure_mod
                 deallocate(point%U)
                 deallocate(point%dq)
                 deallocate(point%qm)
-                deallocate(point%ddq)
+                ! deallocate(point%ddq)
                 deallocate(point%temp)
+
+                deallocate(point%vorticity)
+                deallocate(point%vorticity_sqr)
 
                 deallocate(point%entropy)
                 deallocate(point%xpos_nbhs)
