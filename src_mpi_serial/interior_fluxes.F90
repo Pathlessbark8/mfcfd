@@ -85,8 +85,8 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -184,8 +184,8 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -284,8 +284,8 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
@@ -381,8 +381,8 @@ contains
                         call venkat_limiter(qtilde_i, phi_i, i)
                         call venkat_limiter(qtilde_k, phi_k, k)
 
-                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) + (1.0d0/12.0d0)*phi_i*(delx*delx*point%ddq(1,:,i) + 2.0*delx*dely*point%ddq(2,:,i) + dely*dely*point%ddq(3,:,i))
-                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + (1.0d0/12.0d0)*phi_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
+                        qtilde_i = point%q(:,i) - 0.5d0*phi_i*(delx*point%dq(1,:,i) + dely*point%dq(2,:,i)) 
+                        qtilde_k = point%q(:,k) - 0.5d0*phi_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k))
 
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)
