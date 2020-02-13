@@ -11,7 +11,7 @@ endif
 objects=meshfree_solver.o parameter.o data_structure.o petsc_data_structure.o point_preprocessor.o utilities.o initial_conditions.o \
 q_lskum.o point_normals.o  generate_connectivity.o fpi_solver.o q_variables.o flux_residual.o wall_fluxes.o interior_fluxes.o \
 outer_fluxes.o split_fluxes.o limiters.o quadrant_fluxes.o state_update.o readcase.o post_processing.o objective_function.o \
-compute_force_coeffs.o compute_entropy.o
+compute_force_coeffs.o compute_entropy.o stagnation_values.o compute_enstrophy.o
 
 
 execname: $(objects)  
@@ -82,7 +82,7 @@ state_update.o: state_update.F90 data_structure.o flux_residual.o
 limiters.o: limiters.F90 data_structure.o
 	$(FC) $(FFLAGS) -c  limiters.F90
 	
-objective_function.o: objective_function.F90 data_structure.o compute_entropy.o compute_force_coeffs.o
+objective_function.o: objective_function.F90 data_structure.o compute_entropy.o compute_force_coeffs.o stagnation_values.o compute_enstrophy.o
 	$(FC) $(FFLAGS) -c  objective_function.F90
 	
 compute_force_coeffs.o: compute_force_coeffs.F90 data_structure.o petsc_data_structure.o
@@ -91,8 +91,14 @@ compute_force_coeffs.o: compute_force_coeffs.F90 data_structure.o petsc_data_str
 compute_entropy.o: compute_entropy.F90 data_structure.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  compute_entropy.F90
 
+compute_enstrophy.o: compute_enstrophy.F90 data_structure.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  compute_enstrophy.F90
+
 post_processing.o: data_structure.o petsc_data_structure.o
 	$(FC) $(FFLAGS) -c  post_processing.F90
+
+stagnation_values.o: stagnation_values.F90 data_structure.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c stagnation_values.F90
 
 clean::
 	rm -rf *.mod execname *.o
