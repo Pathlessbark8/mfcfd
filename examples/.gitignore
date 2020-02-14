@@ -11,3 +11,5 @@ tor/*
 point/*
 ai/*
 objective
+*.dat
+phi_vector*

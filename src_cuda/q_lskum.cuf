@@ -79,21 +79,16 @@ contains
                                 call eval_q_double_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, point_d%conn, &
                                         & point_d%dq, point_d%ddq)
 
-                                if(inner_iterations /= 0) then
-                                        do i = 1, inner_iterations
+                                do i = 1, inner_iterations
 
-                                                call eval_q_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                                        & point_d%conn, point_d%q, point_d%dq, point_d%inner)
+                                        call eval_q_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
+                                                & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner)
 
-                                                call eval_update_innerloop_2<<<grid, tBlock>>>(point_d%dq, point_d%inner)
+                                        call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner)
 
-                                                call eval_dq_derivatives_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
-                                                        & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner)
-
-                                                call eval_update_innerloop_3<<<grid, tBlock>>>(point_d%ddq, point_d%inner)
-                                                
-                                        end do
-                                end if
+                                        call eval_q_double_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, point_d%conn, &
+                                                & point_d%dq, point_d%ddq)
+                                end do
 
                                 call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                         & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
