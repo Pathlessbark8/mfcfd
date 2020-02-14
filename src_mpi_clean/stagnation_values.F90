@@ -48,7 +48,7 @@ module stagnation_values_mod
         real*8 :: p0_inf, gammaPower, p0, p0_sum, constant, angle, mach_t
         real*8 :: prim(4)
         real*8 :: total_p0
-        ! PetscErrorCode :: ierr
+            PetscErrorCode :: ierr
 
         gammaPower = gamma/(gamma-1)
         p0_inf = pr_inf*((1 + ((gamma - 1)/2)*mach*mach) ** gammaPower)

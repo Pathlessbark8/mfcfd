@@ -5,11 +5,10 @@ program meshfree_solver
 
         use petscsys
         use parameter_mod
-        use data_structure_mod
+        use data_structure_mod_diff
         use petsc_data_structure_mod
         use point_preprocessor_mod
-        use q_lskum_mod
-        use compute_force_coeffs_mod
+        use q_lskum_mod_diff
 
         implicit none
         real*8  :: totaltime,runtime
@@ -54,7 +53,7 @@ program meshfree_solver
 !       Allocate solution variables
 
         call allocate_soln()
-
+        call allocate_soln_d()
 !       Initialize Petsc vectors
 
         if(proc .ne. 1)call init_petsc()
@@ -73,13 +72,11 @@ program meshfree_solver
 
 !	Primal fixed point iterative solver ..
         runtime = MPI_Wtime()
-        if(runop == 1)then
-                if(rank == 0) then
-                        write(*,*)'%%%%%%%%%-Using inbuilt solvers-%%%%%%%%%%%'
-                        write(*,*)
-                end if
-                call q_lskum()
+        if(rank == 0) then
+                write(*,*)'%%%%%%%%%-Using inbuilt solvers-%%%%%%%%%%%'
+                write(*,*)
         end if
+        call Q_LSKUM_D()
         runtime = MPI_Wtime() - runtime
 
 !       Save solution one last time
@@ -88,6 +85,7 @@ program meshfree_solver
 !       destroy petsc vectors and deallocate point/solution vectors
         call dest_petsc()
         call deallocate_soln()
+        call deallocate_soln_d()
         call dealloc_points()
 
         totaltime = MPI_Wtime() - totaltime

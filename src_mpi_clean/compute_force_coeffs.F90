@@ -24,7 +24,7 @@ module compute_force_coeffs_mod
 			real*8 :: nx, ny
             character(len=64) :: cp_file
             character(len=10) :: itos
-            ! PetscErrorCode :: ierr
+                PetscErrorCode :: ierr
 
             cp_file = 'cp/'//'cp-file'
             if (proc>1) cp_file = 'cp/'//'cp-file'//trim(itos(4,rank))

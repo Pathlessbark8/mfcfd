@@ -2,7 +2,7 @@ subroutine readcase()
 #include <petsc/finclude/petscsys.h>
     use petscsys
     use petsc_data_structure_mod
-    use data_structure_mod
+    use data_structure_mod_diff
     implicit none
     PetscErrorCode :: ierr
     PetscBool :: set

@@ -59,7 +59,7 @@ module data_structure_mod
     integer :: it, itr
 
     !Flag for time stepping
-    integer :: rks, rank, int
+    integer :: rks, rank
     real*8 :: euler
     real*8 :: cost_func
     real*8  :: res_old, res_new, residue, max_res

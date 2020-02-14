@@ -1,7 +1,7 @@
 module post_processing_mod
 
 
-    use data_structure_mod
+    use data_structure_mod_diff
     use petsc_data_structure_mod
 
 

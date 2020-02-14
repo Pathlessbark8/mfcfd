@@ -19,7 +19,7 @@ module compute_enstrophy_mod
 			real*8 :: one_by_det
 			real*8 :: du1_dy, du2_dx, temp
             real*8 :: gtotal_enstrophy
-            ! PetscErrorCode :: ierr
+                PetscErrorCode :: ierr
 
             total_enstrophy = 0.d0
 
