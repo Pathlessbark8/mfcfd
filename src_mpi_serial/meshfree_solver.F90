@@ -70,7 +70,7 @@ program meshfree_solver
                 write(*,*)'%%%%%%%%%%%-Solution initialised-%%%%%%%%%%'
                 write(*,*)
         end if
-
+        point%x(78) = point%x(78) - 1e-5 
 !	Primal fixed point iterative solver ..
         runtime = MPI_Wtime()
         if(runop == 1)then

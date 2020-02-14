@@ -58,14 +58,15 @@ CONTAINS
       total_entropy = total_entropy + dabs0
     END DO
 
-    call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
-    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(total_entropy, gtotal_entropy , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
-    call MPI_Allreduce(total_entropyd, gtotal_entropyd , 1, &
-    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-    total_entropy = gtotal_entropy
-    total_entropyd = gtotal_entropyd
-
+    call MPI_Reduce(total_entropyd, gtotal_entropyd , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    if(rank == 0) then
+      total_entropy = gtotal_entropy
+      total_entropyd = gtotal_entropyd
+    end if
   END SUBROUTINE COMPUTE_ENTROPY_D
 
   SUBROUTINE COMPUTE_ENTROPY()

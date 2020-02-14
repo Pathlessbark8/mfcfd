@@ -114,6 +114,9 @@ CONTAINS
       p0_sumd = p0_sumd - 2*(p0_inf-p0)*p0d
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
+
+    total_p0 = 0.0_8
+    total_p0d = 0.0_8
     call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
     PETSC_COMM_WORLD, ierr)
     call MPI_Allreduce(p0_sumd, total_p0d, 1, MPI_DOUBLE, MPI_SUM, &

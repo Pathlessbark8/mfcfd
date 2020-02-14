@@ -111,22 +111,22 @@ CONTAINS
     lcmd = pitch_momd
     lcm = pitch_mom
     
-    call MPI_Allreduce(lCl, Cl , shapes, MPI_DOUBLE, MPI_SUM, &
-    & PETSC_COMM_WORLD, ierr)
-    call MPI_Allreduce(lCd, Cd , shapes, MPI_DOUBLE, MPI_SUM, &
-    & PETSC_COMM_WORLD, ierr)
-    call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
-    & PETSC_COMM_WORLD, ierr)
-
-    call MPI_Allreduce(lCld, Cld , shapes, MPI_DOUBLE, MPI_SUM, &
-    & PETSC_COMM_WORLD, ierr)
-    call MPI_Allreduce(lCdd, Cdd , shapes, MPI_DOUBLE, MPI_SUM, &
-    & PETSC_COMM_WORLD, ierr)
-    call MPI_Allreduce(lCmd, Cmd , shapes, MPI_DOUBLE, MPI_SUM, &
-    & PETSC_COMM_WORLD, ierr)
-
-    clcdd = (cld*cd-cl*cdd)/cd**2
-    clcd = cl/cd
+    call MPI_Reduce(lcl, cl , 1, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcld, cld , 1, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcd, cd , 1, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcdd, cdd , 1, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcm, cm , 1, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(lcmd, cmd , 1, MPI_DOUBLE, MPI_SUM, 0, &
+            & PETSC_COMM_WORLD, ierr)
+    if(rank == 0) then
+      clcdd = (cld*cd-cl*cdd)/cd**2
+      clcd = cl/cd
+    end if
 ! if(rank == 0) then
 !     do j = 1, shapes
 !         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm

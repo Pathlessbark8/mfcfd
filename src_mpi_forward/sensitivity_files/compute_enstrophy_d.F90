@@ -142,14 +142,18 @@ CONTAINS
       total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
     END DO
 
-    call MPI_Allreduce(total_enstrophy, gtotal_enstrophy , 1, &
-    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-    call MPI_Allreduce(total_enstrophyd, gtotal_enstrophyd , 1, &
-    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
+!     gtotal_enstrophy = 0.0_8
+!     gtotal_enstrophyd = 0.0_8
 
-    total_enstrophy = gtotal_enstrophy
-    total_enstrophyd = gtotal_enstrophyd
+    call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(total_enstrophyd, gtotal_enstrophyd , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
+    if(rank == 0) then
+        total_enstrophy = gtotal_enstrophy
+        total_enstrophyd = gtotal_enstrophyd
+    end if
   END SUBROUTINE COMPUTE_ENSTROPHY_D
 
   SUBROUTINE COMPUTE_ENSTROPHY()
