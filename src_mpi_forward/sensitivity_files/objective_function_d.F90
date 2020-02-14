@@ -24,11 +24,11 @@ CONTAINS
     CALL COMPUTE_CL_CD_CM_D()
     CALL COMPUTE_ENTROPY_D()
     CALL COMPUTE_ENSTROPHY_D()
-    CALL OBJECTIVE_FUNCTION_J()
-    vector_cost_funcd = cld + cdd + cmd + clcdd + total_entropyd + &
-&     total_enstrophyd
-    vector_cost_func = cl + cd + cm + clcd + total_entropy + &
-&     total_enstrophy
+    CALL OBJECTIVE_FUNCTION_J_D()
+    vector_cost_funcd = total_loss_stagpressured + cld + cdd + cmd + &
+&     clcdd + total_entropyd + total_enstrophyd
+    vector_cost_func = total_loss_stagpressure + cl + cd + cm + clcd + &
+&     total_entropy + total_enstrophy
   END SUBROUTINE OBJECTIVE_FUNCTION_D
 
   SUBROUTINE OBJECTIVE_FUNCTION()
@@ -37,9 +37,8 @@ CONTAINS
     CALL COMPUTE_ENTROPY()
     CALL COMPUTE_ENSTROPHY()
     CALL OBJECTIVE_FUNCTION_J()
-    vector_cost_func = cl + cd + cm + clcd + total_entropy + &
-&     total_enstrophy
+    vector_cost_func = total_loss_stagpressure + cl + cd + cm + clcd + &
+&     total_entropy + total_enstrophy
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF
-

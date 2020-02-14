@@ -27,7 +27,7 @@ CONTAINS
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
     DOUBLE PRECISION :: dabs0d
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     total_entropyd = 0.0_8
@@ -76,7 +76,7 @@ CONTAINS
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     DO k=1,local_points
@@ -98,3 +98,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENTROPY
 
 END MODULE COMPUTE_ENTROPY_MOD_DIFF
+

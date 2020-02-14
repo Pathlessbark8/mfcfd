@@ -61,7 +61,7 @@ module data_structure_mod
     !Flag for time stepping
     integer :: rks, rank
     real*8 :: euler
-    real*8 :: cost_func
+    real*8 :: total_loss_stagpressure
     real*8  :: res_old, res_new, residue, max_res
     real* 8 :: gsum_res_sqr,sum_res_sqr
     integer :: max_res_point

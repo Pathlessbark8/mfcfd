@@ -35,7 +35,7 @@ CONTAINS
     INTRINSIC MOD
     EXTERNAL PRINT_PRIMAL_OUTPUT
     DOUBLE PRECISION :: result1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       pointd%prim_old(:, i) = pointd%prim(:, i)
       point%prim_old(:, i) = point%prim(:, i)
@@ -94,7 +94,7 @@ CONTAINS
     INTRINSIC MOD
     EXTERNAL PRINT_PRIMAL_OUTPUT
     DOUBLE PRECISION :: result1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
@@ -145,3 +145,4 @@ CONTAINS
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
+

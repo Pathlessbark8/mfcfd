@@ -4,7 +4,7 @@ subroutine readcase()
     use petsc_data_structure_mod
     use data_structure_mod
     implicit none
-        PetscErrorCode :: ierr
+        ! PetscErrorCode :: ierr
     PetscBool :: set
     character(len=64) :: format_file, time, limiter, restart_solution
     character(len=64) :: solution_accuracy, tscheme, run_option

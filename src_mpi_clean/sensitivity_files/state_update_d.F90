@@ -338,7 +338,7 @@ CONTAINS
     REAL*8 :: arg1d
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       min_deltd = 0.0_8
@@ -415,7 +415,7 @@ CONTAINS
     INTRINSIC DSQRT
     REAL*8 :: arg1
     DOUBLE PRECISION :: result1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -623,3 +623,4 @@ CONTAINS
   END SUBROUTINE CONSERVED_VECTOR_UBAR
 
 END MODULE STATE_UPDATE_MOD_DIFF
+

@@ -37,7 +37,7 @@ CONTAINS
     INTRINSIC DCOS
     INTRINSIC DSIN
     TYPE(UNKNOWNTYPE) :: proc
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&
@@ -149,7 +149,7 @@ CONTAINS
     INTRINSIC DCOS
     INTRINSIC DSIN
     TYPE(UNKNOWNTYPE) :: proc
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&
@@ -205,3 +205,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_CL_CD_CM
 
 END MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
+

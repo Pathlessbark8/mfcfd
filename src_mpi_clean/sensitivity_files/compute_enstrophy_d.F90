@@ -42,7 +42,7 @@ CONTAINS
     INTRINSIC DSQRT
     REAL*8 :: arg1
     REAL*8 :: arg1d
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     total_enstrophy = 0.d0
     total_enstrophyd = 0.0_8
     DO i=1,local_points
@@ -167,7 +167,7 @@ CONTAINS
     REAL*8 :: gtotal_enstrophy
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     total_enstrophy = 0.d0
     DO i=1,local_points
       x_i = point%x(i)
@@ -214,3 +214,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENSTROPHY
 
 END MODULE COMPUTE_ENSTROPHY_MOD_DIFF
+

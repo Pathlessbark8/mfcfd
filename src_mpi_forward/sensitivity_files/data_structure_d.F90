@@ -67,7 +67,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !Flag for time stepping
   INTEGER :: rks
   REAL*8 :: euler
-  REAL*8 :: cost_func
+  REAL*8 :: total_loss_stagpressure
   REAL*8 :: res_old, res_new, residue, max_res
   REAL*8 :: gsum_res_sqr, sum_res_sqr
   INTEGER :: max_res_point

@@ -15,7 +15,7 @@ contains
         implicit none
         
         integer :: t, i, rk
-            PetscErrorCode :: ierr
+            ! PetscErrorCode :: ierr
 
         do i =1, local_points
             point%prim_old(:, i) = point%prim(:, i)

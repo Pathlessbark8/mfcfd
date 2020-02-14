@@ -17,9 +17,9 @@ CONTAINS
 !  Differentiation of q_lskum in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *vector_cost_func
 !   with respect to varying inputs: *(point.x) *(point.y)
-!   RW status of diff variables: total_enstrophy:(loc) *clcd:(loc)
-!                *cd:(loc) *vector_cost_func:out *cl:(loc) *cm:(loc)
-!                total_entropy:(loc) *(point.x):in *(point.y):in
+!   RW status of diff variables: total_enstrophy:(loc) total_loss_stagpressure:(loc)
+!                *clcd:(loc) *cd:(loc) *vector_cost_func:out *cl:(loc)
+!                *cm:(loc) total_entropy:(loc) *(point.x):in *(point.y):in
 !                *(point.nx):(loc) *(point.ny):(loc) *(point.prim):(loc)
 !                *(point.prim_old):(loc) *(point.flux_res):(loc)
 !                *(point.q):(loc) *(point.dq):(loc) *(point.qm):(loc)

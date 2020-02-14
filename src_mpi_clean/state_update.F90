@@ -204,7 +204,7 @@ module state_update_mod
 		real*8 :: u1, u2, rho, pr, mod_u
 		real*8 :: dist
 		real*8 :: min_delt 
-            PetscErrorCode :: ierr
+            ! PetscErrorCode :: ierr
 
         do i = 1,local_points
             min_delt = 1.0d0

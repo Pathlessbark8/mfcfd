@@ -15,7 +15,7 @@ module compute_entropy_mod
             integer :: k
 			real*8 :: temp1, temp2
             real*8 :: gtotal_entropy
-                PetscErrorCode :: ierr
+                ! PetscErrorCode :: ierr
 
             total_entropy = 0.d0
 

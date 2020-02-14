@@ -49,10 +49,88 @@ CONTAINS
 &   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
   END SUBROUTINE STAGNATION_PRESSURE
 
+!  Differentiation of objective_function_j in forward (tangent) mode (with options fixinterface):
+!   variations   of useful results: total_loss_stagpressure
+!   with respect to varying inputs: *(point.prim)
+!   Plus diff mem management of: point.prim:in
+  SUBROUTINE OBJECTIVE_FUNCTION_J_D()
+    IMPLICIT NONE
+! if(rank == 0) then
+! write(*,*) "J: ", total_loss_stagpressure
+! endif
+    INTEGER :: i
+    REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
+    REAL*8 :: p0d, p0_sumd, angled, mach_td
+    REAL*8 :: prim(4)
+    REAL*8 :: primd(4)
+    REAL*8 :: total_p0
+    REAL*8 :: total_p0d
+    INTRINSIC SQRT
+    REAL*8 :: pwx1
+    REAL*8 :: pwx1d
+    REAL*8 :: pwr1
+    REAL*8 :: pwr1d
+    REAL*8 :: arg1
+    REAL*8 :: arg1d
+    REAL*8 :: result1
+    REAL*8 :: result1d
+! PetscErrorCode :: ierr
+    gammapower = gamma/(gamma-1)
+    pwx1 = 1 + (gamma-1)/2*mach*mach
+    pwr1 = pwx1**gammapower
+    p0_inf = pr_inf*pwr1
+    constant = 1/(p0_inf**2*plen)
+    p0_sum = 0.0d0
+    p0_sumd = 0.0_8
+    DO i=1,local_points
+      primd = pointd%prim(:, i)
+      prim = point%prim(:, i)
+      arg1d = (gamma*primd(4)*prim(1)-gamma*prim(4)*primd(1))/prim(1)**2
+      arg1 = gamma*prim(4)/prim(1)
+      IF (arg1 .EQ. 0.0) THEN
+        angled = 0.0_8
+      ELSE
+        angled = arg1d/(2.0*SQRT(arg1))
+      END IF
+      angle = SQRT(arg1)
+      arg1d = 2*prim(2)*primd(2) + 2*prim(3)*primd(3)
+      arg1 = prim(2)**2 + prim(3)**2
+      IF (arg1 .EQ. 0.0) THEN
+        result1d = 0.0_8
+      ELSE
+        result1d = arg1d/(2.0*SQRT(arg1))
+      END IF
+      result1 = SQRT(arg1)
+      mach_td = (result1d*angle-result1*angled)/angle**2
+      mach_t = result1/angle
+      pwx1d = (gamma-1)*(mach_td*mach_t+mach_t*mach_td)/2
+      pwx1 = 1 + (gamma-1)/2*mach_t*mach_t
+      IF (pwx1 .GT. 0.0 .OR. (pwx1 .LT. 0.0 .AND. gammapower .EQ. INT(&
+&         gammapower))) THEN
+        pwr1d = gammapower*pwx1**(gammapower-1)*pwx1d
+      ELSE IF (pwx1 .EQ. 0.0 .AND. gammapower .EQ. 1.0) THEN
+        pwr1d = pwx1d
+      ELSE
+        pwr1d = 0.0
+      END IF
+      pwr1 = pwx1**gammapower
+      p0d = primd(4)*pwr1 + prim(4)*pwr1d
+      p0 = prim(4)*pwr1
+      p0_sumd = p0_sumd - 2*(p0_inf-p0)*p0d
+      p0_sum = p0_sum + (p0_inf-p0)**2
+    END DO
+    total_p0d = p0_sumd
+    total_p0 = p0_sum*1.0
+! call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
+!    PETSC_COMM_WORLD, ierr)
+    total_loss_stagpressured = constant*total_p0d
+    total_loss_stagpressure = total_p0*constant
+  END SUBROUTINE OBJECTIVE_FUNCTION_J_D
+
   SUBROUTINE OBJECTIVE_FUNCTION_J()
     IMPLICIT NONE
 ! if(rank == 0) then
-! write(*,*) "J: ", cost_func
+! write(*,*) "J: ", total_loss_stagpressure
 ! endif
     INTEGER :: i
     REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
@@ -63,7 +141,7 @@ CONTAINS
     REAL*8 :: pwr1
     REAL*8 :: arg1
     REAL*8 :: result1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     pwx1 = 1 + (gamma-1)/2*mach*mach
     pwr1 = pwx1**gammapower
@@ -82,9 +160,11 @@ CONTAINS
       p0 = prim(4)*pwr1
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
+    total_p0 = p0_sum*1.0
 ! call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
 !    PETSC_COMM_WORLD, ierr)
-    cost_func = total_p0*constant
+    total_loss_stagpressure = total_p0*constant
   END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF
+
