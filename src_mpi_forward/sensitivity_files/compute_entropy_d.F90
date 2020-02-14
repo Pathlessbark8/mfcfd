@@ -14,15 +14,11 @@ CONTAINS
 !   Plus diff mem management of: point.prim:in
   SUBROUTINE COMPUTE_ENTROPY_D()
     IMPLICIT NONE
-! call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
-! & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-! if(rank == 0) then
-!     !write(*,*)"total entropy :", gtotal_entropy
-! end if
+
     INTEGER :: k
     REAL*8 :: temp1, temp2
     REAL*8 :: temp1d
-    REAL*8 :: gtotal_entropy
+    REAL*8 :: gtotal_entropy, gtotal_entropyd
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
@@ -61,6 +57,15 @@ CONTAINS
       total_entropyd = total_entropyd + dabs0d
       total_entropy = total_entropy + dabs0
     END DO
+
+    call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
+    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
+
+    call MPI_Allreduce(total_entropyd, gtotal_entropyd , 1, &
+    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
+    total_entropy = gtotal_entropy
+    total_entropyd = gtotal_entropyd
+
   END SUBROUTINE COMPUTE_ENTROPY_D
 
   SUBROUTINE COMPUTE_ENTROPY()

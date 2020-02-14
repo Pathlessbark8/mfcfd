@@ -52,15 +52,15 @@ CONTAINS
       DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP_D()
         CALL EVAL_UPDATE_INNERLOOP_D()
+        call update_begin_dq_ghost()
+        call update_end_dq_ghost()
       END DO
-      call update_begin_dq_ghost()
-      call update_end_dq_ghost()
       CALL CAL_FLUX_RESIDUAL_D()
       CALL STATE_UPDATE_D(rk)
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
     END DO
 ! start updating primitive values
-    call update_begin_prim_ghost()
-    call update_end_prim_ghost()
     CALL OBJECTIVE_FUNCTION_D()
     call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
       0, PETSC_COMM_WORLD, ierr)

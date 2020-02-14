@@ -110,18 +110,21 @@ CONTAINS
     lcd = h*DCOS(theta) + v*DSIN(theta)
     lcmd = pitch_momd
     lcm = pitch_mom
-! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
-! & PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
-! & PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
-! & PETSC_COMM_WORLD, ierr)
-    cld = lcld
-    cl = lcl
-    cdd = lcdd
-    cd = lcd
-    cmd = lcmd
-    cm = lcm
+    
+    call MPI_Allreduce(lCl, Cl , shapes, MPI_DOUBLE, MPI_SUM, &
+    & PETSC_COMM_WORLD, ierr)
+    call MPI_Allreduce(lCd, Cd , shapes, MPI_DOUBLE, MPI_SUM, &
+    & PETSC_COMM_WORLD, ierr)
+    call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
+    & PETSC_COMM_WORLD, ierr)
+
+    call MPI_Allreduce(lCld, Cld , shapes, MPI_DOUBLE, MPI_SUM, &
+    & PETSC_COMM_WORLD, ierr)
+    call MPI_Allreduce(lCdd, Cdd , shapes, MPI_DOUBLE, MPI_SUM, &
+    & PETSC_COMM_WORLD, ierr)
+    call MPI_Allreduce(lCmd, Cmd , shapes, MPI_DOUBLE, MPI_SUM, &
+    & PETSC_COMM_WORLD, ierr)
+
     clcdd = (cld*cd-cl*cdd)/cd**2
     clcd = cl/cd
 ! if(rank == 0) then

@@ -16,11 +16,7 @@ CONTAINS
 !                point.vorticity_sqr:in
   SUBROUTINE COMPUTE_ENSTROPHY_D()
     IMPLICIT NONE
-! call MPI_Allreduce(total_enstrophy, gtotal_enstrophy , 1, &
-! & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-! if(rank == 0) then
-!write(*,*)"total enstrophy :", gtotal_enstrophy
-! end if
+
     INTEGER :: i, k, r, nbh
     REAL*8 :: x_i, y_i, x_k, y_k
     REAL*8 :: x_id, y_id, x_kd, y_kd
@@ -38,7 +34,7 @@ CONTAINS
     REAL*8 :: one_by_detd
     REAL*8 :: du1_dy, du2_dx, temp
     REAL*8 :: du1_dyd, du2_dxd, tempd
-    REAL*8 :: gtotal_enstrophy
+    REAL*8 :: gtotal_enstrophy, gtotal_enstrophyd
     INTRINSIC DSQRT
     REAL*8 :: arg1
     REAL*8 :: arg1d
@@ -145,6 +141,15 @@ CONTAINS
       total_enstrophyd = total_enstrophyd + pointd%vorticity_sqr(i)
       total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
     END DO
+
+    call MPI_Allreduce(total_enstrophy, gtotal_enstrophy , 1, &
+    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
+    call MPI_Allreduce(total_enstrophyd, gtotal_enstrophyd , 1, &
+    & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
+
+    total_enstrophy = gtotal_enstrophy
+    total_enstrophyd = gtotal_enstrophyd
+
   END SUBROUTINE COMPUTE_ENSTROPHY_D
 
   SUBROUTINE COMPUTE_ENSTROPHY()
