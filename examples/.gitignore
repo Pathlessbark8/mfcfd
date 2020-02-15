@@ -13,3 +13,6 @@ ai/*
 objective
 *.dat
 phi_vector*
+new/*
+code-verif/*
+*/*

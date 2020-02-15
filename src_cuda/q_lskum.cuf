@@ -76,18 +76,12 @@ contains
                                 call eval_q_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                         & point_d%conn, point_d%q, point_d%qm, point_d%dq)
 
-                                call eval_q_double_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, point_d%conn, &
-                                        & point_d%dq, point_d%ddq)
-
                                 do i = 1, inner_iterations
 
                                         call eval_q_inner_loop<<<grid, tBlock>>>(point_d%x, point_d%nbhs, &
                                                 & point_d%conn, point_d%q, point_d%dq, point_d%ddq, point_d%inner)
 
                                         call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner)
-
-                                        call eval_q_double_derivatives<<<grid, tBlock>>>(point_d%x, point_d%nbhs, point_d%conn, &
-                                                & point_d%dq, point_d%ddq)
                                 end do
 
                                 call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
