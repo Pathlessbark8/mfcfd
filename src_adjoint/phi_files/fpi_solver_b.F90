@@ -38,8 +38,8 @@ CONTAINS
       CALL EVAL_Q_VARIABLES()
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
       CALL EVAL_Q_DERIVATIVES()
-        CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
-        CALL EVAL_Q_DOUBLE_DERIVATIVES()
+      CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
+      CALL EVAL_Q_DOUBLE_DERIVATIVES()
 !                        if(inner_iterations /= 0) then
 !                                do i = 1, inner_iterations
       DO i=1,inner_iterations

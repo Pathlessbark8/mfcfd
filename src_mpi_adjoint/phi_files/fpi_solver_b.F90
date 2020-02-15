@@ -2,267 +2,290 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE FPI_SOLVER_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
-  USE DATA_STRUCTURE_MOD_DIFF
-  USE FLUX_RESIDUAL_MOD_DIFF
-  USE STATE_UPDATE_MOD_DIFF
-  USE Q_VARIABLES_MOD_DIFF
-  USE OBJECTIVE_FUNCTION_MOD_DIFF
-  USE POST_PROCESSING_MOD
-  USE STAGNATION_VALUES_MOD_DIFF
-  IMPLICIT NONE
-
-CONTAINS
-!  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cost_func *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
-!                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
-!   with respect to varying inputs: *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
-!                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
-!   Plus diff mem management of: point.prim:in point.prim_old:in
-!                point.flux_res:in point.q:in point.dq:in point.ddq:in
-!                point.temp:in point.phi1:in point.phi2:in point.delta:in
-  SUBROUTINE FPI_SOLVER_B(t)
+    #include <petsc/finclude/petscsys.h>
+    USE DATA_STRUCTURE_MOD_DIFF
+    USE FLUX_RESIDUAL_MOD_DIFF
+    USE STATE_UPDATE_MOD_DIFF
+    USE Q_VARIABLES_MOD_DIFF
+    USE OBJECTIVE_FUNCTION_MOD_DIFF
+    USE POST_PROCESSING_MOD
+    USE STAGNATION_VALUES_MOD_DIFF
     IMPLICIT NONE
-    INTEGER :: t, i, rk, j, z, nbh, k
-    INTRINSIC DSQRT
-    INTRINSIC DLOG10
-    PetscErrorCode :: ierr
-    DO i=1,local_points
-      point%prim_old(:, i) = point%prim(:, i)
-    END DO
-    CALL FUNC_DELTA()
-! Perform 4-stage, 3-order SSPRK update
-    DO rk=1,rks
-        CALL PUSHREAL8ARRAY(point%q, 4*max_points)
-        CALL EVAL_Q_VARIABLES()
-
-        CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
-        CALL EVAL_Q_DERIVATIVES()
-      
-        CALL UPDATE_BEGIN_DQ_GHOST()
-        CALL UPDATE_BEGIN_QM_GHOST()
-        CALL UPDATE_END_DQ_GHOST()
-        CALL UPDATE_END_QM_GHOST()
-
-        DO i=1,inner_iterations+1
+    
+    CONTAINS
+    !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
+    !   gradient     of useful results: cost_func *(point.prim) *(point.prim_old)
+    !                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
+    !                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
+    !   with respect to varying inputs: *(point.prim) *(point.prim_old)
+    !                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
+    !                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
+    !   Plus diff mem management of: point.prim:in point.prim_old:in
+    !                point.flux_res:in point.q:in point.dq:in point.ddq:in
+    !                point.temp:in point.phi1:in point.phi2:in point.delta:in
+    SUBROUTINE FPI_SOLVER_B(t)
+        IMPLICIT NONE
+        INTEGER :: t, i, rk, j, z, nbh, k
+        INTRINSIC DSQRT
+        INTRINSIC DLOG10
+        PetscErrorCode :: ierr
+        DO i=1,local_points
+            point%prim_old(:, i) = point%prim(:, i)
+        END DO
+        CALL FUNC_DELTA()
+        ! Perform 4-stage, 3-order SSPRK update
+        DO rk=1,rks
+            CALL PUSHREAL8ARRAY(point%q, 4*max_points)
+            CALL EVAL_Q_VARIABLES()
+            
+            CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
+            CALL EVAL_Q_DERIVATIVES()
+            
+            CALL UPDATE_BEGIN_DQ_GHOST()
+            CALL UPDATE_BEGIN_QM_GHOST()
+            CALL UPDATE_END_DQ_GHOST()
+            CALL UPDATE_END_QM_GHOST()
+            
             CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
             CALL EVAL_Q_DOUBLE_DERIVATIVES()
             
             CALL UPDATE_BEGIN_DDQ_GHOST()
             CALL UPDATE_END_DDQ_GHOST()
-      
-            CALL EVAL_Q_INNER_LOOP()
-            CALL EVAL_UPDATE_INNERLOOP()
+            
+            DO i=1,inner_iterations
+                
+                CALL EVAL_Q_INNER_LOOP()
+                CALL EVAL_UPDATE_INNERLOOP()
+                
+                CALL UPDATE_BEGIN_DQ_GHOST()
+                CALL UPDATE_END_DQ_GHOST()
+                
+                CALL UPDATE_BEGIN_DDQ_GHOST()
+                CALL UPDATE_END_DDQ_GHOST()
+                
+                CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
+                CALL EVAL_Q_DOUBLE_DERIVATIVES()
+                
+                CALL UPDATE_BEGIN_DDQ_GHOST()
+                CALL UPDATE_END_DDQ_GHOST()
+            END DO
+            
+            CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
+            CALL CAL_FLUX_RESIDUAL()
+            
+            CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
+            CALL STATE_UPDATE(rk)
+            CALL UPDATE_BEGIN_PRIM_GHOST()
+            CALL UPDATE_END_PRIM_GHOST()
+            ! start updating primitive values
+        END DO
+        ! call objective_function()
+        CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
+        &             , petsc_comm_world, ierr)
+        CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
+        &            ierr)
+        CALL OBJECTIVE_FUNCTION_J_B()
+        
+        DO rk=rks,1,-1
+            
+            ! z = 78
+            ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+            ! write(*,*) pointb%phi1(:,z), ' is Phi2'
+            ! write(*,*) pointb%prim(:,z), ' is Prim'
+            ! write(*,*) pointb%temp(:,:,z), ' is Temp'
+            ! write(*,*) pointb%delta(z), ' is Delta'
+            ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
+            ! DO k=1,point%nbhs(z)
+            !     nbh = point%conn(z, k)
+            !     write(*,*) pointb%temp(:,:,nbh), ' is Temp'
+            !     write(*,*) pointb%delta(nbh), ' is Delta'
+            !     write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
+            !     write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
+            !     write(*,*) pointb%prim(:,nbh), ' is Prim-k'
+            !     write(*,*) pointb%q(:,nbh), ' is Q'
+            !     write(*,*) pointb%dq(:,:,nbh), ' is DQ'
+            !     write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
+            !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
+            ! END DO
+            
+            CALL POPREAL8ARRAY(point%prim, 4*max_points)
+            CALL STATE_UPDATE_B(rk)
+            CALL UPDATE_BEGIN_PRIMB_GHOST()
+            CALL UPDATE_END_PRIMB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%prim(:, j) = 0.0d0
+                pointb%prim_old(:, j) = 0.0d0
+            end do
+            
+            
+            CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
+            CALL CAL_FLUX_RESIDUAL_B()
+            
+            CALL UPDATE_BEGIN_QB_GHOST()
+            CALL UPDATE_END_QB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%q(:, j) = 0.0d0
+            end do
+            CALL UPDATE_BEGIN_DQB_GHOST()
+            CALL UPDATE_END_DQB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%dq(:, :, j) = 0.0d0
+            end do
+            CALL UPDATE_BEGIN_DDQB_GHOST()
+            CALL UPDATE_END_DDQB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%ddq(:, :, j) = 0.0d0
+            end do
+            
+            DO i=inner_iterations,1,-1
+                
+                CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+                CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+                do j = local_points+1, max_points 
+                    pointb%ddq(:, :, j) = 0.0d0
+                end do
+                
+                CALL UPDATE_BEGIN_DQB_GHOST()
+                CALL UPDATE_END_DQB_GHOST()
+                do j = local_points+1, max_points 
+                    pointb%dq(:, :, j) = 0.0d0
+                end do
 
+                CALL EVAL_UPDATE_INNERLOOP_B()
+                do j = local_points+1, max_points 
+                    pointb%dq(:, :, j) = 0.0d0
+                end do
+                
+                CALL EVAL_Q_INNER_LOOP_B()
+                do j = local_points+1, max_points 
+                    pointb%temp(:, :, j) = 0.0d0
+                end do
+                CALL UPDATE_BEGIN_QB_GHOST()
+                CALL UPDATE_END_QB_GHOST()
+                do j = local_points+1, max_points 
+                    pointb%q(:, j) = 0.0d0
+                end do
+                CALL UPDATE_BEGIN_DQB_GHOST()
+                CALL UPDATE_END_DQB_GHOST()
+                do j = local_points+1, max_points 
+                    pointb%dq(:, :, j) = 0.0d0
+                end do
+                
+                CALL UPDATE_BEGIN_DDQB_GHOST()
+                CALL UPDATE_END_DDQB_GHOST()
+                do j = local_points+1, max_points 
+                    pointb%ddq(:, :, j) = 0.0d0
+                end do
+            END DO
+            
+            CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+            CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+            do j = local_points+1, max_points 
+              pointb%ddq(:, :, j) = 0.0d0
+            end do
+  
+            CALL UPDATE_BEGIN_DQB_GHOST()
+            CALL UPDATE_END_DQB_GHOST()
+            do j = local_points+1, max_points 
+              pointb%dq(:, :, j) = 0.0d0
+            end do
+            
+            CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
+            CALL EVAL_Q_DERIVATIVES_B()
+            
+            
+            CALL UPDATE_BEGIN_QB_GHOST()
+            CALL UPDATE_END_QB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%q(:, j) = 0.0d0
+            end do
+            do j = local_points+1, max_points 
+                pointb%dq(:, :, j) = 0.0d0
+            end do
+            
+            CALL POPREAL8ARRAY(point%q, 4*max_points)
+            CALL EVAL_Q_VARIABLES_B()
+            CALL UPDATE_BEGIN_PRIMB_GHOST()
+            CALL UPDATE_END_PRIMB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%prim(:, j) = 0.0d0
+            end do
+            
+        END DO
+        
+        CALL FUNC_DELTA_B()  
+        CALL UPDATE_BEGIN_PRIMB_GHOST()
+        CALL UPDATE_END_PRIMB_GHOST()
+        do j = local_points+1, max_points 
+            pointb%prim(:, j) = 0.0d0
+        end do
+        DO i=local_points,1,-1
+            pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
+            pointb%prim_old(:, i) = 0.0_8
+        END DO
+        
+        
+    END SUBROUTINE FPI_SOLVER_B
+    
+    SUBROUTINE FPI_SOLVER(t)
+        IMPLICIT NONE
+        INTEGER :: t, i, rk, z
+        INTRINSIC DSQRT
+        INTRINSIC DLOG10
+        PetscErrorCode :: ierr
+        DO i=1,local_points
+            point%prim_old(:, i) = point%prim(:, i)
+        END DO
+        CALL FUNC_DELTA()
+        ! Perform 4-stage, 3-order SSPRK update
+        DO rk=1,rks
+            CALL EVAL_Q_VARIABLES()
+            CALL EVAL_Q_DERIVATIVES()
+            !Update the ghost values from the owned process
             CALL UPDATE_BEGIN_DQ_GHOST()
+            CALL UPDATE_BEGIN_QM_GHOST()
             CALL UPDATE_END_DQ_GHOST()
-
+            CALL UPDATE_END_QM_GHOST()
+            
+                            
+            CALL EVAL_Q_DOUBLE_DERIVATIVES()
             CALL UPDATE_BEGIN_DDQ_GHOST()
             CALL UPDATE_END_DDQ_GHOST()
+            
+            DO i=1,inner_iterations
+
+                CALL EVAL_Q_INNER_LOOP()
+                CALL EVAL_UPDATE_INNERLOOP()
+                CALL UPDATE_BEGIN_DQ_GHOST()
+                CALL UPDATE_END_DQ_GHOST()
+                CALL UPDATE_BEGIN_DDQ_GHOST()
+                CALL UPDATE_END_DDQ_GHOST()
+                                
+                CALL EVAL_Q_DOUBLE_DERIVATIVES()
+                CALL UPDATE_BEGIN_DDQ_GHOST()
+                CALL UPDATE_END_DDQ_GHOST()
+                
+            END DO
+            
+            CALL CAL_FLUX_RESIDUAL()
+            CALL STATE_UPDATE(rk)
+            ! start updating primitive values
+            CALL UPDATE_BEGIN_PRIM_GHOST()
+            CALL UPDATE_END_PRIM_GHOST()
         END DO
-
-      CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
-      CALL CAL_FLUX_RESIDUAL()
-
-      CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
-      CALL STATE_UPDATE(rk)
-      CALL UPDATE_BEGIN_PRIM_GHOST()
-      CALL UPDATE_END_PRIM_GHOST()
-! start updating primitive values
-    END DO
-! call objective_function()
-    CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
-&             , petsc_comm_world, ierr)
-    CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
-&            ierr)
-    CALL OBJECTIVE_FUNCTION_J_B()
-
-    DO rk=rks,1,-1
-
-      ! z = 78
-      ! write(*,*) pointb%phi1(:,z), ' is Phi1'
-      ! write(*,*) pointb%phi1(:,z), ' is Phi2'
-      ! write(*,*) pointb%prim(:,z), ' is Prim'
-      ! write(*,*) pointb%temp(:,:,z), ' is Temp'
-      ! write(*,*) pointb%delta(z), ' is Delta'
-      ! write(*,*) pointb%prim_old(:,z), ' is Prim_Old'
-      ! DO k=1,point%nbhs(z)
-      !     nbh = point%conn(z, k)
-      !     write(*,*) pointb%temp(:,:,nbh), ' is Temp'
-      !     write(*,*) pointb%delta(nbh), ' is Delta'
-      !     write(*,*) pointb%prim_old(:,nbh), ' is Prim_Old'
-      !     write(*,*) pointb%phi1(:,nbh), ' is Phi1-k'
-      !     write(*,*) pointb%prim(:,nbh), ' is Prim-k'
-      !     write(*,*) pointb%q(:,nbh), ' is Q'
-      !     write(*,*) pointb%dq(:,:,nbh), ' is DQ'
-      !     write(*,*) pointb%ddq(:,:,nbh), ' is DDQ'
-      !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
-      ! END DO
-
-      CALL POPREAL8ARRAY(point%prim, 4*max_points)
-      CALL STATE_UPDATE_B(rk)
-      CALL UPDATE_BEGIN_PRIMB_GHOST()
-      CALL UPDATE_END_PRIMB_GHOST()
-      do j = local_points+1, max_points 
-        pointb%prim(:, j) = 0.0d0
-        pointb%prim_old(:, j) = 0.0d0
-      end do
-
-      
-      CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
-      CALL CAL_FLUX_RESIDUAL_B()
-
-      CALL UPDATE_BEGIN_QB_GHOST()
-      CALL UPDATE_END_QB_GHOST()
-      do j = local_points+1, max_points 
-        pointb%q(:, j) = 0.0d0
-      end do
-      CALL UPDATE_BEGIN_DQB_GHOST()
-      CALL UPDATE_END_DQB_GHOST()
-      do j = local_points+1, max_points 
-        pointb%dq(:, :, j) = 0.0d0
-      end do
-      CALL UPDATE_BEGIN_DDQB_GHOST()
-      CALL UPDATE_END_DDQB_GHOST()
-      do j = local_points+1, max_points 
-        pointb%ddq(:, :, j) = 0.0d0
-      end do
-
-        DO i=inner_iterations+1,1,-1
-          CALL EVAL_UPDATE_INNERLOOP_B()
-          do j = local_points+1, max_points 
-            pointb%dq(:, :, j) = 0.0d0
-          end do
-
-          CALL EVAL_Q_INNER_LOOP_B()
-          do j = local_points+1, max_points 
-            pointb%temp(:, :, j) = 0.0d0
-          end do
-          CALL UPDATE_BEGIN_QB_GHOST()
-          CALL UPDATE_END_QB_GHOST()
-          do j = local_points+1, max_points 
-            pointb%q(:, j) = 0.0d0
-          end do
-          CALL UPDATE_BEGIN_DQB_GHOST()
-          CALL UPDATE_END_DQB_GHOST()
-          do j = local_points+1, max_points 
-            pointb%dq(:, :, j) = 0.0d0
-          end do
-
-          CALL UPDATE_BEGIN_DDQB_GHOST()
-          CALL UPDATE_END_DDQB_GHOST()
-          do j = local_points+1, max_points 
-            pointb%ddq(:, :, j) = 0.0d0
-          end do
-
-
-          CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
-          CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
-          do j = local_points+1, max_points 
-            pointb%ddq(:, :, j) = 0.0d0
-          end do
-
-          CALL UPDATE_BEGIN_DQB_GHOST()
-          CALL UPDATE_END_DQB_GHOST()
-          do j = local_points+1, max_points 
-            pointb%dq(:, :, j) = 0.0d0
-          end do
-        END DO
-
-
-      CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
-      CALL EVAL_Q_DERIVATIVES_B()
-
-
-      CALL UPDATE_BEGIN_QB_GHOST()
-      CALL UPDATE_END_QB_GHOST()
-      do j = local_points+1, max_points 
-        pointb%q(:, j) = 0.0d0
-      end do
-      do j = local_points+1, max_points 
-        pointb%dq(:, :, j) = 0.0d0
-      end do
-
-      CALL POPREAL8ARRAY(point%q, 4*max_points)
-      CALL EVAL_Q_VARIABLES_B()
-      CALL UPDATE_BEGIN_PRIMB_GHOST()
-      CALL UPDATE_END_PRIMB_GHOST()
-      do j = local_points+1, max_points 
-        pointb%prim(:, j) = 0.0d0
-      end do
-
-    END DO
-
-    CALL FUNC_DELTA_B()  
-    CALL UPDATE_BEGIN_PRIMB_GHOST()
-    CALL UPDATE_END_PRIMB_GHOST()
-    do j = local_points+1, max_points 
-      pointb%prim(:, j) = 0.0d0
-    end do
-    DO i=local_points,1,-1
-      pointb%prim(:, i) = pointb%prim(:, i) + pointb%prim_old(:, i)
-      pointb%prim_old(:, i) = 0.0_8
-    END DO
-
-
-  END SUBROUTINE FPI_SOLVER_B
-
-  SUBROUTINE FPI_SOLVER(t)
-    IMPLICIT NONE
-    INTEGER :: t, i, rk, z
-    INTRINSIC DSQRT
-    INTRINSIC DLOG10
-    PetscErrorCode :: ierr
-    DO i=1,local_points
-      point%prim_old(:, i) = point%prim(:, i)
-    END DO
-    CALL FUNC_DELTA()
-! Perform 4-stage, 3-order SSPRK update
-    DO rk=1,rks
-      CALL EVAL_Q_VARIABLES()
-      CALL EVAL_Q_DERIVATIVES()
-!Update the ghost values from the owned process
-      CALL UPDATE_BEGIN_DQ_GHOST()
-      CALL UPDATE_BEGIN_QM_GHOST()
-      CALL UPDATE_END_DQ_GHOST()
-      CALL UPDATE_END_QM_GHOST()
-
-
-      DO i=1,inner_iterations+1
-
-        CALL EVAL_Q_DOUBLE_DERIVATIVES()
-        CALL UPDATE_BEGIN_DDQ_GHOST()
-        CALL UPDATE_END_DDQ_GHOST()
-
-        CALL EVAL_Q_INNER_LOOP()
-        CALL EVAL_UPDATE_INNERLOOP()
-        CALL UPDATE_BEGIN_DQ_GHOST()
-        CALL UPDATE_END_DQ_GHOST()
-        CALL UPDATE_BEGIN_DDQ_GHOST()
-        CALL UPDATE_END_DDQ_GHOST()
-      END DO
-
-      CALL CAL_FLUX_RESIDUAL()
-      CALL STATE_UPDATE(rk)
-! start updating primitive values
-      CALL UPDATE_BEGIN_PRIM_GHOST()
-      CALL UPDATE_END_PRIM_GHOST()
-    END DO
-! call objective_function()
-    CALL OBJECTIVE_FUNCTION_J()
-    CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
-&             , petsc_comm_world, ierr)
-    CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
-&            ierr)
-    res_new = DSQRT(gsum_res_sqr)/plen
-    IF (t .LE. 2 .AND. restart .EQ. 0) THEN
-      res_old = res_new
-      residue = 0.d0
-    ELSE
-      residue = DLOG10(res_new/res_old)
-    END IF
-  END SUBROUTINE FPI_SOLVER
-
+        ! call objective_function()
+        CALL OBJECTIVE_FUNCTION_J()
+        CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
+        &             , petsc_comm_world, ierr)
+        CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
+        &            ierr)
+        res_new = DSQRT(gsum_res_sqr)/plen
+        IF (t .LE. 2 .AND. restart .EQ. 0) THEN
+            res_old = res_new
+            residue = 0.d0
+        ELSE
+            residue = DLOG10(res_new/res_old)
+        END IF
+    END SUBROUTINE FPI_SOLVER
+    
 END MODULE FPI_SOLVER_MOD_DIFF
