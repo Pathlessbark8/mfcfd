@@ -38,11 +38,15 @@ CONTAINS
       CALL EVAL_Q_VARIABLES()
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
       CALL EVAL_Q_DERIVATIVES()
-      DO i=1,inner_iterations+1
         CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL EVAL_Q_DOUBLE_DERIVATIVES()
+!                        if(inner_iterations /= 0) then
+!                                do i = 1, inner_iterations
+      DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP()
         CALL EVAL_UPDATE_INNERLOOP()
+        CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
+        CALL EVAL_Q_DOUBLE_DERIVATIVES()
       END DO
       CALL PUSHREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL()
@@ -74,12 +78,14 @@ CONTAINS
       CALL STATE_UPDATE_B(rk)
       CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
       CALL CAL_FLUX_RESIDUAL_B()
-      DO i=inner_iterations+1,1,-1
-        CALL EVAL_UPDATE_INNERLOOP_B()
-        CALL EVAL_Q_INNER_LOOP_B()
+      DO i=inner_iterations,1,-1
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
+        CALL EVAL_UPDATE_INNERLOOP_B()
+        CALL EVAL_Q_INNER_LOOP_B()
       END DO
+      CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
+      CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
       CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
       CALL EVAL_Q_DERIVATIVES_B()
       CALL POPREAL8ARRAY(point%q, 4*max_points)
@@ -103,37 +109,16 @@ CONTAINS
     CALL FUNC_DELTA()
 ! Perform 4-stage, 3-order SSPRK update
     DO rk=1,rks
-
-      ! write(*,*) '<<<<<<<<<<<<<<<<<<<<<<<<<<'
-      ! z = 78
-
-      ! write(*,*) point%q(:,z), ' is Q'
-      ! write(*,*) point%prim(:,z), ' is Prim'
-      ! write(*,*) point%temp(:,:,z), ' is Temp'
-      ! write(*,*) point%prim_old(:,z), ' is Prim_Old'
-      ! write(*,*) point%dq(:,:,z), ' is DQ'
-      ! write(*,*) point%ddq(:,:,z), ' is DDQ'
-      ! write(*,*) point%flux_res(:,z), ' is Flux Res'
-
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
+      CALL EVAL_Q_DOUBLE_DERIVATIVES()
 !                        if(inner_iterations /= 0) then
 !                                do i = 1, inner_iterations
-      DO i=1,inner_iterations+1
-        CALL EVAL_Q_DOUBLE_DERIVATIVES()
+      DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP()
         CALL EVAL_UPDATE_INNERLOOP()
+        CALL EVAL_Q_DOUBLE_DERIVATIVES()
       END DO
-
-      ! write(*,*) '==========================='
-      ! write(*,*) point%q(:,z), ' is Q'
-      ! write(*,*) point%prim(:,z), ' is Prim'
-      ! write(*,*) point%temp(:,:,z), ' is Temp'
-      ! write(*,*) point%prim_old(:,z), ' is Prim_Old'
-      ! write(*,*) point%dq(:,:,z), ' is DQ'
-      ! write(*,*) point%ddq(:,:,z), ' is DDQ'
-      ! write(*,*) point%flux_res(:,z), ' is Flux Res'
-      ! write(*,*) '>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 !                        end if
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)

@@ -27,17 +27,16 @@ contains
                         call eval_q_variables()
                 
                         call eval_q_derivatives()
-
+                        
+                        call eval_q_double_derivatives()
 !                        if(inner_iterations /= 0) then
 !                                do i = 1, inner_iterations
-                                do i = 1, inner_iterations + 1
-
-                                        call eval_q_double_derivatives()
+                                do i = 1, inner_iterations
 
                                         call eval_q_inner_loop()
 
                                         call eval_update_innerloop()
-                                        
+                                        call eval_q_double_derivatives()                                        
                                 enddo
 !                        end if
                 
