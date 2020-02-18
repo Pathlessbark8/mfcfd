@@ -159,7 +159,7 @@ CONTAINS
     REAL*8 :: sum_delx_delq(4), sum_dely_delq(4)
     REAL*8 :: det, delq, temp
     REAL*8 :: one_by_det
-    ! INTRINSIC DSQRT
+    INTRINSIC DSQRT
     DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
@@ -310,7 +310,7 @@ CONTAINS
 &   , sum_dely_del_qy(4)
     REAL*8 :: det, delq, temp
     REAL*8 :: one_by_det
-    ! INTRINSIC DSQRT
+    INTRINSIC DSQRT
     DO i=1,local_points
       x_i = point%x(i)
       y_i = point%y(i)
@@ -778,8 +778,8 @@ CONTAINS
     REAL*8 :: qtilde(4), u1, u2, rho, pr
     REAL*8 :: beta, temp, temp1, temp2
     REAL*8 :: q1, q2, q3, q4
-    ! INTRINSIC DLOG
-    ! INTRINSIC DEXP
+    INTRINSIC DLOG
+    INTRINSIC DEXP
     q1 = qtilde(1)
     q2 = qtilde(2)
     q3 = qtilde(3)

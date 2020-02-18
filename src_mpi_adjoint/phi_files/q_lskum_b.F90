@@ -71,7 +71,7 @@ CONTAINS
       END IF
     END DO
     CLOSE(unit=301) 
-    pointb%delta = 0.0_8
+
     pointb%prim = 0.0_8
     pointb%prim_old = 0.0_8
     pointb%q = 0.0_8
@@ -81,6 +81,7 @@ CONTAINS
     pointb%temp = 0.0_8
     pointb%phi1 = 0.0_8
     pointb%phi2 = 0.0_8
+    pointb%delta = 0.0_8
     IF (rank .EQ. 0) THEN
       write(*,*)
       write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'

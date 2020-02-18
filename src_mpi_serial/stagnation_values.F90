@@ -36,8 +36,9 @@ module stagnation_values_mod
                 endif
             enddo
 
-            write(*,*) "Stagnation values are ", pMin, " ", pMax, " ", pMin/p0_inf, " ", pMax/p0_inf," ", indexMin, " ", indexMax
-
+            if(rank == 0) then
+                write(*,*) "Stagnation values are ", pMin, " ", pMax, " ", pMin/p0_inf, " ", pMax/p0_inf," ", indexMin, " ", indexMax
+            endif
         end subroutine
 
         subroutine objective_function_J()
