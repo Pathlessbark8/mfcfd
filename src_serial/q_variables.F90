@@ -197,7 +197,8 @@ contains
                         real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                         real*8 :: det, temp
                         real*8 :: one_by_det
-                        real*8 :: sum_delx_delq1, sum_delx_delq2, sum_delx_delq3, sum_delx_delq4, sum_dely_delq1, sum_dely_delq2, sum_dely_delq3, sum_dely_delq4
+                        real*8 :: sum_delx_delq1, sum_delx_delq2, sum_delx_delq3, sum_delx_delq4
+                        real*8 :: sum_dely_delq1, sum_dely_delq2, sum_dely_delq3, sum_dely_delq4
                         real*8 :: q1, q2, q3, q4
                 
                         real*8 :: temp1, temp2
