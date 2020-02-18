@@ -326,7 +326,7 @@ CONTAINS
 !   variations   of useful results: *(point.temp)
 !   with respect to varying inputs: *(point.q) *(point.dq) *(point.temp)
 !   Plus diff mem management of: point.q:in point.dq:in point.temp:in
-  SUBROUTINE EVAL_DQ_INNER_LOOP_D()
+  SUBROUTINE EVAL_Q_INNER_LOOP_D()
     IMPLICIT NONE
     INTEGER :: i
     INTEGER :: k, r, nbh
@@ -394,49 +394,77 @@ CONTAINS
         sum_dely_sqr = sum_dely_sqr + dely*dely*weights
         sum_delx_dely = sum_delx_dely + delx*dely*weights
         temp1d = q1d - 0.5d0*(delx*pointd%dq(1, 1, i)+dely*pointd%dq(2, &
-&         1, i))
+&         1, i)) + (delx**2*pointd%ddq(1, 1, i)+2.0d0*delx*dely**3*(&
+&         pointd%ddq(2, 1, i)*point%ddq(3, 1, i)+point%ddq(2, 1, i)*&
+&         pointd%ddq(3, 1, i)))/12.0d0
         temp1 = q1 - 0.5d0*(delx*point%dq(1, 1, i)+dely*point%dq(2, 1, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 1, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 1, i)*dely*dely*point%ddq(3, 1, i))
         temp2d = pointd%q(1, nbh) - 0.5d0*(delx*pointd%dq(1, 1, nbh)+&
-&         dely*pointd%dq(2, 1, nbh))
+&         dely*pointd%dq(2, 1, nbh)) + (delx**2*pointd%ddq(1, 1, nbh)+2*&
+&         delx*dely**3*(pointd%ddq(2, 1, nbh)*point%ddq(3, 1, nbh)+point&
+&         %ddq(2, 1, nbh)*pointd%ddq(3, 1, nbh)))/12.0d0
         temp2 = point%q(1, nbh) - 0.5d0*(delx*point%dq(1, 1, nbh)+dely*&
-&         point%dq(2, 1, nbh))
+&         point%dq(2, 1, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 1&
+&         , nbh)+2*delx*dely*point%ddq(2, 1, nbh)*dely*dely*point%ddq(3&
+&         , 1, nbh))
         sum_delx_delq1d = sum_delx_delq1d + weights*delx*(temp2d-temp1d)
         sum_delx_delq1 = sum_delx_delq1 + weights*delx*(temp2-temp1)
         sum_dely_delq1d = sum_dely_delq1d + weights*dely*(temp2d-temp1d)
         sum_dely_delq1 = sum_dely_delq1 + weights*dely*(temp2-temp1)
         temp1d = q2d - 0.5d0*(delx*pointd%dq(1, 2, i)+dely*pointd%dq(2, &
-&         2, i))
+&         2, i)) + (delx**2*pointd%ddq(1, 2, i)+2.0d0*delx*dely**3*(&
+&         pointd%ddq(2, 2, i)*point%ddq(3, 2, i)+point%ddq(2, 2, i)*&
+&         pointd%ddq(3, 2, i)))/12.0d0
         temp1 = q2 - 0.5d0*(delx*point%dq(1, 2, i)+dely*point%dq(2, 2, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 2, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 2, i)*dely*dely*point%ddq(3, 2, i))
         temp2d = pointd%q(2, nbh) - 0.5d0*(delx*pointd%dq(1, 2, nbh)+&
-&         dely*pointd%dq(2, 2, nbh))
+&         dely*pointd%dq(2, 2, nbh)) + (delx**2*pointd%ddq(1, 2, nbh)+2*&
+&         delx*dely**3*(pointd%ddq(2, 2, nbh)*point%ddq(3, 2, nbh)+point&
+&         %ddq(2, 2, nbh)*pointd%ddq(3, 2, nbh)))/12.0d0
         temp2 = point%q(2, nbh) - 0.5d0*(delx*point%dq(1, 2, nbh)+dely*&
-&         point%dq(2, 2, nbh))
+&         point%dq(2, 2, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 2&
+&         , nbh)+2*delx*dely*point%ddq(2, 2, nbh)*dely*dely*point%ddq(3&
+&         , 2, nbh))
         sum_delx_delq2d = sum_delx_delq2d + weights*delx*(temp2d-temp1d)
         sum_delx_delq2 = sum_delx_delq2 + weights*delx*(temp2-temp1)
         sum_dely_delq2d = sum_dely_delq2d + weights*dely*(temp2d-temp1d)
         sum_dely_delq2 = sum_dely_delq2 + weights*dely*(temp2-temp1)
         temp1d = q3d - 0.5d0*(delx*pointd%dq(1, 3, i)+dely*pointd%dq(2, &
-&         3, i))
+&         3, i)) + (delx**2*pointd%ddq(1, 3, i)+2.0d0*delx*dely**3*(&
+&         pointd%ddq(2, 3, i)*point%ddq(3, 3, i)+point%ddq(2, 3, i)*&
+&         pointd%ddq(3, 3, i)))/12.0d0
         temp1 = q3 - 0.5d0*(delx*point%dq(1, 3, i)+dely*point%dq(2, 3, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 3, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 3, i)*dely*dely*point%ddq(3, 3, i))
         temp2d = pointd%q(3, nbh) - 0.5d0*(delx*pointd%dq(1, 3, nbh)+&
-&         dely*pointd%dq(2, 3, nbh))
+&         dely*pointd%dq(2, 3, nbh)) + (delx**2*pointd%ddq(1, 3, nbh)+2*&
+&         delx*dely**3*(pointd%ddq(2, 3, nbh)*point%ddq(3, 3, nbh)+point&
+&         %ddq(2, 3, nbh)*pointd%ddq(3, 3, nbh)))/12.0d0
         temp2 = point%q(3, nbh) - 0.5d0*(delx*point%dq(1, 3, nbh)+dely*&
-&         point%dq(2, 3, nbh))
+&         point%dq(2, 3, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 3&
+&         , nbh)+2*delx*dely*point%ddq(2, 3, nbh)*dely*dely*point%ddq(3&
+&         , 3, nbh))
         sum_delx_delq3d = sum_delx_delq3d + weights*delx*(temp2d-temp1d)
         sum_delx_delq3 = sum_delx_delq3 + weights*delx*(temp2-temp1)
         sum_dely_delq3d = sum_dely_delq3d + weights*dely*(temp2d-temp1d)
         sum_dely_delq3 = sum_dely_delq3 + weights*dely*(temp2-temp1)
         temp1d = q4d - 0.5d0*(delx*pointd%dq(1, 4, i)+dely*pointd%dq(2, &
-&         4, i))
+&         4, i)) + (delx**2*pointd%ddq(1, 4, i)+2.0d0*delx*dely**3*(&
+&         pointd%ddq(2, 4, i)*point%ddq(3, 4, i)+point%ddq(2, 4, i)*&
+&         pointd%ddq(3, 4, i)))/12.0d0
         temp1 = q4 - 0.5d0*(delx*point%dq(1, 4, i)+dely*point%dq(2, 4, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 4, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 4, i)*dely*dely*point%ddq(3, 4, i))
         temp2d = pointd%q(4, nbh) - 0.5d0*(delx*pointd%dq(1, 4, nbh)+&
-&         dely*pointd%dq(2, 4, nbh))
+&         dely*pointd%dq(2, 4, nbh)) + (delx**2*pointd%ddq(1, 4, nbh)+2*&
+&         delx*dely**3*(pointd%ddq(2, 4, nbh)*point%ddq(3, 4, nbh)+point&
+&         %ddq(2, 4, nbh)*pointd%ddq(3, 4, nbh)))/12.0d0
         temp2 = point%q(4, nbh) - 0.5d0*(delx*point%dq(1, 4, nbh)+dely*&
-&         point%dq(2, 4, nbh))
+&         point%dq(2, 4, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 4&
+&         , nbh)+2*delx*dely*point%ddq(2, 4, nbh)*dely*dely*point%ddq(3&
+&         , 4, nbh))
         sum_delx_delq4d = sum_delx_delq4d + weights*delx*(temp2d-temp1d)
         sum_delx_delq4 = sum_delx_delq4 + weights*delx*(temp2-temp1)
         sum_dely_delq4d = sum_dely_delq4d + weights*dely*(temp2d-temp1d)
@@ -477,9 +505,9 @@ CONTAINS
       point%temp(2, 4, i) = one_by_det*(sum_dely_delq4*sum_delx_sqr-&
 &       sum_delx_delq4*sum_delx_dely)
     END DO
-  END SUBROUTINE EVAL_DQ_INNER_LOOP_D
+END SUBROUTINE EVAL_Q_INNER_LOOP_D
 
-  SUBROUTINE EVAL_DQ_INNER_LOOP()
+SUBROUTINE EVAL_Q_INNER_LOOP()
     IMPLICIT NONE
     INTEGER :: i
     INTEGER :: k, r, nbh
@@ -529,27 +557,39 @@ CONTAINS
         sum_dely_sqr = sum_dely_sqr + dely*dely*weights
         sum_delx_dely = sum_delx_dely + delx*dely*weights
         temp1 = q1 - 0.5d0*(delx*point%dq(1, 1, i)+dely*point%dq(2, 1, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 1, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 1, i)*dely*dely*point%ddq(3, 1, i))
         temp2 = point%q(1, nbh) - 0.5d0*(delx*point%dq(1, 1, nbh)+dely*&
-&         point%dq(2, 1, nbh))
+&         point%dq(2, 1, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 1&
+&         , nbh)+2*delx*dely*point%ddq(2, 1, nbh)*dely*dely*point%ddq(3&
+&         , 1, nbh))
         sum_delx_delq1 = sum_delx_delq1 + weights*delx*(temp2-temp1)
         sum_dely_delq1 = sum_dely_delq1 + weights*dely*(temp2-temp1)
         temp1 = q2 - 0.5d0*(delx*point%dq(1, 2, i)+dely*point%dq(2, 2, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 2, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 2, i)*dely*dely*point%ddq(3, 2, i))
         temp2 = point%q(2, nbh) - 0.5d0*(delx*point%dq(1, 2, nbh)+dely*&
-&         point%dq(2, 2, nbh))
+&         point%dq(2, 2, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 2&
+&         , nbh)+2*delx*dely*point%ddq(2, 2, nbh)*dely*dely*point%ddq(3&
+&         , 2, nbh))
         sum_delx_delq2 = sum_delx_delq2 + weights*delx*(temp2-temp1)
         sum_dely_delq2 = sum_dely_delq2 + weights*dely*(temp2-temp1)
         temp1 = q3 - 0.5d0*(delx*point%dq(1, 3, i)+dely*point%dq(2, 3, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 3, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 3, i)*dely*dely*point%ddq(3, 3, i))
         temp2 = point%q(3, nbh) - 0.5d0*(delx*point%dq(1, 3, nbh)+dely*&
-&         point%dq(2, 3, nbh))
+&         point%dq(2, 3, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 3&
+&         , nbh)+2*delx*dely*point%ddq(2, 3, nbh)*dely*dely*point%ddq(3&
+&         , 3, nbh))
         sum_delx_delq3 = sum_delx_delq3 + weights*delx*(temp2-temp1)
         sum_dely_delq3 = sum_dely_delq3 + weights*dely*(temp2-temp1)
         temp1 = q4 - 0.5d0*(delx*point%dq(1, 4, i)+dely*point%dq(2, 4, i&
-&         ))
+&         )) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 4, i)+2.0d0*delx*&
+&         dely*point%ddq(2, 4, i)*dely*dely*point%ddq(3, 4, i))
         temp2 = point%q(4, nbh) - 0.5d0*(delx*point%dq(1, 4, nbh)+dely*&
-&         point%dq(2, 4, nbh))
+&         point%dq(2, 4, nbh)) + 1.0d0/12.0d0*(delx*delx*point%ddq(1, 4&
+&         , nbh)+2*delx*dely*point%ddq(2, 4, nbh)*dely*dely*point%ddq(3&
+&         , 4, nbh))
         sum_delx_delq4 = sum_delx_delq4 + weights*delx*(temp2-temp1)
         sum_dely_delq4 = sum_dely_delq4 + weights*dely*(temp2-temp1)
       END DO
@@ -572,205 +612,13 @@ CONTAINS
       point%temp(2, 4, i) = one_by_det*(sum_dely_delq4*sum_delx_sqr-&
 &       sum_delx_delq4*sum_delx_dely)
     END DO
-  END SUBROUTINE EVAL_DQ_INNER_LOOP
+  END SUBROUTINE EVAL_Q_INNER_LOOP
 
-!  Differentiation of eval_ddq_inner_loop in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: *(point.temp)
-!   with respect to varying inputs: *(point.dq) *(point.ddq) *(point.temp)
-!   Plus diff mem management of: point.dq:in point.ddq:in point.temp:in
-  SUBROUTINE EVAL_DDQ_INNER_LOOP_D()
-    IMPLICIT NONE
-! local variables
-    INTEGER :: i
-    INTEGER :: k, r, nbh
-    REAL*8 :: x_i, y_i, x_k, y_k
-    REAL*8 :: delx, dely, dist, weights
-    REAL*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-    REAL*8 :: det, temp
-    REAL*8 :: one_by_det
-    REAL*8 :: sum_delx_del_qx(4), sum_dely_del_qy(4), sum_delx_del_qy(4)&
-&   , sum_dely_del_qx(4)
-    REAL*8 :: sum_delx_del_qxd(4), sum_dely_del_qyd(4), sum_delx_del_qyd&
-&   (4), sum_dely_del_qxd(4)
-    REAL*8 :: dq_x(4), dq_y(4)
-    REAL*8 :: dq_xd(4), dq_yd(4)
-    REAL*8 :: temp1(4), temp2(4)
-    REAL*8 :: temp1d(4), temp2d(4)
-    INTRINSIC DSQRT
-    REAL*8 :: arg1
-    DO i=1,local_points
-      x_i = point%x(i)
-      y_i = point%y(i)
-      dq_xd = pointd%dq(1, :, i)
-      dq_x = point%dq(1, :, i)
-      dq_yd = pointd%dq(2, :, i)
-      dq_y = point%dq(2, :, i)
-      sum_delx_sqr = 0.d0
-      sum_dely_sqr = 0.d0
-      sum_delx_dely = 0.d0
-      sum_delx_del_qx = 0.d0
-      sum_delx_del_qy = 0.d0
-      sum_dely_del_qx = 0.d0
-      sum_dely_del_qy = 0.d0
-      temp1 = 0.d0
-      temp2 = 0.d0
-      sum_delx_del_qxd = 0.0_8
-      sum_delx_del_qyd = 0.0_8
-      sum_dely_del_qxd = 0.0_8
-      sum_dely_del_qyd = 0.0_8
-      DO k=1,point%nbhs(i)
-        nbh = point%conn(i, k)
-        x_k = point%x(nbh)
-        y_k = point%y(nbh)
-        delx = x_k - x_i
-        dely = y_k - y_i
-        arg1 = delx*delx + dely*dely
-        dist = DSQRT(arg1)
-        weights = dist**power
-        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
-        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
-        sum_delx_dely = sum_delx_dely + delx*dely*weights
-        temp1d = dq_xd - 0.5d0*(delx*pointd%ddq(1, :, i)+dely*pointd%ddq&
-&         (2, :, i))
-        temp1 = dq_x - 0.5d0*(delx*point%ddq(1, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2d = pointd%dq(1, :, nbh) - 0.5d0*(delx*pointd%ddq(1, :, nbh&
-&         )+dely*pointd%ddq(2, :, nbh))
-        temp2 = point%dq(1, :, nbh) - 0.5d0*(delx*point%ddq(1, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_delx_del_qxd = sum_delx_del_qxd + weights*delx*(temp2d-&
-&         temp1d)
-        sum_delx_del_qx = sum_delx_del_qx + weights*delx*(temp2-temp1)
-        temp1d = dq_yd - 0.5d0*(delx*pointd%ddq(3, :, i)+dely*pointd%ddq&
-&         (2, :, i))
-        temp1 = dq_y - 0.5d0*(delx*point%ddq(3, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2d = pointd%dq(2, :, nbh) - 0.5d0*(delx*pointd%ddq(3, :, nbh&
-&         )+dely*pointd%ddq(2, :, nbh))
-        temp2 = point%dq(2, :, nbh) - 0.5d0*(delx*point%ddq(3, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_delx_del_qyd = sum_delx_del_qyd + weights*delx*(temp2d-&
-&         temp1d)
-        sum_delx_del_qy = sum_delx_del_qy + weights*delx*(temp2-temp1)
-        temp1d = dq_yd - 0.5d0*(delx*pointd%ddq(1, :, i)+dely*pointd%ddq&
-&         (2, :, i))
-        temp1 = dq_y - 0.5d0*(delx*point%ddq(1, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2d = pointd%dq(2, :, nbh) - 0.5d0*(delx*pointd%ddq(1, :, nbh&
-&         )+dely*pointd%ddq(2, :, nbh))
-        temp2 = point%dq(2, :, nbh) - 0.5d0*(delx*point%ddq(1, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_dely_del_qyd = sum_dely_del_qyd + weights*dely*(temp2d-&
-&         temp1d)
-        sum_dely_del_qy = sum_dely_del_qy + weights*dely*(temp2-temp1)
-        temp1d = dq_xd - 0.5d0*(delx*pointd%ddq(3, :, i)+dely*pointd%ddq&
-&         (2, :, i))
-        temp1 = dq_x - 0.5d0*(delx*point%ddq(3, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2d = pointd%dq(1, :, nbh) - 0.5d0*(delx*pointd%ddq(3, :, nbh&
-&         )+dely*pointd%ddq(2, :, nbh))
-        temp2 = point%dq(1, :, nbh) - 0.5d0*(delx*point%ddq(3, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_dely_del_qxd = sum_dely_del_qxd + weights*dely*(temp2d-&
-&         temp1d)
-        sum_dely_del_qx = sum_dely_del_qx + weights*dely*(temp2-temp1)
-      END DO
-      det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-      one_by_det = 1.0d0/det
-      pointd%temp(1, :, i) = one_by_det*(sum_dely_sqr*sum_delx_del_qxd-&
-&       sum_delx_dely*sum_dely_del_qxd)
-      point%temp(1, :, i) = (sum_delx_del_qx*sum_dely_sqr-&
-&       sum_dely_del_qx*sum_delx_dely)*one_by_det
-      pointd%temp(2, :, i) = one_by_det*(sum_dely_sqr*sum_delx_del_qyd-&
-&       sum_delx_dely*sum_dely_del_qyd)
-      point%temp(2, :, i) = (sum_delx_del_qy*sum_dely_sqr-&
-&       sum_dely_del_qy*sum_delx_dely)*one_by_det
-      pointd%temp(3, :, i) = one_by_det*(sum_delx_sqr*sum_dely_del_qyd-&
-&       sum_delx_dely*sum_delx_del_qyd)
-      point%temp(3, :, i) = (sum_dely_del_qy*sum_delx_sqr-&
-&       sum_delx_del_qy*sum_delx_dely)*one_by_det
-    END DO
-  END SUBROUTINE EVAL_DDQ_INNER_LOOP_D
-
-  SUBROUTINE EVAL_DDQ_INNER_LOOP()
-    IMPLICIT NONE
-! local variables
-    INTEGER :: i
-    INTEGER :: k, r, nbh
-    REAL*8 :: x_i, y_i, x_k, y_k
-    REAL*8 :: delx, dely, dist, weights
-    REAL*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-    REAL*8 :: det, temp
-    REAL*8 :: one_by_det
-    REAL*8 :: sum_delx_del_qx(4), sum_dely_del_qy(4), sum_delx_del_qy(4)&
-&   , sum_dely_del_qx(4)
-    REAL*8 :: dq_x(4), dq_y(4)
-    REAL*8 :: temp1(4), temp2(4)
-    INTRINSIC DSQRT
-    REAL*8 :: arg1
-    DO i=1,local_points
-      x_i = point%x(i)
-      y_i = point%y(i)
-      dq_x = point%dq(1, :, i)
-      dq_y = point%dq(2, :, i)
-      sum_delx_sqr = 0.d0
-      sum_dely_sqr = 0.d0
-      sum_delx_dely = 0.d0
-      sum_delx_del_qx = 0.d0
-      sum_delx_del_qy = 0.d0
-      sum_dely_del_qx = 0.d0
-      sum_dely_del_qy = 0.d0
-      temp1 = 0.d0
-      temp2 = 0.d0
-      DO k=1,point%nbhs(i)
-        nbh = point%conn(i, k)
-        x_k = point%x(nbh)
-        y_k = point%y(nbh)
-        delx = x_k - x_i
-        dely = y_k - y_i
-        arg1 = delx*delx + dely*dely
-        dist = DSQRT(arg1)
-        weights = dist**power
-        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
-        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
-        sum_delx_dely = sum_delx_dely + delx*dely*weights
-        temp1 = dq_x - 0.5d0*(delx*point%ddq(1, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2 = point%dq(1, :, nbh) - 0.5d0*(delx*point%ddq(1, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_delx_del_qx = sum_delx_del_qx + weights*delx*(temp2-temp1)
-        temp1 = dq_y - 0.5d0*(delx*point%ddq(3, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2 = point%dq(2, :, nbh) - 0.5d0*(delx*point%ddq(3, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_delx_del_qy = sum_delx_del_qy + weights*delx*(temp2-temp1)
-        temp1 = dq_y - 0.5d0*(delx*point%ddq(1, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2 = point%dq(2, :, nbh) - 0.5d0*(delx*point%ddq(1, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_dely_del_qy = sum_dely_del_qy + weights*dely*(temp2-temp1)
-        temp1 = dq_x - 0.5d0*(delx*point%ddq(3, :, i)+dely*point%ddq(2, &
-&         :, i))
-        temp2 = point%dq(1, :, nbh) - 0.5d0*(delx*point%ddq(3, :, nbh)+&
-&         dely*point%ddq(2, :, nbh))
-        sum_dely_del_qx = sum_dely_del_qx + weights*dely*(temp2-temp1)
-      END DO
-      det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-      one_by_det = 1.0d0/det
-      point%temp(1, :, i) = (sum_delx_del_qx*sum_dely_sqr-&
-&       sum_dely_del_qx*sum_delx_dely)*one_by_det
-      point%temp(2, :, i) = (sum_delx_del_qy*sum_dely_sqr-&
-&       sum_dely_del_qy*sum_delx_dely)*one_by_det
-      point%temp(3, :, i) = (sum_dely_del_qy*sum_delx_sqr-&
-&       sum_delx_del_qy*sum_delx_dely)*one_by_det
-    END DO
-  END SUBROUTINE EVAL_DDQ_INNER_LOOP
-
-!  Differentiation of eval_update_innerloop_2 in forward (tangent) mode (with options fixinterface):
+ 
 !   variations   of useful results: *(point.dq)
 !   with respect to varying inputs: *(point.dq) *(point.temp)
 !   Plus diff mem management of: point.dq:in point.temp:in
-  SUBROUTINE EVAL_UPDATE_INNERLOOP_2_D()
+  SUBROUTINE EVAL_UPDATE_INNERLOOP_D()
     IMPLICIT NONE
     INTEGER :: i
     DO i=1,local_points
@@ -791,9 +639,9 @@ CONTAINS
       pointd%dq(2, 4, i) = pointd%temp(2, 4, i)
       point%dq(2, 4, i) = point%temp(2, 4, i)
     END DO
-  END SUBROUTINE EVAL_UPDATE_INNERLOOP_2_D
+END SUBROUTINE EVAL_UPDATE_INNERLOOP_D
 
-  SUBROUTINE EVAL_UPDATE_INNERLOOP_2()
+SUBROUTINE EVAL_UPDATE_INNERLOOP()
     IMPLICIT NONE
     INTEGER :: i
     DO i=1,local_points
@@ -806,34 +654,7 @@ CONTAINS
       point%dq(2, 3, i) = point%temp(2, 3, i)
       point%dq(2, 4, i) = point%temp(2, 4, i)
     END DO
-  END SUBROUTINE EVAL_UPDATE_INNERLOOP_2
-
-!  Differentiation of eval_update_innerloop_3 in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: *(point.ddq)
-!   with respect to varying inputs: *(point.ddq) *(point.temp)
-!   Plus diff mem management of: point.ddq:in point.temp:in
-  SUBROUTINE EVAL_UPDATE_INNERLOOP_3_D()
-    IMPLICIT NONE
-    INTEGER :: i
-    DO i=1,local_points
-      pointd%ddq(1, :, i) = pointd%temp(1, :, i)
-      point%ddq(1, :, i) = point%temp(1, :, i)
-      pointd%ddq(2, :, i) = pointd%temp(2, :, i)
-      point%ddq(2, :, i) = point%temp(2, :, i)
-      pointd%ddq(3, :, i) = pointd%temp(3, :, i)
-      point%ddq(3, :, i) = point%temp(3, :, i)
-    END DO
-  END SUBROUTINE EVAL_UPDATE_INNERLOOP_3_D
-
-  SUBROUTINE EVAL_UPDATE_INNERLOOP_3()
-    IMPLICIT NONE
-    INTEGER :: i
-    DO i=1,local_points
-      point%ddq(1, :, i) = point%temp(1, :, i)
-      point%ddq(2, :, i) = point%temp(2, :, i)
-      point%ddq(3, :, i) = point%temp(3, :, i)
-    END DO
-  END SUBROUTINE EVAL_UPDATE_INNERLOOP_3
+END SUBROUTINE EVAL_UPDATE_INNERLOOP
 
 !  Differentiation of qtilde_to_primitive in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: u1 u2 pr rho
@@ -898,4 +719,3 @@ CONTAINS
   END SUBROUTINE QTILDE_TO_PRIMITIVE
 
 END MODULE Q_VARIABLES_MOD_DIFF
-

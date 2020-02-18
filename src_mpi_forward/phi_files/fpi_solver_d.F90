@@ -49,18 +49,17 @@ CONTAINS
       CALL EVAL_Q_DOUBLE_DERIVATIVES_D()
       CALL UPDATE_BEGIN_DDQ_GHOST()
       CALL UPDATE_END_DDQ_GHOST()
-      IF (inner_iterations .NE. 0) THEN
         DO i=1,inner_iterations
-          CALL EVAL_DQ_INNER_LOOP_D()
-          CALL EVAL_UPDATE_INNERLOOP_2_D()
-          CALL UPDATE_BEGIN_DQ_GHOST()
-          CALL UPDATE_END_DQ_GHOST()
-          CALL EVAL_DDQ_INNER_LOOP_D()
-          CALL EVAL_UPDATE_INNERLOOP_3_D()
-          CALL UPDATE_BEGIN_DDQ_GHOST()
-          CALL UPDATE_END_DDQ_GHOST()
+            CALL EVAL_Q_INNER_LOOP_D()
+            CALL EVAL_UPDATE_INNERLOOP_D()
+            CALL UPDATE_BEGIN_DQ_GHOST()
+            CALL UPDATE_END_DQ_GHOST()
+            CALL UPDATE_BEGIN_DDQ_GHOST()
+            CALL UPDATE_END_DDQ_GHOST()
+            CALL EVAL_Q_DOUBLE_DERIVATIVES_D()
+            CALL UPDATE_BEGIN_DDQ_GHOST()
+            CALL UPDATE_END_DDQ_GHOST()
         END DO
-      END IF
       CALL CAL_FLUX_RESIDUAL_D()
       CALL STATE_UPDATE_D(rk)
 ! start updating primitive values
@@ -117,18 +116,17 @@ CONTAINS
       CALL EVAL_Q_DOUBLE_DERIVATIVES()
       CALL UPDATE_BEGIN_DDQ_GHOST()
       CALL UPDATE_END_DDQ_GHOST()
-      IF (inner_iterations .NE. 0) THEN
-        DO i=1,inner_iterations
-          CALL EVAL_DQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_2()
-          CALL UPDATE_BEGIN_DQ_GHOST()
-          CALL UPDATE_END_DQ_GHOST()
-          CALL EVAL_DDQ_INNER_LOOP()
-          CALL EVAL_UPDATE_INNERLOOP_3()
-          CALL UPDATE_BEGIN_DDQ_GHOST()
-          CALL UPDATE_END_DDQ_GHOST()
-        END DO
-      END IF
+      DO i=1,inner_iterations
+        CALL EVAL_Q_INNER_LOOP()
+        CALL EVAL_UPDATE_INNERLOOP()
+        CALL UPDATE_BEGIN_DQ_GHOST()
+        CALL UPDATE_END_DQ_GHOST()
+        CALL UPDATE_BEGIN_DDQ_GHOST()
+        CALL UPDATE_END_DDQ_GHOST()
+        CALL EVAL_Q_DOUBLE_DERIVATIVES()
+        CALL UPDATE_BEGIN_DDQ_GHOST()
+        CALL UPDATE_END_DDQ_GHOST()
+      END DO
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)
 ! start updating primitive values

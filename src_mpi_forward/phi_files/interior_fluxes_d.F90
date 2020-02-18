@@ -86,32 +86,32 @@ CONTAINS
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_id = pointd%q(:, i) - 0.5d0*(phi1_id*(delx*point%dq(1, :, i&
 &       )+dely*point%dq(2, :, i))+phi1_i*(delx*pointd%dq(1, :, i)+dely*&
-&       pointd%dq(2, :, i))) - (phi2_id*(delx*delx*point%ddq(1, :, i)+&
+&       pointd%dq(2, :, i))) + (phi2_id*(delx*delx*point%ddq(1, :, i)+&
 &       2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, i))+&
 &       phi2_i*(delx**2*pointd%ddq(1, :, i)+2.0*delx*dely*pointd%ddq(2, &
-&       :, i)+dely**2*pointd%ddq(3, :, i)))/6d0
+&       :, i)+dely**2*pointd%ddq(3, :, i)))/12d0
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_kd = pointd%q(:, k) - 0.5d0*(phi1_kd*(delx*point%dq(1, :, k&
 &       )+dely*point%dq(2, :, k))+phi1_k*(delx*pointd%dq(1, :, k)+dely*&
-&       pointd%dq(2, :, k))) - (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
+&       pointd%dq(2, :, k))) + (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
 &       2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, k))+&
 &       phi2_k*(delx**2*pointd%ddq(1, :, k)+2.0*delx*dely*pointd%ddq(2, &
-&       :, k)+dely**2*pointd%ddq(3, :, k)))/6d0
+&       :, k)+dely**2*pointd%ddq(3, :, k)))/12d0
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_i, qtilde_id, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GXP_D0(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GXP_D(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_k, qtilde_kd, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GXP_D0(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GXP_D(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       sum_delx_delfd = sum_delx_delfd + dels_weights*(g_kd-g_id)
       sum_delx_delf = sum_delx_delf + (g_k-g_i)*dels_weights
       sum_dely_delfd = sum_dely_delfd + deln_weights*(g_kd-g_id)
@@ -178,13 +178,13 @@ CONTAINS
       sum_dely_sqr = sum_dely_sqr + deln*deln_weights
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GXP(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -271,32 +271,32 @@ CONTAINS
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_id = pointd%q(:, i) - 0.5d0*(phi1_id*(delx*point%dq(1, :, i&
 &       )+dely*point%dq(2, :, i))+phi1_i*(delx*pointd%dq(1, :, i)+dely*&
-&       pointd%dq(2, :, i))) - (phi2_id*(delx*delx*point%ddq(1, :, i)+&
+&       pointd%dq(2, :, i))) + (phi2_id*(delx*delx*point%ddq(1, :, i)+&
 &       2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, i))+&
 &       phi2_i*(delx**2*pointd%ddq(1, :, i)+2.0*delx*dely*pointd%ddq(2, &
-&       :, i)+dely**2*pointd%ddq(3, :, i)))/6d0
+&       :, i)+dely**2*pointd%ddq(3, :, i)))/12d0
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_kd = pointd%q(:, k) - 0.5d0*(phi1_kd*(delx*point%dq(1, :, k&
 &       )+dely*point%dq(2, :, k))+phi1_k*(delx*pointd%dq(1, :, k)+dely*&
-&       pointd%dq(2, :, k))) - (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
+&       pointd%dq(2, :, k))) + (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
 &       2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, k))+&
 &       phi2_k*(delx**2*pointd%ddq(1, :, k)+2.0*delx*dely*pointd%ddq(2, &
-&       :, k)+dely**2*pointd%ddq(3, :, k)))/6d0
+&       :, k)+dely**2*pointd%ddq(3, :, k)))/12d0
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_i, qtilde_id, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GXN_D0(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GXN_D(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_k, qtilde_kd, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GXN_D0(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GXN_D(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       sum_delx_delfd = sum_delx_delfd + dels_weights*(g_kd-g_id)
       sum_delx_delf = sum_delx_delf + (g_k-g_i)*dels_weights
       sum_dely_delfd = sum_dely_delfd + deln_weights*(g_kd-g_id)
@@ -362,13 +362,13 @@ CONTAINS
       sum_dely_sqr = sum_dely_sqr + deln*deln_weights
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GXN(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -457,32 +457,32 @@ CONTAINS
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_id = pointd%q(:, i) - 0.5d0*(phi1_id*(delx*point%dq(1, :, i&
 &       )+dely*point%dq(2, :, i))+phi1_i*(delx*pointd%dq(1, :, i)+dely*&
-&       pointd%dq(2, :, i))) - (phi2_id*(delx*delx*point%ddq(1, :, i)+&
+&       pointd%dq(2, :, i))) + (phi2_id*(delx*delx*point%ddq(1, :, i)+&
 &       2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, i))+&
 &       phi2_i*(delx**2*pointd%ddq(1, :, i)+2.0*delx*dely*pointd%ddq(2, &
-&       :, i)+dely**2*pointd%ddq(3, :, i)))/6d0
+&       :, i)+dely**2*pointd%ddq(3, :, i)))/12d0
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_kd = pointd%q(:, k) - 0.5d0*(phi1_kd*(delx*point%dq(1, :, k&
 &       )+dely*point%dq(2, :, k))+phi1_k*(delx*pointd%dq(1, :, k)+dely*&
-&       pointd%dq(2, :, k))) - (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
+&       pointd%dq(2, :, k))) + (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
 &       2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, k))+&
 &       phi2_k*(delx**2*pointd%ddq(1, :, k)+2.0*delx*dely*pointd%ddq(2, &
-&       :, k)+dely**2*pointd%ddq(3, :, k)))/6d0
+&       :, k)+dely**2*pointd%ddq(3, :, k)))/12d0
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_i, qtilde_id, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GYP_D0(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GYP_D(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_k, qtilde_kd, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GYP_D0(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GYP_D(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       sum_delx_delfd = sum_delx_delfd + dels_weights*(g_kd-g_id)
       sum_delx_delf = sum_delx_delf + (g_k-g_i)*dels_weights
       sum_dely_delfd = sum_dely_delfd + deln_weights*(g_kd-g_id)
@@ -550,13 +550,13 @@ CONTAINS
       sum_dely_sqr = sum_dely_sqr + deln*deln_weights
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GYP(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -643,32 +643,32 @@ CONTAINS
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_id = pointd%q(:, i) - 0.5d0*(phi1_id*(delx*point%dq(1, :, i&
 &       )+dely*point%dq(2, :, i))+phi1_i*(delx*pointd%dq(1, :, i)+dely*&
-&       pointd%dq(2, :, i))) - (phi2_id*(delx*delx*point%ddq(1, :, i)+&
+&       pointd%dq(2, :, i))) + (phi2_id*(delx*delx*point%ddq(1, :, i)+&
 &       2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, i))+&
 &       phi2_i*(delx**2*pointd%ddq(1, :, i)+2.0*delx*dely*pointd%ddq(2, &
-&       :, i)+dely**2*pointd%ddq(3, :, i)))/6d0
+&       :, i)+dely**2*pointd%ddq(3, :, i)))/12d0
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_kd = pointd%q(:, k) - 0.5d0*(phi1_kd*(delx*point%dq(1, :, k&
 &       )+dely*point%dq(2, :, k))+phi1_k*(delx*pointd%dq(1, :, k)+dely*&
-&       pointd%dq(2, :, k))) - (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
+&       pointd%dq(2, :, k))) + (phi2_kd*(delx*delx*point%ddq(1, :, k)+&
 &       2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, k))+&
 &       phi2_k*(delx**2*pointd%ddq(1, :, k)+2.0*delx*dely*pointd%ddq(2, &
-&       :, k)+dely**2*pointd%ddq(3, :, k)))/6d0
+&       :, k)+dely**2*pointd%ddq(3, :, k)))/12d0
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_i, qtilde_id, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GYN_D0(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GYN_D(g_i, g_id, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       CALL QTILDE_TO_PRIMITIVE_D(qtilde_k, qtilde_kd, u1, u1d, u2, u2d, &
 &                          rho, rhod, pr, prd)
-      CALL FLUX_GYN_D0(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, &
-&                pr, prd)
+      CALL FLUX_GYN_D(g_k, g_kd, nx, ny, u1, u1d, u2, u2d, rho, rhod, pr&
+&               , prd)
       sum_delx_delfd = sum_delx_delfd + dels_weights*(g_kd-g_id)
       sum_delx_delf = sum_delx_delf + (g_k-g_i)*dels_weights
       sum_dely_delfd = sum_dely_delfd + deln_weights*(g_kd-g_id)
@@ -734,13 +734,13 @@ CONTAINS
       sum_dely_sqr = sum_dely_sqr + deln*deln_weights
       sum_delx_dely = sum_delx_dely + dels*deln_weights
       qtilde_i = point%q(:, i) - 0.5d0*phi1_i*(delx*point%dq(1, :, i)+&
-&       dely*point%dq(2, :, i)) - 1/6d0*phi2_i*(delx*delx*point%ddq(1, :&
-&       , i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :, &
-&       i))
+&       dely*point%dq(2, :, i)) + 1/12d0*phi2_i*(delx*delx*point%ddq(1, &
+&       :, i)+2.0*delx*dely*point%ddq(2, :, i)+dely*dely*point%ddq(3, :&
+&       , i))
       qtilde_k = point%q(:, k) - 0.5d0*phi1_k*(delx*point%dq(1, :, k)+&
-&       dely*point%dq(2, :, k)) - 1/6d0*phi2_k*(delx*delx*point%ddq(1, :&
-&       , k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :, &
-&       k))
+&       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
+&       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
+&       , k))
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GYN(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -755,4 +755,3 @@ CONTAINS
   END SUBROUTINE INTERIOR_DGY_NEG
 
 END MODULE INTERIOR_FLUXES_MOD_DIFF
-
