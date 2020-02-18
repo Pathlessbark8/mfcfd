@@ -1,8 +1,0 @@
-#pgi compiler
-FC = pgfortran
-CC = gcc
-
-#when using cuda-memcheck, use this flag: -ta=nvidia,lineinfo
-
-FFLAGS = -O3 -Mcuda=nordc
-#,lineinfo -Mcuda=keepptx,ptxinfo
