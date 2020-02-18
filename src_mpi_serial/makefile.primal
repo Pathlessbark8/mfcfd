@@ -2,7 +2,9 @@
 
 include makefile.in
 
-
+ifndef VERBOSE
+.SILENT:
+endif
 
 
 # defining the variables

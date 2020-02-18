@@ -114,7 +114,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       Objective function
   REAL*8 :: cl_flag, cd_flag, cm_flag, cl_cd_flag, ent_flag, ens_flag
   INTEGER :: obj_flag
-  INTEGER, SAVE :: inner_iterations=0
+  INTEGER :: inner_iterations
 !       No of shapes
   INTEGER :: shapes
   INTEGER :: ad_mode

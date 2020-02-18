@@ -67,7 +67,7 @@ contains
                         write(*,*)
                 end if
 
-                point%phi1(80,1) = point%phi1(80,1) - 1e-3
+                point%phi1(80,1) = point%phi1(80,1) -  1e-5
 
                 t = 0.0d0
                 if(restart == 0)itr = 0
