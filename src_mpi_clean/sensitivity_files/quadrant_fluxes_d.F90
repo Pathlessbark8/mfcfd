@@ -29,12 +29,7 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    DOUBLE PRECISION :: DERF
-    DOUBLE PRECISION :: DERF_D
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
-    EXTERNAL DERF_D
+
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -87,10 +82,13 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-    result1d = DERF_D(s1, s1d, result1)
+      result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
+      result1 = derf(s1)
     a1negd = -(0.5d0*result1d)
     a1neg = 0.5d0*(1.0d0-result1)
-    result1d = DERF_D(s2, s2d, result1)
+      ! result1d = DERF_D(s2, s2d, result1)
+      result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
+      result1 = derf(s2)
     a2negd = -(0.5d0*result1d)
     a2neg = 0.5d0*(1.0d0-result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
@@ -140,10 +138,7 @@ CONTAINS
     DOUBLE PRECISION :: a1neg, a2neg
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    DOUBLE PRECISION :: DERF
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
+
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -204,12 +199,7 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    DOUBLE PRECISION :: DERF
-    DOUBLE PRECISION :: DERF_D
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
-    EXTERNAL DERF_D
+
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -262,10 +252,13 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-    result1d = DERF_D(s1, s1d, result1)
+      result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
+      result1 = derf(s1)
     a1posd = 0.5d0*result1d
     a1pos = 0.5d0*(1.d0+result1)
-    result1d = DERF_D(s2, s2d, result1)
+      ! result1d = DERF_D(s2, s2d, result1)
+      result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
+      result1 = derf(s2)
     a2negd = -(0.5d0*result1d)
     a2neg = 0.5d0*(1.d0-result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
@@ -315,10 +308,7 @@ CONTAINS
     DOUBLE PRECISION :: a1pos, a2neg
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    DOUBLE PRECISION :: DERF
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
+
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -379,12 +369,7 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    DOUBLE PRECISION :: DERF
-    DOUBLE PRECISION :: DERF_D
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
-    EXTERNAL DERF_D
+
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -437,10 +422,13 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-    result1d = DERF_D(s1, s1d, result1)
+      result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
+      result1 = derf(s1)
     a1posd = 0.5d0*result1d
     a1pos = 0.5d0*(1.0d0+result1)
-    result1d = DERF_D(s2, s2d, result1)
+      ! result1d = DERF_D(s2, s2d, result1)
+      result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
+      result1 = derf(s2)
     a2posd = 0.5d0*result1d
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
@@ -490,10 +478,7 @@ CONTAINS
     DOUBLE PRECISION :: a1pos, a2pos
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    DOUBLE PRECISION :: DERF
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
+
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -554,12 +539,7 @@ CONTAINS
     DOUBLE PRECISION :: temp1d, temp2d, temp3d, temp4d
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhod, u_sqrd
-    DOUBLE PRECISION :: DERF
-    DOUBLE PRECISION :: DERF_D
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
-    EXTERNAL DERF_D
+
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -612,10 +592,13 @@ CONTAINS
     b2d = (-(0.5d0*(s2d*s2+s2*s2d)*DEXP(-(s2*s2))*result1)-0.5d0*DEXP(-(&
 &     s2*s2))*result1d)/result1**2
     b2 = 0.5d0*DEXP(-(s2*s2))/result1
-    result1d = DERF_D(s1, s1d, result1)
+      result1d = dexp(-s1**2)*(2.d0/sqrt(pi))*s1d
+      result1 = derf(s1)
     a1negd = -(0.5d0*result1d)
     a1neg = 0.5d0*(1.0d0-result1)
-    result1d = DERF_D(s2, s2d, result1)
+      ! result1d = DERF_D(s2, s2d, result1)
+      result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
+      result1 = derf(s2)
     a2posd = 0.5d0*result1d
     a2pos = 0.5d0*(1.0d0+result1)
     pr_by_rhod = (prd*rho-pr*rhod)/rho**2
@@ -665,10 +648,7 @@ CONTAINS
     DOUBLE PRECISION :: a1neg, a2pos
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-    DOUBLE PRECISION :: DERF
-    INTRINSIC DSQRT
-    INTRINSIC DEXP
-    EXTERNAL DERF
+
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     tx = ny
@@ -710,4 +690,3 @@ CONTAINS
   END SUBROUTINE FLUX_QUAD_GXIV
 
 END MODULE QUADRANT_FLUXES_MOD_DIFF
-

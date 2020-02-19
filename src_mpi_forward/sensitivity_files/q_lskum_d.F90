@@ -89,6 +89,16 @@ CONTAINS
       END IF
     END DO
     CLOSE(unit=301) 
+    if(rank==0) then
+        write(*,*) "SG", total_loss_stagpressure 
+        write(*,*) "Cl", cl
+        write(*,*) "Cd", cd
+        write(*,*) "Cm", cm
+        write(*,*) "Clcd", clcd
+        write(*,*) "Entropy", total_entropy
+        write(*,*) "Enstrophy", total_enstrophy
+        write(*,*) "Vector function is ", vector_cost_func
+    end if
   END SUBROUTINE Q_LSKUM_D
 
 END MODULE Q_LSKUM_MOD_DIFF

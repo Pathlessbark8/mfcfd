@@ -36,5 +36,6 @@
 36 compute_enstrophy_mod: (DD15) Module petsc_data_structure_mod is not defined
 37 stagnation_values_mod: (DD15) Module petsc_data_structure_mod is not defined
 38 data_structure_mod: (DD28) Save statement may save extra variables, please use "save::varname" 
-39 compute_cl_cd_cm_d: Tool: (TypeSpec tree regeneration) null wrapped type
-40 compute_cl_cd_cm: Tool: (TypeSpec tree regeneration) null wrapped type
+39 objective_function_j: (DF03) variable total_p0 is used before initialized
+40 compute_cl_cd_cm_d: Tool: (TypeSpec tree regeneration) null wrapped type
+41 compute_cl_cd_cm: Tool: (TypeSpec tree regeneration) null wrapped type

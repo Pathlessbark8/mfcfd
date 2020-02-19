@@ -65,7 +65,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !iterations
   INTEGER :: it, itr
 !Flag for time stepping
-  INTEGER :: rks, rank
+  INTEGER :: rks
   REAL*8 :: euler
   REAL*8 :: total_loss_stagpressure
   REAL*8 :: total_loss_stagpressured
@@ -133,7 +133,6 @@ CONTAINS
     ALLOCATE(point%u(4, max_points))
     ALLOCATE(point%dq(2, 4, max_points))
     ALLOCATE(point%qm(2, 4, max_points))
-! allocate(point%ddq(3,4,max_points))
     ALLOCATE(point%temp(3, 4, max_points))
     ALLOCATE(point%entropy(max_points))
     ALLOCATE(point%vorticity(max_points))
@@ -155,8 +154,30 @@ CONTAINS
     ALLOCATE(vector_cost_func(shapes))
   END SUBROUTINE ALLOCATE_SOLN
 
+  SUBROUTINE ALLOCATE_SOLN_D()
+    IMPLICIT NONE
+    ALLOCATE(pointd%x(max_points))
+    ALLOCATE(pointd%y(max_points))
+    ALLOCATE(pointd%nx(max_points))
+    ALLOCATE(pointd%ny(max_points))
+    ALLOCATE(pointd%prim(4,max_points))
+    ALLOCATE(pointd%prim_old(4,max_points))
+    ALLOCATE(pointd%flux_res(4,max_points))
+    ALLOCATE(pointd%q(4,max_points))
+    ALLOCATE(pointd%dq(2,4,max_points))
+    ALLOCATE(pointd%temp(3, 4, max_points))
+    ALLOCATE(pointd%qm(2,4,max_points))
+    ALLOCATE(pointd%delta(max_points))
+    ALLOCATE(Cld(shapes))
+    ALLOCATE(ClCdd(shapes))
+    ALLOCATE(Cdd(shapes))
+    ALLOCATE(Cmd(shapes))
+    ALLOCATE(pointd%vorticity_sqr(max_points))
+  END SUBROUTINE
+
   SUBROUTINE DEALLOCATE_SOLN()
     IMPLICIT NONE
+
     DEALLOCATE(point%prim)
     DEALLOCATE(point%prim_old)
     DEALLOCATE(point%flux_res)
@@ -165,7 +186,6 @@ CONTAINS
     DEALLOCATE(point%u)
     DEALLOCATE(point%dq)
     DEALLOCATE(point%qm)
-! deallocate(point%ddq)
     DEALLOCATE(point%temp)
     DEALLOCATE(point%vorticity)
     DEALLOCATE(point%vorticity_sqr)
@@ -187,5 +207,25 @@ CONTAINS
     DEALLOCATE(vector_cost_func)
   END SUBROUTINE DEALLOCATE_SOLN
 
-END MODULE DATA_STRUCTURE_MOD_DIFF
+  SUBROUTINE DEALLOCATE_SOLN_D()
+    IMPLICIT NONE
+    DEALLOCATE(pointd%x)
+    DEALLOCATE(pointd%y)
+    DEALLOCATE(pointd%nx)
+    DEALLOCATE(pointd%ny)
+    DEALLOCATE(pointd%prim)
+    DEALLOCATE(pointd%prim_old)
+    DEALLOCATE(pointd%flux_res)
+    DEALLOCATE(pointd%q)
+    DEALLOCATE(pointd%dq)
+    DEALLOCATE(pointd%qm)
+    DEALLOCATE(pointd%temp)
+    DEALLOCATE(pointd%delta)
+    DEALLOCATE(Cld)
+    DEALLOCATE(ClCdd)
+    DEALLOCATE(Cdd)
+    DEALLOCATE(Cmd)
+    DEALLOCATE(pointd%vorticity_sqr)
+  END SUBROUTINE
 
+END MODULE DATA_STRUCTURE_MOD_DIFF

@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_ENTROPY_MOD_DIFF
-! #include <petsc/finclude/petscsys.h>
+#include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -14,20 +14,16 @@ CONTAINS
 !   Plus diff mem management of: point.prim:in
   SUBROUTINE COMPUTE_ENTROPY_D()
     IMPLICIT NONE
-! call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
-! & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-! if(rank == 0) then
-!     !write(*,*)"total entropy :", gtotal_entropy
-! end if
+
     INTEGER :: k
     REAL*8 :: temp1, temp2
     REAL*8 :: temp1d
-    REAL*8 :: gtotal_entropy
+    REAL*8 :: gtotal_entropy, gtotal_entropyd
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
     DOUBLE PRECISION :: dabs0d
-! PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     total_entropyd = 0.0_8
@@ -61,6 +57,16 @@ CONTAINS
       total_entropyd = total_entropyd + dabs0d
       total_entropy = total_entropy + dabs0
     END DO
+
+    call MPI_Reduce(total_entropy, gtotal_entropy , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+
+    call MPI_Reduce(total_entropyd, gtotal_entropyd , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    if(rank == 0) then
+      total_entropy = gtotal_entropy
+      total_entropyd = gtotal_entropyd
+    end if
   END SUBROUTINE COMPUTE_ENTROPY_D
 
   SUBROUTINE COMPUTE_ENTROPY()
@@ -76,7 +82,7 @@ CONTAINS
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
-! PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     DO k=1,local_points
@@ -98,4 +104,3 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENTROPY
 
 END MODULE COMPUTE_ENTROPY_MOD_DIFF
-

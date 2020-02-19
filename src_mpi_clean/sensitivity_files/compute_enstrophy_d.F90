@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_ENSTROPHY_MOD_DIFF
-! #include <petsc/finclude/petscsys.h>
+#include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -16,11 +16,7 @@ CONTAINS
 !                point.vorticity_sqr:in
   SUBROUTINE COMPUTE_ENSTROPHY_D()
     IMPLICIT NONE
-! call MPI_Allreduce(total_enstrophy, gtotal_enstrophy , 1, &
-! & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-! if(rank == 0) then
-!write(*,*)"total enstrophy :", gtotal_enstrophy
-! end if
+
     INTEGER :: i, k, r, nbh
     REAL*8 :: x_i, y_i, x_k, y_k
     REAL*8 :: x_id, y_id, x_kd, y_kd
@@ -38,11 +34,11 @@ CONTAINS
     REAL*8 :: one_by_detd
     REAL*8 :: du1_dy, du2_dx, temp
     REAL*8 :: du1_dyd, du2_dxd, tempd
-    REAL*8 :: gtotal_enstrophy
+    REAL*8 :: gtotal_enstrophy, gtotal_enstrophyd
     INTRINSIC DSQRT
     REAL*8 :: arg1
     REAL*8 :: arg1d
-! PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     total_enstrophy = 0.d0
     total_enstrophyd = 0.0_8
     DO i=1,local_points
@@ -82,8 +78,7 @@ CONTAINS
           distd = arg1d/(2.D0*DSQRT(arg1))
         END IF
         dist = DSQRT(arg1)
-        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power&
-&           ))) THEN
+        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))) THEN
           weightsd = power*dist**(power-1)*distd
         ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
           weightsd = distd
@@ -146,6 +141,19 @@ CONTAINS
       total_enstrophyd = total_enstrophyd + pointd%vorticity_sqr(i)
       total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
     END DO
+
+!     gtotal_enstrophy = 0.0_8
+!     gtotal_enstrophyd = 0.0_8
+
+    call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    call MPI_Reduce(total_enstrophyd, gtotal_enstrophyd , 1, &
+    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+
+    if(rank == 0) then
+        total_enstrophy = gtotal_enstrophy
+        total_enstrophyd = gtotal_enstrophyd
+    end if
   END SUBROUTINE COMPUTE_ENSTROPHY_D
 
   SUBROUTINE COMPUTE_ENSTROPHY()
@@ -167,7 +175,7 @@ CONTAINS
     REAL*8 :: gtotal_enstrophy
     INTRINSIC DSQRT
     REAL*8 :: arg1
-! PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     total_enstrophy = 0.d0
     DO i=1,local_points
       x_i = point%x(i)
@@ -214,4 +222,3 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENSTROPHY
 
 END MODULE COMPUTE_ENSTROPHY_MOD_DIFF
-

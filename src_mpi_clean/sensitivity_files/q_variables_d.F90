@@ -136,8 +136,7 @@ CONTAINS
           distd = arg1d/(2.D0*DSQRT(arg1))
         END IF
         dist = DSQRT(arg1)
-        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power&
-&           ))) THEN
+        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))) THEN
           weightsd = power*dist**(power-1)*distd
         ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
           weightsd = distd
@@ -328,8 +327,7 @@ CONTAINS
           distd = arg1d/(2.D0*DSQRT(arg1))
         END IF
         dist = DSQRT(arg1)
-        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power&
-&           ))) THEN
+        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))) THEN
           weightsd = power*dist**(power-1)*distd
         ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
           weightsd = distd
@@ -663,4 +661,3 @@ CONTAINS
   END SUBROUTINE QTILDE_TO_PRIMITIVE
 
 END MODULE Q_VARIABLES_MOD_DIFF
-

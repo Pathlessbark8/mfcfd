@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE FPI_SOLVER_MOD_DIFF
-! #include <petsc/finclude/petscsys.h>
+#include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE FLUX_RESIDUAL_MOD_DIFF
   USE STATE_UPDATE_MOD_DIFF
@@ -33,9 +33,8 @@ CONTAINS
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     INTRINSIC MOD
-    EXTERNAL PRINT_PRIMAL_OUTPUT
     DOUBLE PRECISION :: result1
-! PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       pointd%prim_old(:, i) = pointd%prim(:, i)
       point%prim_old(:, i) = point%prim(:, i)
@@ -46,27 +45,27 @@ CONTAINS
       CALL EVAL_Q_VARIABLES_D()
       CALL EVAL_Q_DERIVATIVES_D()
 !Update the ghost values from the owned process
-! call update_begin_dq_ghost()
-! call update_begin_qm_ghost()
-! call update_end_dq_ghost()
-! call update_end_qm_ghost()
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
       DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP_D()
         CALL EVAL_UPDATE_INNERLOOP_D()
+        call update_begin_dq_ghost()
+        call update_end_dq_ghost()
       END DO
-! call update_begin_dq_ghost()
-! call update_end_dq_ghost()
       CALL CAL_FLUX_RESIDUAL_D()
       CALL STATE_UPDATE_D(rk)
+      call update_begin_prim_ghost()
+      call update_end_prim_ghost()
     END DO
 ! start updating primitive values
-! call update_begin_prim_ghost()
-! call update_end_prim_ghost()
     CALL OBJECTIVE_FUNCTION_D()
-! call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
-!    0, PETSC_COMM_WORLD, ierr)
-! call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
-!   ierr)
+    call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
+      0, PETSC_COMM_WORLD, ierr)
+    call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
+      ierr)
     result1 = DSQRT(gsum_res_sqr)
     res_new = result1/plen
     IF (t .LE. 2 .AND. restart .EQ. 0) THEN
@@ -92,9 +91,8 @@ CONTAINS
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     INTRINSIC MOD
-    EXTERNAL PRINT_PRIMAL_OUTPUT
     DOUBLE PRECISION :: result1
-! PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       point%prim_old(:, i) = point%prim(:, i)
     END DO
@@ -104,10 +102,10 @@ CONTAINS
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
 !Update the ghost values from the owned process
-! call update_begin_dq_ghost()
-! call update_begin_qm_ghost()
-! call update_end_dq_ghost()
-! call update_end_qm_ghost()
+      call update_begin_dq_ghost()
+      call update_begin_qm_ghost()
+      call update_end_dq_ghost()
+      call update_end_qm_ghost()
       DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP()
         CALL EVAL_UPDATE_INNERLOOP()
@@ -145,4 +143,3 @@ CONTAINS
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
-
