@@ -31,14 +31,8 @@ contains
                 end if
 
                 do i=1,max_points
-                        point%phi1(1,i) = 1.0d0
-                        point%phi1(2,i) = 1.0d0
-                        point%phi1(3,i) = 1.0d0
-                        point%phi1(4,i) = 1.0d0
-                        point%phi2(1,i) = 1.0d0
-                        point%phi2(2,i) = 1.0d0
-                        point%phi2(3,i) = 1.0d0
-                        point%phi2(4,i) = 1.0d0
+                        point%phi1(:,i) = 1.0d0
+                        point%phi2(:,i) = 1.0d0
                 enddo
 
                 ! Set U_old to U for first iteration
@@ -56,7 +50,7 @@ contains
                         write(*,*)
                 end if
 
-                point%phi1(78,1) = point%phi1(78,1) + 1e-3
+                point%phi1(1,78) = point%phi1(1,78) - 1e-3
 
                 t = 0.0d0
                 if(restart == 0)itr = 0

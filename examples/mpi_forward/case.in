@@ -2,4 +2,4 @@
 -max_iters 10
 -format_file legacy
 -vl_const 650
--inner_iterations 0
+-inner_iterations 1

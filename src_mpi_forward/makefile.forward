@@ -2,6 +2,10 @@
 
 include makefile.in
 
+ifndef VERBOSE
+.SILENT:
+endif
+
 # defining the variables
 
 objects=meshfree_solver.o parameter.o data_structure_d.o point_preprocessor.o utilities.o initial_conditions.o q_lskum_d.o \
