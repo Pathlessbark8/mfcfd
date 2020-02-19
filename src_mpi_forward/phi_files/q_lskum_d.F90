@@ -66,7 +66,7 @@ CONTAINS
 &       (3, i))
     ! IF (point%original_id(i) .EQ. 80) THEN
         ! WRITE(*, *) '%%%%%%%%%%%%%-<<<<<<<<PhiD Value has been set to 1>>>>>>>>-%%%%%%%%%%%%'
-    pointd%phi1(1, 78) = 1.0d0
+    ! pointd%phi1(1, 78) = 1.0d0
 
     ! END IF
     END DO
