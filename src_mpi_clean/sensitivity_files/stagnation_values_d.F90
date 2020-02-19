@@ -64,7 +64,6 @@ CONTAINS
     REAL*8 :: prim(4)
     REAL*8 :: primd(4)
     REAL*8 :: total_p0
-    REAL*8 :: total_p0d
     INTRINSIC SQRT
     REAL*8 :: pwx1
     REAL*8 :: pwx1d
@@ -119,12 +118,11 @@ CONTAINS
       p0_sumd = p0_sumd - 2*(p0_inf-p0)*p0d
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
-    total_p0d = p0_sumd
-    total_p0 = p0_sum*1.0
+! total_p0 = p0_sum*1.0
 ! call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
 !    PETSC_COMM_WORLD, ierr)
-    total_loss_stagpressured = constant*total_p0d
-    total_loss_stagpressure = total_p0*constant
+    total_loss_stagpressured = constant*p0_sumd
+    total_loss_stagpressure = p0_sum*constant
   END SUBROUTINE OBJECTIVE_FUNCTION_J_D
 
   SUBROUTINE OBJECTIVE_FUNCTION_J()
@@ -160,10 +158,10 @@ CONTAINS
       p0 = prim(4)*pwr1
       p0_sum = p0_sum + (p0_inf-p0)**2
     END DO
-    total_p0 = p0_sum*1.0
+! total_p0 = p0_sum*1.0
 ! call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
 !    PETSC_COMM_WORLD, ierr)
-    total_loss_stagpressure = total_p0*constant
+    total_loss_stagpressure = p0_sum*constant
   END SUBROUTINE OBJECTIVE_FUNCTION_J
 
 END MODULE STAGNATION_VALUES_MOD_DIFF

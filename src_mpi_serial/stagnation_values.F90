@@ -67,10 +67,10 @@ module stagnation_values_mod
         call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
            PETSC_COMM_WORLD, ierr)
 
-        cost_func = total_p0 * constant
+        total_loss_stagpressure = total_p0 * constant
 
         if(rank == 0) then
-        write(*,*) "J: ", cost_func
+        write(*,*) "J: ", total_loss_stagpressure
         endif
     end subroutine
 

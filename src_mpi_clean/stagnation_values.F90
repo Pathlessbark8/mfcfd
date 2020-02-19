@@ -63,11 +63,11 @@ module stagnation_values_mod
         p0 = prim(4)*((1 + ((gamma - 1)/2)*mach_t*mach_t) ** gammaPower)
         p0_sum = p0_sum + (p0_inf - p0) ** 2
         enddo
-        total_p0 = p0_sum*1.0
+        ! total_p0 = p0_sum*1.0
         ! call MPI_Allreduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
         !    PETSC_COMM_WORLD, ierr)
 
-        total_loss_stagpressure = total_p0 * constant
+        total_loss_stagpressure = p0_sum * constant
 
         ! if(rank == 0) then
         ! write(*,*) "J: ", total_loss_stagpressure

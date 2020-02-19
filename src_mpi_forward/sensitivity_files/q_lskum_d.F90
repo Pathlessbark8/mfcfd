@@ -73,7 +73,7 @@ CONTAINS
       pointd%temp = 0.0_8
       pointd%vorticity_sqr = 0.0_8
       pointd%delta = 0.0_8
-      ! pointd%x(78) = 1.0
+      pointd%x(78) = 1.0
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)
       t = t + dtg

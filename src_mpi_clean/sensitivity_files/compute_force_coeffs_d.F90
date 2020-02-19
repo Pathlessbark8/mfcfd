@@ -27,7 +27,6 @@ CONTAINS
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
     REAL*8, DIMENSION(shapes) :: hd, vd, pitch_momd
     REAL*8, DIMENSION(shapes) :: lcl, lcd, lcm, lcl1, lcd1
-    REAL*8, DIMENSION(shapes) :: lcld, lcdd, lcmd
     REAL*8 :: nx, ny
     REAL*8 :: nxd, nyd
     CHARACTER(len=64) :: cp_file
@@ -104,24 +103,21 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
-    lcld = DCOS(theta)*vd - DSIN(theta)*hd
-    lcl = v*DCOS(theta) - h*DSIN(theta)
-    lcdd = DCOS(theta)*hd + DSIN(theta)*vd
-    lcd = h*DCOS(theta) + v*DSIN(theta)
-    lcmd = pitch_momd
-    lcm = pitch_mom
+    cld = DCOS(theta)*vd - DSIN(theta)*hd
+    cl = v*DCOS(theta) - h*DSIN(theta)
+    cdd = DCOS(theta)*hd + DSIN(theta)*vd
+    cd = h*DCOS(theta) + v*DSIN(theta)
+    cmd = pitch_momd
+    cm = pitch_mom
 ! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
-    cld = lcld
-    cl = lcl
-    cdd = lcdd
-    cd = lcd
-    cmd = lcmd
-    cm = lcm
+! Cl = lCl
+! Cd = lCd
+! Cm = lCm
     clcdd = (cld*cd-cl*cdd)/cd**2
     clcd = cl/cd
 ! if(rank == 0) then
@@ -183,18 +179,18 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
-    lcl = v*DCOS(theta) - h*DSIN(theta)
-    lcd = h*DCOS(theta) + v*DSIN(theta)
-    lcm = pitch_mom
+    cl = v*DCOS(theta) - h*DSIN(theta)
+    cd = h*DCOS(theta) + v*DSIN(theta)
+    cm = pitch_mom
 ! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
-    cl = lcl
-    cd = lcd
-    cm = lcm
+! Cl = lCl
+! Cd = lCd
+! Cm = lCm
     clcd = cl/cd
 ! if(rank == 0) then
 !     do j = 1, shapes

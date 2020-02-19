@@ -77,9 +77,9 @@ module compute_force_coeffs_mod
 
             enddo
 
-            lCl = V*dcos(theta) - H*dsin(theta)
-            lCd = H*dcos(theta) + V*dsin(theta)
-            lCm = pitch_mom
+            Cl = V*dcos(theta) - H*dsin(theta)
+            Cd = H*dcos(theta) + V*dsin(theta)
+            Cm = pitch_mom
 
             ! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
                 ! & PETSC_COMM_WORLD, ierr)
@@ -88,9 +88,9 @@ module compute_force_coeffs_mod
             ! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
                 ! & PETSC_COMM_WORLD, ierr)
 
-            Cl = lCl
-            Cd = lCd
-            Cm = lCm
+            ! Cl = lCl
+            ! Cd = lCd
+            ! Cm = lCm
             ClCd = Cl/Cd
             ! if(rank == 0) then
             !     do j = 1, shapes
