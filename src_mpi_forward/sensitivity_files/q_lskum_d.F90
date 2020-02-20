@@ -61,6 +61,7 @@ CONTAINS
     INTEGER :: i
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
+    ! pointd%x(78) = 1.0d0
     CALL COMPUTE_NORMALS_D()
     CALL GENERATE_CONNECTIVITY()
     IF (rank .EQ. 0) THEN
@@ -86,6 +87,7 @@ CONTAINS
       WRITE(*, *) 
     END IF
     t = 0.0d0
+
     IF (restart .EQ. 0) itr = 0
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)

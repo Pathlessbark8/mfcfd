@@ -20,7 +20,7 @@ contains
         integer :: i
 
         if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-
+        ! point%x(78) = point%x(78) - 1e-7 
         call compute_normals()
         call generate_connectivity()
 
@@ -29,7 +29,6 @@ contains
             write(*,*)'%%%%-Normals and connectivity generated-%%%'
             write(*,*)
         end if
-
         ! Set U_old to U for first iteration
         do i=1,local_points
             point%U_old(1,i) = point%prim(1,i)
