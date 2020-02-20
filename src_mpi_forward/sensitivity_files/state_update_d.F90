@@ -11,8 +11,8 @@ MODULE STATE_UPDATE_MOD_DIFF
 CONTAINS
 !  Differentiation of state_update in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.prim)
-!   with respect to varying inputs: *(point.nx) *(point.ny) *(point.prim)
-!                *(point.prim_old) *(point.flux_res)
+!   with respect to varying inputs: q_inf euler *(point.nx) *(point.ny)
+!                *(point.prim) *(point.prim_old) *(point.flux_res)
 !   Plus diff mem management of: point.nx:in point.ny:in point.prim:in
 !                point.prim_old:in point.flux_res:in
   SUBROUTINE STATE_UPDATE_D(rk)
@@ -44,7 +44,8 @@ CONTAINS
 &                             u_oldd)
       temp = u(1)
       IF (rk .NE. 3) THEN
-        ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
+        ud = ud - 0.5d0*(eulerd*point%flux_res(:, k)+euler*pointd%&
+&         flux_res(:, k))
         u = u - 0.5d0*euler*point%flux_res(:, k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
@@ -90,7 +91,8 @@ CONTAINS
 &                            (:, k), u_old, u_oldd, nx, nxd, ny, nyd)
       temp = u(1)
       IF (rk .NE. 3) THEN
-        ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
+        ud = ud - 0.5d0*(eulerd*point%flux_res(:, k)+euler*pointd%&
+&         flux_res(:, k))
         u = u - 0.5d0*euler*point%flux_res(:, k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
@@ -129,7 +131,8 @@ CONTAINS
 &                             u_oldd)
       temp = u(1)
       IF (rk .NE. 3) THEN
-        ud = ud - 0.5d0*euler*pointd%flux_res(:, k)
+        ud = ud - 0.5d0*(eulerd*point%flux_res(:, k)+euler*pointd%&
+&         flux_res(:, k))
         u = u - 0.5d0*euler*point%flux_res(:, k)
       ELSE
         ud = tbt*u_oldd + obt*(ud-0.5d0*pointd%flux_res(:, k))
@@ -312,7 +315,7 @@ CONTAINS
 
 !  Differentiation of func_delta in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.delta)
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.prim)
+!   with respect to varying inputs: cfl *(point.x) *(point.y) *(point.prim)
 !                *(point.delta)
 !   Plus diff mem management of: point.x:in point.y:in point.prim:in
 !                point.delta:in
@@ -324,6 +327,7 @@ CONTAINS
     REAL*8 :: delta_td
     REAL*8 :: min_dist
     REAL*8, SAVE :: lmin=1.0d0
+    REAL*8, SAVE :: lmind
     REAL*8 :: gmin
     REAL*8 :: x_i, y_i, x_k, y_k
     REAL*8 :: x_id, y_id, x_kd, y_kd
@@ -388,7 +392,7 @@ CONTAINS
         delta_td = (distd*(mod_u+3.0d0*result1)-dist*(mod_ud+3.0d0*&
 &         result1d))/(mod_u+3.0d0*result1)**2
         delta_t = dist/(mod_u+3.0d0*result1)
-        delta_td = cfl*delta_td
+        delta_td = cfld*delta_t + cfl*delta_td
         delta_t = cfl*delta_t
         IF (min_delt .GT. delta_t) THEN
           min_deltd = delta_td
@@ -444,12 +448,12 @@ CONTAINS
 
 !  Differentiation of conserved_vector_ubar in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: ubar
-!   with respect to varying inputs: prim nx ny ubar
+!   with respect to varying inputs: q_inf prim nx ny ubar
   SUBROUTINE CONSERVED_VECTOR_UBAR_D(prim, primd, ubar, ubard, nx, nxd, &
 &   ny, nyd)
     IMPLICIT NONE
     REAL*8 :: u1_inf, u2_inf, u1_inf_rot, u2_inf_rot, e_inf
-    REAL*8 :: u1_inf_rotd, u2_inf_rotd, e_infd
+    REAL*8 :: u1_infd, u2_infd, u1_inf_rotd, u2_inf_rotd, e_infd
     REAL*8 :: u1, u2, pr, rho, u1_rot, u2_rot, e
     REAL*8 :: u1d, u2d, prd, rhod, u1_rotd, u2_rotd, ed
     REAL*8 :: beta, s2, b2_inf, a2n_inf
@@ -466,15 +470,17 @@ CONTAINS
     REAL*8 :: arg1d
     REAL*8 :: result10
     REAL*8 :: result10d
+    u1_infd = q_infd(2)
     u1_inf = q_inf(2)
+    u2_infd = q_infd(3)
     u2_inf = q_inf(3)
     txd = nyd
     tx = ny
     tyd = -nxd
     ty = -nx
-    u1_inf_rotd = u1_inf*txd + u2_inf*tyd
+    u1_inf_rotd = u1_infd*tx + u1_inf*txd + u2_infd*ty + u2_inf*tyd
     u1_inf_rot = u1_inf*tx + u2_inf*ty
-    u2_inf_rotd = u1_inf*nxd + u2_inf*nyd
+    u2_inf_rotd = u1_infd*nx + u1_inf*nxd + u2_infd*ny + u2_inf*nyd
     u2_inf_rot = u1_inf*nx + u2_inf*ny
     temp1d = u1_inf_rotd*u1_inf_rot + u1_inf_rot*u1_inf_rotd + &
 &     u2_inf_rotd*u2_inf_rot + u2_inf_rot*u2_inf_rotd

@@ -17,10 +17,12 @@ MODULE WALL_FLUXES_MOD_DIFF
 CONTAINS
 !  Differentiation of wall_dgx_pos in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: g
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
-!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
+!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
+!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
+!                *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.q:in point.dq:in point.qm:in
+!                point.ny:in point.min_dist:in point.q:in point.dq:in
+!                point.qm:in
 !	This subroutine evaluates the wall flux derivative dGs_pos
   SUBROUTINE WALL_DGX_POS_D(g, gd, i)
     IMPLICIT NONE
@@ -101,11 +103,16 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
-&     ) THEN
+      IF (dist .GT. 0.0) THEN
+        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
+      ELSE IF (dist .EQ. 0.0) THEN
+        IF (power .EQ. 1.0) THEN
+          weightsd = distd
+        ELSE
+          weightsd = 0.0
+        END IF
+      ELSE IF (power .EQ. INT(power)) THEN
         weightsd = power*dist**(power-1)*distd
-      ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
-        weightsd = distd
       ELSE
         weightsd = 0.0
       END IF
@@ -246,10 +253,12 @@ CONTAINS
 
 !  Differentiation of wall_dgx_neg in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: g
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
-!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
+!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
+!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
+!                *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.q:in point.dq:in point.qm:in
+!                point.ny:in point.min_dist:in point.q:in point.dq:in
+!                point.qm:in
 !	This subroutine evaluates the wall flux derivative dGs_neg
   SUBROUTINE WALL_DGX_NEG_D(g, gd, i)
     IMPLICIT NONE
@@ -333,11 +342,16 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
-&     ) THEN
+      IF (dist .GT. 0.0) THEN
+        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
+      ELSE IF (dist .EQ. 0.0) THEN
+        IF (power .EQ. 1.0) THEN
+          weightsd = distd
+        ELSE
+          weightsd = 0.0
+        END IF
+      ELSE IF (power .EQ. INT(power)) THEN
         weightsd = power*dist**(power-1)*distd
-      ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
-        weightsd = distd
       ELSE
         weightsd = 0.0
       END IF
@@ -480,10 +494,12 @@ CONTAINS
 
 !  Differentiation of wall_dgy_neg in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: g
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
-!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
+!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
+!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
+!                *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.q:in point.dq:in point.qm:in
+!                point.ny:in point.min_dist:in point.q:in point.dq:in
+!                point.qm:in
   SUBROUTINE WALL_DGY_NEG_D(g, gd, i)
     IMPLICIT NONE
     INTEGER :: i, j, k, r
@@ -563,11 +579,16 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
-&     ) THEN
+      IF (dist .GT. 0.0) THEN
+        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
+      ELSE IF (dist .EQ. 0.0) THEN
+        IF (power .EQ. 1.0) THEN
+          weightsd = distd
+        ELSE
+          weightsd = 0.0
+        END IF
+      ELSE IF (power .EQ. INT(power)) THEN
         weightsd = power*dist**(power-1)*distd
-      ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
-        weightsd = distd
       ELSE
         weightsd = 0.0
       END IF

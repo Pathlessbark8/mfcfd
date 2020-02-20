@@ -67,8 +67,8 @@ CONTAINS
 
 !  Differentiation of eval_q_derivatives in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.dq) *(point.qm)
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.q)
-!                *(point.dq) *(point.qm)
+!   with respect to varying inputs: power *(point.x) *(point.y)
+!                *(point.q) *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.q:in
 !                point.dq:in point.qm:in
   SUBROUTINE EVAL_Q_DERIVATIVES_D()
@@ -136,10 +136,16 @@ CONTAINS
           distd = arg1d/(2.D0*DSQRT(arg1))
         END IF
         dist = DSQRT(arg1)
-        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))) THEN
+        IF (dist .GT. 0.0) THEN
+          weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
+        ELSE IF (dist .EQ. 0.0) THEN
+          IF (power .EQ. 1.0) THEN
+            weightsd = distd
+          ELSE
+            weightsd = 0.0
+          END IF
+        ELSE IF (power .EQ. INT(power)) THEN
           weightsd = power*dist**(power-1)*distd
-        ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
-          weightsd = distd
         ELSE
           weightsd = 0.0
         END IF
@@ -239,8 +245,8 @@ CONTAINS
 
 !  Differentiation of eval_q_inner_loop in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.temp)
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.q)
-!                *(point.dq) *(point.temp)
+!   with respect to varying inputs: power *(point.x) *(point.y)
+!                *(point.q) *(point.dq) *(point.temp)
 !   Plus diff mem management of: point.x:in point.y:in point.q:in
 !                point.dq:in point.temp:in
   SUBROUTINE EVAL_Q_INNER_LOOP_D()
@@ -327,10 +333,16 @@ CONTAINS
           distd = arg1d/(2.D0*DSQRT(arg1))
         END IF
         dist = DSQRT(arg1)
-        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))) THEN
+        IF (dist .GT. 0.0) THEN
+          weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
+        ELSE IF (dist .EQ. 0.0) THEN
+          IF (power .EQ. 1.0) THEN
+            weightsd = distd
+          ELSE
+            weightsd = 0.0
+          END IF
+        ELSE IF (power .EQ. INT(power)) THEN
           weightsd = power*dist**(power-1)*distd
-        ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
-          weightsd = distd
         ELSE
           weightsd = 0.0
         END IF
@@ -661,3 +673,4 @@ CONTAINS
   END SUBROUTINE QTILDE_TO_PRIMITIVE
 
 END MODULE Q_VARIABLES_MOD_DIFF
+

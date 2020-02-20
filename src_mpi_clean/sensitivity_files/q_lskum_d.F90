@@ -15,26 +15,52 @@ MODULE Q_LSKUM_MOD_DIFF
 CONTAINS
 !  Differentiation of q_lskum in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *vector_cost_func
-!   with respect to varying inputs: *(point.x) *(point.y)
-!   RW status of diff variables: total_enstrophy:(loc) *clcd:(loc)
-!                *cd:(loc) *vector_cost_func:out *cl:(loc) *cm:(loc)
-!                total_entropy:(loc) *(point.x):in *(point.y):in
-!                *(point.nx):(loc) *(point.ny):(loc) *(point.prim):(loc)
-!                *(point.prim_old):(loc) *(point.flux_res):(loc)
-!                *(point.q):(loc) *(point.dq):(loc) *(point.qm):(loc)
-!                *(point.temp):(loc) *(point.vorticity_sqr):(loc)
-!                *(point.delta):(loc)
+!   with respect to varying inputs: mach q_inf theta euler cfl
+!                power *clcd *cd *vector_cost_func *cl *cm vl_const
+!                *(point.x) *(point.y) *(point.nx) *(point.ny)
+!                *(point.min_dist) *(point.prim) *(point.prim_old)
+!                *(point.flux_res) *(point.q) *(point.dq) *(point.qm)
+!                *(point.temp) *(point.vorticity_sqr) *(point.delta)
+!   RW status of diff variables: mach:in q_inf:in theta:in aoa:(loc)
+!                q_init:(loc) euler:in res_new:(loc) cfl:in t:(loc)
+!                sum_res_sqr:(loc) cfv:(loc) *cfv:(loc) max_res:(loc)
+!                cm_flag:(loc) tfinal:(loc) total_enstrophy:(loc)
+!                ens_flag:(loc) total_loss_stagpressure:(loc) power:in
+!                res_old:(loc) cl_cd_flag:(loc) clcd:(loc) *clcd:in-killed
+!                cd:(loc) *cd:in-killed vector_cost_func:(loc)
+!                *vector_cost_func:in-out cl:(loc) *cl:in-killed
+!                cm:(loc) *cm:in-killed vl_const:in cd_flag:(loc)
+!                residue:(loc) total_entropy:(loc) point.original_id:(loc)
+!                point.x:(loc) *(point.x):in point.y:(loc) *(point.y):in
+!                point.left:(loc) point.right:(loc) point.flag_1:(loc)
+!                point.flag_2:(loc) point.qtdepth:(loc) point.nx:(loc)
+!                *(point.nx):in-killed point.ny:(loc) *(point.ny):in-killed
+!                point.nbhs:(loc) point.conn:(loc) point.min_dist:(loc)
+!                *(point.min_dist):in point.prim:(loc) *(point.prim):in-killed
+!                point.prim_old:(loc) *(point.prim_old):in-killed
+!                point.flux_res:(loc) *(point.flux_res):in-killed
+!                point.q:(loc) *(point.q):in-killed point.u:(loc)
+!                *(point.u):(loc) point.dq:(loc) *(point.dq):in-killed
+!                point.qm:(loc) *(point.qm):in-killed point.temp:(loc)
+!                *(point.temp):in-killed point.entropy:(loc) *(point.entropy):(loc)
+!                point.vorticity:(loc) *(point.vorticity):(loc)
+!                point.vorticity_sqr:(loc) *(point.vorticity_sqr):in-killed
+!                point.xpos_nbhs:(loc) point.xneg_nbhs:(loc) point.ypos_nbhs:(loc)
+!                point.yneg_nbhs:(loc) point.xpos_conn:(loc) point.xneg_conn:(loc)
+!                point.ypos_conn:(loc) point.yneg_conn:(loc) point.delta:(loc)
+!                *(point.delta):in-killed point.u_old:(loc) *(point.u_old):(loc)
+!                fo_flag:(loc) cl_flag:(loc) gsum_res_sqr:(loc)
+!                ent_flag:(loc) dtg:(loc)
 !   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
 !                cl:in cm:in point.x:in point.y:in point.nx:in
-!                point.ny:in point.prim:in point.prim_old:in point.flux_res:in
-!                point.q:in point.dq:in point.qm:in point.temp:in
-!                point.vorticity_sqr:in point.delta:in
+!                point.ny:in point.min_dist:in point.prim:in point.prim_old:in
+!                point.flux_res:in point.q:in point.dq:in point.qm:in
+!                point.temp:in point.vorticity_sqr:in point.delta:in
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
-
     CALL COMPUTE_NORMALS_D()
     CALL GENERATE_CONNECTIVITY()
     IF (rank .EQ. 0) THEN
@@ -44,9 +70,13 @@ CONTAINS
     END IF
 ! Set U_old to U for first iteration
     DO i=1,local_points
+      pointd%u_old(1, i) = 0.0_8
       point%u_old(1, i) = point%prim(1, i)
+      pointd%u_old(2, i) = 0.0_8
       point%u_old(2, i) = point%prim(1, i)*point%prim(2, i)
+      pointd%u_old(3, i) = 0.0_8
       point%u_old(3, i) = point%prim(1, i)*point%prim(3, i)
+      pointd%u_old(4, i) = 0.0_8
       point%u_old(4, i) = 2.5d0*point%prim(4, i) + 0.5d0*point%prim(1, i&
 &       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
 &       (3, i))
@@ -56,24 +86,7 @@ CONTAINS
       WRITE(*, *) 
     END IF
     t = 0.0d0
-    IF (restart .EQ. 0) THEN
-      itr = 0
-    END IF
-      IF (ALLOCATED(clcdd)) clcdd = 0.0_8
-      IF (ALLOCATED(cdd)) cdd = 0.0_8
-      IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
-      IF (ALLOCATED(cld)) cld = 0.0_8
-      IF (ALLOCATED(cmd)) cmd = 0.0_8
-      pointd%prim = 0.0_8
-      pointd%prim_old = 0.0_8
-      pointd%flux_res = 0.0_8
-      pointd%q = 0.0_8
-      pointd%dq = 0.0_8
-      pointd%qm = 0.0_8
-      pointd%temp = 0.0_8
-      pointd%vorticity_sqr = 0.0_8
-      pointd%delta = 0.0_8
-      pointd%x(78) = 1.0
+    IF (restart .EQ. 0) itr = 0
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)
       t = t + dtg
@@ -86,19 +99,10 @@ CONTAINS
           WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'time:', t
           WRITE(301, *) it, t, dtg
         END IF
+        IF (IEEE_IS_NAN(residue)) EXIT
       END IF
     END DO
     CLOSE(unit=301) 
-    if(rank==0) then
-        write(*,*) "SG", total_loss_stagpressure 
-        write(*,*) "Cl", cl
-        write(*,*) "Cd", cd
-        write(*,*) "Cm", cm
-        write(*,*) "Clcd", clcd
-        write(*,*) "Entropy", total_entropy
-        write(*,*) "Enstrophy", total_enstrophy
-        write(*,*) "Vector function is ", vector_cost_func
-    end if
   END SUBROUTINE Q_LSKUM_D
 
 END MODULE Q_LSKUM_MOD_DIFF

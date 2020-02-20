@@ -18,7 +18,7 @@ CONTAINS
     INTEGER :: k
     REAL*8 :: temp1, temp2
     REAL*8 :: temp1d
-    REAL*8 :: gtotal_entropy, gtotal_entropyd
+    REAL*8 :: gtotal_entropy
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
@@ -43,8 +43,10 @@ CONTAINS
       temp1d = temp1d/temp1
       temp1 = DLOG(temp1)
       IF (temp1 - temp2 .GE. 0.) THEN
+        pointd%entropy(k) = 0.0_8
         point%entropy(k) = temp1 - temp2
       ELSE
+        pointd%entropy(k) = 0.0_8
         point%entropy(k) = -(temp1-temp2)
       END IF
       IF (temp1 - temp2 .GE. 0.) THEN
@@ -58,15 +60,15 @@ CONTAINS
       total_entropy = total_entropy + dabs0
     END DO
 
-    call MPI_Reduce(total_entropy, gtotal_entropy , 1, &
-    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    ! call MPI_Reduce(total_entropy, gtotal_entropy , 1, &
+    ! & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
-    call MPI_Reduce(total_entropyd, gtotal_entropyd , 1, &
-    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
-    if(rank == 0) then
-      total_entropy = gtotal_entropy
-      total_entropyd = gtotal_entropyd
-    end if
+    ! call MPI_Reduce(total_entropyd, gtotal_entropyd , 1, &
+    ! & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    ! if(rank == 0) then
+    !   total_entropy = gtotal_entropy
+    !   total_entropyd = gtotal_entropyd
+    ! end if
   END SUBROUTINE COMPUTE_ENTROPY_D
 
   SUBROUTINE COMPUTE_ENTROPY()

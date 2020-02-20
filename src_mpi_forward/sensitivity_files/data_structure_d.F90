@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE DATA_STRUCTURE_MOD_DIFF
-  USE PARAMETER_MOD
+  USE PARAMETER_MOD_DIFF
   IMPLICIT NONE
   INTEGER :: max_points, local_points, ghost_points
   INTEGER :: wall_points, interior_points, outer_points, shape_points
@@ -45,15 +45,20 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: y
       REAL*8, DIMENSION(:), ALLOCATABLE :: nx
       REAL*8, DIMENSION(:), ALLOCATABLE :: ny
+      REAL*8, DIMENSION(:), ALLOCATABLE :: min_dist
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: u
       REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
       REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
       REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
+      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy
+      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity
       REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+      REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointd
@@ -67,14 +72,17 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !Flag for time stepping
   INTEGER :: rks
   REAL*8 :: euler
+  REAL*8 :: eulerd
   REAL*8 :: total_loss_stagpressure
   REAL*8 :: total_loss_stagpressured
   REAL*8 :: res_old, res_new, residue, max_res
+  REAL*8 :: res_oldd, res_newd, residued, max_resd
   REAL*8 :: gsum_res_sqr, sum_res_sqr
+  REAL*8 :: gsum_res_sqrd, sum_res_sqrd
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv, clcd, &
 & vector_cost_func
-  REAL*8, DIMENSION(:), ALLOCATABLE :: cld, cdd, cmd, clcdd, &
+  REAL*8, DIMENSION(:), ALLOCATABLE :: cld, cdd, cmd, cfvd, clcdd, &
 & vector_cost_funcd
   REAL*8 :: total_entropy, total_enstrophy
   REAL*8 :: total_entropyd, total_enstrophyd
@@ -82,9 +90,11 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: format
 !The parameter CFL is the CFL number for stability ..
   REAL*8 :: cfl
+  REAL*8 :: cfld
   INTEGER :: max_iters
 !Unsteady variables
   REAL*8 :: t, tfinal, dtg
+  REAL*8 :: td, tfinald, dtgd
   INTEGER :: timestep
 !Run option: petsc or normal
   INTEGER :: runop
@@ -97,6 +107,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       power = -4.0 => weights = 1/d^4
 !
   REAL*8 :: power
+  REAL*8 :: powerd
 !
 !       limiter_flag = 1 => venkatakrishnan limiter
 !       limiter_flag = 2 => min-max limiter     
@@ -104,6 +115,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: limiter_flag
 ! Venkatakrishnan limiter constant ..
   REAL*8 :: vl_const
+  REAL*8 :: vl_constd
   INTEGER :: restart
 !       Interior points normal flag ..
 !       If flag is zero => nx = 0.0 and ny = 1.0
@@ -115,8 +127,11 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: nsave
 !       First order flag
   REAL*8 :: fo_flag
+  REAL*8 :: fo_flagd
 !       Objective function
   REAL*8 :: cl_flag, cd_flag, cm_flag, cl_cd_flag, ent_flag, ens_flag
+  REAL*8 :: cl_flagd, cd_flagd, cm_flagd, cl_cd_flagd, ent_flagd, &
+& ens_flagd
   INTEGER :: obj_flag
   INTEGER, SAVE :: inner_iterations=0
 !       No of shapes
@@ -133,6 +148,7 @@ CONTAINS
     ALLOCATE(point%u(4, max_points))
     ALLOCATE(point%dq(2, 4, max_points))
     ALLOCATE(point%qm(2, 4, max_points))
+! allocate(point%ddq(3,4,max_points))
     ALLOCATE(point%temp(3, 4, max_points))
     ALLOCATE(point%entropy(max_points))
     ALLOCATE(point%vorticity(max_points))
@@ -152,32 +168,36 @@ CONTAINS
     ALLOCATE(cfv(shapes))
     ALLOCATE(clcd(shapes))
     ALLOCATE(vector_cost_func(shapes))
-  END SUBROUTINE ALLOCATE_SOLN
+END SUBROUTINE ALLOCATE_SOLN
 
-  SUBROUTINE ALLOCATE_SOLN_D()
+SUBROUTINE ALLOCATE_SOLN_D()
+  IMPLICIT NONE
+  ALLOCATE(pointd%x(max_points))
+  ALLOCATE(pointd%y(max_points))
+  ALLOCATE(pointd%nx(max_points))
+  ALLOCATE(pointd%ny(max_points))
+  ALLOCATE(pointd%min_dist(max_points))
+  ALLOCATE(pointd%prim(4,max_points))
+  ALLOCATE(pointd%prim_old(4,max_points))
+  ALLOCATE(pointd%flux_res(4,max_points))
+  ALLOCATE(pointd%q(4,max_points))
+  ALLOCATE(pointd%u(4,max_points))
+  ALLOCATE(pointd%u_old(4,max_points))
+  ALLOCATE(pointd%dq(2,4,max_points))
+  ALLOCATE(pointd%temp(3, 4, max_points))
+  ALLOCATE(pointd%qm(2,4,max_points))
+  ALLOCATE(pointd%delta(max_points))
+  ALLOCATE(Cld(shapes))
+  ALLOCATE(ClCdd(shapes))
+  ALLOCATE(Cdd(shapes))
+  ALLOCATE(Cmd(shapes))
+  ALLOCATE(pointd%entropy(max_points))
+  ALLOCATE(pointd%vorticity(max_points))
+  ALLOCATE(pointd%vorticity_sqr(max_points))
+END SUBROUTINE
+
+SUBROUTINE DEALLOCATE_SOLN()
     IMPLICIT NONE
-    ALLOCATE(pointd%x(max_points))
-    ALLOCATE(pointd%y(max_points))
-    ALLOCATE(pointd%nx(max_points))
-    ALLOCATE(pointd%ny(max_points))
-    ALLOCATE(pointd%prim(4,max_points))
-    ALLOCATE(pointd%prim_old(4,max_points))
-    ALLOCATE(pointd%flux_res(4,max_points))
-    ALLOCATE(pointd%q(4,max_points))
-    ALLOCATE(pointd%dq(2,4,max_points))
-    ALLOCATE(pointd%temp(3, 4, max_points))
-    ALLOCATE(pointd%qm(2,4,max_points))
-    ALLOCATE(pointd%delta(max_points))
-    ALLOCATE(Cld(shapes))
-    ALLOCATE(ClCdd(shapes))
-    ALLOCATE(Cdd(shapes))
-    ALLOCATE(Cmd(shapes))
-    ALLOCATE(pointd%vorticity_sqr(max_points))
-  END SUBROUTINE
-
-  SUBROUTINE DEALLOCATE_SOLN()
-    IMPLICIT NONE
-
     DEALLOCATE(point%prim)
     DEALLOCATE(point%prim_old)
     DEALLOCATE(point%flux_res)
@@ -205,27 +225,32 @@ CONTAINS
     DEALLOCATE(cfv)
     DEALLOCATE(clcd)
     DEALLOCATE(vector_cost_func)
-  END SUBROUTINE DEALLOCATE_SOLN
+END SUBROUTINE DEALLOCATE_SOLN
 
-  SUBROUTINE DEALLOCATE_SOLN_D()
-    IMPLICIT NONE
-    DEALLOCATE(pointd%x)
-    DEALLOCATE(pointd%y)
-    DEALLOCATE(pointd%nx)
-    DEALLOCATE(pointd%ny)
-    DEALLOCATE(pointd%prim)
-    DEALLOCATE(pointd%prim_old)
-    DEALLOCATE(pointd%flux_res)
-    DEALLOCATE(pointd%q)
-    DEALLOCATE(pointd%dq)
-    DEALLOCATE(pointd%qm)
-    DEALLOCATE(pointd%temp)
-    DEALLOCATE(pointd%delta)
-    DEALLOCATE(Cld)
-    DEALLOCATE(ClCdd)
-    DEALLOCATE(Cdd)
-    DEALLOCATE(Cmd)
-    DEALLOCATE(pointd%vorticity_sqr)
-  END SUBROUTINE
+SUBROUTINE DEALLOCATE_SOLN_D()
+  IMPLICIT NONE
+  DEALLOCATE(pointd%x)
+  DEALLOCATE(pointd%y)
+  DEALLOCATE(pointd%nx)
+  DEALLOCATE(pointd%ny)
+  DEALLOCATE(pointd%min_dist)
+  DEALLOCATE(pointd%u)
+  DEALLOCATE(pointd%u_old)
+  DEALLOCATE(pointd%prim)
+  DEALLOCATE(pointd%prim_old)
+  DEALLOCATE(pointd%flux_res)
+  DEALLOCATE(pointd%q)
+  DEALLOCATE(pointd%dq)
+  DEALLOCATE(pointd%qm)
+  DEALLOCATE(pointd%temp)
+  DEALLOCATE(pointd%delta)
+  DEALLOCATE(Cld)
+  DEALLOCATE(ClCdd)
+  DEALLOCATE(Cdd)
+  DEALLOCATE(Cmd)
+  DEALLOCATE(pointd%entropy)
+  DEALLOCATE(pointd%vorticity)
+  DEALLOCATE(pointd%vorticity_sqr)
+END SUBROUTINE
 
 END MODULE DATA_STRUCTURE_MOD_DIFF

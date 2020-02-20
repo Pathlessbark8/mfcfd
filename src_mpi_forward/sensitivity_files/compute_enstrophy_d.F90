@@ -10,8 +10,8 @@ MODULE COMPUTE_ENSTROPHY_MOD_DIFF
 CONTAINS
 !  Differentiation of compute_enstrophy in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: total_enstrophy *(point.vorticity_sqr)
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.prim)
-!                *(point.vorticity_sqr)
+!   with respect to varying inputs: power *(point.x) *(point.y)
+!                *(point.prim) *(point.vorticity_sqr)
 !   Plus diff mem management of: point.x:in point.y:in point.prim:in
 !                point.vorticity_sqr:in
   SUBROUTINE COMPUTE_ENSTROPHY_D()
@@ -34,7 +34,7 @@ CONTAINS
     REAL*8 :: one_by_detd
     REAL*8 :: du1_dy, du2_dx, temp
     REAL*8 :: du1_dyd, du2_dxd, tempd
-    REAL*8 :: gtotal_enstrophy, gtotal_enstrophyd
+    REAL*8 :: gtotal_enstrophy
     INTRINSIC DSQRT
     REAL*8 :: arg1
     REAL*8 :: arg1d
@@ -78,10 +78,16 @@ CONTAINS
           distd = arg1d/(2.D0*DSQRT(arg1))
         END IF
         dist = DSQRT(arg1)
-        IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))) THEN
+        IF (dist .GT. 0.0) THEN
+          weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
+        ELSE IF (dist .EQ. 0.0) THEN
+          IF (power .EQ. 1.0) THEN
+            weightsd = distd
+          ELSE
+            weightsd = 0.0
+          END IF
+        ELSE IF (power .EQ. INT(power)) THEN
           weightsd = power*dist**(power-1)*distd
-        ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
-          weightsd = distd
         ELSE
           weightsd = 0.0
         END IF
@@ -135,6 +141,7 @@ CONTAINS
 &       )*one_by_det
       tempd = du2_dxd - du1_dyd
       temp = du2_dx - du1_dy
+      pointd%vorticity(i) = 0.0_8
       point%vorticity(i) = temp
       pointd%vorticity_sqr(i) = tempd*temp + temp*tempd
       point%vorticity_sqr(i) = temp*temp
@@ -142,19 +149,19 @@ CONTAINS
       total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
     END DO
 
-!     gtotal_enstrophy = 0.0_8
-!     gtotal_enstrophyd = 0.0_8
-
-    call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
-    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(total_enstrophyd, gtotal_enstrophyd , 1, &
-    & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
-
-    if(rank == 0) then
-        total_enstrophy = gtotal_enstrophy
-        total_enstrophyd = gtotal_enstrophyd
-    end if
-  END SUBROUTINE COMPUTE_ENSTROPHY_D
+    !     gtotal_enstrophy = 0.0_8
+    !     gtotal_enstrophyd = 0.0_8
+    
+        ! call MPI_Reduce(total_enstrophy, gtotal_enstrophy , 1, &
+        ! & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+        ! call MPI_Reduce(total_enstrophyd, gtotal_enstrophyd , 1, &
+        ! & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+    
+        ! if(rank == 0) then
+        !     total_enstrophy = gtotal_enstrophy
+        !     total_enstrophyd = gtotal_enstrophyd
+        ! end if
+      END SUBROUTINE COMPUTE_ENSTROPHY_D
 
   SUBROUTINE COMPUTE_ENSTROPHY()
     IMPLICIT NONE

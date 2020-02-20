@@ -13,9 +13,9 @@ CONTAINS
 !  Differentiation of objective_function in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *clcd *cd *vector_cost_func
 !                *cl *cm *(point.vorticity_sqr)
-!   with respect to varying inputs: *clcd *cd *vector_cost_func
-!                *cl *cm *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.prim) *(point.vorticity_sqr)
+!   with respect to varying inputs: mach theta power *clcd *cd
+!                *vector_cost_func *cl *cm *(point.x) *(point.y)
+!                *(point.nx) *(point.ny) *(point.prim) *(point.vorticity_sqr)
 !   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
 !                cl:in cm:in point.x:in point.y:in point.nx:in
 !                point.ny:in point.prim:in point.vorticity_sqr:in

@@ -17,19 +17,21 @@ CONTAINS
 !                *cl *cm *(point.prim) *(point.prim_old) *(point.flux_res)
 !                *(point.q) *(point.dq) *(point.qm) *(point.temp)
 !                *(point.vorticity_sqr) *(point.delta)
-!   with respect to varying inputs: *clcd *cd *vector_cost_func
-!                *cl *cm *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.prim) *(point.prim_old) *(point.flux_res)
-!                *(point.q) *(point.dq) *(point.qm) *(point.temp)
-!                *(point.vorticity_sqr) *(point.delta)
+!   with respect to varying inputs: mach q_inf theta euler cfl
+!                power *clcd *cd *vector_cost_func *cl *cm vl_const
+!                *(point.x) *(point.y) *(point.nx) *(point.ny)
+!                *(point.min_dist) *(point.prim) *(point.prim_old)
+!                *(point.flux_res) *(point.q) *(point.dq) *(point.qm)
+!                *(point.temp) *(point.vorticity_sqr) *(point.delta)
 !   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
 !                cl:in cm:in point.x:in point.y:in point.nx:in
-!                point.ny:in point.prim:in point.prim_old:in point.flux_res:in
-!                point.q:in point.dq:in point.qm:in point.temp:in
-!                point.vorticity_sqr:in point.delta:in
+!                point.ny:in point.min_dist:in point.prim:in point.prim_old:in
+!                point.flux_res:in point.q:in point.dq:in point.qm:in
+!                point.temp:in point.vorticity_sqr:in point.delta:in
   SUBROUTINE FPI_SOLVER_D(t)
     IMPLICIT NONE
     INTEGER :: t, i, rk
+    INTEGER :: td
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     INTRINSIC MOD
@@ -45,10 +47,10 @@ CONTAINS
       CALL EVAL_Q_VARIABLES_D()
       CALL EVAL_Q_DERIVATIVES_D()
 !Update the ghost values from the owned process
-      call update_begin_dq_ghost()
-      call update_begin_qm_ghost()
-      call update_end_dq_ghost()
-      call update_end_qm_ghost()
+        call update_begin_dq_ghost()
+        call update_begin_qm_ghost()
+        call update_end_dq_ghost()
+        call update_end_qm_ghost()
       DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP_D()
         CALL EVAL_UPDATE_INNERLOOP_D()
@@ -61,9 +63,11 @@ CONTAINS
       call update_end_prim_ghost()
     END DO
 ! start updating primitive values
+! call update_begin_prim_ghost()
+! call update_end_prim_ghost()
     CALL OBJECTIVE_FUNCTION_D()
     call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
-      0, PETSC_COMM_WORLD, ierr)
+       0, PETSC_COMM_WORLD, ierr)
     call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &
       ierr)
     result1 = DSQRT(gsum_res_sqr)
@@ -102,22 +106,22 @@ CONTAINS
       CALL EVAL_Q_VARIABLES()
       CALL EVAL_Q_DERIVATIVES()
 !Update the ghost values from the owned process
-      call update_begin_dq_ghost()
-      call update_begin_qm_ghost()
-      call update_end_dq_ghost()
-      call update_end_qm_ghost()
+call update_begin_dq_ghost()
+call update_begin_qm_ghost()
+call update_end_dq_ghost()
+call update_end_qm_ghost()
       DO i=1,inner_iterations
         CALL EVAL_Q_INNER_LOOP()
         CALL EVAL_UPDATE_INNERLOOP()
-      END DO
-! call update_begin_dq_ghost()
-! call update_end_dq_ghost()
+        call update_begin_dq_ghost()
+        call update_end_dq_ghost()
+    END DO
       CALL CAL_FLUX_RESIDUAL()
       CALL STATE_UPDATE(rk)
+        call update_begin_prim_ghost()
+        call update_end_prim_ghost()
     END DO
 ! start updating primitive values
-! call update_begin_prim_ghost()
-! call update_end_prim_ghost()
     CALL OBJECTIVE_FUNCTION()
 ! call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
 !    0, PETSC_COMM_WORLD, ierr)

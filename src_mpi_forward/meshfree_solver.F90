@@ -4,7 +4,7 @@ program meshfree_solver
 
 
         use petscsys
-        use parameter_mod
+        USE PARAMETER_MOD_DIFF
         use data_structure_mod_diff
         use petsc_data_structure_mod
         use point_preprocessor_mod

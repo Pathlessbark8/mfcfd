@@ -8,7 +8,8 @@ MODULE POINT_NORMALS_MOD_DIFF
 CONTAINS
 !  Differentiation of compute_normals in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.nx) *(point.ny)
-!   with respect to varying inputs: *(point.x) *(point.y)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
 !                point.ny:in
   SUBROUTINE COMPUTE_NORMALS_D()
@@ -23,8 +24,6 @@ CONTAINS
     INTRINSIC DSQRT
     DOUBLE PRECISION :: arg1
     DOUBLE PRECISION :: arg1d
-    pointd%nx = 0.0_8
-    pointd%ny = 0.0_8
 !Finding the normals for the points on the shapes ..   
     DO i=1,wall_points
       m = wall_points_index(i)

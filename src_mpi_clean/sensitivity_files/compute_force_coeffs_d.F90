@@ -10,8 +10,9 @@ MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
 CONTAINS
 !  Differentiation of compute_cl_cd_cm in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *clcd *cd *cl *cm
-!   with respect to varying inputs: *clcd *cd *cl *cm *(point.x)
-!                *(point.y) *(point.nx) *(point.ny) *(point.prim)
+!   with respect to varying inputs: mach theta *clcd *cd *cl *cm
+!                *(point.x) *(point.y) *(point.nx) *(point.ny)
+!                *(point.prim)
 !   Plus diff mem management of: clcd:in cd:in cl:in cm:in point.x:in
 !                point.y:in point.nx:in point.ny:in point.prim:in
   SUBROUTINE COMPUTE_CL_CD_CM_D()
@@ -19,7 +20,7 @@ CONTAINS
     INTEGER :: i, j, k
     INTEGER :: l, m, r
     REAL*8 :: cp, temp
-    REAL*8 :: cpd
+    REAL*8 :: cpd, tempd
     REAL*8 :: lx, ly, mx, my, rx, ry
     REAL*8 :: lxd, lyd, mxd, myd, rxd, ryd
     REAL*8 :: ds1, ds2, ds
@@ -36,12 +37,12 @@ CONTAINS
     INTRINSIC DSQRT
     INTRINSIC DCOS
     INTRINSIC DSIN
-
     PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&
 &  'REPLACE', action='WRITE') 
+    tempd = 0.5d0*rho_inf*(machd*mach+mach*machd)
     temp = 0.5d0*rho_inf*mach*mach
     h = 0.d0
     v = 0.d0
@@ -89,7 +90,7 @@ CONTAINS
       ny = point%ny(m)
       cpd = pointd%prim(4, m)
       cp = point%prim(4, m) - pr_inf
-      cpd = -(cpd/temp)
+      cpd = -((cpd*temp-cp*tempd)/temp**2)
       cp = -(cp/temp)
       WRITE(201, *) point%flag_2(m), point%x(m), cp
       hd(point%flag_2(m)) = hd(point%flag_2(m)) + (cpd*nx+cp*nxd)*ds + &
@@ -104,29 +105,27 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
-    lcld = DCOS(theta)*vd - DSIN(theta)*hd
-    lcl = v*DCOS(theta) - h*DSIN(theta)
-    lcdd = DCOS(theta)*hd + DSIN(theta)*vd
-    lcd = h*DCOS(theta) + v*DSIN(theta)
-    lcmd = pitch_momd
-    lcm = pitch_mom
-    
-    call MPI_Reduce(lcl, cl , 1, MPI_DOUBLE, MPI_SUM, 0, &
-            & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lcld, cld , 1, MPI_DOUBLE, MPI_SUM, 0, &
-            & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lcd, cd , 1, MPI_DOUBLE, MPI_SUM, 0, &
-            & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lcdd, cdd , 1, MPI_DOUBLE, MPI_SUM, 0, &
-            & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lcm, cm , 1, MPI_DOUBLE, MPI_SUM, 0, &
-            & PETSC_COMM_WORLD, ierr)
-    call MPI_Reduce(lcmd, cmd , 1, MPI_DOUBLE, MPI_SUM, 0, &
-            & PETSC_COMM_WORLD, ierr)
+    cld = vd*DCOS(theta) - v*thetad*DSIN(theta) - hd*DSIN(theta) - h*&
+&     thetad*DCOS(theta)
+    cl = v*DCOS(theta) - h*DSIN(theta)
+    cdd = hd*DCOS(theta) - h*thetad*DSIN(theta) + vd*DSIN(theta) + v*&
+&     thetad*DCOS(theta)
+    cd = h*DCOS(theta) + v*DSIN(theta)
+    cmd = pitch_momd
+    cm = pitch_mom
+! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
+! & PETSC_COMM_WORLD, ierr)
+! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
+! & PETSC_COMM_WORLD, ierr)
+! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
+! & PETSC_COMM_WORLD, ierr)
+! Cl = lCl
+! Cd = lCd
+! Cm = lCm
     if(rank == 0) then
-      clcdd = (cld*cd-cl*cdd)/cd**2
-      clcd = cl/cd
-    end if
+        clcdd = (cld*cd-cl*cdd)/cd**2
+        clcd = cl/cd
+      end if
 ! if(rank == 0) then
 !     do j = 1, shapes
 !         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm
@@ -186,18 +185,18 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
-    lcl = v*DCOS(theta) - h*DSIN(theta)
-    lcd = h*DCOS(theta) + v*DSIN(theta)
-    lcm = pitch_mom
+    cl = v*DCOS(theta) - h*DSIN(theta)
+    cd = h*DCOS(theta) + v*DSIN(theta)
+    cm = pitch_mom
 ! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
-    cl = lcl
-    cd = lcd
-    cm = lcm
+! Cl = lCl
+! Cd = lCd
+! Cm = lCm
     clcd = cl/cd
 ! if(rank == 0) then
 !     do j = 1, shapes

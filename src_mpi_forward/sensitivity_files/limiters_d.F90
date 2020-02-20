@@ -35,9 +35,9 @@ CONTAINS
 
 !  Differentiation of venkat_limiter in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: phi
-!   with respect to varying inputs: *(point.q) *(point.qm) qtilde
-!                phi
-!   Plus diff mem management of: point.q:in point.qm:in
+!   with respect to varying inputs: vl_const *(point.min_dist)
+!                *(point.q) *(point.qm) qtilde phi
+!   Plus diff mem management of: point.min_dist:in point.q:in point.qm:in
 !	The following subroutines are used for venkatakrishnan limiter .. 	
   SUBROUTINE VENKAT_LIMITER_D(qtilde, qtilded, phi, phid, k)
     IMPLICIT NONE
@@ -47,7 +47,7 @@ CONTAINS
     REAL*8 :: q, del_neg, del_pos
     REAL*8 :: qd, del_negd, del_posd
     REAL*8 :: max_q, min_q, ds, epsi, num, den, temp
-    REAL*8 :: numd, dend, tempd
+    REAL*8 :: epsid, numd, dend, tempd
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
     DOUBLE PRECISION :: dabs1
@@ -79,10 +79,14 @@ CONTAINS
             del_posd = pointd%qm(2, r, k) - qd
             del_pos = point%qm(2, r, k) - q
           END IF
+          epsid = vl_constd*point%min_dist(k) + vl_const*pointd%min_dist&
+&           (k)
           epsi = vl_const*point%min_dist(k)
+          epsid = 3.0d0*epsi**2.0D0*epsid
           epsi = epsi**3.0d0
 ! Numerator .. 
-          numd = del_posd*del_pos + del_pos*del_posd
+          numd = del_posd*del_pos + del_pos*del_posd + epsid*epsi + epsi&
+&           *epsid
           num = del_pos*del_pos + epsi*epsi
           numd = numd*del_neg + num*del_negd + 2.0d0*((del_negd*del_neg+&
 &           del_neg*del_negd)*del_pos+del_neg**2*del_posd)
@@ -91,7 +95,8 @@ CONTAINS
           dend = del_posd*del_pos + del_pos*del_posd + 2.0d0*(del_negd*&
 &           del_neg+del_neg*del_negd)
           den = del_pos*del_pos + 2.0d0*del_neg*del_neg
-          dend = dend + del_negd*del_pos + del_neg*del_posd
+          dend = dend + del_negd*del_pos + del_neg*del_posd + epsid*epsi&
+&           + epsi*epsid
           den = den + del_neg*del_pos + epsi*epsi
           dend = dend*del_neg + den*del_negd
           den = den*del_neg

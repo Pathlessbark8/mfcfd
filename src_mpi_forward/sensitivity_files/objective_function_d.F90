@@ -13,9 +13,9 @@ CONTAINS
 !  Differentiation of objective_function in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *clcd *cd *vector_cost_func
 !                *cl *cm *(point.vorticity_sqr)
-!   with respect to varying inputs: *clcd *cd *vector_cost_func
-!                *cl *cm *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.prim) *(point.vorticity_sqr)
+!   with respect to varying inputs: mach theta power *clcd *cd
+!                *vector_cost_func *cl *cm *(point.x) *(point.y)
+!                *(point.nx) *(point.ny) *(point.prim) *(point.vorticity_sqr)
 !   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
 !                cl:in cm:in point.x:in point.y:in point.nx:in
 !                point.ny:in point.prim:in point.vorticity_sqr:in
@@ -29,8 +29,8 @@ CONTAINS
 &     clcdd + total_entropyd + total_enstrophyd
     vector_cost_func = total_loss_stagpressure + cl + cd + cm + clcd + &
 &     total_entropy + total_enstrophy
-    ! if(rank==0) then
-    !   write(*,*) "Vector function derivative is ", vector_cost_funcd
+    if(rank==0) then
+      write(*,*) "Vector function derivative is ", vector_cost_funcd
     !   write(*,*) "SG", total_loss_stagpressured 
     !   write(*,*) "Cld", cld
     !   write(*,*) "Cdd", cdd
@@ -39,7 +39,7 @@ CONTAINS
     !   write(*,*) "Entropy", total_entropyd
     !   write(*,*) "Enstrophyd", total_enstrophyd
     !   write(*,*) "Vector function is ", vector_cost_func
-    ! end if
+    end if
   END SUBROUTINE OBJECTIVE_FUNCTION_D
 
   SUBROUTINE OBJECTIVE_FUNCTION()
