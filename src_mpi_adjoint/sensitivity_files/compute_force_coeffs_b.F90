@@ -43,7 +43,7 @@ CONTAINS
     REAL*8 :: tempb5
     REAL*8 :: tempb6
     REAL*8 :: tempb7
-    REAL*8, DIMENSION(4) :: tempb8
+    REAL*8, DIMENSION(shapes) :: tempb8
     temp = 0.5d0*rho_inf*mach*mach
     h = 0.d0
     v = 0.d0

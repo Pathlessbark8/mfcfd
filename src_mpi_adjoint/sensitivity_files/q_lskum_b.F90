@@ -62,6 +62,7 @@ MODULE Q_LSKUM_MOD_DIFF
         INTEGER :: branch
         IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
         &                   status='REPLACE', action='WRITE') 
+        vector_cost_funcb = 1.0d0
         CALL COMPUTE_NORMALS()
         CALL GENERATE_CONNECTIVITY()
         IF (rank .EQ. 0) THEN
@@ -153,8 +154,12 @@ MODULE Q_LSKUM_MOD_DIFF
             CALL POPREAL8ARRAY(point%delta, max_points)
             
             CALL FPI_SOLVER_B(it)
+            IF (rank .EQ. 0) THEN
+                WRITE(*,*) 'iterations:', it 
+            end if
         END DO
         CALL COMPUTE_NORMALS_B()
+        WRITE(*,*) pointb%x(78)
         aoab = 0.0_8
         q_initb = 0.0_8
         res_newb = 0.0_8

@@ -30,7 +30,7 @@ CONTAINS
     vector_cost_func = total_loss_stagpressure + cl + cd + cm + clcd + &
 &     total_entropy + total_enstrophy
     if(rank==0) then
-      write(*,*) "Vector function derivative is ", vector_cost_funcd
+    !   write(*,*) "Vector function derivative is ", vector_cost_funcd
     !   write(*,*) "SG", total_loss_stagpressured 
     !   write(*,*) "Cld", cld
     !   write(*,*) "Cdd", cdd

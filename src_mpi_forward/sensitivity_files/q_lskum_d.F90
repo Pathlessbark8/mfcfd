@@ -61,7 +61,7 @@ CONTAINS
     INTEGER :: i
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
-    ! pointd%x(78) = 1.0d0
+    pointd%x(78) = 1.0d0
     CALL COMPUTE_NORMALS_D()
     CALL GENERATE_CONNECTIVITY()
     IF (rank .EQ. 0) THEN
