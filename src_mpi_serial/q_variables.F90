@@ -121,72 +121,6 @@ contains
 
                 end subroutine 
 
-                subroutine eval_q_double_derivatives()
-
-                        implicit none
-
-                        ! local variables
-                        integer :: i
-                        integer :: k, r, nbh
-                        real*8 :: x_i, y_i, x_k, y_k
-                        real*8 :: delx, dely, dist, weights
-                        real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                        real*8 :: sum_delx_del_qx(4), sum_delx_del_qy(4), sum_dely_del_qx(4), sum_dely_del_qy(4)
-                        real*8 :: det, delq, temp
-                        real*8 :: one_by_det
-
-                        do i=1, local_points
-
-                                x_i = point%x(i)
-                                y_i = point%y(i)
-
-                                sum_delx_sqr = 0.d0
-                                sum_dely_sqr = 0.d0
-                                sum_delx_dely = 0.d0
-
-                                sum_delx_del_qx = 0.d0
-                                sum_delx_del_qy = 0.d0
-                                sum_dely_del_qx = 0.d0
-                                sum_dely_del_qy = 0.d0
-
-                                do k = 1, point%nbhs(i)
-
-                                        nbh = point%conn(i,k)
-                                        
-                                        x_k = point%x(nbh)
-                                        y_k = point%y(nbh)
-
-                                        delx = x_k - x_i
-                                        dely = y_k - y_i
-
-                                        dist = dsqrt(delx*delx + dely*dely)
-                                        weights = dist**power
-
-                                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
-                                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
-
-                                        sum_delx_dely = sum_delx_dely + delx*dely*weights
-
-                                        sum_delx_del_qx = sum_delx_del_qx + weights*delx*(point%dq(1,:,nbh) - point%dq(1,:,i))
-                                        sum_delx_del_qy = sum_delx_del_qy + weights*delx*(point%dq(2,:,nbh) - point%dq(2,:,i))
-                                        sum_dely_del_qx = sum_dely_del_qx + weights*dely*(point%dq(1,:,nbh) - point%dq(1,:,i))
-                                        sum_dely_del_qy = sum_dely_del_qy + weights*dely*(point%dq(2,:,nbh) - point%dq(2,:,i))
-
-                                enddo
-
-                                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                                one_by_det = 1.0d0/det
-
-                                point%ddq(1,:,i) = (sum_delx_del_qx*sum_dely_sqr&
-                                & - sum_dely_del_qx*sum_delx_dely)*one_by_det
-                                point%ddq(2,:,i) = (sum_delx_del_qy*sum_dely_sqr&
-                                & - sum_dely_del_qy*sum_delx_dely)*one_by_det
-                                point%ddq(3,:,i) = (sum_dely_del_qy*sum_delx_sqr&
-                                &- sum_delx_del_qy*sum_delx_dely)*one_by_det
-                        end do
-
-                end subroutine
-
                 subroutine eval_q_inner_loop()
                         implicit none
 
@@ -248,23 +182,23 @@ contains
                 
                                         sum_delx_dely = sum_delx_dely + delx*dely*weights
                 
-                                        temp1 = q1 - 0.5d0 * (delx * point%dq(1,1,i) + dely * point%dq(2,1,i)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,1,i) + 2.0d0*delx*dely * point%ddq(2,1,i) + dely*dely * point%ddq(3,1,i))
-                                        temp2 = point%q(1,nbh) - 0.5d0 * (delx * point%dq(1,1,nbh) + dely * point%dq(2,1,nbh)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,1,nbh) + 2*delx*dely * point%ddq(2,1,nbh) + dely*dely * point%ddq(3,1,nbh))
+                                        temp1 = q1 - 0.5d0 * (delx * point%dq(1,1,i) + dely * point%dq(2,1,i))
+                                        temp2 = point%q(1,nbh) - 0.5d0 * (delx * point%dq(1,1,nbh) + dely * point%dq(2,1,nbh))
                                         sum_delx_delq1 = sum_delx_delq1 + (weights * delx * (temp2 - temp1))
                                         sum_dely_delq1 = sum_dely_delq1 + (weights * dely * (temp2 - temp1))
                 
-                                        temp1 = q2 - 0.5d0 * (delx * point%dq(1,2,i) + dely * point%dq(2,2,i)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,2,i) + 2.0d0*delx*dely * point%ddq(2,2,i) + dely*dely * point%ddq(3,2,i))
-                                        temp2 = point%q(2,nbh) - 0.5d0 * (delx * point%dq(1,2,nbh) + dely * point%dq(2,2,nbh)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,2,nbh) + 2*delx*dely * point%ddq(2,2,nbh) + dely*dely * point%ddq(3,2,nbh))
+                                        temp1 = q2 - 0.5d0 * (delx * point%dq(1,2,i) + dely * point%dq(2,2,i))
+                                        temp2 = point%q(2,nbh) - 0.5d0 * (delx * point%dq(1,2,nbh) + dely * point%dq(2,2,nbh))
                                         sum_delx_delq2 = sum_delx_delq2 + (weights * delx * (temp2 - temp1))
                                         sum_dely_delq2 = sum_dely_delq2 + (weights * dely * (temp2 - temp1))
                 
-                                        temp1 = q3 - 0.5d0 * (delx * point%dq(1,3,i) + dely * point%dq(2,3,i)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,3,i) + 2.0d0*delx*dely * point%ddq(2,3,i) + dely*dely * point%ddq(3,3,i))
-                                        temp2 = point%q(3,nbh) - 0.5d0 * (delx * point%dq(1,3,nbh) + dely * point%dq(2,3,nbh)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,3,nbh) + 2*delx*dely * point%ddq(2,3,nbh) + dely*dely * point%ddq(3,3,nbh))
+                                        temp1 = q3 - 0.5d0 * (delx * point%dq(1,3,i) + dely * point%dq(2,3,i))
+                                        temp2 = point%q(3,nbh) - 0.5d0 * (delx * point%dq(1,3,nbh) + dely * point%dq(2,3,nbh))
                                         sum_delx_delq3 = sum_delx_delq3 + (weights * delx * (temp2 - temp1))
                                         sum_dely_delq3 = sum_dely_delq3 + (weights * dely * (temp2 - temp1))
                 
-                                        temp1 = q4 - 0.5d0 * (delx * point%dq(1,4,i) + dely * point%dq(2,4,i)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,4,i) + 2.0d0*delx*dely * point%ddq(2,4,i) + dely*dely * point%ddq(3,4,i))
-                                        temp2 = point%q(4,nbh) - 0.5d0 * (delx * point%dq(1,4,nbh) + dely * point%dq(2,4,nbh)) + (1.0d0/12.0d0) * (delx*delx * point%ddq(1,4,nbh) + 2*delx*dely * point%ddq(2,4,nbh) + dely*dely * point%ddq(3,4,nbh))
+                                        temp1 = q4 - 0.5d0 * (delx * point%dq(1,4,i) + dely * point%dq(2,4,i))
+                                        temp2 = point%q(4,nbh) - 0.5d0 * (delx * point%dq(1,4,nbh) + dely * point%dq(2,4,nbh))
                                         sum_delx_delq4 = sum_delx_delq4 + (weights * delx * (temp2 - temp1))
                                         sum_dely_delq4 = sum_dely_delq4 + (weights * dely * (temp2 - temp1))
                 

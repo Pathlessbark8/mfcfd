@@ -33,7 +33,6 @@ module data_structure_mod
                 real*8, dimension(:,:), allocatable :: U
 		real*8, dimension(:,:,:), allocatable :: dq
 		real*8, dimension(:,:,:), allocatable :: qm
-                real*8, dimension(:,:,:), allocatable :: ddq
                 real*8, dimension(:,:,:), allocatable :: temp
 
                 real*8, dimension(:,:), allocatable :: phi1, phi2
@@ -143,7 +142,6 @@ module data_structure_mod
                 allocate(point%dq(2,4,max_points))
 
                 allocate(point%qm(2,4,max_points))
-                allocate(point%ddq(3,4,max_points))
                 allocate(point%temp(3,4,max_points))
 
                 allocate(point%phi1(4,max_points))
@@ -187,7 +185,6 @@ module data_structure_mod
                 deallocate(point%U)
                 deallocate(point%dq)
                 deallocate(point%qm)
-                deallocate(point%ddq)
                 deallocate(point%temp)
 
                 deallocate(point%phi1)
