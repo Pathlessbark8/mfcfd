@@ -63,6 +63,9 @@ CONTAINS
     p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
     constant = 1/(p0_inf**2*plen)
     DO i=1,local_points
+      if(point%original_id(i) == 1) then
+        cycle
+      end if
       prim = point%prim(:, i)
       CALL PUSHREAL8(angle)
       angle = SQRT(gamma*prim(4)/prim(1))
@@ -73,6 +76,9 @@ CONTAINS
     p0_sumb = 0.0_8
     p0_sumb = total_p0b
     DO i=local_points,1,-1
+      if(point%original_id(i) == 1) then
+          cycle
+      end if
       prim = point%prim(:, i)
       p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
       p0b = -(2*(p0_inf-p0)*p0_sumb)
@@ -121,6 +127,9 @@ CONTAINS
     constant = 1/(p0_inf**2*plen)
     p0_sum = 0.0d0
     DO i=1,local_points
+      if(point%original_id(i) == 1) then
+        cycle
+      end if
       prim = point%prim(:, i)
       angle = SQRT(gamma*prim(4)/prim(1))
       mach_t = SQRT(prim(2)**2+prim(3)**2)/angle

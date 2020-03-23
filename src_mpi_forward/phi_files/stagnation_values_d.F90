@@ -80,6 +80,9 @@ CONTAINS
     p0_sum = 0.0d0
     p0_sumd = 0.0_8
     DO i=1,local_points
+      if(point%original_id(i) == 1) then
+        cycle
+      end if
       primd = pointd%prim(:, i)
       prim = point%prim(:, i)
       arg1d = (gamma*primd(4)*prim(1)-gamma*prim(4)*primd(1))/prim(1)**2
@@ -144,6 +147,9 @@ CONTAINS
     constant = 1/(p0_inf**2*plen)
     p0_sum = 0.0d0
     DO i=1,local_points
+      if(point%original_id(i) == 1) then
+          cycle
+      end if
       prim = point%prim(:, i)
       arg1 = gamma*prim(4)/prim(1)
       angle = SQRT(arg1)

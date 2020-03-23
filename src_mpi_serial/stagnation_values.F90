@@ -58,6 +58,9 @@ module stagnation_values_mod
             p0_sum = 0.0d0
 
             do i=1, local_points
+                if(point%original_id(i) == 1) then
+                    cycle
+                end if
                 prim = point%prim(:,i)
                 angle = sqrt(gamma * prim(4)/ prim(1))
                 mach_t = sqrt(prim(2)**2 + prim(3)**2)/angle
