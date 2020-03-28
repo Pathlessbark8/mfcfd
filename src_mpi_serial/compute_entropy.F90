@@ -25,16 +25,16 @@ module compute_entropy_mod
                                 temp1 = (point%prim(1,k))**gamma
                                 temp1 = point%prim(4,k)/temp1
                                 temp1 = dlog(temp1)
-                                point%entropy(k) = dabs(temp1 - temp2)
+                                point%entropy(k) = (temp1 - temp2)**2
                                 
-                                total_entropy = total_entropy + dabs(temp1 - temp2)
+                                total_entropy = total_entropy + (temp1 - temp2)**2
                         enddo
 
                         call MPI_Reduce(total_entropy, gtotal_entropy , 1, &
                                 & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
 
                         if(rank == 0) then
-                                !write(*,*)"total entropy :", gtotal_entropy
+                                write(*,*)"total entropy :", gtotal_entropy
                         end if
 
                 end subroutine 
