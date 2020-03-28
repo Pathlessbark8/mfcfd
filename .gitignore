@@ -24,4 +24,3 @@ case.in
 examples/mpi_adjoint/phi_values_split/*
 partGrid*
 examples/mpi_adjoint/case.in
-src_mpi_clean/
