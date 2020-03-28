@@ -67,12 +67,12 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: rks, rank, proc
   REAL*8 :: euler
   REAL*8 :: cost_func
-  REAL*8 :: cost_funcb
   REAL*8 :: res_old, res_new, residue, max_res
   REAL*8 :: gsum_res_sqr, sum_res_sqr
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
   REAL*8 :: total_entropy, total_enstrophy
+  REAL*8 :: total_entropyb
   INTEGER :: plen
   INTEGER :: format
 !The parameter CFL is the CFL number for stability ..

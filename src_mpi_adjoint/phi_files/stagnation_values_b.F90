@@ -38,81 +38,81 @@ CONTAINS
 ! &   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
   END SUBROUTINE STAGNATION_PRESSURE
 
-!  Differentiation of objective_function_j in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cost_func *(point.prim)
-!   with respect to varying inputs: *(point.prim)
-!   Plus diff mem management of: point.prim:in
-  SUBROUTINE OBJECTIVE_FUNCTION_J_B()
-    IMPLICIT NONE
-    INTEGER :: i
-    REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
-    REAL*8 :: p0b, p0_sumb, angleb, mach_tb
-    REAL*8 :: prim(4)
-    REAL*8 :: primb(4)
-    REAL*8 :: total_p0
-    REAL*8 :: total_p0b
-    INTRINSIC SQRT
-    REAL*8 :: temp
-    REAL*8 :: temp0
-    REAL*8 :: temp1
-    REAL*8 :: temp2
-    REAL*8 :: tempb
-    REAL*8 :: tempb0
-    PetscErrorCode :: ierr
-    gammapower = gamma/(gamma-1)
-    p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
-    constant = 1/(p0_inf**2*plen)
-    DO i=1,local_points
-      if(point%original_id(i) == 1) then
-        cycle
-      end if
-      prim = point%prim(:, i)
-      CALL PUSHREAL8(angle)
-      angle = SQRT(gamma*prim(4)/prim(1))
-      CALL PUSHREAL8(mach_t)
-      mach_t = SQRT(prim(2)**2+prim(3)**2)/angle
-    END DO
-    total_p0b = constant*cost_funcb
-    p0_sumb = 0.0_8
-    p0_sumb = total_p0b
-    DO i=local_points,1,-1
-      if(point%original_id(i) == 1) then
-          cycle
-      end if
-      prim = point%prim(:, i)
-      p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
-      p0b = -(2*(p0_inf-p0)*p0_sumb)
-      primb = 0.0_8
-      temp2 = (gamma-1)*mach_t**2/2 + 1
-      primb(4) = primb(4) + temp2**gammapower*p0b
-      IF (temp2 .LE. 0.0 .AND. (gammapower .EQ. 0.0 .OR. gammapower .NE.&
-&         INT(gammapower))) THEN
-        mach_tb = 0.0
-      ELSE
-        mach_tb = (gamma-1)*gammapower*temp2**(gammapower-1)*prim(4)*&
-&         mach_t*p0b
-      END IF
-      CALL POPREAL8(mach_t)
-      tempb = mach_tb/angle
-      temp0 = prim(2)**2 + prim(3)**2
-      temp1 = SQRT(temp0)
-      IF (.NOT.temp0 .EQ. 0.0) primb(2) = primb(2) + 2*prim(2)*tempb/(&
-&         2.0*temp1)
-      IF (.NOT.temp0 .EQ. 0.0) primb(3) = primb(3) + 2*prim(3)*tempb/(&
-&         2.0*temp1)
-      angleb = -(temp1*tempb/angle)
-      CALL POPREAL8(angle)
-      temp = prim(4)/prim(1)
-      IF (gamma*temp .EQ. 0.0) THEN
-        tempb0 = 0.0
-      ELSE
-        tempb0 = gamma*angleb/(2.0*SQRT(gamma*temp)*prim(1))
-      END IF
-      primb(4) = primb(4) + tempb0
-      primb(1) = primb(1) - temp*tempb0
-      pointb%prim(:, i) = pointb%prim(:, i) + primb
-    END DO
-  END SUBROUTINE OBJECTIVE_FUNCTION_J_B
+! !  Differentiation of objective_function_j in reverse (adjoint) mode (with options fixinterface):
+! !   gradient     of useful results: cost_func *(point.prim)
+! !   with respect to varying inputs: *(point.prim)
+! !   Plus diff mem management of: point.prim:in
+!   SUBROUTINE OBJECTIVE_FUNCTION_J_B()
+!     IMPLICIT NONE
+!     INTEGER :: i
+!     REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
+!     REAL*8 :: p0b, p0_sumb, angleb, mach_tb
+!     REAL*8 :: prim(4)
+!     REAL*8 :: primb(4)
+!     REAL*8 :: total_p0
+!     REAL*8 :: total_p0b
+!     INTRINSIC SQRT
+!     REAL*8 :: temp
+!     REAL*8 :: temp0
+!     REAL*8 :: temp1
+!     REAL*8 :: temp2
+!     REAL*8 :: tempb
+!     REAL*8 :: tempb0
+!     PetscErrorCode :: ierr
+!     gammapower = gamma/(gamma-1)
+!     p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
+!     constant = 1/(p0_inf**2*plen)
+!     DO i=1,local_points
+!       if(point%original_id(i) == 1) then
+!         cycle
+!       end if
+!       prim = point%prim(:, i)
+!       CALL PUSHREAL8(angle)
+!       angle = SQRT(gamma*prim(4)/prim(1))
+!       CALL PUSHREAL8(mach_t)
+!       mach_t = SQRT(prim(2)**2+prim(3)**2)/angle
+!     END DO
+!     total_p0b = constant*cost_funcb
+!     p0_sumb = 0.0_8
+!     p0_sumb = total_p0b
+!     DO i=local_points,1,-1
+!       if(point%original_id(i) == 1) then
+!           cycle
+!       end if
+!       prim = point%prim(:, i)
+!       p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
+!       p0b = -(2*(p0_inf-p0)*p0_sumb)
+!       primb = 0.0_8
+!       temp2 = (gamma-1)*mach_t**2/2 + 1
+!       primb(4) = primb(4) + temp2**gammapower*p0b
+!       IF (temp2 .LE. 0.0 .AND. (gammapower .EQ. 0.0 .OR. gammapower .NE.&
+! &         INT(gammapower))) THEN
+!         mach_tb = 0.0
+!       ELSE
+!         mach_tb = (gamma-1)*gammapower*temp2**(gammapower-1)*prim(4)*&
+! &         mach_t*p0b
+!       END IF
+!       CALL POPREAL8(mach_t)
+!       tempb = mach_tb/angle
+!       temp0 = prim(2)**2 + prim(3)**2
+!       temp1 = SQRT(temp0)
+!       IF (.NOT.temp0 .EQ. 0.0) primb(2) = primb(2) + 2*prim(2)*tempb/(&
+! &         2.0*temp1)
+!       IF (.NOT.temp0 .EQ. 0.0) primb(3) = primb(3) + 2*prim(3)*tempb/(&
+! &         2.0*temp1)
+!       angleb = -(temp1*tempb/angle)
+!       CALL POPREAL8(angle)
+!       temp = prim(4)/prim(1)
+!       IF (gamma*temp .EQ. 0.0) THEN
+!         tempb0 = 0.0
+!       ELSE
+!         tempb0 = gamma*angleb/(2.0*SQRT(gamma*temp)*prim(1))
+!       END IF
+!       primb(4) = primb(4) + tempb0
+!       primb(1) = primb(1) - temp*tempb0
+!       pointb%prim(:, i) = pointb%prim(:, i) + primb
+!     END DO
+!   END SUBROUTINE OBJECTIVE_FUNCTION_J_B
 
   SUBROUTINE OBJECTIVE_FUNCTION_J()
     IMPLICIT NONE

@@ -15,9 +15,9 @@ MODULE Q_LSKUM_MOD_DIFF
 
 CONTAINS
 !  Differentiation of q_lskum in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cost_func
+!   gradient     of useful results: total_entropy
 !   with respect to varying inputs: *(point.phi1) *(point.phi2)
-!   RW status of diff variables: cost_func:in-killed *(point.prim):(loc)
+!   RW status of diff variables: total_entropy:in-killed *(point.prim):(loc)
 !                *(point.prim_old):(loc) *(point.flux_res):(loc)
 !                *(point.q):(loc) *(point.dq):(loc) *(point.ddq):(loc)
 !                *(point.temp):(loc) *(point.phi1):out *(point.phi2):out
@@ -193,7 +193,7 @@ CONTAINS
 &                  ISIZE2OFDrfpoint_temp*ISIZE3OFDrfpoint_temp)
       CALL POPREAL8ARRAY(point%delta, ISIZE1OFDrfpoint_delta)
       CALL FPI_SOLVER_B(it)
-      cost_funcb = 0.0_8
+      total_entropyb = 0.0_8
  130 CONTINUE
     DO i=ghost_points,1,-1
       pointb%phi2(4, i+local_points) = 0.0_8

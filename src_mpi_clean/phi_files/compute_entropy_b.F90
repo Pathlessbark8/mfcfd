@@ -8,15 +8,55 @@ MODULE COMPUTE_ENTROPY_MOD_DIFF
   IMPLICIT NONE
 
 CONTAINS
+!  Differentiation of compute_entropy in reverse (adjoint) mode (with options fixinterface):
+!   gradient     of useful results: total_entropy *(point.prim)
+!   with respect to varying inputs: *(point.prim)
+!   Plus diff mem management of: point.prim:in
+  SUBROUTINE COMPUTE_ENTROPY_B()
+    IMPLICIT NONE
+    INTEGER :: k
+    REAL*8 :: temp1, temp2
+    REAL*8 :: temp1b
+    REAL*8 :: gtotal_entropy
+    INTRINSIC DLOG
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+! PetscErrorCode :: ierr
+    total_entropy = 0.d0
+    temp2 = DLOG(pr_inf)
+    DO k=1,local_points
+      CALL PUSHREAL8(temp1)
+      temp1 = point%prim(1, k)**gamma
+      CALL PUSHREAL8(temp1)
+      temp1 = point%prim(4, k)/temp1
+      CALL PUSHREAL8(temp1)
+      temp1 = DLOG(temp1)
+      total_entropy = total_entropy + (temp1-temp2)**2
+    END DO
+    CALL MPI_REDUCE(total_entropy, gtotal_entropy, 1, mpi_double, &
+&             mpi_sum, 0, petsc_comm_world, ierr)
+    DO k=local_points,1,-1
+      temp1b = 2*(temp1-temp2)*total_entropyb
+      CALL POPREAL8(temp1)
+      temp1b = temp1b/temp1
+      CALL POPREAL8(temp1)
+      pointb%prim(4, k) = pointb%prim(4, k) + temp1b/temp1
+      temp1b = -(point%prim(4, k)*temp1b/temp1**2)
+      CALL POPREAL8(temp1)
+      IF (.NOT.(point%prim(1, k) .LE. 0.0 .AND. (gamma .EQ. 0.0 .OR. &
+&         gamma .NE. INT(gamma)))) pointb%prim(1, k) = pointb%prim(1, k)&
+&         + gamma*point%prim(1, k)**(gamma-1)*temp1b
+    END DO
+  END SUBROUTINE COMPUTE_ENTROPY_B
+
   SUBROUTINE COMPUTE_ENTROPY()
     IMPLICIT NONE
-!write(*,*)"total entropy :", gtotal_entropy
     INTEGER :: k
     REAL*8 :: temp1, temp2
     REAL*8 :: gtotal_entropy
     INTRINSIC DLOG
-    INTRINSIC DABS
-    DOUBLE PRECISION :: dabs0
     INTEGER :: petsc_comm_world
     INTEGER :: ierr
     INTEGER :: mpi_sum
@@ -28,20 +68,12 @@ CONTAINS
       temp1 = point%prim(1, k)**gamma
       temp1 = point%prim(4, k)/temp1
       temp1 = DLOG(temp1)
-      IF (temp1 - temp2 .GE. 0.) THEN
-        point%entropy(k) = temp1 - temp2
-      ELSE
-        point%entropy(k) = -(temp1-temp2)
-      END IF
-      IF (temp1 - temp2 .GE. 0.) THEN
-        dabs0 = temp1 - temp2
-      ELSE
-        dabs0 = -(temp1-temp2)
-      END IF
-      total_entropy = total_entropy + dabs0
+      point%entropy(k) = (temp1-temp2)**2
+      total_entropy = total_entropy + (temp1-temp2)**2
     END DO
     CALL MPI_REDUCE(total_entropy, gtotal_entropy, 1, mpi_double, &
 &             mpi_sum, 0, petsc_comm_world, ierr)
+    IF (rank .EQ. 0) WRITE(*, *) 'total entropy :', gtotal_entropy
   END SUBROUTINE COMPUTE_ENTROPY
 
 END MODULE COMPUTE_ENTROPY_MOD_DIFF

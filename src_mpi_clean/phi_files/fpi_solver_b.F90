@@ -14,9 +14,10 @@ MODULE FPI_SOLVER_MOD_DIFF
 
 CONTAINS
 !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cost_func *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
-!                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
+!   gradient     of useful results: total_entropy *(point.prim)
+!                *(point.prim_old) *(point.flux_res) *(point.q)
+!                *(point.dq) *(point.ddq) *(point.temp) *(point.phi1)
+!                *(point.phi2) *(point.delta)
 !   with respect to varying inputs: *(point.prim) *(point.prim_old)
 !                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
 !                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
@@ -84,7 +85,7 @@ CONTAINS
 &                   ISIZE2OFDrfpoint_prim)
       CALL STATE_UPDATE(rk)
     END DO
-    CALL OBJECTIVE_FUNCTION_J_B()
+    CALL OBJECTIVE_FUNCTION_B()
     DO rk=rks,1,-1
       CALL POPREAL8ARRAY(point%prim, ISIZE1OFDrfpoint_prim*&
 &                  ISIZE2OFDrfpoint_prim)
@@ -154,7 +155,7 @@ CONTAINS
 ! start updating primitive values
 ! call update_begin_prim_ghost()
 ! call update_end_prim_ghost()
-    CALL OBJECTIVE_FUNCTION_J()
+    CALL OBJECTIVE_FUNCTION()
 ! call MPI_Reduce(sum_res_sqr,gsum_res_sqr, 1, MPI_DOUBLE, MPI_SUM, &
 !    0, PETSC_COMM_WORLD, ierr)
 ! call MPI_Bcast(gsum_res_sqr, 1, MPI_DOUBLE, 0, PETSC_COMM_WORLD, &

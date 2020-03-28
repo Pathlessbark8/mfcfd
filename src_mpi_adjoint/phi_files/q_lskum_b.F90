@@ -31,7 +31,7 @@ CONTAINS
 &                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    cost_funcb = 1.0d0
+    total_entropyb = 1.0d0
 
     IF (rank .EQ. 0) THEN
       WRITE(*, *) 
@@ -100,8 +100,8 @@ CONTAINS
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL FPI_SOLVER_B(it)
         ! IF (rank .EQ. 1) THEN
-          ! z = 78
-          ! write(*,*) pointb%phi1(:,z), ' is Phi1'
+        !   z = 78
+        !   write(*,*) pointb%phi1(:,z), ' is Phi1'
           ! write(*,*) pointb%phi1(:,z), ' is Phi2'
           ! write(*,*) pointb%prim(:,z), ' is Prim'
           ! write(*,*) pointb%temp(:,:,z), ' is Temp'
@@ -120,7 +120,7 @@ CONTAINS
           !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
           ! END DO
         ! END IF
-        cost_funcb = 0.0_8
+        total_entropyb = 0.0_8
     END DO
     CALL PRINT_PHI_OUTPUT()
 
