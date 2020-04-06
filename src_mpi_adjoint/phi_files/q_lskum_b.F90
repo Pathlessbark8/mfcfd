@@ -31,13 +31,16 @@ CONTAINS
 &                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    total_entropyb = 1.0d0
+    total_enstrophyb = 1.0d0
 
     IF (rank .EQ. 0) THEN
       WRITE(*, *) 
       WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
       WRITE(*, *) 
     END IF
+    ! DO i=1,max_points
+    !     point%vor_area(i) = 1.0d0
+    ! END DO
 
     ! DO i=1,max_points
     !   point%phi1(:, i) = 1.0d0
@@ -52,7 +55,8 @@ CONTAINS
     IF (restart .EQ. 0) itr = 0
     ! ad_count = 1
     DO it=itr+1,itr+max_iters
-      CALL PUSHREAL8(gsum_res_sqr)
+    !   CALL PUSHREAL8(gsum_res_sqr)
+      CALL PUSHREAL8ARRAY(point%vorticity_sqr, max_points)
       CALL PUSHREAL8ARRAY(point%temp, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
@@ -62,7 +66,7 @@ CONTAINS
       CALL PUSHREAL8ARRAY(point%prim_old, 4*max_points)
       CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
       CALL PUSHREAL8ARRAY(point%delta, max_points)
-      CALL PUSHREAL8(sum_res_sqr)
+    !   CALL PUSHREAL8(sum_res_sqr)
       CALL FPI_SOLVER(it)
       IF (rank .EQ. 0) THEN
         WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
@@ -82,6 +86,7 @@ CONTAINS
     pointb%phi1 = 0.0_8
     pointb%phi2 = 0.0_8
     pointb%delta = 0.0_8
+    pointb%vorticity_sqr = 0.0_8
     IF (rank .EQ. 0) THEN
       write(*,*)
       write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
@@ -98,6 +103,7 @@ CONTAINS
         CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
+        CALL POPREAL8ARRAY(point%vorticity_sqr, max_points)
         CALL FPI_SOLVER_B(it)
         ! IF (rank .EQ. 1) THEN
         !   z = 78
@@ -120,7 +126,7 @@ CONTAINS
           !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
           ! END DO
         ! END IF
-        total_entropyb = 0.0_8
+        total_enstrophyb = 0.0_8
     END DO
     CALL PRINT_PHI_OUTPUT()
 

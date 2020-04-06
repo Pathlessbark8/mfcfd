@@ -57,7 +57,7 @@ CONTAINS
     real*8, allocatable :: q_stor(:, :, :), dq_stor(:, :, :, :)
     real*8, allocatable :: fluxres_stor(:, :, :), delta_stor(:, :)
     real*8, allocatable :: primold_stor(:, :, :), ddq_stor(:, :, :, :)
-    real*8, allocatable :: temp_stor(:, :, :, :)
+    real*8, allocatable :: temp_stor(:, :, :, :), vorticitysqr_stor(:, :)
 
 !   Allocate store variables
 
@@ -68,6 +68,7 @@ CONTAINS
     allocate( dq_stor(0:chkpts, 2, 4, max_points))
     allocate( qm_stor(0:chkpts, 2, 4, max_points))
     allocate( delta_stor(0:chkpts, max_points))
+    allocate( vorticitysqr_stor(0:chkpts, max_points))
     allocate( ddq_stor(0:chkpts, 3, 4, max_points))
     allocate( temp_stor(0:chkpts, 3, 4, max_points))
 
@@ -97,11 +98,15 @@ CONTAINS
     
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    total_entropyb = 1.0d0
+    total_enstrophyb = 1.0d0
+    ! DO i=1,max_points
+    !     point%vor_area(i) = 1.0d0
+    ! END DO
     ! DO i=1,max_points
     !     point%phi1(:, i) = 1.0d0
     !     point%phi2(:, i) = 1.0d0
-    !   END DO 
+    ! END DO
+
     IF (rank .EQ. 0) THEN
         WRITE(*, *) 
         WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
@@ -129,6 +134,7 @@ CONTAINS
     IF ((WHATDO.EQ.TAKSHT) .AND. (INFO.GT.1)) THEN                                                                          
         do i=1,max_points
             delta_stor(check, i) = point%delta(i)
+            vorticitysqr_stor(check, i) = point%vorticity_sqr(i)
             do r = 1, 4
                 q_stor(check, r, i) = point%q(r,i)
                 prim_stor(check, r, i) = point%prim(r,i)
@@ -181,6 +187,7 @@ CONTAINS
         !
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
+        pointb%vorticity_sqr = 0.0_8
         pointb%delta = 0.0_8
         pointb%prim = 0.0_8
         pointb%prim_old = 0.0_8
@@ -198,7 +205,7 @@ CONTAINS
         END IF
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
-        total_entropyb = 0.0_8
+        total_enstrophyb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
                 write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
@@ -213,7 +220,7 @@ CONTAINS
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
         CALL FPI_SOLVER_B(ITIM)
-        total_entropyb = 0.0_8
+        total_enstrophyb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
                 write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
@@ -230,6 +237,7 @@ CONTAINS
 !
         do i=1,max_points
             point%delta(i) = delta_stor(check, i)
+            point%vorticity_sqr(i) = vorticitysqr_stor(check, i)
             do r = 1, 4
                 point%q(r,i) = q_stor(check, r, i)
                 point%prim(r,i) = prim_stor(check, r, i)

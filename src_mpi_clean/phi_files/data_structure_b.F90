@@ -38,7 +38,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       INTEGER, DIMENSION(:, :), ALLOCATABLE :: ypos_conn, yneg_conn
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
-      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy
+      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy, vorticity, &
+&     vorticity_sqr, vor_area
   END TYPE POINTS
   TYPE POINTS_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: x
@@ -53,6 +54,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
+      REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointb
@@ -72,7 +75,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
   REAL*8 :: total_entropy, total_enstrophy
-  REAL*8 :: total_entropyb
+  REAL*8 :: total_enstrophyb
   INTEGER :: plen
   INTEGER :: format
 !The parameter CFL is the CFL number for stability ..
@@ -133,6 +136,9 @@ CONTAINS
     ALLOCATE(point%phi1(4, max_points))
     ALLOCATE(point%phi2(4, max_points))
     ALLOCATE(point%entropy(max_points))
+    ALLOCATE(point%vorticity(max_points))
+    ALLOCATE(point%vorticity_sqr(max_points))
+    ALLOCATE(point%vor_area(max_points))
     ALLOCATE(point%xpos_nbhs(max_points))
     ALLOCATE(point%xneg_nbhs(max_points))
     ALLOCATE(point%ypos_nbhs(max_points))
@@ -163,6 +169,9 @@ CONTAINS
     DEALLOCATE(point%phi1)
     DEALLOCATE(point%phi2)
     DEALLOCATE(point%entropy)
+    DEALLOCATE(point%vorticity)
+    DEALLOCATE(point%vorticity_sqr)
+    DEALLOCATE(point%vor_area)
     DEALLOCATE(point%xpos_nbhs)
     DEALLOCATE(point%xneg_nbhs)
     DEALLOCATE(point%ypos_nbhs)
@@ -179,4 +188,3 @@ CONTAINS
   END SUBROUTINE DEALLOCATE_SOLN
 
 END MODULE DATA_STRUCTURE_MOD_DIFF
-
