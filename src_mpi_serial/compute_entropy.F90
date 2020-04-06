@@ -13,7 +13,7 @@ module compute_entropy_mod
                         implicit none
 
                         integer :: k
-			real*8 :: temp1, temp2
+			            real*8 :: temp1, temp2
                         real*8 :: gtotal_entropy
                         PetscErrorCode :: ierr
 
@@ -108,7 +108,7 @@ module compute_entropy_mod
                         
                         point%vorticity_sqr(i) = temp*temp
                         
-                        total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
+                        total_enstrophy = total_enstrophy + (point%vorticity_sqr(i)*point%vor_area(i))
                         
                     enddo
                     

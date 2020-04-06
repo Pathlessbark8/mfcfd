@@ -30,6 +30,10 @@ contains
                         write(*,*)
                 end if
 
+                do i=1,max_points
+                    point%vor_area(i) = 1.0d0
+                enddo
+
                 do i=1,local_points
                         point%phi1(1,i) = 1.0d0
                         point%phi1(2,i) = 1.0d0

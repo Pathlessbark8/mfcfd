@@ -46,7 +46,7 @@ module data_structure_mod
                 
 ! Implicit data
                 real*8, dimension(:,:), allocatable :: U_old
-                real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr
+                real*8, dimension(:), allocatable :: entropy, vorticity, vorticity_sqr, vor_area
         end type points
  
         type(points) :: point
@@ -152,6 +152,7 @@ module data_structure_mod
                 allocate(point%entropy(max_points))
                 allocate(point%vorticity(max_points))
                 allocate(point%vorticity_sqr(max_points))
+                allocate(point%vor_area(max_points))
                 allocate(point%xpos_nbhs(max_points))
                 allocate(point%xneg_nbhs(max_points))
                 allocate(point%ypos_nbhs(max_points))
@@ -198,6 +199,7 @@ module data_structure_mod
                 deallocate(point%entropy)
                 deallocate(point%vorticity)
                 deallocate(point%vorticity_sqr)
+                deallocate(point%vor_area)
                 deallocate(point%xpos_nbhs)
                 deallocate(point%xneg_nbhs)
                 deallocate(point%ypos_nbhs)

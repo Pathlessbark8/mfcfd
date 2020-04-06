@@ -108,7 +108,7 @@ module compute_entropy_mod
                         
                         point%vorticity_sqr(i) = temp*temp
                         
-                        total_enstrophy = total_enstrophy + point%vorticity_sqr(i)
+                        total_enstrophy = total_enstrophy + (point%vorticity_sqr(i)*point%vor_area(i))
                         
                     enddo
                     
