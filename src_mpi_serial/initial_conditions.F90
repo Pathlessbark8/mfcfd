@@ -39,6 +39,8 @@ contains
                 
                 endif
 
+                call voronoi_area_read()
+
         end subroutine
 
         subroutine restart_sol()
@@ -66,6 +68,31 @@ contains
                 end do
 
                 close(515)
+
+        end subroutine
+
+        subroutine voronoi_area_read()
+ 
+            implicit none
+
+            integer :: i
+            character(len=64) :: sfile
+            character(len=10) :: itos
+            real*8 :: dummy
+            
+            if(proc==1) then
+                    sfile = 'voronoi_values_split/voronoi.dat'
+            else
+                    sfile = 'voronoi_values_split/'//'voronoi'//trim(itos(4,rank))//'.dat'
+            end if
+
+            OPEN(UNIT=515,FILE=trim(sfile),form='formatted', action="read")
+
+            do i = 1, local_points
+                read(515,*) dummy, point%vor_area(i)
+            end do
+
+            close(515)
 
         end subroutine
 

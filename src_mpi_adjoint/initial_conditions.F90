@@ -40,12 +40,12 @@ contains
                         
                         call restart_sol()
 
-                        call voronoi_area_read()
-
                         call update_begin_prim_ghost()
                         call update_end_prim_ghost()
                 
                 endif
+
+                call voronoi_area_read()
 
         end subroutine
 
@@ -101,6 +101,6 @@ contains
 
             close(515)
 
-    end subroutine
+        end subroutine
 
 end module initial_conditions_mod

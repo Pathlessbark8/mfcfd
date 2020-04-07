@@ -51,7 +51,9 @@ contains
                         write(*,*)
                 end if
 
-                ! point%phi1(1,78) = point%phi1(1,78) - 1e-3
+                ! if(rank == 30) then
+                !     point%phi1(1,1) = point%phi1(1,1) - 1e-3
+                ! end if
 
                 t = 0.0d0
                 if(restart == 0)itr = 0
