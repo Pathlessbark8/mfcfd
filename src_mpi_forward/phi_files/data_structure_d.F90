@@ -38,7 +38,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       INTEGER, DIMENSION(:, :), ALLOCATABLE :: ypos_conn, yneg_conn
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
-      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy
+      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy, vorticity, &
+      &     vorticity_sqr, vor_area
   END TYPE POINTS
   TYPE POINTS_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: x
@@ -53,6 +54,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
+      REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointd
@@ -67,12 +70,13 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: rks
   REAL*8 :: euler
   REAL*8 :: cost_func
-  REAL*8 :: cost_funcd
+!   REAL*8 :: cost_funcd
   REAL*8 :: res_old, res_new, residue, max_res
   REAL*8 :: gsum_res_sqr, sum_res_sqr
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
   REAL*8 :: total_entropy, total_enstrophy
+  REAL*8 :: total_enstrophyd
   INTEGER :: plen
   INTEGER :: format
 !The parameter CFL is the CFL number for stability ..
@@ -134,6 +138,9 @@ CONTAINS
     ALLOCATE(point%phi1(4, max_points))
     ALLOCATE(point%phi2(4, max_points))
     ALLOCATE(point%entropy(max_points))
+    ALLOCATE(point%vorticity(max_points))
+    ALLOCATE(point%vorticity_sqr(max_points))
+    ALLOCATE(point%vor_area(max_points))
     ALLOCATE(point%xpos_nbhs(max_points))
     ALLOCATE(point%xneg_nbhs(max_points))
     ALLOCATE(point%ypos_nbhs(max_points))
@@ -162,6 +169,8 @@ CONTAINS
     ALLOCATE(pointd%temp(3, 4, max_points))
     ! allocate(pointd%qm(2,4,max_points))
     allocate(pointd%delta(max_points))
+    allocate(pointd%vorticity_sqr(max_points))
+    allocate(pointd%vor_area(max_points))
     ! allocate(Cld(shapes))
     ! allocate(ClCdd(shapes))
     ! allocate(Cdd(shapes))
@@ -184,6 +193,9 @@ end subroutine
     DEALLOCATE(point%phi1)
     DEALLOCATE(point%phi2)
     DEALLOCATE(point%entropy)
+    DEALLOCATE(point%vorticity)
+    DEALLOCATE(point%vorticity_sqr)
+    DEALLOCATE(point%vor_area)
     DEALLOCATE(point%xpos_nbhs)
     DEALLOCATE(point%xneg_nbhs)
     DEALLOCATE(point%ypos_nbhs)
@@ -213,6 +225,8 @@ end subroutine
     DEALLOCATE(pointd%temp)
     ! deallocate(pointd%qm)
     deallocate(pointd%delta)
+    deallocate(pointd%vorticity_sqr)
+    deallocate(pointd%vor_area)
     ! deallocate(Cld)
     ! deallocate(ClCdd)
     ! deallocate(Cdd)

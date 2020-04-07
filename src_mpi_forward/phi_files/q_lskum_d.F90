@@ -37,23 +37,14 @@ CONTAINS
       WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
       WRITE(*, *) 
     END IF
+    ! DO i=1,max_points
+    !     point%vor_area(i) = 1.0d0
+    !   END DO
     DO i=1,max_points
-      pointd%phi1(1, i) = 0.0_8
-      point%phi1(1, i) = 1.0d0
-      pointd%phi1(2, i) = 0.0_8
-      point%phi1(2, i) = 1.0d0
-      pointd%phi1(3, i) = 0.0_8
-      point%phi1(3, i) = 1.0d0
-      pointd%phi1(4, i) = 0.0_8
-      point%phi1(4, i) = 1.0d0
-      pointd%phi2(1, i) = 0.0_8
-      point%phi2(1, i) = 1.0d0
-      pointd%phi2(2, i) = 0.0_8
-      point%phi2(2, i) = 1.0d0
-      pointd%phi2(3, i) = 0.0_8
-      point%phi2(3, i) = 1.0d0
-      pointd%phi2(4, i) = 0.0_8
-      point%phi2(4, i) = 1.0d0
+      pointd%phi1(:, i) = 0.0_8
+      point%phi1(:, i) = 1.0d0
+      pointd%phi2(:, i) = 0.0_8
+      point%phi2(:, i) = 1.0d0
     END DO
 
 ! Set U_old to U for first iteration
@@ -64,19 +55,19 @@ CONTAINS
       point%u_old(4, i) = 2.5d0*point%prim(4, i) + 0.5d0*point%prim(1, i&
 &       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
 &       (3, i))
-    ! IF (point%original_id(i) .EQ. 80) THEN
-        ! WRITE(*, *) '%%%%%%%%%%%%%-<<<<<<<<PhiD Value has been set to 1>>>>>>>>-%%%%%%%%%%%%'
-    ! pointd%phi1(1, 78) = 1.0d0
-
-    ! END IF
     END DO
+
+    if(rank == 30) then
+        WRITE(*, *) '%%%%%%%%%%%%%-<<<<<<<<PhiD Value has been set to 1>>>>>>>>-%%%%%%%%%%%%'
+        pointd%phi1(1, 1) = 1.0d0
+    END IF
     IF (rank .EQ. 0) THEN
       WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
       WRITE(*, *) 
     END IF
     t = 0.0d0
 
-    cost_funcd = 0.0_8
+    total_enstrophyd = 0.0_8
     pointd%prim = 0.0_8
     pointd%prim_old = 0.0_8
     pointd%flux_res = 0.0_8
@@ -85,6 +76,7 @@ CONTAINS
     pointd%ddq = 0.0_8
     pointd%temp = 0.0_8
     pointd%delta = 0.0_8
+    pointd%vorticity_sqr = 0.0_8
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)
       t = t + dtg

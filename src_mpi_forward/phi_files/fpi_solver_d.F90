@@ -67,7 +67,7 @@ CONTAINS
       CALL UPDATE_END_PRIM_GHOST()
     END DO
 ! call objective_function()
-    CALL OBJECTIVE_FUNCTION_J_D()
+    CALL OBJECTIVE_FUNCTION_D()
     CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
 &             , petsc_comm_world, ierr)
     CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
@@ -134,7 +134,7 @@ CONTAINS
       CALL UPDATE_END_PRIM_GHOST()
     END DO
 ! call objective_function()
-    CALL OBJECTIVE_FUNCTION_J()
+    CALL OBJECTIVE_FUNCTION()
     CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
 &             , petsc_comm_world, ierr)
     CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
@@ -159,3 +159,4 @@ CONTAINS
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
+

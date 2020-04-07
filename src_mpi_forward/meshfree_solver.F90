@@ -55,7 +55,7 @@ program meshfree_solver
         call allocate_soln_d()
 !       Initialize Petsc vectors
         ! write(*,*) 'Number of points:         ', max_points
-        write(*,*)
+        ! write(*,*)
 
         if(proc .ne. 1)call init_petsc()
         if(proc == 1) plen = max_points

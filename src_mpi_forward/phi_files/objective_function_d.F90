@@ -8,12 +8,22 @@ MODULE OBJECTIVE_FUNCTION_MOD_DIFF
   IMPLICIT NONE
 
 CONTAINS
+!  Differentiation of objective_function in forward (tangent) mode (with options fixinterface):
+!   variations   of useful results: total_enstrophy *(point.vorticity_sqr)
+!   with respect to varying inputs: *(point.prim) *(point.vorticity_sqr)
+!   Plus diff mem management of: point.prim:in point.vorticity_sqr:in
+SUBROUTINE OBJECTIVE_FUNCTION_D()
+    IMPLICIT NONE
+! call compute_cl_cd_cm()
+! call compute_entropy()
+    CALL COMPUTE_ENSTROPHY_D()
+  END SUBROUTINE OBJECTIVE_FUNCTION_D
+
   SUBROUTINE OBJECTIVE_FUNCTION()
     IMPLICIT NONE
+! call compute_cl_cd_cm()
 ! call compute_entropy()
-! call compute_enstrophy()
-    CALL COMPUTE_CL_CD_CM()
+    CALL COMPUTE_ENSTROPHY()
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF
-
