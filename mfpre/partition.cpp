@@ -30,6 +30,7 @@ void Graph::partition(int n){
     /*  output processing routine  */
     // creates sets of ghost nodes for each partition
     ghosts = new set<int>[nParts];
+    orig_ghosts = new set<int>[nParts];
     totalPoints = new int[nParts];
     fill_n(totalPoints,nParts,0);
     for(int i = 0; i < nvtxs; i++){
@@ -40,6 +41,9 @@ void Graph::partition(int n){
 		    if(part[nbr] != partn){
 			    if(ghosts[part[i]].find(nbr) == ghosts[part[i]].end()){
 				    ghosts[part[i]].insert(nbr);
+                    if (orig_ghosts[part[nbr]].find(nbr) == orig_ghosts[part[nbr]].end()){
+                        orig_ghosts[part[nbr]].insert(nbr);
+                    }
 			    }
 		    }
 	    }

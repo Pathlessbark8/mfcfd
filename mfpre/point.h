@@ -31,6 +31,7 @@ class Graph{
 		int * currGlobalNum;
 		idx_t * part;
 		set<int> * ghosts;
+        set<int> * orig_ghosts;
 		map<int, int> * inputToLoc;
 		map<int, int> inputToGlob;
 		vector<point> ptVec;

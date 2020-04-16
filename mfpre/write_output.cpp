@@ -208,8 +208,13 @@ void Graph::write_output_quad(){
 		set<int>::iterator itr;
 		write << fixed << setprecision(20);
 		for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
-			write << inputToGlob[*itr] << "  " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
-			write << endl;
+            int temp_id = *itr;
+            for(int j=0; j < nParts; j++) {
+                if (orig_ghosts[j].find(temp_id) != orig_ghosts[j].end()){
+			        write << j << " " << " " << ptVec[*itr].id << "  " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
+			        write << endl;
+                }
+            }
 		}
 		write.close(); 
 	}
