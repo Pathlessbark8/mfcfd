@@ -207,15 +207,17 @@ void Graph::write_output_quad(){
 		write.open(folder.append(filename.c_str()), fstream::app);
 		set<int>::iterator itr;
 		write << fixed << setprecision(20);
-		for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
-            int temp_id = *itr;
-            for(int j=0; j < nParts; j++) {
+        for(int j=0; j < nParts; j++) {
+		    for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
+                int temp_id = *itr;
+                int temp_id2;
                 if (orig_ghosts[j].find(temp_id) != orig_ghosts[j].end()){
-			        write << j << " " << " " << ptVec[*itr].id << "  " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
-			        write << endl;
+                    temp_id2 = inputToGlob[*itr] - totalSumPoints[j];
+		    	    write << j << " " <<  temp_id2 << " " << ptVec[*itr].id << " " << ptVec[*itr].x << " " << ptVec[*itr].y << " " << ptVec[*itr].min_dist << "  ";
+		    	    write << endl;
                 }
-            }
-		}
+		    }
+        }
 		write.close(); 
 	}
 }

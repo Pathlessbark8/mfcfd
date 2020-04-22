@@ -32,6 +32,7 @@ void Graph::partition(int n){
     ghosts = new set<int>[nParts];
     orig_ghosts = new set<int>[nParts];
     totalPoints = new int[nParts];
+    totalSumPoints = new int[nParts];
     fill_n(totalPoints,nParts,0);
     for(int i = 0; i < nvtxs; i++){
 	    totalPoints[part[i]]++;
@@ -49,6 +50,13 @@ void Graph::partition(int n){
 	    }
     }
 
+    totalSumPoints[0] = 0;
+    for(int i=0; i<nParts; i++){
+        for(int j=0; j<i; j++){
+            totalSumPoints[i]+=totalPoints[j];
+        }
+    }
+
     
     // creates mapping of local and input numberings for each partition
     inputToLoc = new map<int, int>[nParts];
@@ -62,10 +70,15 @@ void Graph::partition(int n){
     
     for(int i=0; i < nParts; i++) {
 	    set<int>::iterator itr;
-	    for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
-		    inputToLoc[i][ ptVec[*itr].id ] = currLocalIndex[i];
-		    currLocalIndex[i]++;
-	    }
+        for(int j=0; j < nParts; j++) {
+	        for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
+                int temp_id = *itr;
+                if (orig_ghosts[j].find(temp_id) != orig_ghosts[j].end()){
+		            inputToLoc[i][ ptVec[*itr].id ] = currLocalIndex[i];
+		            currLocalIndex[i]++;
+                }
+	        }
+        }
     }
 
     // creates mapping of local and global numberings over all partitions

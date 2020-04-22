@@ -28,6 +28,7 @@ class Graph{
 		idx_t nvtxs;
 		idx_t nParts;
 		int * totalPoints;
+        int * totalSumPoints;
 		int * currGlobalNum;
 		idx_t * part;
 		set<int> * ghosts;
