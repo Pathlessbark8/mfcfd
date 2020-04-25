@@ -175,7 +175,7 @@ void Graph::write_output_quad(){
 		string filename = getfileName(i, nParts);
 		string folder = "point/";
 		ofstream outfile (folder.append(filename.c_str()));
-		outfile << nParts << " " << totalPoints[i]+ghosts[i].size() << " "<< totalPoints[i] << " " << ghosts[i].size() << endl;
+		outfile << nParts << " " << totalPoints[i]+ghosts[i].size() << " "<< totalPoints[i] << " " << ghosts[i].size() << " " << maxGhostPoints[i] << endl;
 	}
 
         // local nodes

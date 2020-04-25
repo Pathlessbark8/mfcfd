@@ -33,6 +33,7 @@ void Graph::partition(int n){
     orig_ghosts = new set<int>[nParts];
     totalPoints = new int[nParts];
     totalSumPoints = new int[nParts];
+    maxGhostPoints = new int[nParts];
     fill_n(totalPoints,nParts,0);
     for(int i = 0; i < nvtxs; i++){
 	    totalPoints[part[i]]++;
@@ -52,6 +53,7 @@ void Graph::partition(int n){
 
     totalSumPoints[0] = 0;
     for(int i=0; i<nParts; i++){
+        maxGhostPoints[i] = 0; 
         for(int j=0; j<i; j++){
             totalSumPoints[i]+=totalPoints[j];
         }
@@ -70,14 +72,20 @@ void Graph::partition(int n){
     
     for(int i=0; i < nParts; i++) {
 	    set<int>::iterator itr;
+        int ghostPointsCounter = 0;
         for(int j=0; j < nParts; j++) {
+            ghostPointsCounter = 0;
 	        for(itr = ghosts[i].begin(); itr!=ghosts[i].end(); itr++){
                 int temp_id = *itr;
                 if (orig_ghosts[j].find(temp_id) != orig_ghosts[j].end()){
+                    ghostPointsCounter++;
 		            inputToLoc[i][ ptVec[*itr].id ] = currLocalIndex[i];
 		            currLocalIndex[i]++;
                 }
 	        }
+            if (ghostPointsCounter > maxGhostPoints[j]){
+                maxGhostPoints[j] = ghostPointsCounter;
+            }
         }
     }
 
