@@ -68,7 +68,7 @@ module data_structure_mod
         real*8  :: res_old, res_new, residue, max_res
         real* 8 :: gsum_res_sqr,sum_res_sqr
         integer :: max_res_point
-	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, cfv
+	real*8, allocatable, dimension(:)  :: Cl, Cd, Cm, cfv, lCl
 	real*8  :: total_entropy, total_enstrophy
         integer :: plen
         integer :: format
@@ -170,6 +170,7 @@ module data_structure_mod
                 allocate(point%delta(max_points))
 
                 allocate(Cl(shapes))
+                allocate(lCl(shapes))
                 allocate(Cd(shapes))
                 allocate(Cm(shapes))
                 allocate(cfv(shapes))
@@ -217,6 +218,7 @@ module data_structure_mod
                 deallocate(point%delta)
 
                 deallocate(Cl)
+                deallocate(lCl)
                 deallocate(Cd)
                 deallocate(Cm)
                 deallocate(cfv)

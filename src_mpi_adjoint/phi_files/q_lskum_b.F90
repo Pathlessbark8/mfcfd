@@ -31,7 +31,7 @@ CONTAINS
 &                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    total_enstrophyb = 1.0d0
+    lclb = 1.0d0
 
     IF (rank .EQ. 0) THEN
       WRITE(*, *) 
@@ -126,7 +126,7 @@ CONTAINS
           !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
           ! END DO
         ! END IF
-        total_enstrophyb = 0.0_8
+        lclb = 0.0_8
     END DO
     CALL PRINT_PHI_OUTPUT()
 

@@ -54,8 +54,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
-      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
-      REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointb
@@ -73,9 +71,9 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   REAL*8 :: res_old, res_new, residue, max_res
   REAL*8 :: gsum_res_sqr, sum_res_sqr
   INTEGER :: max_res_point
-  REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
+  REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv, lcl
+  REAL*8, DIMENSION(:), ALLOCATABLE :: lclb
   REAL*8 :: total_entropy, total_enstrophy
-  REAL*8 :: total_enstrophyb
   INTEGER :: plen
   INTEGER :: format
 !The parameter CFL is the CFL number for stability ..
@@ -149,6 +147,7 @@ CONTAINS
     ALLOCATE(point%yneg_conn(max_points, 20))
     ALLOCATE(point%delta(max_points))
     ALLOCATE(cl(shapes))
+    ALLOCATE(lcl(shapes))
     ALLOCATE(cd(shapes))
     ALLOCATE(cm(shapes))
     ALLOCATE(cfv(shapes))
@@ -182,6 +181,7 @@ CONTAINS
     DEALLOCATE(point%yneg_conn)
     DEALLOCATE(point%delta)
     DEALLOCATE(cl)
+    DEALLOCATE(lcl)
     DEALLOCATE(cd)
     DEALLOCATE(cm)
     DEALLOCATE(cfv)

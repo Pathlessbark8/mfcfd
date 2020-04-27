@@ -8,6 +8,65 @@ MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
   IMPLICIT NONE
 
 CONTAINS
+!  Differentiation of compute_cl_cd_cm in reverse (adjoint) mode (with options fixinterface):
+!   gradient     of useful results: *lcl *(point.prim)
+!   with respect to varying inputs: *lcl *(point.prim)
+!   Plus diff mem management of: lcl:in point.prim:in
+  SUBROUTINE COMPUTE_CL_CD_CM_B()
+    IMPLICIT NONE
+    INTEGER :: i, j, k
+    INTEGER :: l, m, r
+    REAL*8 :: cp, temp
+    REAL*8 :: cpb
+    REAL*8 :: lx, ly, mx, my, rx, ry
+    REAL*8 :: ds1, ds2, ds
+    REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
+    REAL*8, DIMENSION(shapes) :: hb, vb
+    REAL*8, DIMENSION(shapes) :: lcd, lcm
+    REAL*8 :: nx, ny
+    CHARACTER(len=64) :: cp_file
+    CHARACTER(len=10) :: itos
+    INTRINSIC TRIM
+    INTRINSIC DSQRT
+    INTRINSIC DCOS
+    INTRINSIC DSIN
+! PetscErrorCode :: ierr
+!if(rank==0) OPEN(UNIT=202,FILE='clcdcm')
+    temp = 0.5d0*rho_inf*mach*mach
+    DO j=1,shape_points
+      CALL PUSHINTEGER4(m)
+      m = shape_points_index(j)
+      r = point%right(m)
+      l = point%left(m)
+      lx = point%x(l)
+      ly = point%y(l)
+      mx = point%x(m)
+      my = point%y(m)
+      rx = point%x(r)
+      ry = point%y(r)
+      ds1 = (mx-lx)**2 + (my-ly)**2
+      ds1 = DSQRT(ds1)
+      ds2 = (rx-mx)**2 + (ry-my)**2
+      ds2 = DSQRT(ds2)
+      CALL PUSHREAL8(ds)
+      ds = 0.5d0*(ds1+ds2)
+    END DO
+    hb = 0.0_8
+    vb = 0.0_8
+    vb = DCOS(theta)*lclb
+    hb = -(DSIN(theta)*lclb)
+    lclb = 0.0_8
+    DO j=shape_points,1,-1
+      nx = point%nx(m)
+      ny = point%ny(m)
+      cpb = nx*ds*hb(point%flag_2(m)) + ny*ds*vb(point%flag_2(m))
+      cpb = -(cpb/temp)
+      pointb%prim(4, m) = pointb%prim(4, m) + cpb
+      CALL POPREAL8(ds)
+      CALL POPINTEGER4(m)
+    END DO
+  END SUBROUTINE COMPUTE_CL_CD_CM_B
+
   SUBROUTINE COMPUTE_CL_CD_CM()
     IMPLICIT NONE
     INTEGER :: i, j, k
@@ -16,7 +75,7 @@ CONTAINS
     REAL*8 :: lx, ly, mx, my, rx, ry
     REAL*8 :: ds1, ds2, ds
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
-    REAL*8, DIMENSION(shapes) :: lcl, lcd, lcm
+    REAL*8, DIMENSION(shapes) :: lcd, lcm
     REAL*8 :: nx, ny
     CHARACTER(len=64) :: cp_file
     CHARACTER(len=10) :: itos
@@ -77,4 +136,3 @@ CONTAINS
   END SUBROUTINE COMPUTE_CL_CD_CM
 
 END MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
-

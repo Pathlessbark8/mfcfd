@@ -15,14 +15,16 @@ MODULE OBJECTIVE_FUNCTION_MOD_DIFF
 !   Plus diff mem management of: point.prim:in point.vorticity_sqr:in
   SUBROUTINE OBJECTIVE_FUNCTION_B()
     IMPLICIT NONE
-    CALL COMPUTE_ENSTROPHY_B()
+! call compute_entropy()
+! call compute_enstrophy()
+    CALL COMPUTE_CL_CD_CM_B()
   END SUBROUTINE OBJECTIVE_FUNCTION_B
   
     SUBROUTINE OBJECTIVE_FUNCTION()
       IMPLICIT NONE
-! call compute_cl_cd_cm()
 ! call compute_entropy()
-      CALL COMPUTE_ENSTROPHY()
+! call compute_enstrophy()
+      CALL COMPUTE_CL_CD_CM()
     END SUBROUTINE OBJECTIVE_FUNCTION
   
   END MODULE OBJECTIVE_FUNCTION_MOD_DIFF
