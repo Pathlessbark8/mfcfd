@@ -14,15 +14,18 @@ MODULE FPI_SOLVER_MOD_DIFF
 
 CONTAINS
 !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *lcl *(point.prim) *(point.prim_old)
+!   gradient     of useful results: total_enstrophy *(point.prim)
+!                *(point.prim_old) *(point.flux_res) *(point.q)
+!                *(point.dq) *(point.ddq) *(point.temp) *(point.phi1)
+!                *(point.phi2) *(point.delta) *(point.vorticity_sqr)
+!   with respect to varying inputs: *(point.prim) *(point.prim_old)
 !                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
 !                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
-!   with respect to varying inputs: *lcl *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
-!                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
-!   Plus diff mem management of: lcl:in point.prim:in point.prim_old:in
+!                *(point.vorticity_sqr)
+!   Plus diff mem management of: point.prim:in point.prim_old:in
 !                point.flux_res:in point.q:in point.dq:in point.ddq:in
 !                point.temp:in point.phi1:in point.phi2:in point.delta:in
+!                point.vorticity_sqr:in
   SUBROUTINE FPI_SOLVER_B(t)
     USE DIFFSIZES
 !  Hint: ISIZE2OFDrfpoint_q should be the size of dimension 2 of array *point%q

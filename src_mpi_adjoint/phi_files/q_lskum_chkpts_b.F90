@@ -98,7 +98,7 @@ CONTAINS
     
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    lclb = 1.0d0
+    total_enstrophyb = 1.0d0
     ! DO i=1,max_points
     !     point%vor_area(i) = 1.0d0
     ! END DO
@@ -205,7 +205,7 @@ CONTAINS
         END IF
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
-        lclb = 0.0_8
+        total_enstrophyb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
                 write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue

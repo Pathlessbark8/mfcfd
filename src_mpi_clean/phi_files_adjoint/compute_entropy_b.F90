@@ -33,6 +33,130 @@ CONTAINS
     IF (rank .EQ. 0) WRITE(*, *) 'total entropy :', gtotal_entropy
   END SUBROUTINE COMPUTE_ENTROPY
 
+!  Differentiation of compute_enstrophy in reverse (adjoint) mode (with options fixinterface):
+!   gradient     of useful results: total_enstrophy *(point.prim)
+!                *(point.vorticity_sqr)
+!   with respect to varying inputs: *(point.prim) *(point.vorticity_sqr)
+!   Plus diff mem management of: point.prim:in point.vorticity_sqr:in
+  SUBROUTINE COMPUTE_ENSTROPHY_B()
+    IMPLICIT NONE
+    INTEGER :: i, k, r, nbh
+    REAL*8 :: x_i, y_i, x_k, y_k
+    REAL*8 :: delx, dely, dist, weights
+    REAL*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+    REAL*8 :: sum_delx_delu1, sum_delx_delu2, sum_dely_delu1, &
+&   sum_dely_delu2
+    REAL*8 :: sum_delx_delu1b, sum_delx_delu2b, sum_dely_delu1b, &
+&   sum_dely_delu2b
+    REAL*8 :: det
+    REAL*8 :: one_by_det
+    REAL*8 :: du1_dy, du2_dx, temp
+    REAL*8 :: du1_dyb, du2_dxb, tempb
+    REAL*8 :: gtotal_enstrophy
+    INTRINSIC DSQRT
+    REAL*8 :: tempb0
+    REAL*8 :: tempb1
+    REAL*8 :: tempb2
+    REAL*8 :: tempb3
+    INTEGER :: ad_to
+    INTEGER :: petsc_comm_world
+    INTEGER :: ierr
+    INTEGER :: mpi_sum
+    INTEGER :: mpi_double
+! PetscErrorCode :: ierr
+    total_enstrophy = 0.d0
+    DO i=1,local_points
+      x_i = point%x(i)
+      y_i = point%y(i)
+      CALL PUSHREAL8(sum_delx_sqr)
+      sum_delx_sqr = 0.d0
+      CALL PUSHREAL8(sum_dely_sqr)
+      sum_dely_sqr = 0.d0
+      CALL PUSHREAL8(sum_delx_dely)
+      sum_delx_dely = 0.d0
+      sum_delx_delu1 = 0.d0
+      sum_dely_delu1 = 0.d0
+      sum_delx_delu2 = 0.d0
+      sum_dely_delu2 = 0.d0
+      DO k=1,point%nbhs(i)
+        nbh = point%conn(i, k)
+        x_k = point%x(nbh)
+        y_k = point%y(nbh)
+        delx = x_k - x_i
+        dely = y_k - y_i
+        dist = DSQRT(delx*delx + dely*dely)
+        CALL PUSHREAL8(weights)
+        weights = dist**power
+        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+        sum_delx_dely = sum_delx_dely + delx*dely*weights
+        sum_delx_delu1 = sum_delx_delu1 + weights*delx*(point%prim(2, &
+&         nbh)-point%prim(2, i))
+        sum_delx_delu2 = sum_delx_delu2 + weights*delx*(point%prim(3, &
+&         nbh)-point%prim(3, i))
+        sum_dely_delu1 = sum_dely_delu1 + weights*dely*(point%prim(2, &
+&         nbh)-point%prim(2, i))
+        sum_dely_delu2 = sum_dely_delu2 + weights*dely*(point%prim(3, &
+&         nbh)-point%prim(3, i))
+      END DO
+      CALL PUSHINTEGER4(k - 1)
+      det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+      CALL PUSHREAL8(one_by_det)
+      one_by_det = 1.0d0/det
+      du2_dx = (sum_delx_delu2*sum_dely_sqr-sum_dely_delu2*sum_delx_dely&
+&       )*one_by_det
+      du1_dy = (sum_dely_delu1*sum_delx_sqr-sum_delx_delu1*sum_delx_dely&
+&       )*one_by_det
+      CALL PUSHREAL8(temp)
+      temp = du2_dx - du1_dy
+      point%vorticity_sqr(i) = temp*temp
+      total_enstrophy = total_enstrophy + point%vorticity_sqr(i)*point%&
+&       vor_area(i)
+    END DO
+    CALL MPI_REDUCE(total_enstrophy, gtotal_enstrophy, 1, mpi_double, &
+&             mpi_sum, 0, petsc_comm_world, ierr)
+    DO i=local_points,1,-1
+      pointb%vorticity_sqr(i) = pointb%vorticity_sqr(i) + point%vor_area&
+&       (i)*total_enstrophyb
+      tempb = 2*temp*pointb%vorticity_sqr(i)
+      pointb%vorticity_sqr(i) = 0.0_8
+      CALL POPREAL8(temp)
+      du2_dxb = tempb
+      du1_dyb = -tempb
+      sum_dely_delu1b = one_by_det*sum_delx_sqr*du1_dyb
+      sum_delx_delu1b = -(one_by_det*sum_delx_dely*du1_dyb)
+      sum_delx_delu2b = one_by_det*sum_dely_sqr*du2_dxb
+      sum_dely_delu2b = -(one_by_det*sum_delx_dely*du2_dxb)
+      CALL POPREAL8(one_by_det)
+      y_i = point%y(i)
+      x_i = point%x(i)
+      CALL POPINTEGER4(ad_to)
+      DO k=ad_to,1,-1
+        nbh = point%conn(i, k)
+        y_k = point%y(nbh)
+        dely = y_k - y_i
+        tempb0 = weights*dely*sum_dely_delu2b
+        pointb%prim(3, nbh) = pointb%prim(3, nbh) + tempb0
+        pointb%prim(3, i) = pointb%prim(3, i) - tempb0
+        tempb1 = weights*dely*sum_dely_delu1b
+        pointb%prim(2, nbh) = pointb%prim(2, nbh) + tempb1
+        pointb%prim(2, i) = pointb%prim(2, i) - tempb1
+        x_k = point%x(nbh)
+        delx = x_k - x_i
+        tempb2 = weights*delx*sum_delx_delu2b
+        pointb%prim(3, nbh) = pointb%prim(3, nbh) + tempb2
+        pointb%prim(3, i) = pointb%prim(3, i) - tempb2
+        tempb3 = weights*delx*sum_delx_delu1b
+        pointb%prim(2, nbh) = pointb%prim(2, nbh) + tempb3
+        pointb%prim(2, i) = pointb%prim(2, i) - tempb3
+        CALL POPREAL8(weights)
+      END DO
+      CALL POPREAL8(sum_delx_dely)
+      CALL POPREAL8(sum_dely_sqr)
+      CALL POPREAL8(sum_delx_sqr)
+    END DO
+  END SUBROUTINE COMPUTE_ENSTROPHY_B
+
   SUBROUTINE COMPUTE_ENSTROPHY()
     IMPLICIT NONE
     INTEGER :: i, k, r, nbh
@@ -100,3 +224,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENSTROPHY
 
 END MODULE COMPUTE_ENTROPY_MOD_DIFF
+
