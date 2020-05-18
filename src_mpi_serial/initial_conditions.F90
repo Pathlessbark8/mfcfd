@@ -39,7 +39,7 @@ contains
                 
                 endif
 
-                call voronoi_area_read()
+                ! call voronoi_area_read()
 
         end subroutine
 
