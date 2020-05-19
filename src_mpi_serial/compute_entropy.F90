@@ -136,6 +136,8 @@ module compute_entropy_mod
         real*8 :: du1_dy, du2_dx, temp, du1_sqr_dx_sqr, du2_sqr_dy_sqr
         ! real*8, dimension(local_points) :: du1_dx, du2_dy
         real*8 :: total_sum_div_enstrophy
+        real*8 :: gtotal_sum_div_enstrophy
+        PetscErrorCode :: ierr
         
         total_sum_div_enstrophy = 0.d0
         
@@ -194,6 +196,12 @@ module compute_entropy_mod
             point%du1_dx(i) = (sum_delx_delu1 * sum_dely_sqr - sum_dely_delu1*sum_delx_dely) * one_by_det  
             
         enddo
+
+        call update_begin_du1_dx_ghost()
+        call update_end_du1_dx_ghost()
+
+        call update_begin_du2_dy_ghost()
+        call update_end_du2_dy_ghost()
         
         do i=1, local_points
             
@@ -250,9 +258,12 @@ module compute_entropy_mod
             total_sum_div_enstrophy = total_sum_div_enstrophy + ((point%vorticity_sqr(i) + point%divergence_sqr(i)) * point%vor_area(i))
         enddo 	                       
         !                        
-        cost_func = total_sum_div_enstrophy
-        !                        
-        write(*,*) "Objective Function (J)", total_sum_div_enstrophy
+        call MPI_Reduce(total_sum_div_enstrophy, gtotal_sum_div_enstrophy , 1, &
+        & MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD, ierr)
+        !               
+        if(rank == 0) then         
+            write(*,*) "Objective Function (J)", gtotal_sum_div_enstrophy
+        end if
         
     end subroutine
     
