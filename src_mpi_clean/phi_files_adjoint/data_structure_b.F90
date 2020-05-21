@@ -39,7 +39,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
       REAL*8, DIMENSION(:), ALLOCATABLE :: entropy, vorticity, &
-&     vorticity_sqr, vor_area
+&     vorticity_sqr, vor_area, divergence_sqr, du1_dx, du2_dy
   END TYPE POINTS
   TYPE POINTS_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: x
@@ -56,6 +56,9 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
       REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
       REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
+      REAL*8, DIMENSION(:), ALLOCATABLE :: divergence_sqr
+      REAL*8, DIMENSION(:), ALLOCATABLE :: du1_dx
+      REAL*8, DIMENSION(:), ALLOCATABLE :: du2_dy
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
   TYPE(POINTS_DIFF) :: pointb
@@ -74,8 +77,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   REAL*8 :: gsum_res_sqr, sum_res_sqr
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
-  REAL*8 :: total_entropy, total_enstrophy
-  REAL*8 :: total_enstrophyb
+  REAL*8 :: total_entropy, total_enstrophy, total_sum_div_enstrophy
+  REAL*8 :: total_sum_div_enstrophyb
   INTEGER :: plen
   INTEGER :: format
 !The parameter CFL is the CFL number for stability ..
@@ -138,7 +141,10 @@ CONTAINS
     ALLOCATE(point%entropy(max_points))
     ALLOCATE(point%vorticity(max_points))
     ALLOCATE(point%vorticity_sqr(max_points))
+    ALLOCATE(point%divergence_sqr(max_points))
     ALLOCATE(point%vor_area(max_points))
+    ALLOCATE(point%du1_dx(max_points))
+    ALLOCATE(point%du2_dy(max_points))
     ALLOCATE(point%xpos_nbhs(max_points))
     ALLOCATE(point%xneg_nbhs(max_points))
     ALLOCATE(point%ypos_nbhs(max_points))
@@ -171,7 +177,10 @@ CONTAINS
     DEALLOCATE(point%entropy)
     DEALLOCATE(point%vorticity)
     DEALLOCATE(point%vorticity_sqr)
+    DEALLOCATE(point%divergence_sqr)
     DEALLOCATE(point%vor_area)
+    DEALLOCATE(point%du1_dx)
+    DEALLOCATE(point%du2_dy)
     DEALLOCATE(point%xpos_nbhs)
     DEALLOCATE(point%xneg_nbhs)
     DEALLOCATE(point%ypos_nbhs)
@@ -188,3 +197,4 @@ CONTAINS
   END SUBROUTINE DEALLOCATE_SOLN
 
 END MODULE DATA_STRUCTURE_MOD_DIFF
+

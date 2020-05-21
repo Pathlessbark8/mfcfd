@@ -15,19 +15,25 @@ MODULE Q_LSKUM_MOD_DIFF
 
 CONTAINS
 !  Differentiation of q_lskum in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: total_enstrophy
+!   gradient     of useful results: total_sum_div_enstrophy
 !   with respect to varying inputs: *(point.phi1) *(point.phi2)
-!   RW status of diff variables: total_enstrophy:in-killed *(point.prim):(loc)
-!                *(point.prim_old):(loc) *(point.flux_res):(loc)
+!   RW status of diff variables: total_sum_div_enstrophy:in-killed
+!                *(point.prim):(loc) *(point.prim_old):(loc) *(point.flux_res):(loc)
 !                *(point.q):(loc) *(point.dq):(loc) *(point.ddq):(loc)
 !                *(point.temp):(loc) *(point.phi1):out *(point.phi2):out
 !                *(point.delta):(loc) *(point.vorticity_sqr):(loc)
+!                *(point.divergence_sqr):(loc) *(point.du1_dx):(loc)
+!                *(point.du2_dy):(loc)
 !   Plus diff mem management of: point.prim:in point.prim_old:in
 !                point.flux_res:in point.q:in point.dq:in point.ddq:in
 !                point.temp:in point.phi1:in point.phi2:in point.delta:in
-!                point.vorticity_sqr:in point.vor_area:in
+!                point.vorticity_sqr:in point.vor_area:in point.divergence_sqr:in
+!                point.du1_dx:in point.du2_dy:in
   SUBROUTINE Q_LSKUM_B()
     USE DIFFSIZES
+!  Hint: ISIZE1OFDrfpoint_du2_dy should be the size of dimension 1 of array *point%du2_dy
+!  Hint: ISIZE1OFDrfpoint_du1_dx should be the size of dimension 1 of array *point%du1_dx
+!  Hint: ISIZE1OFDrfpoint_divergence_sqr should be the size of dimension 1 of array *point%divergence_sqr
 !  Hint: ISIZE1OFDrfpoint_vorticity_sqr should be the size of dimension 1 of array *point%vorticity_sqr
 !  Hint: ISIZE1OFDrfpoint_delta should be the size of dimension 1 of array *point%delta
 !  Hint: ISIZE3OFDrfpoint_temp should be the size of dimension 3 of array *point%temp
@@ -99,6 +105,10 @@ CONTAINS
     IF (restart .EQ. 0) itr = 0
     ad_count = 1
     DO it=itr+1,itr+max_iters
+      CALL PUSHREAL8ARRAY(point%du2_dy, ISIZE1OFDrfpoint_du2_dy)
+      CALL PUSHREAL8ARRAY(point%du1_dx, ISIZE1OFDrfpoint_du1_dx)
+      CALL PUSHREAL8ARRAY(point%divergence_sqr, &
+&                   ISIZE1OFDrfpoint_divergence_sqr)
       CALL PUSHREAL8ARRAY(point%vorticity_sqr, &
 &                   ISIZE1OFDrfpoint_vorticity_sqr)
       CALL PUSHREAL8ARRAY(point%delta, ISIZE1OFDrfpoint_delta)
@@ -166,6 +176,9 @@ CONTAINS
           pointb%phi2 = 0.0_8
           pointb%delta = 0.0_8
           pointb%vorticity_sqr = 0.0_8
+          pointb%divergence_sqr = 0.0_8
+          pointb%du1_dx = 0.0_8
+          pointb%du2_dy = 0.0_8
           GOTO 130
         ELSE
           pointb%prim = 0.0_8
@@ -179,6 +192,9 @@ CONTAINS
           pointb%phi2 = 0.0_8
           pointb%delta = 0.0_8
           pointb%vorticity_sqr = 0.0_8
+          pointb%divergence_sqr = 0.0_8
+          pointb%du1_dx = 0.0_8
+          pointb%du2_dy = 0.0_8
         END IF
       ELSE
         CALL POPCONTROL1B(branch)
@@ -203,8 +219,12 @@ CONTAINS
       CALL POPREAL8ARRAY(point%delta, ISIZE1OFDrfpoint_delta)
       CALL POPREAL8ARRAY(point%vorticity_sqr, &
 &                  ISIZE1OFDrfpoint_vorticity_sqr)
+      CALL POPREAL8ARRAY(point%divergence_sqr, &
+&                  ISIZE1OFDrfpoint_divergence_sqr)
+      CALL POPREAL8ARRAY(point%du1_dx, ISIZE1OFDrfpoint_du1_dx)
+      CALL POPREAL8ARRAY(point%du2_dy, ISIZE1OFDrfpoint_du2_dy)
       CALL FPI_SOLVER_B(it)
-      total_enstrophyb = 0.0_8
+      total_sum_div_enstrophyb = 0.0_8
  130 CONTINUE
     DO i=ghost_points,1,-1
       pointb%phi2(4, i+local_points) = 0.0_8

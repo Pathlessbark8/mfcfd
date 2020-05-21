@@ -58,7 +58,7 @@ CONTAINS
     real*8, allocatable :: fluxres_stor(:, :, :), delta_stor(:, :)
     real*8, allocatable :: primold_stor(:, :, :), ddq_stor(:, :, :, :)
     real*8, allocatable :: temp_stor(:, :, :, :), vorticitysqr_stor(:, :)
-
+    real*8, allocatable :: divergencesqr_stor(:, :), du1_dx_store(:, :), du2_dy_store(:, :)
 !   Allocate store variables
 
     allocate( prim_stor(0:chkpts, 4, max_points))
@@ -71,6 +71,9 @@ CONTAINS
     allocate( vorticitysqr_stor(0:chkpts, max_points))
     allocate( ddq_stor(0:chkpts, 3, 4, max_points))
     allocate( temp_stor(0:chkpts, 3, 4, max_points))
+    allocate( divergencesqr_stor(0:chkpts, max_points))
+    allocate( du1_dx_store(0:chkpts, max_points))
+    allocate( du2_dy_store(0:chkpts, max_points))
 
 !   End of the declaraion for the revolve algorithm ..          
 !
@@ -98,7 +101,7 @@ CONTAINS
     
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    total_enstrophyb = 1.0d0
+    total_sum_div_enstrophyb = 1.0d0
     ! DO i=1,max_points
     !     point%vor_area(i) = 1.0d0
     ! END DO
@@ -135,6 +138,9 @@ CONTAINS
         do i=1,max_points
             delta_stor(check, i) = point%delta(i)
             vorticitysqr_stor(check, i) = point%vorticity_sqr(i)
+            divergencesqr_stor(check, i) = point%divergence_sqr(i)
+            du1_dx_store(check, i) = point%du1_dx(i)
+            du2_dy_store(check, i) = point%du2_dy(i)
             do r = 1, 4
                 q_stor(check, r, i) = point%q(r,i)
                 prim_stor(check, r, i) = point%prim(r,i)
@@ -187,8 +193,6 @@ CONTAINS
         !
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
-        pointb%vorticity_sqr = 0.0_8
-        pointb%delta = 0.0_8
         pointb%prim = 0.0_8
         pointb%prim_old = 0.0_8
         pointb%q = 0.0_8
@@ -198,6 +202,11 @@ CONTAINS
         pointb%temp = 0.0_8
         pointb%phi1 = 0.0_8
         pointb%phi2 = 0.0_8
+        pointb%delta = 0.0_8
+        pointb%vorticity_sqr = 0.0_8
+        pointb%divergence_sqr = 0.0_8
+        pointb%du1_dx = 0.0_8
+        pointb%du2_dy = 0.0_8
         IF (rank .EQ. 0) THEN
             write(*,*)
             write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
@@ -205,7 +214,7 @@ CONTAINS
         END IF
         pflag = 0
         CALL FPI_SOLVER_B(ITIM)
-        total_enstrophyb = 0.0_8
+        total_sum_div_enstrophyb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
                 write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
@@ -220,7 +229,7 @@ CONTAINS
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
         CALL FPI_SOLVER_B(ITIM)
-        total_enstrophyb = 0.0_8
+        total_sum_div_enstrophyb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
                 write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
@@ -238,6 +247,9 @@ CONTAINS
         do i=1,max_points
             point%delta(i) = delta_stor(check, i)
             point%vorticity_sqr(i) = vorticitysqr_stor(check, i)
+            point%divergence_sqr(i) = divergencesqr_stor(check, i)
+            point%du1_dx(i) = du1_dx_store(check, i)
+            point%du2_dy(i) = du2_dy_store(check, i)
             do r = 1, 4
                 point%q(r,i) = q_stor(check, r, i)
                 point%prim(r,i) = prim_stor(check, r, i)

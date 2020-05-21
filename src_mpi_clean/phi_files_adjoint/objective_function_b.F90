@@ -9,21 +9,24 @@ MODULE OBJECTIVE_FUNCTION_MOD_DIFF
 
 CONTAINS
 !  Differentiation of objective_function in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: total_enstrophy *(point.prim)
-!                *(point.vorticity_sqr)
+!   gradient     of useful results: total_sum_div_enstrophy *(point.prim)
+!                *(point.vorticity_sqr) *(point.divergence_sqr)
+!                *(point.du1_dx) *(point.du2_dy)
 !   with respect to varying inputs: *(point.prim) *(point.vorticity_sqr)
+!                *(point.divergence_sqr) *(point.du1_dx) *(point.du2_dy)
 !   Plus diff mem management of: point.prim:in point.vorticity_sqr:in
+!                point.divergence_sqr:in point.du1_dx:in point.du2_dy:in
   SUBROUTINE OBJECTIVE_FUNCTION_B()
     IMPLICIT NONE
-    CALL COMPUTE_ENSTROPHY_B()
+    CALL COMPUTE_SUM_DIV_ENSTROPHY_B()
   END SUBROUTINE OBJECTIVE_FUNCTION_B
 
   SUBROUTINE OBJECTIVE_FUNCTION()
     IMPLICIT NONE
 ! call compute_cl_cd_cm()
 ! call compute_entropy()
-    CALL COMPUTE_ENSTROPHY()
+! call compute_enstrophy()
+    CALL COMPUTE_SUM_DIV_ENSTROPHY()
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF
-
