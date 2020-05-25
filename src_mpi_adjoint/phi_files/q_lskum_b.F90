@@ -31,7 +31,7 @@ CONTAINS
 &                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    total_sum_div_enstrophyb = 1.0d0
+    total_enstrophyb = 1.0d0
 
     IF (rank .EQ. 0) THEN
       WRITE(*, *) 
@@ -55,9 +55,7 @@ CONTAINS
     IF (restart .EQ. 0) itr = 0
     ! ad_count = 1
     DO it=itr+1,itr+max_iters
-      CALL PUSHREAL8ARRAY(point%du2_dy, max_points)
-      CALL PUSHREAL8ARRAY(point%du1_dx, max_points)
-      CALL PUSHREAL8ARRAY(point%divergence_sqr, max_points)
+    !   CALL PUSHREAL8(gsum_res_sqr)
       CALL PUSHREAL8ARRAY(point%vorticity_sqr, max_points)
       CALL PUSHREAL8ARRAY(point%temp, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
@@ -89,9 +87,6 @@ CONTAINS
     pointb%phi2 = 0.0_8
     pointb%delta = 0.0_8
     pointb%vorticity_sqr = 0.0_8
-    pointb%divergence_sqr = 0.0_8
-    pointb%du1_dx = 0.0_8
-    pointb%du2_dy = 0.0_8
     IF (rank .EQ. 0) THEN
       write(*,*)
       write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
@@ -109,9 +104,6 @@ CONTAINS
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
         CALL POPREAL8ARRAY(point%vorticity_sqr, max_points)
-        CALL POPREAL8ARRAY(point%divergence_sqr, max_points)
-        CALL POPREAL8ARRAY(point%du1_dx, max_points)
-        CALL POPREAL8ARRAY(point%du2_dy, max_points)
         CALL FPI_SOLVER_B(it)
         ! IF (rank .EQ. 1) THEN
         !   z = 78
@@ -134,7 +126,7 @@ CONTAINS
           !     write(*,*) pointb%flux_res(:,nbh), ' is Flux Res'
           ! END DO
         ! END IF
-        total_sum_div_enstrophyb = 0.0_8
+        total_enstrophyb = 0.0_8
     END DO
     CALL PRINT_PHI_OUTPUT()
 
