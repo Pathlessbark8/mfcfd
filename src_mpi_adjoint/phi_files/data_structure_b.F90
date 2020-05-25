@@ -53,7 +53,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
-      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
+    !   REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
       REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
@@ -169,7 +169,7 @@ CONTAINS
     ALLOCATE(pointb%phi1(4, max_points))
     ALLOCATE(pointb%phi2(4, max_points))
     ALLOCATE(pointb%temp(3, 4, max_points))
-    ALLOCATE(pointb%vorticity_sqr(max_points))
+    ! ALLOCATE(pointb%vorticity_sqr(max_points))
     ALLOCATE(pointb%vor_area(max_points))
   end subroutine
   
@@ -219,7 +219,7 @@ CONTAINS
     DEALLOCATE(pointb%phi1)
     DEALLOCATE(pointb%phi2)
     DEALLOCATE(pointb%temp)
-    DEALLOCATE(pointb%vorticity_sqr)
+    ! DEALLOCATE(pointb%vorticity_sqr)
     DEALLOCATE(pointb%vor_area)
   end subroutine
   

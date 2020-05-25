@@ -56,7 +56,7 @@ CONTAINS
     ! ad_count = 1
     DO it=itr+1,itr+max_iters
     !   CALL PUSHREAL8(gsum_res_sqr)
-      CALL PUSHREAL8ARRAY(point%vorticity_sqr, max_points)
+    !   CALL PUSHREAL8ARRAY(point%vorticity_sqr, max_points)
       CALL PUSHREAL8ARRAY(point%temp, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%ddq, 3*4*max_points)
       CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
@@ -86,7 +86,7 @@ CONTAINS
     pointb%phi1 = 0.0_8
     pointb%phi2 = 0.0_8
     pointb%delta = 0.0_8
-    pointb%vorticity_sqr = 0.0_8
+    ! pointb%vorticity_sqr = 0.0_8
     IF (rank .EQ. 0) THEN
       write(*,*)
       write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
@@ -103,7 +103,7 @@ CONTAINS
         CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
         CALL POPREAL8ARRAY(point%ddq, 3*4*max_points)
         CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
-        CALL POPREAL8ARRAY(point%vorticity_sqr, max_points)
+        ! CALL POPREAL8ARRAY(point%vorticity_sqr, max_points)
         CALL FPI_SOLVER_B(it)
         ! IF (rank .EQ. 1) THEN
         !   z = 78
