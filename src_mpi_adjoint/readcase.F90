@@ -19,7 +19,7 @@ subroutine readcase()
 
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-mach',mach,set,ierr); CHKERRQ(ierr)
-
+        aoa = 0.0d0
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-aoa',aoa,set,ierr); CHKERRQ(ierr)
         

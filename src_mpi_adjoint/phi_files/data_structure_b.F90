@@ -2,225 +2,225 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE DATA_STRUCTURE_MOD_DIFF
-  USE PARAMETER_MOD
-  IMPLICIT NONE
-  INTEGER :: max_points, local_points, ghost_points
-  INTEGER :: wall_points, interior_points, outer_points, shape_points
-  INTEGER, DIMENSION(:), ALLOCATABLE :: pghost
-! stores location of point
-! stores shape point belongs to 
-! Implicit data
-  TYPE POINTS
-      INTEGER, DIMENSION(:), ALLOCATABLE :: original_id
-      REAL*8, DIMENSION(:), ALLOCATABLE :: x, y
-      INTEGER, DIMENSION(:), ALLOCATABLE :: left, right
-      INTEGER, DIMENSION(:), ALLOCATABLE :: flag_1
-      INTEGER, DIMENSION(:), ALLOCATABLE :: flag_2
-      INTEGER, DIMENSION(:), ALLOCATABLE :: qtdepth
-      REAL*8, DIMENSION(:), ALLOCATABLE :: nx, ny
-      INTEGER, DIMENSION(:), ALLOCATABLE :: nbhs
-      INTEGER, DIMENSION(:, :), ALLOCATABLE :: conn
-      REAL*8, DIMENSION(:), ALLOCATABLE :: min_dist
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: u
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1, phi2
-      INTEGER, DIMENSION(:), ALLOCATABLE :: xpos_nbhs, xneg_nbhs, &
-&     ypos_nbhs, yneg_nbhs
-      INTEGER, DIMENSION(:, :), ALLOCATABLE :: xpos_conn, xneg_conn
-      INTEGER, DIMENSION(:, :), ALLOCATABLE :: ypos_conn, yneg_conn
-      REAL*8, DIMENSION(:), ALLOCATABLE :: delta
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
-      REAL*8, DIMENSION(:), ALLOCATABLE :: entropy, vorticity, &
-&     vorticity_sqr, vor_area
-  END TYPE POINTS
-  TYPE POINTS_DIFF
-      REAL*8, DIMENSION(:), ALLOCATABLE :: x
-      REAL*8, DIMENSION(:), ALLOCATABLE :: y
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
-      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
-      REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
-      REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+    USE PARAMETER_MOD
+    IMPLICIT NONE
+    INTEGER :: max_points, local_points, ghost_points
+    INTEGER :: wall_points, interior_points, outer_points, shape_points
+    INTEGER, DIMENSION(:), ALLOCATABLE :: pghost
+    ! stores location of point
+    ! stores shape point belongs to 
+    ! Implicit data
+    TYPE POINTS
+    INTEGER, DIMENSION(:), ALLOCATABLE :: original_id
+    REAL*8, DIMENSION(:), ALLOCATABLE :: x, y
+    INTEGER, DIMENSION(:), ALLOCATABLE :: left, right
+    INTEGER, DIMENSION(:), ALLOCATABLE :: flag_1
+    INTEGER, DIMENSION(:), ALLOCATABLE :: flag_2
+    INTEGER, DIMENSION(:), ALLOCATABLE :: qtdepth
+    REAL*8, DIMENSION(:), ALLOCATABLE :: nx, ny
+    INTEGER, DIMENSION(:), ALLOCATABLE :: nbhs
+    INTEGER, DIMENSION(:, :), ALLOCATABLE :: conn
+    REAL*8, DIMENSION(:), ALLOCATABLE :: min_dist
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: u
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1, phi2
+    INTEGER, DIMENSION(:), ALLOCATABLE :: xpos_nbhs, xneg_nbhs, &
+    &     ypos_nbhs, yneg_nbhs
+    INTEGER, DIMENSION(:, :), ALLOCATABLE :: xpos_conn, xneg_conn
+    INTEGER, DIMENSION(:, :), ALLOCATABLE :: ypos_conn, yneg_conn
+    REAL*8, DIMENSION(:), ALLOCATABLE :: delta
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
+    REAL*8, DIMENSION(:), ALLOCATABLE :: entropy, vorticity, &
+    &     vorticity_sqr, vor_area
+    END TYPE POINTS
+    TYPE POINTS_DIFF
+    REAL*8, DIMENSION(:), ALLOCATABLE :: x
+    REAL*8, DIMENSION(:), ALLOCATABLE :: y
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
+    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
+    REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
+    REAL*8, DIMENSION(:), ALLOCATABLE :: delta
     !   REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
-      REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
-  END TYPE POINTS_DIFF
-  TYPE(POINTS) :: point
-  TYPE(POINTS_DIFF) :: pointb
-  SAVE 
-  INTEGER, DIMENSION(:), ALLOCATABLE :: wall_points_index
-  INTEGER, DIMENSION(:), ALLOCATABLE :: outer_points_index
-  INTEGER, DIMENSION(:), ALLOCATABLE :: interior_points_index
-  INTEGER, DIMENSION(:), ALLOCATABLE :: shape_points_index
-!iterations
-  INTEGER :: it, itr
-!Flag for time stepping
-  INTEGER :: rks
-  INTEGER :: chkpts
-  REAL*8 :: euler
-  REAL*8 :: cost_func
-!   REAL*8 :: cost_funcb
-  REAL*8 :: res_old, res_new, residue, max_res
-  REAL*8 :: gsum_res_sqr, sum_res_sqr
-  INTEGER :: max_res_point
-  REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
-  REAL*8 :: total_entropy, total_enstrophy
-  REAL*8 :: total_enstrophyb
-  INTEGER :: plen
-  INTEGER :: format
-!The parameter CFL is the CFL number for stability ..
-  REAL*8 :: cfl
-  INTEGER :: max_iters
-!Unsteady variables
-  REAL*8 :: t, tfinal, dtg
-  INTEGER :: timestep
-!Run option: petsc or normal
-  INTEGER :: runop
-  INTEGER :: read_phi_file
-!
-!       The parameter power is used to specify the weights 
-!       in the LS formula for the derivatives ..
-!       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
-!       For example, power = -2.0 implies that
-!       power = -2.0 => weights = 1/d^2
-!       power = -4.0 => weights = 1/d^4
-!
-  REAL*8 :: power
-!
-!       limiter_flag = 1 => venkatakrishnan limiter
-!       limiter_flag = 2 => min-max limiter     
-!
-  INTEGER :: limiter_flag
-! Venkatakrishnan limiter constant ..
-  REAL*8 :: vl_const
-  INTEGER :: restart
-!       Interior points normal flag ..
-!       If flag is zero => nx = 0.0 and ny = 1.0
-!
-  INTEGER :: interior_points_normal_flag
-!       Restart solution parameter
-  INTEGER :: solution_restart
-!       solution save parameter
-  INTEGER :: nsave
-!       First order flag
-  REAL*8 :: fo_flag
-!       Objective function
-  REAL*8 :: cl_flag, cd_flag, cm_flag, cl_cd_flag, ent_flag, ens_flag
-  INTEGER :: obj_flag
-  INTEGER :: inner_iterations
-!       No of shapes
-  INTEGER :: shapes
-  INTEGER :: ad_mode
-
-CONTAINS
-  SUBROUTINE ALLOCATE_SOLN()
-    IMPLICIT NONE
-    ALLOCATE(point%prim(4, max_points))
-    ALLOCATE(point%prim_old(4, max_points))
-    ALLOCATE(point%flux_res(4, max_points))
-    ALLOCATE(point%u_old(4, max_points))
-    ALLOCATE(point%q(4, max_points))
-    ALLOCATE(point%u(4, max_points))
-    ALLOCATE(point%dq(2, 4, max_points))
-    ALLOCATE(point%qm(2, 4, max_points))
-    ALLOCATE(point%ddq(3, 4, max_points))
-    ALLOCATE(point%temp(3, 4, max_points))
-    ! ALLOCATE(point%phi1(4, max_points))
-    ! ALLOCATE(point%phi2(4, max_points))
-    ALLOCATE(point%entropy(max_points))
-    ALLOCATE(point%vorticity(max_points))
-    ALLOCATE(point%vorticity_sqr(max_points))
-    ALLOCATE(point%vor_area(max_points))
-    ALLOCATE(point%xpos_nbhs(max_points))
-    ALLOCATE(point%xneg_nbhs(max_points))
-    ALLOCATE(point%ypos_nbhs(max_points))
-    ALLOCATE(point%yneg_nbhs(max_points))
-    ALLOCATE(point%xpos_conn(max_points, 20))
-    ALLOCATE(point%xneg_conn(max_points, 20))
-    ALLOCATE(point%ypos_conn(max_points, 20))
-    ALLOCATE(point%yneg_conn(max_points, 20))
-    ALLOCATE(point%delta(max_points))
-    ALLOCATE(cl(shapes))
-    ALLOCATE(cd(shapes))
-    ALLOCATE(cm(shapes))
-    ALLOCATE(cfv(shapes))
-  END SUBROUTINE ALLOCATE_SOLN
-
-  subroutine allocate_soln_b()
-    implicit none
-    ALLOCATE(pointb%delta(max_points))
-    allocate(pointb%prim(4,max_points))
-    allocate(pointb%prim_old(4,max_points))
-    allocate(pointb%flux_res(4,max_points))
-    allocate(pointb%q(4,max_points))
-    allocate(pointb%dq(2,4,max_points))
-    ALLOCATE(pointb%ddq(3, 4, max_points))
-    ALLOCATE(pointb%phi1(4, max_points))
-    ALLOCATE(pointb%phi2(4, max_points))
-    ALLOCATE(pointb%temp(3, 4, max_points))
-    ! ALLOCATE(pointb%vorticity_sqr(max_points))
-    ALLOCATE(pointb%vor_area(max_points))
-  end subroutine
-  
-  
-  SUBROUTINE DEALLOCATE_SOLN()
-    IMPLICIT NONE
-    DEALLOCATE(point%prim)
-    DEALLOCATE(point%prim_old)
-    DEALLOCATE(point%flux_res)
-    DEALLOCATE(point%u_old)
-    DEALLOCATE(point%q)
-    DEALLOCATE(point%u)
-    DEALLOCATE(point%dq)
-    DEALLOCATE(point%qm)
-    DEALLOCATE(point%ddq)
-    DEALLOCATE(point%temp)
-    DEALLOCATE(point%phi1)
-    DEALLOCATE(point%phi2)
-    DEALLOCATE(point%entropy)
-    DEALLOCATE(point%vorticity)
-    DEALLOCATE(point%vorticity_sqr)
-    DEALLOCATE(point%vor_area)
-    DEALLOCATE(point%xpos_nbhs)
-    DEALLOCATE(point%xneg_nbhs)
-    DEALLOCATE(point%ypos_nbhs)
-    DEALLOCATE(point%yneg_nbhs)
-    DEALLOCATE(point%xpos_conn)
-    DEALLOCATE(point%xneg_conn)
-    DEALLOCATE(point%ypos_conn)
-    DEALLOCATE(point%yneg_conn)
-    DEALLOCATE(point%delta)
-    DEALLOCATE(cl)
-    DEALLOCATE(cd)
-    DEALLOCATE(cm)
-    DEALLOCATE(cfv)
-  END SUBROUTINE DEALLOCATE_SOLN
-
-  subroutine deallocate_soln_b()
-    implicit none
-
-    deallocate(pointb%prim)
-    deallocate(pointb%prim_old)
-    deallocate(pointb%flux_res)
-    deallocate(pointb%q)
-    deallocate(pointb%dq)
-    DEALLOCATE(pointb%ddq)
-    DEALLOCATE(pointb%phi1)
-    DEALLOCATE(pointb%phi2)
-    DEALLOCATE(pointb%temp)
-    ! DEALLOCATE(pointb%vorticity_sqr)
-    DEALLOCATE(pointb%vor_area)
-  end subroutine
-  
+    REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
+    END TYPE POINTS_DIFF
+    TYPE(POINTS) :: point
+    TYPE(POINTS_DIFF) :: pointb
+    SAVE 
+    INTEGER, DIMENSION(:), ALLOCATABLE :: wall_points_index
+    INTEGER, DIMENSION(:), ALLOCATABLE :: outer_points_index
+    INTEGER, DIMENSION(:), ALLOCATABLE :: interior_points_index
+    INTEGER, DIMENSION(:), ALLOCATABLE :: shape_points_index
+    !iterations
+    INTEGER :: it, itr
+    !Flag for time stepping
+    INTEGER :: rks
+    INTEGER :: chkpts
+    REAL*8 :: euler
+    REAL*8 :: cost_func
+    !   REAL*8 :: cost_funcb
+    REAL*8 :: res_old, res_new, residue, max_res
+    REAL*8 :: gsum_res_sqr, sum_res_sqr
+    INTEGER :: max_res_point
+    REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv
+    REAL*8 :: total_entropy, total_enstrophy
+    REAL*8 :: total_enstrophyb
+    INTEGER :: plen
+    INTEGER :: format
+    !The parameter CFL is the CFL number for stability ..
+    REAL*8 :: cfl
+    INTEGER :: max_iters
+    !Unsteady variables
+    REAL*8 :: t, tfinal, dtg
+    INTEGER :: timestep
+    !Run option: petsc or normal
+    INTEGER :: runop
+    INTEGER :: read_phi_file
+    !
+    !       The parameter power is used to specify the weights 
+    !       in the LS formula for the derivatives ..
+    !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
+    !       For example, power = -2.0 implies that
+    !       power = -2.0 => weights = 1/d^2
+    !       power = -4.0 => weights = 1/d^4
+    !
+    REAL*8 :: power
+    !
+    !       limiter_flag = 1 => venkatakrishnan limiter
+    !       limiter_flag = 2 => min-max limiter     
+    !
+    INTEGER :: limiter_flag
+    ! Venkatakrishnan limiter constant ..
+    REAL*8 :: vl_const
+    INTEGER :: restart
+    !       Interior points normal flag ..
+    !       If flag is zero => nx = 0.0 and ny = 1.0
+    !
+    INTEGER :: interior_points_normal_flag
+    !       Restart solution parameter
+    INTEGER :: solution_restart
+    !       solution save parameter
+    INTEGER :: nsave
+    !       First order flag
+    REAL*8 :: fo_flag
+    !       Objective function
+    REAL*8 :: cl_flag, cd_flag, cm_flag, cl_cd_flag, ent_flag, ens_flag
+    INTEGER :: obj_flag
+    INTEGER :: inner_iterations
+    !       No of shapes
+    INTEGER :: shapes
+    INTEGER :: ad_mode
+    
+    CONTAINS
+    SUBROUTINE ALLOCATE_SOLN()
+        IMPLICIT NONE
+        ALLOCATE(point%prim(4, max_points))
+        ALLOCATE(point%prim_old(4, max_points))
+        ALLOCATE(point%flux_res(4, max_points))
+        ALLOCATE(point%u_old(4, max_points))
+        ALLOCATE(point%q(4, max_points))
+        ALLOCATE(point%u(4, max_points))
+        ALLOCATE(point%dq(2, 4, max_points))
+        ALLOCATE(point%qm(2, 4, max_points))
+        ALLOCATE(point%ddq(3, 4, max_points))
+        ALLOCATE(point%temp(3, 4, max_points))
+        ! ALLOCATE(point%phi1(4, max_points))
+        ! ALLOCATE(point%phi2(4, max_points))
+        ALLOCATE(point%entropy(max_points))
+        ALLOCATE(point%vorticity(max_points))
+        ALLOCATE(point%vorticity_sqr(max_points))
+        ALLOCATE(point%vor_area(max_points))
+        ALLOCATE(point%xpos_nbhs(max_points))
+        ALLOCATE(point%xneg_nbhs(max_points))
+        ALLOCATE(point%ypos_nbhs(max_points))
+        ALLOCATE(point%yneg_nbhs(max_points))
+        ALLOCATE(point%xpos_conn(max_points, 20))
+        ALLOCATE(point%xneg_conn(max_points, 20))
+        ALLOCATE(point%ypos_conn(max_points, 20))
+        ALLOCATE(point%yneg_conn(max_points, 20))
+        ALLOCATE(point%delta(max_points))
+        ALLOCATE(cl(shapes))
+        ALLOCATE(cd(shapes))
+        ALLOCATE(cm(shapes))
+        ALLOCATE(cfv(shapes))
+    END SUBROUTINE ALLOCATE_SOLN
+    
+    subroutine allocate_soln_b()
+        implicit none
+        ALLOCATE(pointb%delta(max_points))
+        allocate(pointb%prim(4,max_points))
+        allocate(pointb%prim_old(4,max_points))
+        allocate(pointb%flux_res(4,max_points))
+        allocate(pointb%q(4,max_points))
+        allocate(pointb%dq(2,4,max_points))
+        ALLOCATE(pointb%ddq(3, 4, max_points))
+        ALLOCATE(pointb%phi1(4, max_points))
+        ALLOCATE(pointb%phi2(4, max_points))
+        ALLOCATE(pointb%temp(3, 4, max_points))
+        ! ALLOCATE(pointb%vorticity_sqr(max_points))
+        ALLOCATE(pointb%vor_area(max_points))
+    end subroutine
+    
+    
+    SUBROUTINE DEALLOCATE_SOLN()
+        IMPLICIT NONE
+        DEALLOCATE(point%prim)
+        DEALLOCATE(point%prim_old)
+        DEALLOCATE(point%flux_res)
+        DEALLOCATE(point%u_old)
+        DEALLOCATE(point%q)
+        DEALLOCATE(point%u)
+        DEALLOCATE(point%dq)
+        DEALLOCATE(point%qm)
+        DEALLOCATE(point%ddq)
+        DEALLOCATE(point%temp)
+        DEALLOCATE(point%phi1)
+        DEALLOCATE(point%phi2)
+        DEALLOCATE(point%entropy)
+        DEALLOCATE(point%vorticity)
+        DEALLOCATE(point%vorticity_sqr)
+        DEALLOCATE(point%vor_area)
+        DEALLOCATE(point%xpos_nbhs)
+        DEALLOCATE(point%xneg_nbhs)
+        DEALLOCATE(point%ypos_nbhs)
+        DEALLOCATE(point%yneg_nbhs)
+        DEALLOCATE(point%xpos_conn)
+        DEALLOCATE(point%xneg_conn)
+        DEALLOCATE(point%ypos_conn)
+        DEALLOCATE(point%yneg_conn)
+        DEALLOCATE(point%delta)
+        DEALLOCATE(cl)
+        DEALLOCATE(cd)
+        DEALLOCATE(cm)
+        DEALLOCATE(cfv)
+    END SUBROUTINE DEALLOCATE_SOLN
+    
+    subroutine deallocate_soln_b()
+        implicit none
+        
+        deallocate(pointb%prim)
+        deallocate(pointb%prim_old)
+        deallocate(pointb%flux_res)
+        deallocate(pointb%q)
+        deallocate(pointb%dq)
+        DEALLOCATE(pointb%ddq)
+        DEALLOCATE(pointb%phi1)
+        DEALLOCATE(pointb%phi2)
+        DEALLOCATE(pointb%temp)
+        ! DEALLOCATE(pointb%vorticity_sqr)
+        DEALLOCATE(pointb%vor_area)
+    end subroutine
+    
 END MODULE DATA_STRUCTURE_MOD_DIFF

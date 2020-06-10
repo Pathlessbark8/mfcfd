@@ -2,13 +2,13 @@ module parameter_mod
 
     implicit none
 
-    real*8, parameter :: Mach = 0.63d0
-    real*8, parameter :: aoa = 2.0d0
+    real*8 :: Mach = 0.2d0
+    real*8 :: aoa = 16.0d0
     real*8 :: theta
-real*8, parameter :: rho_inf = 1.0d0
-real*8, parameter :: pr_inf = 1.0d0/1.4d0
+    real*8, parameter :: rho_inf = 1.0d0
+    real*8, parameter :: pr_inf = 1.0d0/1.4d0
     real*8, parameter :: gamma = 1.4d0
-real*8, parameter :: pi=4.d0*datan(1.d0)
+    real*8, parameter :: pi=4.d0*datan(1.d0)
     real*8, dimension(4) :: q_init, q_inf
 
 contains

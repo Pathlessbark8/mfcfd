@@ -174,7 +174,7 @@ C--------------------------------------------------------------------*
 
 C     .. Parameters ..
       INTEGER CHEKUP,REPSUP
-      PARAMETER (CHEKUP=401,REPSUP=401)
+      PARAMETER (CHEKUP=502,REPSUP=502)
 C     ..
 C     .. Scalar Arguments ..
       INTEGER SNAPS,STEPS
@@ -349,7 +349,7 @@ C--------------------------------------------------------------------*
 C     (CAPO ,FINE) is the time range currently under consideration
 C     .. Parameters ..
       INTEGER CHEKUP,REPSUP
-      PARAMETER (CHEKUP=401,REPSUP=401)
+      PARAMETER (CHEKUP=502,REPSUP=502)
       INTEGER TAKSHT,ADVAN,FSTURN,YUTURN
       PARAMETER (TAKSHT=1,ADVAN=2,FSTURN=3,YUTURN=4)
       INTEGER RESTRE,TRMATE,ERROR,PFS
