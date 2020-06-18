@@ -328,6 +328,28 @@ contains
 
                 end subroutine 
 
+                subroutine limit_qtildes(qtilde_i, qtilde_k, i, k)
 
+                    implicit none
+                    real*8 :: qtilde_i(4), qtilde_k(4)
+                    integer :: i, k, r
+                    do r = 1, 4
+                        if(qtilde_i(r) > point%qm(1,r,i)) then
+                            qtilde_i(r) = point%qm(1,r,i)
+                        end if
+                        if(qtilde_i(r) < point%qm(2,r,i)) then
+                            qtilde_i(r) = point%qm(2,r,i)
+                        end if
+                    end do
+
+                    do r = 1, 4
+                        if(qtilde_k(r) > point%qm(1,r,k)) then
+                            qtilde_k(r) = point%qm(1,r,k)
+                        end if
+                        if(qtilde_k(r) < point%qm(2,r,k)) then
+                            qtilde_k(r) = point%qm(2,r,k)
+                        end if
+                    end do
+                end subroutine 
 
 end module q_variables_mod

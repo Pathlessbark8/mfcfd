@@ -49,6 +49,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
       REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
+      REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
       REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
       REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1

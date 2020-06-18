@@ -194,6 +194,7 @@ CONTAINS
         pointb%q = 0.0_8
         pointb%flux_res = 0.0_8
         pointb%dq = 0.0_8
+        pointb%qm = 0.0_8
         pointb%ddq = 0.0_8
         pointb%temp = 0.0_8
         pointb%phi1 = 0.0_8

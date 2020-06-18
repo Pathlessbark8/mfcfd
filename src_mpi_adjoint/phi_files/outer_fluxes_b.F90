@@ -93,6 +93,9 @@ MODULE OUTER_FLUXES_MOD_DIFF
         &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
         &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
         &       , k))
+        CALL PUSHREAL8ARRAY(qtilde_k, 4)
+        CALL PUSHREAL8ARRAY(qtilde_i, 4)
+        CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
         CALL PUSHREAL8(pr)
         CALL PUSHREAL8(rho)
         CALL PUSHREAL8(u2)
@@ -135,6 +138,10 @@ MODULE OUTER_FLUXES_MOD_DIFF
         CALL POPREAL8(pr)
         CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
   &                          rho, rhob, pr, prb)
+  CALL POPREAL8ARRAY(qtilde_i, 4)
+  CALL POPREAL8ARRAY(qtilde_k, 4)
+  CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
+&                    k)
         phi2_k = point%phi2(:, k)
         phi1_k = point%phi1(:, k)
         phi2_kb = 0.0_8
@@ -237,6 +244,7 @@ MODULE OUTER_FLUXES_MOD_DIFF
         &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
         &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
         &       , k))
+        CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
         CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
         CALL FLUX_QUAD_GXIII(g_i, nx, ny, u1, u2, rho, pr)
         CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -330,6 +338,9 @@ MODULE OUTER_FLUXES_MOD_DIFF
         &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
         &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
         &       , k))
+        CALL PUSHREAL8ARRAY(qtilde_k, 4)
+        CALL PUSHREAL8ARRAY(qtilde_i, 4)
+        CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
         CALL PUSHREAL8(pr)
         CALL PUSHREAL8(rho)
         CALL PUSHREAL8(u2)
@@ -372,6 +383,10 @@ MODULE OUTER_FLUXES_MOD_DIFF
         CALL POPREAL8(pr)
         CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
   &                          rho, rhob, pr, prb)
+  CALL POPREAL8ARRAY(qtilde_i, 4)
+  CALL POPREAL8ARRAY(qtilde_k, 4)
+  CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
+&                    k)
         phi2_k = point%phi2(:, k)
         phi1_k = point%phi1(:, k)
         phi2_kb = 0.0_8
@@ -474,6 +489,7 @@ MODULE OUTER_FLUXES_MOD_DIFF
         &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
         &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
         &       , k))
+        CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
         CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
         CALL FLUX_QUAD_GXIV(g_i, nx, ny, u1, u2, rho, pr)
         CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -566,6 +582,9 @@ MODULE OUTER_FLUXES_MOD_DIFF
         &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
         &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
         &       , k))
+        CALL PUSHREAL8ARRAY(qtilde_k, 4)
+        CALL PUSHREAL8ARRAY(qtilde_i, 4)
+        CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
               CALL PUSHREAL8(pr)
         CALL PUSHREAL8(rho)
         CALL PUSHREAL8(u2)
@@ -608,6 +627,10 @@ MODULE OUTER_FLUXES_MOD_DIFF
         CALL POPREAL8(pr)
         CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
   &                          rho, rhob, pr, prb)
+  CALL POPREAL8ARRAY(qtilde_i, 4)
+  CALL POPREAL8ARRAY(qtilde_k, 4)
+  CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
+&                    k)
         phi2_k = point%phi2(:, k)
         phi1_k = point%phi1(:, k)
         phi2_kb = 0.0_8
@@ -709,6 +732,7 @@ MODULE OUTER_FLUXES_MOD_DIFF
         &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
         &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
         &       , k))
+        CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
         CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
         CALL FLUX_GYP(g_i, nx, ny, u1, u2, rho, pr)
         CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
