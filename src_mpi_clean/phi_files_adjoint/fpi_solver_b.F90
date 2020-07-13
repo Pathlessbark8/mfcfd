@@ -16,23 +16,18 @@ CONTAINS
 !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: total_enstrophy *(point.prim)
 !                *(point.prim_old) *(point.flux_res) *(point.q)
-!                *(point.dq) *(point.qm) *(point.ddq) *(point.temp)
-!                *(point.phi1) *(point.phi2) *(point.delta)
+!                *(point.dq) *(point.ddq) *(point.temp) *(point.phi1)
+!                *(point.phi2) *(point.delta)
 !   with respect to varying inputs: *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.temp) *(point.phi1) *(point.phi2)
-!                *(point.delta)
+!                *(point.flux_res) *(point.q) *(point.dq) *(point.ddq)
+!                *(point.temp) *(point.phi1) *(point.phi2) *(point.delta)
 !   Plus diff mem management of: point.prim:in point.prim_old:in
-!                point.flux_res:in point.q:in point.dq:in point.qm:in
-!                point.ddq:in point.temp:in point.phi1:in point.phi2:in
-!                point.delta:in
+!                point.flux_res:in point.q:in point.dq:in point.ddq:in
+!                point.temp:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE FPI_SOLVER_B(t)
     USE DIFFSIZES
 !  Hint: ISIZE2OFDrfpoint_q should be the size of dimension 2 of array *point%q
 !  Hint: ISIZE1OFDrfpoint_q should be the size of dimension 1 of array *point%q
-!  Hint: ISIZE3OFDrfpoint_qm should be the size of dimension 3 of array *point%qm
-!  Hint: ISIZE2OFDrfpoint_qm should be the size of dimension 2 of array *point%qm
-!  Hint: ISIZE1OFDrfpoint_qm should be the size of dimension 1 of array *point%qm
 !  Hint: ISIZE3OFDrfpoint_dq should be the size of dimension 3 of array *point%dq
 !  Hint: ISIZE2OFDrfpoint_dq should be the size of dimension 2 of array *point%dq
 !  Hint: ISIZE1OFDrfpoint_dq should be the size of dimension 1 of array *point%dq
@@ -59,8 +54,6 @@ CONTAINS
       CALL PUSHREAL8ARRAY(point%q, ISIZE1OFDrfpoint_q*ISIZE2OFDrfpoint_q&
 &                  )
       CALL EVAL_Q_VARIABLES()
-      CALL PUSHREAL8ARRAY(point%qm, ISIZE1OFDrfpoint_qm*&
-&                   ISIZE2OFDrfpoint_qm*ISIZE3OFDrfpoint_qm)
       CALL PUSHREAL8ARRAY(point%dq, ISIZE1OFDrfpoint_dq*&
 &                   ISIZE2OFDrfpoint_dq*ISIZE3OFDrfpoint_dq)
       CALL EVAL_Q_DERIVATIVES()
@@ -110,8 +103,6 @@ CONTAINS
       CALL EVAL_Q_DOUBLE_DERIVATIVES_B()
       CALL POPREAL8ARRAY(point%dq, ISIZE1OFDrfpoint_dq*&
 &                  ISIZE2OFDrfpoint_dq*ISIZE3OFDrfpoint_dq)
-      CALL POPREAL8ARRAY(point%qm, ISIZE1OFDrfpoint_qm*&
-&                  ISIZE2OFDrfpoint_qm*ISIZE3OFDrfpoint_qm)
       CALL EVAL_Q_DERIVATIVES_B()
       CALL POPREAL8ARRAY(point%q, ISIZE1OFDrfpoint_q*ISIZE2OFDrfpoint_q)
       CALL EVAL_Q_VARIABLES_B()
@@ -188,3 +179,4 @@ CONTAINS
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
+

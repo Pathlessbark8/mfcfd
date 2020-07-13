@@ -12,14 +12,13 @@ MODULE FLUX_RESIDUAL_MOD_DIFF
 CONTAINS
 !  Differentiation of cal_flux_residual in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: *(point.flux_res) *(point.q)
-!                *(point.dq) *(point.qm) *(point.ddq) *(point.phi1)
-!                *(point.phi2) *(point.delta)
+!                *(point.dq) *(point.ddq) *(point.phi1) *(point.phi2)
+!                *(point.delta)
 !   with respect to varying inputs: *(point.flux_res) *(point.q)
-!                *(point.dq) *(point.qm) *(point.ddq) *(point.phi1)
-!                *(point.phi2) *(point.delta)
+!                *(point.dq) *(point.ddq) *(point.phi1) *(point.phi2)
+!                *(point.delta)
 !   Plus diff mem management of: point.flux_res:in point.q:in point.dq:in
-!                point.qm:in point.ddq:in point.phi1:in point.phi2:in
-!                point.delta:in
+!                point.ddq:in point.phi1:in point.phi2:in point.delta:in
   SUBROUTINE CAL_FLUX_RESIDUAL_B()
     USE DIFFSIZES
 !  Hint: ISIZE1OFDrfpoint_flux_res should be the size of dimension 1 of array *point%flux_res

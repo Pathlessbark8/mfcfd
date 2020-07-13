@@ -87,7 +87,6 @@ CONTAINS
     INTRINSIC DSQRT
     REAL*8, DIMENSION(4) :: tempb
     REAL*8, DIMENSION(4) :: tempb0
-    INTEGER :: branch
     INTEGER :: ad_to
     DO i=1,local_points
       x_i = point%x(i)
@@ -98,28 +97,8 @@ CONTAINS
       sum_dely_sqr = 0.d0
       CALL PUSHREAL8(sum_delx_dely)
       sum_delx_dely = 0.d0
-      CALL PUSHREAL8ARRAY(point%qm(1, :, i), 4)
-      point%qm(1, :, i) = point%q(:, i)
-      CALL PUSHREAL8ARRAY(point%qm(2, :, i), 4)
-      point%qm(2, :, i) = point%q(:, i)
       DO k=1,point%nbhs(i)
         nbh = point%conn(i, k)
-        DO r=1,4
-            IF (point%q(r, nbh) .GT. point%qm(1, r, i)) THEN
-              CALL PUSHREAL8(point%qm(1, r, i))
-              point%qm(1, r, i) = point%q(r, nbh)
-              CALL PUSHCONTROL1B(0)
-            ELSE
-              CALL PUSHCONTROL1B(1)
-            END IF
-            IF (point%q(r, nbh) .LT. point%qm(2, r, i)) THEN
-              CALL PUSHREAL8(point%qm(2, r, i))
-              point%qm(2, r, i) = point%q(r, nbh)
-              CALL PUSHCONTROL1B(1)
-            ELSE
-              CALL PUSHCONTROL1B(0)
-            END IF
-          END DO
         x_k = point%x(nbh)
         y_k = point%y(nbh)
         delx = x_k - x_i
@@ -164,27 +143,7 @@ CONTAINS
         pointb%q(:, nbh) = pointb%q(:, nbh) + tempb0
         pointb%q(:, i) = pointb%q(:, i) - tempb0
         CALL POPREAL8(weights)
-        DO r=4,1,-1
-          CALL POPCONTROL1B(branch)
-          IF (branch .NE. 0) THEN
-            CALL POPREAL8(point%qm(2, r, i))
-            pointb%q(r, nbh) = pointb%q(r, nbh) + pointb%qm(2, r, i)
-            pointb%qm(2, r, i) = 0.0_8
-          END IF
-          CALL POPCONTROL1B(branch)
-          IF (branch .EQ. 0) THEN
-            CALL POPREAL8(point%qm(1, r, i))
-            pointb%q(r, nbh) = pointb%q(r, nbh) + pointb%qm(1, r, i)
-            pointb%qm(1, r, i) = 0.0_8
-          END IF
-        END DO
       END DO
-      CALL POPREAL8ARRAY(point%qm(2, :, i), 4)
-      pointb%q(:, i) = pointb%q(:, i) + pointb%qm(2, :, i)
-      pointb%qm(2, :, i) = 0.0_8
-      CALL POPREAL8ARRAY(point%qm(1, :, i), 4)
-      pointb%q(:, i) = pointb%q(:, i) + pointb%qm(1, :, i)
-      pointb%qm(1, :, i) = 0.0_8
       CALL POPREAL8(sum_delx_dely)
       CALL POPREAL8(sum_dely_sqr)
       CALL POPREAL8(sum_delx_sqr)
@@ -818,86 +777,5 @@ CONTAINS
     rho = DEXP(temp2)
     pr = rho*temp
   END SUBROUTINE QTILDE_TO_PRIMITIVE
-  
-!  Differentiation of limit_qtildes in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *(point.qm) qtilde_i qtilde_k
-!   with respect to varying inputs: *(point.qm) qtilde_i qtilde_k
-!   Plus diff mem management of: point.qm:in
-  SUBROUTINE LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i&
-    &   , k)
-        IMPLICIT NONE
-        REAL*8 :: qtilde_i(4), qtilde_k(4)
-        REAL*8 :: qtilde_ib(4), qtilde_kb(4)
-        INTEGER :: i, k, r
-        INTEGER :: branch
-        DO r=1,4
-          IF (qtilde_i(r) .GT. point%qm(1, r, i)) THEN
-            qtilde_i(r) = point%qm(1, r, i)
-            CALL PUSHCONTROL1B(0)
-          ELSE
-            CALL PUSHCONTROL1B(1)
-          END IF
-          IF (qtilde_i(r) .LT. point%qm(2, r, i)) THEN
-            CALL PUSHCONTROL1B(1)
-          ELSE
-            CALL PUSHCONTROL1B(0)
-          END IF
-        END DO
-        DO r=1,4
-          IF (qtilde_k(r) .GT. point%qm(1, r, k)) THEN
-            qtilde_k(r) = point%qm(1, r, k)
-            CALL PUSHCONTROL1B(0)
-          ELSE
-            CALL PUSHCONTROL1B(1)
-          END IF
-          IF (qtilde_k(r) .LT. point%qm(2, r, k)) THEN
-            CALL PUSHCONTROL1B(1)
-          ELSE
-            CALL PUSHCONTROL1B(0)
-          END IF
-        END DO
-        DO r=4,1,-1
-          CALL POPCONTROL1B(branch)
-          IF (branch .NE. 0) THEN
-            pointb%qm(2, r, k) = pointb%qm(2, r, k) + qtilde_kb(r)
-            qtilde_kb(r) = 0.0_8
-          END IF
-          CALL POPCONTROL1B(branch)
-          IF (branch .EQ. 0) THEN
-            pointb%qm(1, r, k) = pointb%qm(1, r, k) + qtilde_kb(r)
-            qtilde_kb(r) = 0.0_8
-          END IF
-        END DO
-        DO r=4,1,-1
-          CALL POPCONTROL1B(branch)
-          IF (branch .NE. 0) THEN
-            pointb%qm(2, r, i) = pointb%qm(2, r, i) + qtilde_ib(r)
-            qtilde_ib(r) = 0.0_8
-          END IF
-          CALL POPCONTROL1B(branch)
-          IF (branch .EQ. 0) THEN
-            pointb%qm(1, r, i) = pointb%qm(1, r, i) + qtilde_ib(r)
-            qtilde_ib(r) = 0.0_8
-          END IF
-        END DO
-      END SUBROUTINE LIMIT_QTILDES_B
-    
-      SUBROUTINE LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
-        IMPLICIT NONE
-        REAL*8 :: qtilde_i(4), qtilde_k(4)
-        INTEGER :: i, k, r
-        DO r=1,4
-          IF (qtilde_i(r) .GT. point%qm(1, r, i)) qtilde_i(r) = point%qm(1, &
-    &         r, i)
-          IF (qtilde_i(r) .LT. point%qm(2, r, i)) qtilde_i(r) = point%qm(2, &
-    &         r, i)
-        END DO
-        DO r=1,4
-          IF (qtilde_k(r) .GT. point%qm(1, r, k)) qtilde_k(r) = point%qm(1, &
-    &         r, k)
-          IF (qtilde_k(r) .LT. point%qm(2, r, k)) qtilde_k(r) = point%qm(2, &
-    &         r, k)
-        END DO
-      END SUBROUTINE LIMIT_QTILDES
-    
-    END MODULE Q_VARIABLES_MOD_DIFF
+
+END MODULE Q_VARIABLES_MOD_DIFF

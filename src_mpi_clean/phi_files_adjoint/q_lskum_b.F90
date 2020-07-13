@@ -19,13 +19,13 @@ CONTAINS
 !   with respect to varying inputs: *(point.phi1) *(point.phi2)
 !   RW status of diff variables: total_enstrophy:in-killed *(point.prim):(loc)
 !                *(point.prim_old):(loc) *(point.flux_res):(loc)
-!                *(point.q):(loc) *(point.dq):(loc) *(point.qm):(loc)
-!                *(point.ddq):(loc) *(point.temp):(loc) *(point.phi1):out
-!                *(point.phi2):out *(point.delta):(loc)
+!                *(point.q):(loc) *(point.dq):(loc) *(point.ddq):(loc)
+!                *(point.temp):(loc) *(point.phi1):out *(point.phi2):out
+!                *(point.delta):(loc)
 !   Plus diff mem management of: point.prim:in point.prim_old:in
-!                point.flux_res:in point.q:in point.dq:in point.qm:in
-!                point.ddq:in point.temp:in point.phi1:in point.phi2:in
-!                point.delta:in point.vor_area:in
+!                point.flux_res:in point.q:in point.dq:in point.ddq:in
+!                point.temp:in point.phi1:in point.phi2:in point.delta:in
+!                point.vor_area:in
   SUBROUTINE Q_LSKUM_B()
     USE DIFFSIZES
 !  Hint: ISIZE1OFDrfpoint_delta should be the size of dimension 1 of array *point%delta
@@ -157,7 +157,6 @@ CONTAINS
           pointb%flux_res = 0.0_8
           pointb%q = 0.0_8
           pointb%dq = 0.0_8
-          pointb%qm = 0.0_8
           pointb%ddq = 0.0_8
           pointb%temp = 0.0_8
           pointb%phi1 = 0.0_8
@@ -170,7 +169,6 @@ CONTAINS
           pointb%flux_res = 0.0_8
           pointb%q = 0.0_8
           pointb%dq = 0.0_8
-          pointb%qm = 0.0_8
           pointb%ddq = 0.0_8
           pointb%temp = 0.0_8
           pointb%phi1 = 0.0_8

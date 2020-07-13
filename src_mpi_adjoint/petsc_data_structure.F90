@@ -17,7 +17,7 @@ module petsc_data_structure_mod
         Vec                  :: p_phi1, p_phi2
 
                 ! Adjoint PETSc variables
-        Vec                  :: pb_dq, pb_q, pb_qm
+        Vec                  :: pb_dq, pb_q
         Vec                  :: pb_prim, pb_ddq
         Vec                  :: pb_phi1, pb_phi2
 
@@ -54,9 +54,6 @@ module petsc_data_structure_mod
 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,pointb%dq(1,1,1),pb_dq,ierr)
-
-                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
-                        &PETSC_DECIDE,ghost_points,pghost,pointb%qm(1,1,1),pb_qm,ierr)
                 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,pointb%prim(1,1),pb_prim,ierr)
@@ -167,14 +164,6 @@ module petsc_data_structure_mod
                 call VecGhostUpdateBegin(pb_dq,ADD_VALUES,SCATTER_REVERSE,ierr)
         end subroutine 
         
-        subroutine update_begin_qmb_ghost()
-            implicit none
-            PetscErrorCode      :: ierr
-            if (proc==1) return
-
-            call VecGhostUpdateBegin(pb_qm,ADD_VALUES,SCATTER_REVERSE,ierr)
-        end subroutine 
-
         subroutine update_begin_ddqb_ghost()
                 implicit none
                 PetscErrorCode      :: ierr
@@ -341,18 +330,7 @@ module petsc_data_structure_mod
 
                 call PetscLogEventBegin(dq_comm, ierr)
                 call VecGhostUpdateEnd(pb_dq,ADD_VALUES,SCATTER_REVERSE,ierr)
-                call PetscLogEventEnd(dq_comm, ierr)
-
-        end subroutine 
-
-        subroutine update_end_qmb_ghost()
-            implicit none
-            PetscErrorCode      :: ierr
-            if (proc==1) return
-
-            call PetscLogEventBegin(qm_comm, ierr)
-            call VecGhostUpdateEnd(pb_qm,ADD_VALUES,SCATTER_REVERSE,ierr)
-            call PetscLogEventEnd(qm_comm, ierr)
+                call PetscLogEventEnd(prim_comm, ierr)
 
         end subroutine 
 

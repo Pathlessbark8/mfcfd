@@ -13,12 +13,12 @@ MODULE INTERIOR_FLUXES_MOD_DIFF
 
 CONTAINS
 !  Differentiation of interior_dgx_pos in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2) g
-!   with respect to varying inputs: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2)
-!   Plus diff mem management of: point.q:in point.dq:in point.qm:in
-!                point.ddq:in point.phi1:in point.phi2:in
+!   gradient     of useful results: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2) g
+!   with respect to varying inputs: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2)
+!   Plus diff mem management of: point.q:in point.dq:in point.ddq:in
+!                point.phi1:in point.phi2:in
 !	This subroutine evaluates the interior flux derivative dGx_pos
   SUBROUTINE INTERIOR_DGX_POS_B(g, gb, i)
     USE DIFFSIZES
@@ -96,9 +96,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL PUSHREAL8ARRAY(qtilde_k, 4)
-      CALL PUSHREAL8ARRAY(qtilde_i, 4)
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL PUSHREAL8(pr)
       CALL PUSHREAL8(rho)
       CALL PUSHREAL8(u2)
@@ -141,10 +138,6 @@ CONTAINS
       CALL POPREAL8(pr)
       CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
 &                          rho, rhob, pr, prb)
-      CALL POPREAL8ARRAY(qtilde_i, 4)
-      CALL POPREAL8ARRAY(qtilde_k, 4)
-      CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
-&                    k)
       phi2_k = point%phi2(:, k)
       phi1_k = point%phi1(:, k)
       phi2_kb = 0.0_8
@@ -247,7 +240,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GXP(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -262,12 +254,12 @@ CONTAINS
   END SUBROUTINE INTERIOR_DGX_POS
 
 !  Differentiation of interior_dgx_neg in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2) g
-!   with respect to varying inputs: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2)
-!   Plus diff mem management of: point.q:in point.dq:in point.qm:in
-!                point.ddq:in point.phi1:in point.phi2:in
+!   gradient     of useful results: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2) g
+!   with respect to varying inputs: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2)
+!   Plus diff mem management of: point.q:in point.dq:in point.ddq:in
+!                point.phi1:in point.phi2:in
 !	This subroutine evaluates the interior flux derivative dGx_neg
   SUBROUTINE INTERIOR_DGX_NEG_B(g, gb, i)
     USE DIFFSIZES
@@ -344,9 +336,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL PUSHREAL8ARRAY(qtilde_k, 4)
-      CALL PUSHREAL8ARRAY(qtilde_i, 4)
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL PUSHREAL8(pr)
       CALL PUSHREAL8(rho)
       CALL PUSHREAL8(u2)
@@ -389,10 +378,6 @@ CONTAINS
       CALL POPREAL8(pr)
       CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
 &                          rho, rhob, pr, prb)
-      CALL POPREAL8ARRAY(qtilde_i, 4)
-      CALL POPREAL8ARRAY(qtilde_k, 4)
-      CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
-&                    k)
       phi2_k = point%phi2(:, k)
       phi1_k = point%phi1(:, k)
       phi2_kb = 0.0_8
@@ -494,7 +479,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GXN(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -509,12 +493,12 @@ CONTAINS
   END SUBROUTINE INTERIOR_DGX_NEG
 
 !  Differentiation of interior_dgy_pos in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2) g
-!   with respect to varying inputs: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2)
-!   Plus diff mem management of: point.q:in point.dq:in point.qm:in
-!                point.ddq:in point.phi1:in point.phi2:in
+!   gradient     of useful results: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2) g
+!   with respect to varying inputs: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2)
+!   Plus diff mem management of: point.q:in point.dq:in point.ddq:in
+!                point.phi1:in point.phi2:in
 !	This subroutine evaluates the interior flux derivative dGx_neg
 !
 !
@@ -593,9 +577,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL PUSHREAL8ARRAY(qtilde_k, 4)
-      CALL PUSHREAL8ARRAY(qtilde_i, 4)
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL PUSHREAL8(pr)
       CALL PUSHREAL8(rho)
       CALL PUSHREAL8(u2)
@@ -638,10 +619,6 @@ CONTAINS
       CALL POPREAL8(pr)
       CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
 &                          rho, rhob, pr, prb)
-      CALL POPREAL8ARRAY(qtilde_i, 4)
-      CALL POPREAL8ARRAY(qtilde_k, 4)
-      CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
-&                    k)
       phi2_k = point%phi2(:, k)
       phi1_k = point%phi1(:, k)
       phi2_kb = 0.0_8
@@ -745,7 +722,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GYP(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -760,12 +736,12 @@ CONTAINS
   END SUBROUTINE INTERIOR_DGY_POS
 
 !  Differentiation of interior_dgy_neg in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2) g
-!   with respect to varying inputs: *(point.q) *(point.dq) *(point.qm)
-!                *(point.ddq) *(point.phi1) *(point.phi2)
-!   Plus diff mem management of: point.q:in point.dq:in point.qm:in
-!                point.ddq:in point.phi1:in point.phi2:in
+!   gradient     of useful results: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2) g
+!   with respect to varying inputs: *(point.q) *(point.dq) *(point.ddq)
+!                *(point.phi1) *(point.phi2)
+!   Plus diff mem management of: point.q:in point.dq:in point.ddq:in
+!                point.phi1:in point.phi2:in
 !	This subroutine evaluates the interior flux derivative dGx_neg
   SUBROUTINE INTERIOR_DGY_NEG_B(g, gb, i)
     USE DIFFSIZES
@@ -842,9 +818,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL PUSHREAL8ARRAY(qtilde_k, 4)
-      CALL PUSHREAL8ARRAY(qtilde_i, 4)
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL PUSHREAL8(pr)
       CALL PUSHREAL8(rho)
       CALL PUSHREAL8(u2)
@@ -887,10 +860,6 @@ CONTAINS
       CALL POPREAL8(pr)
       CALL QTILDE_TO_PRIMITIVE_B(qtilde_i, qtilde_ib, u1, u1b, u2, u2b, &
 &                          rho, rhob, pr, prb)
-      CALL POPREAL8ARRAY(qtilde_i, 4)
-      CALL POPREAL8ARRAY(qtilde_k, 4)
-      CALL LIMIT_QTILDES_B(qtilde_i, qtilde_ib, qtilde_k, qtilde_kb, i, &
-&                    k)
       phi2_k = point%phi2(:, k)
       phi1_k = point%phi1(:, k)
       phi2_kb = 0.0_8
@@ -992,7 +961,6 @@ CONTAINS
 &       dely*point%dq(2, :, k)) + 1/12d0*phi2_k*(delx*delx*point%ddq(1, &
 &       :, k)+2.0*delx*dely*point%ddq(2, :, k)+dely*dely*point%ddq(3, :&
 &       , k))
-      CALL LIMIT_QTILDES(qtilde_i, qtilde_k, i, k)
       CALL QTILDE_TO_PRIMITIVE(qtilde_i, u1, u2, rho, pr)
       CALL FLUX_GYN(g_i, nx, ny, u1, u2, rho, pr)
       CALL QTILDE_TO_PRIMITIVE(qtilde_k, u1, u2, rho, pr)
@@ -1007,3 +975,4 @@ CONTAINS
   END SUBROUTINE INTERIOR_DGY_NEG
 
 END MODULE INTERIOR_FLUXES_MOD_DIFF
+

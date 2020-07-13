@@ -48,7 +48,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
     REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
-    REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
     REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: ddq
     REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
@@ -166,7 +165,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
         allocate(pointb%flux_res(4,max_points))
         allocate(pointb%q(4,max_points))
         allocate(pointb%dq(2,4,max_points))
-        allocate(pointb%qm(2,4,max_points))
         ALLOCATE(pointb%ddq(3, 4, max_points))
         ALLOCATE(pointb%phi1(4, max_points))
         ALLOCATE(pointb%phi2(4, max_points))
@@ -216,7 +214,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
         deallocate(pointb%prim_old)
         deallocate(pointb%flux_res)
         deallocate(pointb%q)
-        deallocate(pointb%qm)
         deallocate(pointb%dq)
         DEALLOCATE(pointb%ddq)
         DEALLOCATE(pointb%phi1)

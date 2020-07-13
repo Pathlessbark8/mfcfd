@@ -37,7 +37,7 @@ MODULE FPI_SOLVER_MOD_DIFF
         DO rk=1,rks
             CALL PUSHREAL8ARRAY(point%q, 4*max_points)
             CALL EVAL_Q_VARIABLES()
-            CALL PUSHREAL8ARRAY(point%qm, 2*4*max_points)
+            
             CALL PUSHREAL8ARRAY(point%dq, 2*4*max_points)
             CALL EVAL_Q_DERIVATIVES()
             
@@ -189,15 +189,8 @@ MODULE FPI_SOLVER_MOD_DIFF
             do j = local_points+1, max_points 
               pointb%dq(:, :, j) = 0.0d0
             end do
-
-            CALL UPDATE_BEGIN_QMB_GHOST()
-            CALL UPDATE_END_QMB_GHOST()
-            do j = local_points+1, max_points 
-              pointb%qm(:, :, j) = 0.0d0
-            end do
             
             CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
-            CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
             CALL EVAL_Q_DERIVATIVES_B()
             
             

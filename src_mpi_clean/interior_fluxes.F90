@@ -91,7 +91,7 @@ contains
                         qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
                         &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
-                        call limit_qtildes(qtilde_i, qtilde_k, i, k)
+
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gxp(G_i, nx, ny, u1, u2, rho, pr)
 
@@ -193,7 +193,7 @@ contains
                         qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
                         &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
-                        call limit_qtildes(qtilde_i, qtilde_k, i, k)
+
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gxn(G_i, nx, ny, u1, u2, rho, pr)
 
@@ -296,7 +296,7 @@ contains
                         qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
                         &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
-                        call limit_qtildes(qtilde_i, qtilde_k, i, k)
+
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyp(G_i, nx, ny, u1, u2, rho, pr)
 
@@ -397,7 +397,7 @@ contains
                         qtilde_k = point%q(:,k) - 0.5d0*phi1_k*(delx*point%dq(1,:,k) + dely*point%dq(2,:,k)) + &
                         &(1/12d0)*phi2_k*(delx*delx*point%ddq(1,:,k) + 2.0*delx*dely*point%ddq(2,:,k) + dely*dely*point%ddq(3,:,k))
 
-                        call limit_qtildes(qtilde_i, qtilde_k, i, k)
+
                         call qtilde_to_primitive(qtilde_i, u1, u2, rho, pr)
                         call flux_Gyn(G_i, nx, ny, u1, u2, rho, pr)
 
