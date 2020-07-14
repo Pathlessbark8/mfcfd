@@ -1,5 +1,12 @@
--cfl 0.2
--max_iters 10
--format_file legacy
--vl_const 650
--inner_iterations 1
+-cfl 1.5
+-max_iters 100
+-format_file quadtree
+-vl_const 10
+-inner_iterations 3
+-restart_solution no 
+-read_phi yes
+-shapes 3
+-power 0.0
+-aoa 16.0
+-tscheme ssprk43
+-mach 0.2

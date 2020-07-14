@@ -84,7 +84,7 @@ module data_structure_mod
 
 !Run option: petsc or normal
         integer :: runop
-!
+        INTEGER :: read_phi_file
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
 !       power = 0.0d0, -2.0d0, -4.0d0, -6.0d0 ..
@@ -146,8 +146,8 @@ module data_structure_mod
                 allocate(point%ddq(3,4,max_points))
                 allocate(point%temp(3,4,max_points))
 
-                allocate(point%phi1(4,max_points))
-                allocate(point%phi2(4,max_points))
+                ! allocate(point%phi1(4,max_points))
+                ! allocate(point%phi2(4,max_points))
 
                 allocate(point%entropy(max_points))
                 allocate(point%vorticity(max_points))

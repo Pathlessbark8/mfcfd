@@ -12,6 +12,11 @@ contains
                 
                 integer :: k,i
 
+                CALL UPDATE_BEGIN_PHI1_GHOST()
+                CALL UPDATE_END_PHI1_GHOST()
+                CALL UPDATE_BEGIN_PHI2_GHOST()
+                CALL UPDATE_END_PHI2_GHOST()
+
                 if(restart == 0) then
 
                         call setup_case_parameters()

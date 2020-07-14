@@ -30,11 +30,11 @@ contains
                         write(*,*)
                 end if
 
-                do i=1,max_points
-                        point%phi1(:,i) = 1.0d0
-                        point%phi2(:,i) = 1.0d0
-                        point%vor_area(i) = 1.0d0
-                enddo
+                ! do i=1,max_points
+                !         point%phi1(:,i) = 1.0d0
+                !         point%phi2(:,i) = 1.0d0
+                !         point%vor_area(i) = 1.0d0
+                ! enddo
 
                 ! Set U_old to U for first iteration
                 do i=1,local_points

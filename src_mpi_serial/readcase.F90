@@ -7,7 +7,7 @@ subroutine readcase()
         PetscErrorCode :: ierr
         PetscBool :: set
         character(len=64) :: format_file, time, limiter, restart_solution
-        character(len=64) :: solution_accuracy, tscheme, run_option
+        character(len=64) :: solution_accuracy, tscheme, run_option, read_phi
 
         cfl = 0.0d0 ! Default cfl number
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
@@ -123,6 +123,16 @@ subroutine readcase()
         elseif(trim(format_file) == 'quadtree') then
                 format = 2
         end if
+
+        read_phi = 'yes' ! Default : legacy
+        call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
+                              '-read_phi',read_phi, set,ierr); CHKERRQ(ierr)
+        
+        if(trim(read_phi) == 'yes') then
+                read_phi_file = 1
+        elseif(trim(read_phi) == 'no') then
+                read_phi_file = 0
+        end if
         
         ! Print paramaters to screen
         if (rank==0) then
@@ -138,6 +148,8 @@ subroutine readcase()
                 write(*,*) 'power               :', power
                 write(*,*) 'limiter_flag        :', limiter_flag
                 write(*,*) 'inner_iterations    :', inner_iterations
+                write(*,*) 'mach                :', mach
+                write(*,*) 'aoa                 :', aoa
                 if(limiter_flag == 1)write(*,*) 'vl_const     :', vl_const
         end if
 

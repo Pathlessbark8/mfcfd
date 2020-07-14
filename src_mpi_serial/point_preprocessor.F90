@@ -172,4 +172,45 @@ contains
 
         end subroutine
 
+        subroutine read_phi_data()
+
+            implicit none
+
+            integer:: i, k, r, nproc, extra
+            character(len=64) :: part_grid
+            character(len=10) :: itos
+
+            part_grid = 'phi_values_split/phi.dat'
+            if (proc>1) part_grid = 'phi_values_split/phi-'//trim(itos(4,rank))//'.dat'
+
+            OPEN(UNIT=101,FILE=trim(part_grid),FORM="FORMATTED",STATUS="OLD",ACTION="READ")
+
+            allocate(point%phi1(4, max_points))
+            allocate(point%phi2(4, max_points))
+
+            if (proc>1) then
+
+                    do k = 1, local_points
+                    
+                            read(101,*) extra, point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
+                            & point%phi1(4,k) , point%phi2(1,k), point%phi2(2,k), point%phi2(3,k), &
+                            & point%phi2(4,k)
+
+                    end do
+
+            else
+                    do k = 1, max_points
+                    
+                            read(101,*) point%phi1(1,k), point%phi1(2,k), point%phi1(3,k), &
+                            & point%phi1(4,k) , point%phi2(1,k), point%phi2(2,k), point%phi2(3,k), &
+                            & point%phi2(4,k)
+
+                    end do
+
+            end if
+                                    
+            CLOSE(UNIT=101)
+    
+        end subroutine
+
 end module 
