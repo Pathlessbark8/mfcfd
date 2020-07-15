@@ -51,9 +51,14 @@ contains
                         write(*,*)
                 end if
 
-                ! if(rank == 30) then
+                ! if(rank == 37) then
                 !     point%phi1(1,1) = point%phi1(1,1) - 1e-3
                 ! end if
+
+                CALL UPDATE_BEGIN_PHI1_GHOST()
+                CALL UPDATE_END_PHI1_GHOST()
+                CALL UPDATE_BEGIN_PHI2_GHOST()
+                CALL UPDATE_END_PHI2_GHOST()
 
                 t = 0.0d0
                 if(restart == 0)itr = 0

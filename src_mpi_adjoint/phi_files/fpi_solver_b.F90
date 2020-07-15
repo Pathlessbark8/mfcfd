@@ -120,6 +120,15 @@ MODULE FPI_SOLVER_MOD_DIFF
             
             CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
             CALL CAL_FLUX_RESIDUAL_B()
+
+            CALL UPDATE_BEGIN_PHI1B_GHOST()
+            CALL UPDATE_END_PHI1B_GHOST()
+            CALL UPDATE_BEGIN_PHI2B_GHOST()
+            CALL UPDATE_END_PHI2B_GHOST()
+            do j = local_points+1, max_points 
+                pointb%phi1(:, j) = 0.0d0
+                pointb%phi2(:, j) = 0.0d0
+            end do
             
             CALL UPDATE_BEGIN_QB_GHOST()
             CALL UPDATE_END_QB_GHOST()
