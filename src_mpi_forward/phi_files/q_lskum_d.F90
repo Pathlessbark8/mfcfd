@@ -42,9 +42,9 @@ CONTAINS
     !   END DO
     DO i=1,max_points
       pointd%phi1(:, i) = 0.0_8
-      point%phi1(:, i) = 1.0d0
+    !   point%phi1(:, i) = 1.0d0
       pointd%phi2(:, i) = 0.0_8
-      point%phi2(:, i) = 1.0d0
+    !   point%phi2(:, i) = 1.0d0
     END DO
 
 ! Set U_old to U for first iteration
@@ -61,6 +61,7 @@ CONTAINS
         WRITE(*, *) '%%%%%%%%%%%%%-<<<<<<<<PhiD Value has been set to 1>>>>>>>>-%%%%%%%%%%%%'
         pointd%phi1(1, 1) = 1.0d0
     END IF
+    
     IF (rank .EQ. 0) THEN
       WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
       WRITE(*, *) 
@@ -76,7 +77,6 @@ CONTAINS
     pointd%ddq = 0.0_8
     pointd%temp = 0.0_8
     pointd%delta = 0.0_8
-    pointd%vorticity_sqr = 0.0_8
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)
       t = t + dtg

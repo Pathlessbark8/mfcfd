@@ -612,6 +612,7 @@ SUBROUTINE EVAL_Q_INNER_LOOP()
     END DO
   END SUBROUTINE EVAL_Q_INNER_LOOP
 
+  !  Differentiation of eval_update_innerloop in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.dq)
 !   with respect to varying inputs: *(point.dq) *(point.temp)
 !   Plus diff mem management of: point.dq:in point.temp:in

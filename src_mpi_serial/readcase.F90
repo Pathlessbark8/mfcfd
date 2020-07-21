@@ -81,7 +81,7 @@ subroutine readcase()
         call PetscOptionsGetString(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                               '-restart_solution',restart_solution,set,ierr); CHKERRQ(ierr)
    
-        if(trim(restart_solution) == 'same') then
+        if(trim(restart_solution) == 'yes') then
                 restart = 1
         elseif(trim(restart_solution) == 'no') then
                 restart = 0

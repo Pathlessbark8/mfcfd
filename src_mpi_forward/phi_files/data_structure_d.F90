@@ -39,7 +39,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
       REAL*8, DIMENSION(:), ALLOCATABLE :: entropy, vorticity, &
-      &     vorticity_sqr, vor_area
+      &  vor_area
   END TYPE POINTS
   TYPE POINTS_DIFF
       REAL*8, DIMENSION(:), ALLOCATABLE :: x
@@ -54,7 +54,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
-      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
       REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
@@ -88,6 +87,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: timestep
 !Run option: petsc or normal
   INTEGER :: runop
+  INTEGER :: read_phi_file
 !
 !       The parameter power is used to specify the weights 
 !       in the LS formula for the derivatives ..
@@ -118,7 +118,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
 !       Objective function
   REAL*8 :: cl_flag, cd_flag, cm_flag, cl_cd_flag, ent_flag, ens_flag
   INTEGER :: obj_flag
-  INTEGER, SAVE :: inner_iterations=0
+  INTEGER :: inner_iterations=0
 !       No of shapes
   INTEGER :: shapes
 
@@ -135,20 +135,20 @@ CONTAINS
     ALLOCATE(point%qm(2, 4, max_points))
     ALLOCATE(point%ddq(3, 4, max_points))
     ALLOCATE(point%temp(3, 4, max_points))
-    ALLOCATE(point%phi1(4, max_points))
-    ALLOCATE(point%phi2(4, max_points))
+    ! ALLOCATE(point%phi1(4, max_points))
+    ! ALLOCATE(point%phi2(4, max_points))
     ALLOCATE(point%entropy(max_points))
     ALLOCATE(point%vorticity(max_points))
-    ALLOCATE(point%vorticity_sqr(max_points))
+    ! ALLOCATE(point%vorticity_sqr(max_points))
     ALLOCATE(point%vor_area(max_points))
     ALLOCATE(point%xpos_nbhs(max_points))
     ALLOCATE(point%xneg_nbhs(max_points))
     ALLOCATE(point%ypos_nbhs(max_points))
     ALLOCATE(point%yneg_nbhs(max_points))
-    ALLOCATE(point%xpos_conn(max_points, 20))
-    ALLOCATE(point%xneg_conn(max_points, 20))
-    ALLOCATE(point%ypos_conn(max_points, 20))
-    ALLOCATE(point%yneg_conn(max_points, 20))
+    ALLOCATE(point%xpos_conn(max_points, 30))
+    ALLOCATE(point%xneg_conn(max_points, 30))
+    ALLOCATE(point%ypos_conn(max_points, 30))
+    ALLOCATE(point%yneg_conn(max_points, 30))
     ALLOCATE(point%delta(max_points))
     ALLOCATE(cl(shapes))
     ALLOCATE(cd(shapes))
@@ -169,7 +169,7 @@ CONTAINS
     ALLOCATE(pointd%temp(3, 4, max_points))
     ! allocate(pointd%qm(2,4,max_points))
     allocate(pointd%delta(max_points))
-    allocate(pointd%vorticity_sqr(max_points))
+    ! allocate(pointd%vorticity_sqr(max_points))
     allocate(pointd%vor_area(max_points))
     ! allocate(Cld(shapes))
     ! allocate(ClCdd(shapes))
@@ -194,7 +194,7 @@ end subroutine
     DEALLOCATE(point%phi2)
     DEALLOCATE(point%entropy)
     DEALLOCATE(point%vorticity)
-    DEALLOCATE(point%vorticity_sqr)
+    ! DEALLOCATE(point%vorticity_sqr)
     DEALLOCATE(point%vor_area)
     DEALLOCATE(point%xpos_nbhs)
     DEALLOCATE(point%xneg_nbhs)
@@ -225,7 +225,7 @@ end subroutine
     DEALLOCATE(pointd%temp)
     ! deallocate(pointd%qm)
     deallocate(pointd%delta)
-    deallocate(pointd%vorticity_sqr)
+    ! deallocate(pointd%vorticity_sqr)
     deallocate(pointd%vor_area)
     ! deallocate(Cld)
     ! deallocate(ClCdd)

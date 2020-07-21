@@ -13,7 +13,8 @@ module petsc_data_structure_mod
         Vec                  :: p_ddq, pd_ddq
         Vec                  :: p_qm
         Vec                  :: p_prim, pd_prim
-        PetscLogEvent        :: dq_comm, ddq_comm, prim_comm, qm_comm
+        Vec                  :: p_phi1, p_phi2
+        PetscLogEvent        :: dq_comm, ddq_comm, prim_comm, qm_comm, phi_comm
 
     contains
 
@@ -41,8 +42,11 @@ module petsc_data_structure_mod
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,pointd%dq(1,1,1),pd_dq,ierr)
                 
-                ! call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,2*4,2*4*local_points,&
-                !         &PETSC_DECIDE,ghost_points,pghost,pointd%qm(1,1,1),pd_qm,ierr)
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
+                        &PETSC_DECIDE,ghost_points,pghost,point%phi1(1,1),p_phi1,ierr)
+
+                call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
+                        &PETSC_DECIDE,ghost_points,pghost,point%phi2(1,1),p_phi2,ierr)
                 
                 call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,3*4,3*4*local_points,&
                         &PETSC_DECIDE,ghost_points,pghost,pointd%ddq(1,1,1),pd_ddq,ierr)
@@ -57,6 +61,7 @@ module petsc_data_structure_mod
                 call PetscLogEventRegister('ddq_comm',  0,ddq_comm,ierr);
                 call PetscLogEventRegister('qm_comm',  0,qm_comm,ierr);
                 call PetscLogEventRegister('prim_comm',  0,prim_comm,ierr);
+                call PetscLogEventRegister('phi_comm',  0,phi_comm,ierr);
 
         end subroutine 
 
@@ -70,6 +75,8 @@ module petsc_data_structure_mod
                 call VecDestroy(p_ddq,ierr)
                 call VecDestroy(p_qm,ierr)
                 call VecDestroy(p_prim,ierr)
+                call VecDestroy(p_phi1,ierr)
+                call VecDestroy(p_phi2,ierr)
                 call VecDestroy(pd_dq,ierr)
                 call VecDestroy(pd_ddq,ierr)
                 ! call VecDestroy(pd_qm,ierr)
@@ -114,6 +121,22 @@ module petsc_data_structure_mod
 
                 call VecGhostUpdateBegin(p_qm,INSERT_VALUES,SCATTER_FORWARD,ierr)
                 ! call VecGhostUpdateBegin(pd_qm,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        end subroutine 
+
+        subroutine update_begin_phi1_ghost()
+            implicit none
+            PetscErrorCode      :: ierr
+            if (proc==1) return
+
+            call VecGhostUpdateBegin(p_phi1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        end subroutine 
+
+        subroutine update_begin_phi2_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+
+                call VecGhostUpdateBegin(p_phi2,INSERT_VALUES,SCATTER_FORWARD,ierr)
         end subroutine 
 
         subroutine update_end_dq_ghost()
@@ -164,5 +187,26 @@ module petsc_data_structure_mod
 
         end subroutine
 
+        subroutine update_end_phi1_ghost()
+            implicit none
+            PetscErrorCode      :: ierr
+            if (proc==1) return
+
+            call PetscLogEventBegin(phi_comm, ierr)
+            call VecGhostUpdateEnd(p_phi1,INSERT_VALUES,SCATTER_FORWARD,ierr)
+            call PetscLogEventEnd(phi_comm, ierr)
+
+        end subroutine
+    
+        subroutine update_end_phi2_ghost()
+                implicit none
+                PetscErrorCode      :: ierr
+                if (proc==1) return
+        
+                call PetscLogEventBegin(phi_comm, ierr)
+                call VecGhostUpdateEnd(p_phi2,INSERT_VALUES,SCATTER_FORWARD,ierr)
+                call PetscLogEventEnd(phi_comm, ierr)
+        
+        end subroutine
 
 end module petsc_data_structure_mod

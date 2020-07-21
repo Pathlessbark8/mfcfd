@@ -21,11 +21,11 @@ CONTAINS
 !                *(point.prim_old):(loc) *(point.flux_res):(loc)
 !                *(point.q):(loc) *(point.dq):(loc) *(point.ddq):(loc)
 !                *(point.temp):(loc) *(point.phi1):in-killed *(point.phi2):in-killed
-!                *(point.delta):(loc) *(point.vorticity_sqr):(loc)
+!                *(point.delta):(loc)
 !   Plus diff mem management of: point.prim:in point.prim_old:in
 !                point.flux_res:in point.q:in point.dq:in point.ddq:in
 !                point.temp:in point.phi1:in point.phi2:in point.delta:in
-!                point.vorticity_sqr:in point.vor_area:in
+!                point.vor_area:in
   SUBROUTINE Q_LSKUM_D()
     IMPLICIT NONE
     INTEGER :: i
@@ -105,7 +105,6 @@ CONTAINS
       pointd%ddq = 0.0_8
       pointd%temp = 0.0_8
       pointd%delta = 0.0_8
-      pointd%vorticity_sqr = 0.0_8
     ELSE
       total_enstrophyd = 0.0_8
       pointd%prim = 0.0_8
@@ -116,7 +115,6 @@ CONTAINS
       pointd%ddq = 0.0_8
       pointd%temp = 0.0_8
       pointd%delta = 0.0_8
-      pointd%vorticity_sqr = 0.0_8
     END IF
     DO it=itr+1,itr+max_iters
       CALL FPI_SOLVER_D(it)

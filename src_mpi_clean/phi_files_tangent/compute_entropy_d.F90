@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_ENTROPY_MOD_DIFF
-!#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -34,9 +34,9 @@ CONTAINS
   END SUBROUTINE COMPUTE_ENTROPY
 
 !  Differentiation of compute_enstrophy in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: total_enstrophy *(point.vorticity_sqr)
-!   with respect to varying inputs: *(point.prim) *(point.vorticity_sqr)
-!   Plus diff mem management of: point.prim:in point.vorticity_sqr:in
+!   variations   of useful results: total_enstrophy
+!   with respect to varying inputs: *(point.prim)
+!   Plus diff mem management of: point.prim:in
   SUBROUTINE COMPUTE_ENSTROPHY_D()
     IMPLICIT NONE
     INTEGER :: i, k, r, nbh
@@ -47,10 +47,13 @@ CONTAINS
 &   sum_dely_delu2
     REAL*8 :: sum_delx_delu1d, sum_delx_delu2d, sum_dely_delu1d, &
 &   sum_dely_delu2d
+    REAL*8 :: sum_delx_sqr_delu1_sqr, sum_delx_sqr_delu2_sqr, &
+&   sum_dely_sqr_delu1_sqr, sum_dely_sqr_delu2_sqr
     REAL*8 :: det
     REAL*8 :: one_by_det
-    REAL*8 :: du1_dy, du2_dx, temp
-    REAL*8 :: du1_dyd, du2_dxd, tempd
+    REAL*8 :: du1_dy, du2_dx, temp, du1_sqr_dx_sqr, du2_sqr_dy_sqr, &
+&   du1_dx, du2_dy
+    REAL*8 :: du1_dyd, du2_dxd, du1_dxd, du2_dyd
     REAL*8 :: gtotal_enstrophy
     INTRINSIC DSQRT
     REAL*8 :: arg1
@@ -114,15 +117,19 @@ CONTAINS
 &       sum_delx_delu1d)
       du1_dy = (sum_dely_delu1*sum_delx_sqr-sum_delx_delu1*sum_delx_dely&
 &       )*one_by_det
-      tempd = du2_dxd - du1_dyd
-      temp = du2_dx - du1_dy
-      point%vorticity(i) = temp
-      pointd%vorticity_sqr(i) = tempd*temp + temp*tempd
-      point%vorticity_sqr(i) = temp*temp
-      total_enstrophyd = total_enstrophyd + point%vor_area(i)*pointd%&
-&       vorticity_sqr(i)
-      total_enstrophy = total_enstrophy + point%vorticity_sqr(i)*point%&
-&       vor_area(i)
+      du2_dyd = one_by_det*(sum_delx_sqr*sum_dely_delu2d-sum_delx_dely*&
+&       sum_delx_delu2d)
+      du2_dy = (sum_dely_delu2*sum_delx_sqr-sum_delx_delu2*sum_delx_dely&
+&       )*one_by_det
+      du1_dxd = one_by_det*(sum_dely_sqr*sum_delx_delu1d-sum_delx_dely*&
+&       sum_dely_delu1d)
+      du1_dx = (sum_delx_delu1*sum_dely_sqr-sum_dely_delu1*sum_delx_dely&
+&       )*one_by_det
+      total_enstrophyd = total_enstrophyd + point%vor_area(i)*(du1_dxd*&
+&       du1_dx+du1_dx*du1_dxd+du2_dxd*du2_dx+du2_dx*du2_dxd+du1_dyd*&
+&       du1_dy+du1_dy*du1_dyd+du2_dyd*du2_dy+du2_dy*du2_dyd)
+      total_enstrophy = total_enstrophy + (du1_dx*du1_dx+du2_dx*du2_dx+&
+&       du1_dy*du1_dy+du2_dy*du2_dy)*point%vor_area(i)
     END DO
     CALL MPI_REDUCE(total_enstrophy, gtotal_enstrophy, 1, mpi_double, &
 &             mpi_sum, 0, petsc_comm_world, ierr)
@@ -137,9 +144,12 @@ CONTAINS
     REAL*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
     REAL*8 :: sum_delx_delu1, sum_delx_delu2, sum_dely_delu1, &
 &   sum_dely_delu2
+    REAL*8 :: sum_delx_sqr_delu1_sqr, sum_delx_sqr_delu2_sqr, &
+&   sum_dely_sqr_delu1_sqr, sum_dely_sqr_delu2_sqr
     REAL*8 :: det
     REAL*8 :: one_by_det
-    REAL*8 :: du1_dy, du2_dx, temp
+    REAL*8 :: du1_dy, du2_dx, temp, du1_sqr_dx_sqr, du2_sqr_dy_sqr, &
+&   du1_dx, du2_dy
     REAL*8 :: gtotal_enstrophy
     INTRINSIC DSQRT
     REAL*8 :: arg1
@@ -186,11 +196,12 @@ CONTAINS
 &       )*one_by_det
       du1_dy = (sum_dely_delu1*sum_delx_sqr-sum_delx_delu1*sum_delx_dely&
 &       )*one_by_det
-      temp = du2_dx - du1_dy
-      point%vorticity(i) = temp
-      point%vorticity_sqr(i) = temp*temp
-      total_enstrophy = total_enstrophy + point%vorticity_sqr(i)*point%&
-&       vor_area(i)
+      du2_dy = (sum_dely_delu2*sum_delx_sqr-sum_delx_delu2*sum_delx_dely&
+&       )*one_by_det
+      du1_dx = (sum_delx_delu1*sum_dely_sqr-sum_dely_delu1*sum_delx_dely&
+&       )*one_by_det
+      total_enstrophy = total_enstrophy + (du1_dx*du1_dx+du2_dx*du2_dx+&
+&       du1_dy*du1_dy+du2_dy*du2_dy)*point%vor_area(i)
     END DO
     CALL MPI_REDUCE(total_enstrophy, gtotal_enstrophy, 1, mpi_double, &
 &             mpi_sum, 0, petsc_comm_world, ierr)

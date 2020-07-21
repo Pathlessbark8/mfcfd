@@ -54,7 +54,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi1
       REAL*8, DIMENSION(:, :), ALLOCATABLE :: phi2
       REAL*8, DIMENSION(:), ALLOCATABLE :: delta
-      REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
       REAL*8, DIMENSION(:), ALLOCATABLE :: vor_area
   END TYPE POINTS_DIFF
   TYPE(POINTS) :: point
@@ -143,10 +142,10 @@ CONTAINS
     ALLOCATE(point%xneg_nbhs(max_points))
     ALLOCATE(point%ypos_nbhs(max_points))
     ALLOCATE(point%yneg_nbhs(max_points))
-    ALLOCATE(point%xpos_conn(max_points, 20))
-    ALLOCATE(point%xneg_conn(max_points, 20))
-    ALLOCATE(point%ypos_conn(max_points, 20))
-    ALLOCATE(point%yneg_conn(max_points, 20))
+    ALLOCATE(point%xpos_conn(max_points, 30))
+    ALLOCATE(point%xneg_conn(max_points, 30))
+    ALLOCATE(point%ypos_conn(max_points, 30))
+    ALLOCATE(point%yneg_conn(max_points, 30))
     ALLOCATE(point%delta(max_points))
     ALLOCATE(cl(shapes))
     ALLOCATE(cd(shapes))

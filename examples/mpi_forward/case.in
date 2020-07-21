@@ -1,5 +1,12 @@
 -cfl 0.2
--max_iters 500
+-max_iters 10000
 -format_file legacy
 -vl_const 650
--inner_iterations 1
+-inner_iterations 3
+-restart_solution yes
+-read_phi yes
+-shapes 1
+-power 0.0
+-aoa 2.0
+-tscheme ssprk43
+-mach 0.63
