@@ -57,7 +57,7 @@ contains
                 
                 write(501,*)local_points, it-1 , res_old
 
-                do i = 1, local_points
+                do i = 1, max_points
                         write(501,'(1i8,8e30.20)')point%original_id(i), &
                                 & pointb%phi1(1,i), pointb%phi1(2,i), pointb%phi1(3,i), &
                                 & pointb%phi1(4,i), pointb%phi2(1,i), pointb%phi2(2,i), pointb%phi2(3,i), &

@@ -128,6 +128,14 @@ CONTAINS
         ! END IF
         total_enstrophyb = 0.0_8
     END DO
+    CALL UPDATE_BEGIN_PHI1B_GHOST()
+    CALL UPDATE_END_PHI1B_GHOST()
+    CALL UPDATE_BEGIN_PHI2B_GHOST()
+    CALL UPDATE_END_PHI2B_GHOST()
+    ! do i = local_points+1, max_points 
+    !     pointb%phi1(:, j) = 0.0d0
+    !     pointb%phi2(:, j) = 0.0d0
+    ! end do
     CALL PRINT_PHI_OUTPUT()
 
   END SUBROUTINE Q_LSKUM_B

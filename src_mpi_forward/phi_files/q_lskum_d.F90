@@ -62,6 +62,11 @@ CONTAINS
         pointd%phi1(1, 1) = 1.0d0
     END IF
     
+    CALL UPDATE_BEGIN_PHI1_GHOST()
+    CALL UPDATE_END_PHI1_GHOST()
+    CALL UPDATE_BEGIN_PHI2_GHOST()
+    CALL UPDATE_END_PHI2_GHOST()
+
     IF (rank .EQ. 0) THEN
       WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
       WRITE(*, *) 

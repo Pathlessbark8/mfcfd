@@ -56,7 +56,9 @@ CONTAINS
     REAL*8 :: gtotal_enstrophy, gtotal_enstrophyd
     INTRINSIC DSQRT
     REAL*8 :: arg1
+    character(len=64) :: sfile
     PetscErrorCode :: ierr
+    sfile = 'sensitivity_output.dat'
     total_enstrophy = 0.d0
     total_enstrophyd = 0.0_8
     DO i=1,local_points
@@ -131,6 +133,10 @@ du2_dyd = one_by_det*(sum_delx_sqr*sum_dely_delu2d-sum_delx_dely*&
     CALL MPI_REDUCE(total_enstrophyd, gtotal_enstrophyd, 1, mpi_double, &
 &             mpi_sum, 0, petsc_comm_world, ierr)
     IF (rank .EQ. 0) WRITE(*, *) 'total enstrophy :', gtotal_enstrophy, '  total_enstrophyd:', gtotal_enstrophyd 
+    IF (rank .EQ. 0) THEN
+        OPEN(UNIT=501,FILE=trim(sfile))
+        WRITE(501,'(2e30.20)')gtotal_enstrophy, gtotal_enstrophyd
+    END IF
   END SUBROUTINE COMPUTE_ENSTROPHY_D
 
   SUBROUTINE COMPUTE_ENSTROPHY()

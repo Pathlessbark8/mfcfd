@@ -85,7 +85,23 @@ MODULE FPI_SOLVER_MOD_DIFF
         CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &
         &            ierr)
         CALL OBJECTIVE_FUNCTION_B()
+
+        CALL UPDATE_BEGIN_PRIMB_GHOST()
+        CALL UPDATE_END_PRIMB_GHOST()
+        do j = local_points+1, max_points 
+            pointb%prim(:, j) = 0.0d0
+            pointb%prim_old(:, j) = 0.0d0
+        end do
         
+        CALL UPDATE_BEGIN_PHI1B_GHOST()
+        CALL UPDATE_END_PHI1B_GHOST()
+        CALL UPDATE_BEGIN_PHI2B_GHOST()
+        CALL UPDATE_END_PHI2B_GHOST()
+        do j = local_points+1, max_points 
+            pointb%phi1(:, j) = 0.0d0
+            pointb%phi2(:, j) = 0.0d0
+        end do
+
         DO rk=rks,1,-1
             
             ! z = 78

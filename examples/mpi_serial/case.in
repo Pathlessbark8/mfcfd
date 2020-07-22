@@ -1,9 +1,9 @@
--cfl 0.2
--max_iters 100
+-cfl 0.8
+-max_iters 10000
 -format_file legacy
 -vl_const 650
 -inner_iterations 3
--restart_solution yes 
+-restart_solution no 
 -read_phi yes
 -shapes 1
 -power 0.0
