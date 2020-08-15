@@ -4,7 +4,7 @@ module petsc_data_structure_mod
 
 
         use petscvec
-        use parameter_mod_diff
+        use parameter_mod
         use data_structure_mod_diff
 
         implicit none

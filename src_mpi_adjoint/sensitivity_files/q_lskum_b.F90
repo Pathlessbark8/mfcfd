@@ -124,7 +124,7 @@ MODULE Q_LSKUM_MOD_DIFF
             end if
         END DO
         CALL COMPUTE_NORMALS_B()
-        WRITE(*,*) pointb%x(78)
+        ! WRITE(*,*) pointb%x(78)
     END SUBROUTINE Q_LSKUM_B
     
 END MODULE Q_LSKUM_MOD_DIFF

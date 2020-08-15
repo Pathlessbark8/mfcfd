@@ -13,7 +13,7 @@ subroutine readcase()
         call PetscOptionsGetReal(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-cfl',cfl,set,ierr); CHKERRQ(ierr)
 
-        chkpts = 0.0d0 ! Default cfl number
+        chkpts = 0 ! Default cfl number
         call PetscOptionsGetInt(PETSC_NULL_OPTIONS,PETSC_NULL_CHARACTER,&
                                  '-chkpts',chkpts,set,ierr); CHKERRQ(ierr)
 

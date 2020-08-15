@@ -1,0 +1,120 @@
+#Start of the makefile
+
+include makefile.in
+
+#AD stuff
+AD = adBuffer.o adStack.o revolve.o
+
+ifndef VERBOSE
+.SILENT:
+endif
+
+# defining the variables
+
+objects=meshfree_solver.o parameter.o data_structure_b.o point_preprocessor.o utilities.o initial_conditions.o q_lskum_b.o \
+point_normals_b.o generate_connectivity_b.o fpi_solver_b.o q_variables_b.o flux_residual_b.o wall_fluxes_b.o \
+interior_fluxes_b.o outer_fluxes_b.o limiters_b.o state_update_b.o objective_function_b.o \
+compute_force_coeffs_b.o compute_entropy_b.o post_processing.o split_fluxes_b.o quadrant_fluxes_b.o stagnation_values_b.o \
+readcase.o q_lskum_chkpts_b.o petsc_data_structure.o compute_enstrophy_b.o
+
+
+adBuffer.o : ADFirstAidKit/adBuffer.f
+	$(FC) -c ADFirstAidKit/adBuffer.f
+
+revolve.o : revolve.f
+	$(FC) -fno-range-check -c revolve.f
+
+adStack.o : ADFirstAidKit/adStack.c
+	$(CC) -c ADFirstAidKit/adStack.c
+
+execname: $(objects) $(AD)
+	$(FC) -ggdb -Wall -o execname $(FFLAGS) $(objects) $(PETSC_LIB) $(AD)
+	#$(PETSC_LIB)
+
+SOURCEFILES = $(wildcard $(SRC)
+
+meshfree_solver.o: meshfree_solver.F90 point_preprocessor.o data_structure_b.o parameter.o q_lskum_b.o post_processing.o readcase.o initial_conditions.o q_lskum_chkpts_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  meshfree_solver.F90
+
+parameter.o: parameter.F90
+	$(FC) $(FFLAGS)  -c  parameter.F90
+
+point_preprocessor.o: point_preprocessor.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  point_preprocessor.F90
+
+post_processing.o: post_processing.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  post_processing.F90
+
+readcase.o: readcase.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  readcase.F90 
+
+petsc_data_structure.o: petsc_data_structure.F90 parameter.o data_structure_b.o
+	$(FC) $(FFLAGS) -c  petsc_data_structure.F90 
+
+utilities.o: utilities.F90
+	$(FC) $(FFLAGS) -c  utilities.F90
+
+initial_conditions.o: initial_conditions.F90 parameter.o data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  initial_conditions.F90
+
+q_lskum_b.o: q_lskum_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o post_processing.o
+	$(FC) $(FFLAGS) -c  q_lskum_b.F90
+
+q_lskum_chkpts_b.o: q_lskum_chkpts_b.F90 data_structure_b.o point_normals_b.o generate_connectivity_b.o fpi_solver_b.o initial_conditions.o
+	$(FC) $(FFLAGS) -c  q_lskum_chkpts_b.F90
+
+data_structure_b.o: data_structure_b.F90 parameter.o
+	$(FC) $(FFLAGS) -c  data_structure_b.F90
+
+point_normals_b.o: point_normals_b.F90 data_structure_b.o
+	$(FC) $(FFLAGS) -c  point_normals_b.F90
+
+generate_connectivity_b.o: generate_connectivity_b.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  generate_connectivity_b.F90
+
+fpi_solver_b.o: fpi_solver_b.F90 data_structure_b.o q_variables_b.o flux_residual_b.o state_update_b.o objective_function_b.o stagnation_values_b.o
+	$(FC) $(FFLAGS) -c fpi_solver_b.F90
+
+q_variables_b.o: q_variables_b.F90 data_structure_b.o
+	$(FC) $(FFLAGS) -c  q_variables_b.F90
+
+flux_residual_b.o: flux_residual_b.F90 data_structure_b.o parameter.o interior_fluxes_b.o wall_fluxes_b.o outer_fluxes_b.o
+	$(FC) $(FFLAGS) -c  flux_residual_b.F90
+
+quadrant_fluxes_b.o: quadrant_fluxes_b.F90 parameter.o
+	$(FC) $(FFLAGS) -c  quadrant_fluxes_b.F90
+
+wall_fluxes_b.o: wall_fluxes_b.F90 quadrant_fluxes_b.o data_structure_b.o q_variables_b.o limiters_b.o split_fluxes_b.o  #split_fluxes_b.o # quadrant_fluxes_b.o
+	$(FC) $(FFLAGS) -c  wall_fluxes_b.F90
+
+split_fluxes_b.o: split_fluxes_b.F90 parameter.o
+	$(FC) $(FFLAGS) -c  split_fluxes_b.F90
+
+interior_fluxes_b.o: interior_fluxes_b.F90 data_structure_b.o q_variables_b.o limiters_b.o split_fluxes_b.o #split_fluxes_b.o
+	$(FC) $(FFLAGS) -c  interior_fluxes_b.F90
+
+outer_fluxes_b.o: outer_fluxes_b.F90 quadrant_fluxes_b.o q_variables_b.o limiters_b.o data_structure_b.o split_fluxes_b.o #split_fluxes_b.o #quadrant_fluxes_b.o
+	$(FC) $(FFLAGS) -c  outer_fluxes_b.F90
+
+state_update_b.o: state_update_b.F90 data_structure_b.o flux_residual_b.o
+	$(FC) $(FFLAGS) -c  state_update_b.F90
+
+limiters_b.o: limiters_b.F90 data_structure_b.o
+	$(FC) $(FFLAGS) -c  limiters_b.F90
+
+objective_function_b.o: objective_function_b.F90 data_structure_b.o compute_entropy_b.o compute_force_coeffs_b.o compute_enstrophy_b.o
+	$(FC) $(FFLAGS) -c  objective_function_b.F90
+
+compute_force_coeffs_b.o: compute_force_coeffs_b.F90 data_structure_b.o data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  compute_force_coeffs_b.F90
+
+compute_entropy_b.o: compute_entropy_b.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  compute_entropy_b.F90
+
+compute_enstrophy_b.o: compute_enstrophy_b.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  compute_enstrophy_b.F90
+
+stagnation_values_b.o: stagnation_values_b.F90 data_structure_b.o petsc_data_structure.o
+	$(FC) $(FFLAGS) -c  stagnation_values_b.F90
+clean::
+	rm -rf *.mod execname *.o

@@ -35,6 +35,7 @@ CONTAINS
     CHARACTER(len=64) :: cp_file
     CHARACTER(len=10) :: itos
     PetscErrorCode :: ierr
+    REAL*8 :: tempb
     REAL*8 :: tempb0
     REAL*8 :: tempb1
     REAL*8 :: tempb2
