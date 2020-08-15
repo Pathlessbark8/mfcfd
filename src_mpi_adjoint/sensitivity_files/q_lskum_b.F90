@@ -59,7 +59,6 @@ MODULE Q_LSKUM_MOD_DIFF
     SUBROUTINE Q_LSKUM_B()
         IMPLICIT NONE
         INTEGER :: i
-        INTEGER :: branch
         IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
         &                   status='REPLACE', action='WRITE') 
         vector_cost_funcb = 1.0d0
@@ -84,18 +83,6 @@ MODULE Q_LSKUM_MOD_DIFF
             CALL PUSHREAL8ARRAY(point%flux_res, 4* max_points)
             CALL PUSHREAL8ARRAY(point%prim_old, 4*max_points)
             CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
-            IF (ALLOCATED(cl)) THEN
-                CALL PUSHREAL8ARRAY(cl, shapes)
-                CALL PUSHCONTROL1B(1)
-            ELSE
-                CALL PUSHCONTROL1B(0)
-            END IF
-            IF (ALLOCATED(cd)) THEN
-                CALL PUSHREAL8ARRAY(cd, shapes)
-                CALL PUSHCONTROL1B(1)
-            ELSE
-                CALL PUSHCONTROL1B(0)
-            END IF
             CALL FPI_SOLVER(it)
             IF (rank .EQ. 0) THEN
                 WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
@@ -109,41 +96,20 @@ MODULE Q_LSKUM_MOD_DIFF
             WRITE(*, *) '%%%%%%%%%%%%%-Backward Pass Begins-%%%%%%%%%%%%'
             WRITE(*, *) 
         END IF
-
-        machb = 0.0_8
-        q_infb = 0.0_8
-        thetab = 0.0_8
-        eulerb = 0.0_8
-        cflb = 0.0_8
-        powerb = 0.0_8
-
-        IF (ALLOCATED(clcdb)) clcdb = 0.0_8
-        IF (ALLOCATED(cdb)) cdb = 0.0_8
         IF (ALLOCATED(clb)) clb = 0.0_8
-        IF (ALLOCATED(cmb)) cmb = 0.0_8
-
-        vl_constb = 0.0_8
         pointb%x = 0.0_8
         pointb%y = 0.0_8
         pointb%nx = 0.0_8
         pointb%ny = 0.0_8
-        pointb%min_dist = 0.0_8
         pointb%prim = 0.0_8
         pointb%prim_old = 0.0_8
         pointb%flux_res = 0.0_8
         pointb%q = 0.0_8
         pointb%dq = 0.0_8
         pointb%qm = 0.0_8
-
         pointb%temp = 0.0_8
-        pointb%vorticity_sqr = 0.0_8
         pointb%delta = 0.0_8
         DO it=itr+max_iters,itr+1,-1
-            CALL POPCONTROL1B(branch)
-            IF (branch .EQ. 1) CALL POPREAL8ARRAY(cd, shapes)
-            CALL POPCONTROL1B(branch)
-            IF (branch .EQ. 1) CALL POPREAL8ARRAY(cl, shapes)
-            
             CALL POPREAL8ARRAY(point%prim, 4*max_points)
             CALL POPREAL8ARRAY(point%prim_old, 4*max_points)
             CALL POPREAL8ARRAY(point%flux_res, 4*max_points)
@@ -152,7 +118,6 @@ MODULE Q_LSKUM_MOD_DIFF
             CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
             CALL POPREAL8ARRAY(point%temp, 3*4*max_points)
             CALL POPREAL8ARRAY(point%delta, max_points)
-            
             CALL FPI_SOLVER_B(it)
             IF (rank .EQ. 0) THEN
                 WRITE(*,*) 'iterations:', it 
@@ -160,32 +125,6 @@ MODULE Q_LSKUM_MOD_DIFF
         END DO
         CALL COMPUTE_NORMALS_B()
         WRITE(*,*) pointb%x(78)
-        aoab = 0.0_8
-        q_initb = 0.0_8
-        res_newb = 0.0_8
-        tb = 0.0_8
-        sum_res_sqrb = 0.0_8
-        IF (ALLOCATED(cfvb)) cfvb = 0.0_8
-        max_resb = 0.0_8
-        cm_flagb = 0.0_8
-        tfinalb = 0.0_8
-        total_enstrophyb = 0.0_8
-        ens_flagb = 0.0_8
-        total_loss_stagpressureb = 0.0_8
-        res_oldb = 0.0_8
-        cl_cd_flagb = 0.0_8
-        cd_flagb = 0.0_8
-        residueb = 0.0_8
-        total_entropyb = 0.0_8
-        pointb%u = 0.0_8
-        pointb%entropy = 0.0_8
-        pointb%vorticity = 0.0_8
-        pointb%u_old = 0.0_8
-        fo_flagb = 0.0_8
-        cl_flagb = 0.0_8
-        gsum_res_sqrb = 0.0_8
-        ent_flagb = 0.0_8
-        dtgb = 0.0_8
     END SUBROUTINE Q_LSKUM_B
     
 END MODULE Q_LSKUM_MOD_DIFF

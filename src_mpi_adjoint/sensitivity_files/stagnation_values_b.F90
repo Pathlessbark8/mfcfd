@@ -38,92 +38,6 @@ CONTAINS
 &   p0_inf, ' ', pmax/p0_inf, ' ', indexmin, ' ', indexmax
   END SUBROUTINE STAGNATION_PRESSURE
 
-!  Differentiation of objective_function_j in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: mach total_loss_stagpressure
-!                *(point.prim)
-!   with respect to varying inputs: mach *(point.prim)
-!   Plus diff mem management of: point.prim:in
-  SUBROUTINE OBJECTIVE_FUNCTION_J_B()
-    IMPLICIT NONE
-! if(rank == 0) then
-! write(*,*) "J: ", total_loss_stagpressure
-! endif
-    INTEGER :: i
-    REAL*8 :: p0_inf, gammapower, p0, p0_sum, constant, angle, mach_t
-    REAL*8 :: p0_infb, p0b, p0_sumb, constantb, angleb, mach_tb
-    REAL*8 :: prim(4)
-    REAL*8 :: primb(4)
-    REAL*8 :: total_p0
-    INTRINSIC SQRT
-    REAL*8 :: temp
-    REAL*8 :: temp0
-    REAL*8 :: temp1
-    REAL*8 :: temp2
-    REAL*8 :: temp3
-    REAL*8 :: tempb
-    REAL*8 :: tempb0
-    REAL*8 :: tempb1
-PetscErrorCode :: ierr
-    gammapower = gamma/(gamma-1)
-    p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
-    constant = 1/(p0_inf**2*plen)
-    p0_sum = 0.0d0
-    DO i=1,local_points
-      prim = point%prim(:, i)
-      CALL PUSHREAL8(angle)
-      angle = SQRT(gamma*prim(4)/prim(1))
-      CALL PUSHREAL8(mach_t)
-      mach_t = SQRT(prim(2)**2+prim(3)**2)/angle
-      p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
-      p0_sum = p0_sum + (p0_inf-p0)**2
-    END DO
-    p0_sumb = constant*total_loss_stagpressureb
-    constantb = p0_sum*total_loss_stagpressureb
-    p0_infb = 0.0_8
-    DO i=local_points,1,-1
-      prim = point%prim(:, i)
-      p0 = prim(4)*(1+(gamma-1)/2*mach_t*mach_t)**gammapower
-      tempb = 2*(p0_inf-p0)*p0_sumb
-      p0_infb = p0_infb + tempb
-      p0b = -tempb
-      primb = 0.0_8
-      temp3 = (gamma-1)*mach_t**2/2 + 1
-      primb(4) = primb(4) + temp3**gammapower*p0b
-      IF (temp3 .LE. 0.0 .AND. (gammapower .EQ. 0.0 .OR. gammapower .NE.&
-&         INT(gammapower))) THEN
-        mach_tb = 0.0
-      ELSE
-        mach_tb = (gamma-1)*gammapower*temp3**(gammapower-1)*prim(4)*&
-&         mach_t*p0b
-      END IF
-      CALL POPREAL8(mach_t)
-      tempb0 = mach_tb/angle
-      temp1 = prim(2)**2 + prim(3)**2
-      temp2 = SQRT(temp1)
-      IF (.NOT.temp1 .EQ. 0.0) primb(2) = primb(2) + 2*prim(2)*tempb0/(&
-&         2.0*temp2)
-      IF (.NOT.temp1 .EQ. 0.0) primb(3) = primb(3) + 2*prim(3)*tempb0/(&
-&         2.0*temp2)
-      angleb = -(temp2*tempb0/angle)
-      CALL POPREAL8(angle)
-      temp0 = prim(4)/prim(1)
-      IF (gamma*temp0 .EQ. 0.0) THEN
-        tempb1 = 0.0
-      ELSE
-        tempb1 = gamma*angleb/(2.0*SQRT(gamma*temp0)*prim(1))
-      END IF
-      primb(4) = primb(4) + tempb1
-      primb(1) = primb(1) - temp0*tempb1
-      pointb%prim(:, i) = pointb%prim(:, i) + primb
-    END DO
-    temp = plen*p0_inf**2
-    p0_infb = p0_infb - plen*2*p0_inf*constantb/temp**2
-    IF (.NOT.((gamma-1)*(mach**2/2) + 1 .LE. 0.0 .AND. (gammapower .EQ. &
-&       0.0 .OR. gammapower .NE. INT(gammapower)))) machb = machb + (&
-&       gamma-1)*gammapower*((gamma-1)*(mach**2/2)+1)**(gammapower-1)*&
-&       pr_inf*mach*p0_infb
-  END SUBROUTINE OBJECTIVE_FUNCTION_J_B
-
   SUBROUTINE OBJECTIVE_FUNCTION_J()
     IMPLICIT NONE
 ! if(rank == 0) then
@@ -134,7 +48,7 @@ PetscErrorCode :: ierr
     REAL*8 :: prim(4)
     REAL*8 :: total_p0
     INTRINSIC SQRT
-PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     p0_inf = pr_inf*(1+(gamma-1)/2*mach*mach)**gammapower
     constant = 1/(p0_inf**2*plen)

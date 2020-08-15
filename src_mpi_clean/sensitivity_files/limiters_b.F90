@@ -34,11 +34,10 @@ CONTAINS
   END SUBROUTINE MIN_Q_VALUE
 
 !  Differentiation of venkat_limiter in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: vl_const *(point.min_dist)
-!                *(point.q) *(point.qm) phi
-!   with respect to varying inputs: vl_const *(point.min_dist)
-!                *(point.q) *(point.qm) qtilde phi
-!   Plus diff mem management of: point.min_dist:in point.q:in point.qm:in
+!   gradient     of useful results: *(point.q) *(point.qm) phi
+!   with respect to varying inputs: *(point.q) *(point.qm) qtilde
+!                phi
+!   Plus diff mem management of: point.q:in point.qm:in
 !	The following subroutines are used for venkatakrishnan limiter .. 	
   SUBROUTINE VENKAT_LIMITER_B(qtilde, qtildeb, phi, phib, k)
     IMPLICIT NONE
@@ -48,7 +47,7 @@ CONTAINS
     REAL*8 :: q, del_neg, del_pos
     REAL*8 :: qb, del_negb, del_posb
     REAL*8 :: max_q, min_q, ds, epsi, num, den, temp
-    REAL*8 :: epsib, numb, denb, tempb
+    REAL*8 :: numb, denb, tempb
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
     DOUBLE PRECISION :: dabs1
@@ -81,9 +80,7 @@ CONTAINS
           ELSE
             CALL PUSHCONTROL2B(2)
           END IF
-          CALL PUSHREAL8(epsi)
           epsi = vl_const*point%min_dist(k)
-          CALL PUSHREAL8(epsi)
           epsi = epsi**3.0d0
 ! Numerator .. 
           CALL PUSHREAL8(num)
@@ -143,14 +140,8 @@ CONTAINS
       del_negb = del_negb + (del_pos*2.0d0*2*del_neg+num)*numb + (2.0d0*&
 &       2*del_neg+del_pos)*denb
       numb = del_neg*numb
-      epsib = 2*epsi*numb + 2*epsi*denb
       CALL POPREAL8(num)
       del_posb = del_posb + 2*del_pos*numb
-      CALL POPREAL8(epsi)
-      epsib = 3.0d0*epsi**2.0D0*epsib
-      CALL POPREAL8(epsi)
-      vl_constb = vl_constb + point%min_dist(k)*epsib
-      pointb%min_dist(k) = pointb%min_dist(k) + vl_const*epsib
       CALL POPCONTROL2B(branch)
       IF (branch .EQ. 0) THEN
         CALL POPREAL8(del_pos)
@@ -224,4 +215,3 @@ CONTAINS
   END SUBROUTINE VENKAT_LIMITER
 
 END MODULE LIMITERS_MOD_DIFF
-

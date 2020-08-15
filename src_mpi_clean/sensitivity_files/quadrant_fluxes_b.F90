@@ -4,7 +4,7 @@
 MODULE QUADRANT_FLUXES_MOD_DIFF
 !	This module consists of quadrant split fluxes 
 !	with respect to the x-coordinate direction ..
-  USE PARAMETER_MOD_DIFF
+  USE PARAMETER_MOD
   IMPLICIT NONE
 !
 
@@ -818,4 +818,3 @@ CONTAINS
   END SUBROUTINE FLUX_QUAD_GXIV
 
 END MODULE QUADRANT_FLUXES_MOD_DIFF
-

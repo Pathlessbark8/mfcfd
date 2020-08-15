@@ -4,7 +4,7 @@
 MODULE QUADRANT_FLUXES_MOD_DIFF
 !	This module consists of quadrant split fluxes 
 !	with respect to the x-coordinate direction ..
-  USE PARAMETER_MOD_DIFF
+  USE PARAMETER_MOD
   IMPLICIT NONE
 !
 
@@ -29,7 +29,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b, temp3b, temp4b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -230,7 +229,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b, temp3b, temp4b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -323,7 +321,7 @@ CONTAINS
     CALL ADSTACK_RESETREPEAT()
     CALL ADSTACK_ENDREPEAT()
     s2b = 0.D0
-  
+
     ! CALL DERF_B(s2, s2b, result1b)
     s2b = s2b + (2.0d0/dsqrt(pi))*dexp(-s2**2)*result1b
 
@@ -377,7 +375,6 @@ CONTAINS
     DOUBLE PRECISION :: a1pos, a2neg
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx
@@ -431,7 +428,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b, temp3b, temp4b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -578,7 +574,6 @@ CONTAINS
     DOUBLE PRECISION :: a1pos, a2pos
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx
@@ -632,7 +627,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b, temp3b, temp4b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -779,7 +773,6 @@ CONTAINS
     DOUBLE PRECISION :: a1neg, a2pos
     DOUBLE PRECISION :: temp1, temp2, temp3, temp4
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx

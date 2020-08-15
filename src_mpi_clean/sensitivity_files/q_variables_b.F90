@@ -71,10 +71,10 @@ CONTAINS
   END SUBROUTINE EVAL_Q_VARIABLES
 
 !  Differentiation of eval_q_derivatives in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: power *(point.x) *(point.y)
-!                *(point.q) *(point.dq) *(point.qm)
-!   with respect to varying inputs: power *(point.x) *(point.y)
-!                *(point.q) *(point.dq) *(point.qm)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.q)
+!                *(point.dq) *(point.qm)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.q)
+!                *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.q:in
 !                point.dq:in point.qm:in
   SUBROUTINE EVAL_Q_DERIVATIVES_B()
@@ -205,8 +205,6 @@ CONTAINS
         ELSE
           distb = power*dist**(power-1)*weightsb
         END IF
-        IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&           weightsb
         CALL POPREAL8(dist)
         IF (delx**2 + dely**2 .EQ. 0.0) THEN
           tempb2 = 0.0
@@ -306,10 +304,10 @@ CONTAINS
   END SUBROUTINE EVAL_Q_DERIVATIVES
 
 !  Differentiation of eval_q_inner_loop in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: power *(point.x) *(point.y)
-!                *(point.q) *(point.dq) *(point.temp)
-!   with respect to varying inputs: power *(point.x) *(point.y)
-!                *(point.q) *(point.dq) *(point.temp)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.q)
+!                *(point.dq) *(point.temp)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.q)
+!                *(point.dq) *(point.temp)
 !   Plus diff mem management of: point.x:in point.y:in point.q:in
 !                point.dq:in point.temp:in
   SUBROUTINE EVAL_Q_INNER_LOOP_B()
@@ -596,8 +594,6 @@ CONTAINS
         ELSE
           distb = power*dist**(power-1)*weightsb
         END IF
-        IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&           weightsb
         CALL POPREAL8(dist)
         IF (delx**2 + dely**2 .EQ. 0.0) THEN
           tempb12 = 0.0
@@ -848,4 +844,3 @@ CONTAINS
   END SUBROUTINE QTILDE_TO_PRIMITIVE
 
 END MODULE Q_VARIABLES_MOD_DIFF
-

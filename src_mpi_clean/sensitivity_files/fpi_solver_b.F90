@@ -13,23 +13,18 @@ MODULE FPI_SOLVER_MOD_DIFF
 
 CONTAINS
 !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: mach q_inf theta euler cfl
-!                power *clcd *cd *vector_cost_func *cl *cm vl_const
-!                *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.min_dist) *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.qm)
-!                *(point.temp) *(point.vorticity_sqr) *(point.delta)
-!   with respect to varying inputs: mach q_inf theta euler cfl
-!                power *clcd *cd *vector_cost_func *cl *cm vl_const
-!                *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.min_dist) *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.qm)
-!                *(point.temp) *(point.vorticity_sqr) *(point.delta)
-!   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
-!                cl:in cm:in point.x:in point.y:in point.nx:in
-!                point.ny:in point.min_dist:in point.prim:in point.prim_old:in
-!                point.flux_res:in point.q:in point.dq:in point.qm:in
-!                point.temp:in point.vorticity_sqr:in point.delta:in
+!   gradient     of useful results: *vector_cost_func *cl *(point.x)
+!                *(point.y) *(point.nx) *(point.ny) *(point.prim)
+!                *(point.prim_old) *(point.flux_res) *(point.q)
+!                *(point.dq) *(point.qm) *(point.temp) *(point.delta)
+!   with respect to varying inputs: *vector_cost_func *cl *(point.x)
+!                *(point.y) *(point.nx) *(point.ny) *(point.prim)
+!                *(point.prim_old) *(point.flux_res) *(point.q)
+!                *(point.dq) *(point.qm) *(point.temp) *(point.delta)
+!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!                point.y:in point.nx:in point.ny:in point.prim:in
+!                point.prim_old:in point.flux_res:in point.q:in
+!                point.dq:in point.qm:in point.temp:in point.delta:in
   SUBROUTINE FPI_SOLVER_B(t)
     USE DIFFSIZES
 !  Hint: ISIZE2OFDrfpoint_q should be the size of dimension 2 of array *point%q
@@ -46,7 +41,6 @@ CONTAINS
 !  Hint: ISIZE1OFDrfpoint_prim should be the size of dimension 1 of array *point%prim
     IMPLICIT NONE
     INTEGER :: t, i, rk
-    INTEGER :: tb
     INTRINSIC DSQRT
     INTRINSIC DLOG10
     INTRINSIC MOD
@@ -172,4 +166,3 @@ CONTAINS
   END SUBROUTINE FPI_SOLVER
 
 END MODULE FPI_SOLVER_MOD_DIFF
-

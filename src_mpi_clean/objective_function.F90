@@ -13,10 +13,10 @@ module objective_function_mod
             implicit none
 
             call compute_cl_cd_cm()
-            call compute_entropy()
-            call compute_enstrophy()
-            call objective_function_J()
-            vector_cost_func = total_loss_stagpressure + Cl + Cd + Cm + ClCd + total_entropy + total_enstrophy 
+            ! call compute_entropy()
+            ! call compute_enstrophy()
+            ! call objective_function_J()
+            vector_cost_func = Cl
         end subroutine objective_function
 
 end module objective_function_mod

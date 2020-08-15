@@ -8,59 +8,6 @@ MODULE COMPUTE_ENTROPY_MOD_DIFF
   IMPLICIT NONE
 
 CONTAINS
-!  Differentiation of compute_entropy in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: total_entropy *(point.prim)
-!   with respect to varying inputs: *(point.prim)
-!   Plus diff mem management of: point.prim:in
-  SUBROUTINE COMPUTE_ENTROPY_B()
-    IMPLICIT NONE
-! call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
-! & MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD, ierr)
-! if(rank == 0) then
-!     !write(*,*)"total entropy :", gtotal_entropy
-! end if
-    INTEGER :: k
-    REAL*8 :: temp1, temp2
-    REAL*8 :: temp1b
-    REAL*8 :: gtotal_entropy
-    INTRINSIC DLOG
-    INTRINSIC DABS
-    DOUBLE PRECISION :: dabs0
-    DOUBLE PRECISION :: dabs0b
-    INTEGER :: branch
-PetscErrorCode :: ierr
-    temp2 = DLOG(pr_inf)
-    DO k=1,local_points
-      temp1 = point%prim(1, k)**gamma
-      CALL PUSHREAL8(temp1)
-      temp1 = point%prim(4, k)/temp1
-      CALL PUSHREAL8(temp1)
-      temp1 = DLOG(temp1)
-      IF (temp1 - temp2 .GE. 0.) THEN
-        CALL PUSHCONTROL1B(0)
-      ELSE
-        CALL PUSHCONTROL1B(1)
-      END IF
-    END DO
-    DO k=local_points,1,-1
-      dabs0b = total_entropyb
-      CALL POPCONTROL1B(branch)
-      IF (branch .EQ. 0) THEN
-        temp1b = dabs0b
-      ELSE
-        temp1b = -dabs0b
-      END IF
-      CALL POPREAL8(temp1)
-      temp1b = temp1b/temp1
-      CALL POPREAL8(temp1)
-      pointb%prim(4, k) = pointb%prim(4, k) + temp1b/temp1
-      temp1b = -(point%prim(4, k)*temp1b/temp1**2)
-      IF (.NOT.(point%prim(1, k) .LE. 0.0 .AND. (gamma .EQ. 0.0 .OR. &
-&         gamma .NE. INT(gamma)))) pointb%prim(1, k) = pointb%prim(1, k)&
-&         + gamma*point%prim(1, k)**(gamma-1)*temp1b
-    END DO
-  END SUBROUTINE COMPUTE_ENTROPY_B
-
   SUBROUTINE COMPUTE_ENTROPY()
     IMPLICIT NONE
 ! call MPI_Allreduce(total_entropy, gtotal_entropy , 1, &
@@ -74,7 +21,7 @@ PetscErrorCode :: ierr
     INTRINSIC DLOG
     INTRINSIC DABS
     DOUBLE PRECISION :: dabs0
-PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     total_entropy = 0.d0
     temp2 = DLOG(pr_inf)
     DO k=1,local_points

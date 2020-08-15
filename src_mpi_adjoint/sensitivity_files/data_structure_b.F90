@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE DATA_STRUCTURE_MOD_DIFF
-    USE PARAMETER_MOD_DIFF
+    USE PARAMETER_MOD
     IMPLICIT NONE
     INTEGER :: max_points, local_points, ghost_points
     INTEGER :: wall_points, interior_points, outer_points, shape_points
@@ -45,20 +45,14 @@ MODULE DATA_STRUCTURE_MOD_DIFF
     REAL*8, DIMENSION(:), ALLOCATABLE :: y
     REAL*8, DIMENSION(:), ALLOCATABLE :: nx
     REAL*8, DIMENSION(:), ALLOCATABLE :: ny
-    REAL*8, DIMENSION(:), ALLOCATABLE :: min_dist
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: prim_old
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: flux_res
     REAL*8, DIMENSION(:, :), ALLOCATABLE :: q
-    REAL*8, DIMENSION(:, :), ALLOCATABLE :: u
     REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: dq
     REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: qm
     REAL*8, DIMENSION(:, :, :), ALLOCATABLE :: temp
-    REAL*8, DIMENSION(:), ALLOCATABLE :: entropy
-    REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity
-    REAL*8, DIMENSION(:), ALLOCATABLE :: vorticity_sqr
     REAL*8, DIMENSION(:), ALLOCATABLE :: delta
-    REAL*8, DIMENSION(:, :), ALLOCATABLE :: u_old
     END TYPE POINTS_DIFF
     TYPE(POINTS) :: point
     TYPE(POINTS_DIFF) :: pointb
@@ -73,29 +67,21 @@ MODULE DATA_STRUCTURE_MOD_DIFF
     INTEGER :: rks
     INTEGER :: chkpts, ad_mode, read_phi_file
     REAL*8 :: euler
-    REAL*8 :: eulerb
     REAL*8 :: total_loss_stagpressure
-    REAL*8 :: total_loss_stagpressureb
     REAL*8 :: res_old, res_new, residue, max_res
-    REAL*8 :: res_oldb, res_newb, residueb, max_resb
     REAL*8 :: gsum_res_sqr, sum_res_sqr
-    REAL*8 :: gsum_res_sqrb, sum_res_sqrb
     INTEGER :: max_res_point
     REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv, clcd, &
     & vector_cost_func
-    REAL*8, DIMENSION(:), ALLOCATABLE :: clb, cdb, cmb, cfvb, clcdb, &
-    & vector_cost_funcb
+    REAL*8, DIMENSION(:), ALLOCATABLE :: clb, vector_cost_funcb
     REAL*8 :: total_entropy, total_enstrophy
-    REAL*8 :: total_entropyb, total_enstrophyb
     INTEGER :: plen
     INTEGER :: format
     !The parameter CFL is the CFL number for stability ..
     REAL*8 :: cfl
-    REAL*8 :: cflb
     INTEGER :: max_iters
     !Unsteady variables
     REAL*8 :: t, tfinal, dtg
-    REAL*8 :: tb, tfinalb, dtgb
     INTEGER :: timestep
     !Run option: petsc or normal
     INTEGER :: runop
@@ -108,7 +94,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
     !       power = -4.0 => weights = 1/d^4
     !
     REAL*8 :: power
-    REAL*8 :: powerb
     !
     !       limiter_flag = 1 => venkatakrishnan limiter
     !       limiter_flag = 2 => min-max limiter     
@@ -116,7 +101,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
     INTEGER :: limiter_flag
     ! Venkatakrishnan limiter constant ..
     REAL*8 :: vl_const
-    REAL*8 :: vl_constb
     INTEGER :: restart
     !       Interior points normal flag ..
     !       If flag is zero => nx = 0.0 and ny = 1.0
@@ -128,11 +112,8 @@ MODULE DATA_STRUCTURE_MOD_DIFF
     INTEGER :: nsave
     !       First order flag
     REAL*8 :: fo_flag
-    REAL*8 :: fo_flagb
     !       Objective function
     REAL*8 :: cl_flag, cd_flag, cm_flag, cl_cd_flag, ent_flag, ens_flag
-    REAL*8 :: cl_flagb, cd_flagb, cm_flagb, cl_cd_flagb, ent_flagb, &
-    & ens_flagb
     INTEGER :: obj_flag
     INTEGER :: inner_iterations=0
     !       No of shapes
@@ -176,7 +157,6 @@ MODULE DATA_STRUCTURE_MOD_DIFF
         ALLOCATE(pointb%y(max_points))
         ALLOCATE(pointb%nx(max_points))
         ALLOCATE(pointb%ny(max_points))
-        ALLOCATE(pointb%min_dist(max_points))
         ALLOCATE(pointb%delta(max_points))
         ALLOCATE(pointb%prim(4,max_points))
         ALLOCATE(pointb%prim_old(4,max_points))
@@ -185,15 +165,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
         ALLOCATE(pointb%qm(2,4,max_points))
         ALLOCATE(pointb%dq(2,4,max_points))
         ALLOCATE(pointb%temp(3, 4, max_points))
-        ALLOCATE(pointb%entropy(max_points))
-        ALLOCATE(pointb%vorticity(max_points))
-        ALLOCATE(pointb%vorticity_sqr(max_points))
-        ALLOCATE(pointb%u(4,max_points))
-        ALLOCATE(pointb%u_old(4,max_points))
         ALLOCATE(clb(shapes))
-        ALLOCATE(clcdb(shapes))
-        ALLOCATE(cdb(shapes))
-        ALLOCATE(cmb(shapes))
         ALLOCATE(vector_cost_funcb(shapes))
     end subroutine
     
@@ -234,22 +206,13 @@ MODULE DATA_STRUCTURE_MOD_DIFF
         DEALLOCATE(pointb%y)
         DEALLOCATE(pointb%nx)
         DEALLOCATE(pointb%ny)
-        DEALLOCATE(pointb%min_dist)
-        DEALLOCATE(pointb%u)
-        DEALLOCATE(pointb%u_old)
         DEALLOCATE(pointb%prim)
         DEALLOCATE(pointb%prim_old)
         DEALLOCATE(pointb%flux_res)
         DEALLOCATE(pointb%q)
         DEALLOCATE(pointb%dq)
         DEALLOCATE(pointb%temp)
-        DEALLOCATE(pointb%vorticity)
-        DEALLOCATE(pointb%vorticity_sqr)
-        DEALLOCATE(pointb%entropy)
         DEALLOCATE(clb)
-        DEALLOCATE(clcdb)
-        DEALLOCATE(Cdb)
-        DEALLOCATE(Cmb)
         DEALLOCATE(vector_cost_funcb)
     end subroutine
     

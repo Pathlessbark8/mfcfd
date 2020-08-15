@@ -23,5 +23,4 @@ objective
 *.in
 examples/mpi_adjoint/phi_values_split/*
 partGrid*
-makefile
 phi_files/

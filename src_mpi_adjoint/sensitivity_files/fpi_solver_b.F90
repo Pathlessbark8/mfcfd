@@ -33,7 +33,6 @@ MODULE FPI_SOLVER_MOD_DIFF
     SUBROUTINE FPI_SOLVER_B(t)
         IMPLICIT NONE
         INTEGER :: t, i, rk, j
-        INTEGER :: tb
         INTRINSIC DSQRT
         INTRINSIC DLOG10
         PetscErrorCode :: ierr
@@ -73,6 +72,12 @@ MODULE FPI_SOLVER_MOD_DIFF
             CALL UPDATE_END_PRIM_GHOST()
         END DO
         CALL OBJECTIVE_FUNCTION_B()
+        CALL UPDATE_BEGIN_PRIMB_GHOST()
+        CALL UPDATE_END_PRIMB_GHOST()
+        do j = local_points+1, max_points 
+            pointb%prim(:, j) = 0.0d0
+            pointb%prim_old(:, j) = 0.0d0
+        end do
         ! CALL MPI_REDUCE(sum_res_sqr, gsum_res_sqr, 1, mpi_double, mpi_sum, 0&
         ! &             , petsc_comm_world, ierr)
         ! CALL MPI_BCAST(gsum_res_sqr, 1, mpi_double, 0, petsc_comm_world, &

@@ -16,46 +16,16 @@ MODULE Q_LSKUM_MOD_DIFF
 CONTAINS
 !  Differentiation of q_lskum in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: *vector_cost_func
-!   with respect to varying inputs: mach q_inf theta euler cfl
-!                power *clcd *cd *vector_cost_func *cl *cm vl_const
-!                *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.min_dist) *(point.prim) *(point.prim_old)
-!                *(point.flux_res) *(point.q) *(point.dq) *(point.qm)
-!                *(point.temp) *(point.vorticity_sqr) *(point.delta)
-!   RW status of diff variables: mach:out q_inf:out theta:out aoa:(loc)
-!                q_init:(loc) euler:out res_new:(loc) cfl:out t:(loc)
-!                sum_res_sqr:(loc) cfv:(loc) *cfv:(loc) max_res:(loc)
-!                cm_flag:(loc) tfinal:(loc) total_enstrophy:(loc)
-!                ens_flag:(loc) total_loss_stagpressure:(loc) power:out
-!                res_old:(loc) cl_cd_flag:(loc) clcd:(loc) *clcd:out
-!                cd:(loc) *cd:out vector_cost_func:(loc) *vector_cost_func:in-out
-!                cl:(loc) *cl:out cm:(loc) *cm:out vl_const:out
-!                cd_flag:(loc) residue:(loc) total_entropy:(loc)
-!                point.original_id:(loc) point.x:(loc) *(point.x):out
-!                point.y:(loc) *(point.y):out point.left:(loc)
-!                point.right:(loc) point.flag_1:(loc) point.flag_2:(loc)
-!                point.qtdepth:(loc) point.nx:(loc) *(point.nx):out
-!                point.ny:(loc) *(point.ny):out point.nbhs:(loc)
-!                point.conn:(loc) point.min_dist:(loc) *(point.min_dist):out
-!                point.prim:(loc) *(point.prim):out point.prim_old:(loc)
-!                *(point.prim_old):out point.flux_res:(loc) *(point.flux_res):out
-!                point.q:(loc) *(point.q):out point.u:(loc) *(point.u):(loc)
-!                point.dq:(loc) *(point.dq):out point.qm:(loc)
-!                *(point.qm):out point.temp:(loc) *(point.temp):out
-!                point.entropy:(loc) *(point.entropy):(loc) point.vorticity:(loc)
-!                *(point.vorticity):(loc) point.vorticity_sqr:(loc)
-!                *(point.vorticity_sqr):out point.xpos_nbhs:(loc)
-!                point.xneg_nbhs:(loc) point.ypos_nbhs:(loc) point.yneg_nbhs:(loc)
-!                point.xpos_conn:(loc) point.xneg_conn:(loc) point.ypos_conn:(loc)
-!                point.yneg_conn:(loc) point.delta:(loc) *(point.delta):out
-!                point.u_old:(loc) *(point.u_old):(loc) fo_flag:(loc)
-!                cl_flag:(loc) gsum_res_sqr:(loc) ent_flag:(loc)
-!                dtg:(loc)
-!   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
-!                cl:in cm:in point.x:in point.y:in point.nx:in
-!                point.ny:in point.min_dist:in point.prim:in point.prim_old:in
-!                point.flux_res:in point.q:in point.dq:in point.qm:in
-!                point.temp:in point.vorticity_sqr:in point.delta:in
+!   with respect to varying inputs: *(point.x) *(point.y)
+!   RW status of diff variables: *vector_cost_func:in-killed *cl:(loc)
+!                *(point.x):out *(point.y):out *(point.nx):(loc)
+!                *(point.ny):(loc) *(point.prim):(loc) *(point.prim_old):(loc)
+!                *(point.flux_res):(loc) *(point.q):(loc) *(point.dq):(loc)
+!                *(point.qm):(loc) *(point.temp):(loc) *(point.delta):(loc)
+!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!                point.y:in point.nx:in point.ny:in point.prim:in
+!                point.prim_old:in point.flux_res:in point.q:in
+!                point.dq:in point.qm:in point.temp:in point.delta:in
   SUBROUTINE Q_LSKUM_B()
     USE DIFFSIZES
 !  Hint: ISIZE1OFDrfpoint_delta should be the size of dimension 1 of array *point%delta
@@ -76,11 +46,8 @@ CONTAINS
 !  Hint: ISIZE1OFDrfpoint_prim_old should be the size of dimension 1 of array *point%prim_old
 !  Hint: ISIZE2OFDrfpoint_prim should be the size of dimension 2 of array *point%prim
 !  Hint: ISIZE1OFDrfpoint_prim should be the size of dimension 1 of array *point%prim
-!  Hint: ISIZE1OFDrfcl should be the size of dimension 1 of array *cl
-!  Hint: ISIZE1OFDrfcd should be the size of dimension 1 of array *cd
     IMPLICIT NONE
     INTEGER :: i
-    INTEGER :: branch
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
     CALL COMPUTE_NORMALS()
@@ -111,18 +78,6 @@ CONTAINS
 &                   ISIZE2OFDrfpoint_prim_old)
       CALL PUSHREAL8ARRAY(point%prim, ISIZE1OFDrfpoint_prim*&
 &                   ISIZE2OFDrfpoint_prim)
-      IF (ALLOCATED(cl)) THEN
-        CALL PUSHREAL8ARRAY(cl, ISIZE1OFDrfcl)
-        CALL PUSHCONTROL1B(1)
-      ELSE
-        CALL PUSHCONTROL1B(0)
-      END IF
-      IF (ALLOCATED(cd)) THEN
-        CALL PUSHREAL8ARRAY(cd, ISIZE1OFDrfcd)
-        CALL PUSHCONTROL1B(1)
-      ELSE
-        CALL PUSHCONTROL1B(0)
-      END IF
       CALL FPI_SOLVER(it)
 ! if (rank==0) then
       WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
@@ -131,22 +86,11 @@ CONTAINS
     END DO
 ! end if
     CLOSE(unit=301) 
-    machb = 0.0_8
-    q_infb = 0.0_8
-    thetab = 0.0_8
-    eulerb = 0.0_8
-    cflb = 0.0_8
-    powerb = 0.0_8
-    IF (ALLOCATED(clcdb)) clcdb = 0.0_8
-    IF (ALLOCATED(cdb)) cdb = 0.0_8
     IF (ALLOCATED(clb)) clb = 0.0_8
-    IF (ALLOCATED(cmb)) cmb = 0.0_8
-    vl_constb = 0.0_8
     pointb%x = 0.0_8
     pointb%y = 0.0_8
     pointb%nx = 0.0_8
     pointb%ny = 0.0_8
-    pointb%min_dist = 0.0_8
     pointb%prim = 0.0_8
     pointb%prim_old = 0.0_8
     pointb%flux_res = 0.0_8
@@ -154,13 +98,8 @@ CONTAINS
     pointb%dq = 0.0_8
     pointb%qm = 0.0_8
     pointb%temp = 0.0_8
-    pointb%vorticity_sqr = 0.0_8
     pointb%delta = 0.0_8
     DO it=itr+max_iters,itr+1,-1
-      CALL POPCONTROL1B(branch)
-      IF (branch .EQ. 1) CALL POPREAL8ARRAY(cd, ISIZE1OFDrfcd)
-      CALL POPCONTROL1B(branch)
-      IF (branch .EQ. 1) CALL POPREAL8ARRAY(cl, ISIZE1OFDrfcl)
       CALL POPREAL8ARRAY(point%prim, ISIZE1OFDrfpoint_prim*&
 &                  ISIZE2OFDrfpoint_prim)
       CALL POPREAL8ARRAY(point%prim_old, ISIZE1OFDrfpoint_prim_old*&
@@ -178,32 +117,6 @@ CONTAINS
       CALL FPI_SOLVER_B(it)
     END DO
     CALL COMPUTE_NORMALS_B()
-    aoab = 0.0_8
-    q_initb = 0.0_8
-    res_newb = 0.0_8
-    tb = 0.0_8
-    sum_res_sqrb = 0.0_8
-    IF (ALLOCATED(cfvb)) cfvb = 0.0_8
-    max_resb = 0.0_8
-    cm_flagb = 0.0_8
-    tfinalb = 0.0_8
-    total_enstrophyb = 0.0_8
-    ens_flagb = 0.0_8
-    total_loss_stagpressureb = 0.0_8
-    res_oldb = 0.0_8
-    cl_cd_flagb = 0.0_8
-    cd_flagb = 0.0_8
-    residueb = 0.0_8
-    total_entropyb = 0.0_8
-    pointb%u = 0.0_8
-    pointb%entropy = 0.0_8
-    pointb%vorticity = 0.0_8
-    pointb%u_old = 0.0_8
-    fo_flagb = 0.0_8
-    cl_flagb = 0.0_8
-    gsum_res_sqrb = 0.0_8
-    ent_flagb = 0.0_8
-    dtgb = 0.0_8
   END SUBROUTINE Q_LSKUM_B
 
   SUBROUTINE Q_LSKUM()
@@ -244,4 +157,3 @@ CONTAINS
   END SUBROUTINE Q_LSKUM
 
 END MODULE Q_LSKUM_MOD_DIFF
-

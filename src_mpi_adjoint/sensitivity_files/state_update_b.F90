@@ -163,7 +163,6 @@ CONTAINS
       ub(2) = ub(2) + u2_rotb
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
-        eulerb = eulerb - 0.5d0*SUM(point%flux_res(:, k)*ub)
         pointb%flux_res(:, k) = pointb%flux_res(:, k) - 0.5d0*euler*ub
       ELSE
         u_oldb = u_oldb + tbt*ub
@@ -217,7 +216,6 @@ CONTAINS
       ub(2) = ub(2) + u2_rotb
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
-        eulerb = eulerb - 0.5d0*SUM(point%flux_res(:, k)*ub)
         pointb%flux_res(:, k) = pointb%flux_res(:, k) - 0.5d0*euler*ub
       ELSE
         u_oldb = u_oldb + tbt*ub
@@ -271,7 +269,6 @@ CONTAINS
       ub(3) = 0.0_8
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
-        eulerb = eulerb - 0.5d0*SUM(point%flux_res(:, k)*ub)
         pointb%flux_res(:, k) = pointb%flux_res(:, k) - 0.5d0*euler*ub
       ELSE
         u_oldb = u_oldb + tbt*ub
@@ -460,7 +457,6 @@ CONTAINS
     REAL*8 :: delta_tb
     REAL*8 :: min_dist
     REAL*8, SAVE :: lmin=1.0d0
-    REAL*8, SAVE :: lminb=0.0_8
     REAL*8 :: gmin
     REAL*8 :: x_i, y_i, x_k, y_k
     REAL*8 :: x_ib, y_ib, x_kb, y_kb
@@ -481,7 +477,7 @@ CONTAINS
     REAL*8 :: tempb4
     INTEGER :: ad_to
     INTEGER :: branch
-PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -501,7 +497,6 @@ PetscErrorCode :: ierr
         CALL PUSHREAL8(mod_u)
         mod_u = DSQRT(u1*u1 + u2*u2)
         delta_t = dist/(mod_u+3.0d0*DSQRT(pr/rho))
-        CALL PUSHREAL8(delta_t)
         delta_t = cfl*delta_t
         IF (min_delt .GT. delta_t) THEN
           min_delt = delta_t
@@ -524,8 +519,6 @@ PetscErrorCode :: ierr
           delta_tb = min_deltb
           min_deltb = 0.0_8
         END IF
-        CALL POPREAL8(delta_t)
-        cflb = cflb + delta_t*delta_tb
         delta_tb = cfl*delta_tb
         k = point%conn(i, r)
         pr = point%prim(4, k)
@@ -595,7 +588,7 @@ PetscErrorCode :: ierr
     REAL*8 :: dist
     REAL*8 :: min_delt
     INTRINSIC DSQRT
-PetscErrorCode :: ierr
+    PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -626,7 +619,7 @@ PetscErrorCode :: ierr
 &   ny, nyb)
     IMPLICIT NONE
     REAL*8 :: u1_inf, u2_inf, u1_inf_rot, u2_inf_rot, e_inf
-    REAL*8 :: u1_infb, u2_infb, u1_inf_rotb, u2_inf_rotb, e_infb
+    REAL*8 :: u1_inf_rotb, u2_inf_rotb, e_infb
     REAL*8 :: u1, u2, pr, rho, u1_rot, u2_rot, e
     REAL*8 :: u1b, u2b, prb, rhob, u1_rotb, u2_rotb, eb
     REAL*8 :: beta, s2, b2_inf, a2n_inf
@@ -639,7 +632,6 @@ PetscErrorCode :: ierr
     REAL*8 :: nxb, nyb, txb, tyb
     INTRINSIC DSQRT
     INTRINSIC DEXP
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     REAL*8 :: temp
@@ -757,10 +749,6 @@ PetscErrorCode :: ierr
     nyb = nyb + u2_inf*u2_inf_rotb + txb + u2*u2_rotb
     tyb = u2_inf*u1_inf_rotb + u2*u1_rotb
     nxb = nxb + u1_inf*u2_inf_rotb - tyb + u1*u2_rotb
-    u1_infb = tx*u1_inf_rotb + nx*u2_inf_rotb
-    u2_infb = ty*u1_inf_rotb + ny*u2_inf_rotb
-    q_infb(3) = q_infb(3) + u2_infb
-    q_infb(2) = q_infb(2) + u1_infb
   END SUBROUTINE CONSERVED_VECTOR_UBAR_B
 
   SUBROUTINE CONSERVED_VECTOR_UBAR(prim, ubar, nx, ny)
@@ -771,7 +759,6 @@ PetscErrorCode :: ierr
     REAL*8 :: b2, a2p, temp1, temp2
     REAL*8 :: ubar(4), prim(4)
     REAL*8 :: nx, ny, tx, ty
-
     DOUBLE PRECISION :: result1
     u1_inf = q_inf(2)
     u2_inf = q_inf(3)

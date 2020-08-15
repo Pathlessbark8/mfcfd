@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE FLUX_RESIDUAL_MOD_DIFF
-  USE PARAMETER_MOD_DIFF
+  USE PARAMETER_MOD
   USE DATA_STRUCTURE_MOD_DIFF
   USE INTERIOR_FLUXES_MOD_DIFF
   USE WALL_FLUXES_MOD_DIFF
@@ -11,15 +11,15 @@ MODULE FLUX_RESIDUAL_MOD_DIFF
 
 CONTAINS
 !  Differentiation of cal_flux_residual in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.flux_res)
-!                *(point.q) *(point.dq) *(point.qm) *(point.delta)
-!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.flux_res)
-!                *(point.q) *(point.dq) *(point.qm) *(point.delta)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.flux_res) *(point.q) *(point.dq)
+!                *(point.qm) *(point.delta)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.flux_res) *(point.q) *(point.dq)
+!                *(point.qm) *(point.delta)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.min_dist:in point.flux_res:in
-!                point.q:in point.dq:in point.qm:in point.delta:in
+!                point.ny:in point.flux_res:in point.q:in point.dq:in
+!                point.qm:in point.delta:in
   SUBROUTINE CAL_FLUX_RESIDUAL_B()
     USE DIFFSIZES
 !  Hint: ISIZE1OFDrfpoint_flux_res should be the size of dimension 1 of array *point%flux_res

@@ -14,15 +14,13 @@ MODULE OUTER_FLUXES_MOD_DIFF
 
 CONTAINS
 !  Differentiation of outer_dgx_pos in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
-!                *(point.dq) *(point.qm) g
-!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
-!                *(point.dq) *(point.qm)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
+!                g
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.min_dist:in point.q:in point.dq:in
-!                point.qm:in
+!                point.ny:in point.q:in point.dq:in point.qm:in
 !	This subroutine evaluates the wall flux derivative dGs_pos
   SUBROUTINE OUTER_DGX_POS_B(g, gb, i)
     USE DIFFSIZES
@@ -217,8 +215,6 @@ CONTAINS
       ELSE
         distb = power*dist**(power-1)*weightsb
       END IF
-      IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&         weightsb
       CALL POPREAL8(dist)
       IF (dels**2 + deln**2 .EQ. 0.0) THEN
         tempb3 = 0.0
@@ -323,15 +319,13 @@ CONTAINS
   END SUBROUTINE OUTER_DGX_POS
 
 !  Differentiation of outer_dgx_neg in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
-!                *(point.dq) *(point.qm) g
-!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
-!                *(point.dq) *(point.qm)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
+!                g
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.min_dist:in point.q:in point.dq:in
-!                point.qm:in
+!                point.ny:in point.q:in point.dq:in point.qm:in
 !	This subroutine evaluates the wall flux derivative dGs_neg
   SUBROUTINE OUTER_DGX_NEG_B(g, gb, i)
     USE DIFFSIZES
@@ -526,8 +520,6 @@ CONTAINS
       ELSE
         distb = power*dist**(power-1)*weightsb
       END IF
-      IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&         weightsb
       CALL POPREAL8(dist)
       IF (dels**2 + deln**2 .EQ. 0.0) THEN
         tempb3 = 0.0
@@ -632,15 +624,13 @@ CONTAINS
   END SUBROUTINE OUTER_DGX_NEG
 
 !  Differentiation of outer_dgy_pos in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
-!                *(point.dq) *(point.qm) g
-!   with respect to varying inputs: power vl_const *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.min_dist) *(point.q)
-!                *(point.dq) *(point.qm)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
+!                g
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.q) *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
-!                point.ny:in point.min_dist:in point.q:in point.dq:in
-!                point.qm:in
+!                point.ny:in point.q:in point.dq:in point.qm:in
   SUBROUTINE OUTER_DGY_POS_B(g, gb, i)
     USE DIFFSIZES
 !  Hint: ISIZE1OFtemp should be the size of dimension 1 of array temp
@@ -834,8 +824,6 @@ CONTAINS
       ELSE
         distb = power*dist**(power-1)*weightsb
       END IF
-      IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&         weightsb
       CALL POPREAL8(dist)
       IF (dels**2 + deln**2 .EQ. 0.0) THEN
         tempb3 = 0.0
@@ -939,4 +927,3 @@ CONTAINS
   END SUBROUTINE OUTER_DGY_POS
 
 END MODULE OUTER_FLUXES_MOD_DIFF
-

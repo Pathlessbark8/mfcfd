@@ -22,13 +22,13 @@ CONTAINS
     INTEGER :: i, j, k
     INTEGER :: l, m, r
     REAL*8 :: cp, temp
-    REAL*8 :: cpb, tempb
+    REAL*8 :: cpb
     REAL*8 :: lx, ly, mx, my, rx, ry
     REAL*8 :: lxb, lyb, mxb, myb, rxb, ryb
     REAL*8 :: ds1, ds2, ds
     REAL*8 :: ds1b, ds2b, dsb
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
-    REAL*8, DIMENSION(shapes) :: hb, vb, pitch_momb
+    REAL*8, DIMENSION(shapes) :: hb, vb
     REAL*8, DIMENSION(shapes) :: lcl, lcd, lcm, lcl1, lcd1
     REAL*8 :: nx, ny
     REAL*8 :: nxb, nyb
@@ -38,15 +38,7 @@ CONTAINS
     REAL*8 :: tempb0
     REAL*8 :: tempb1
     REAL*8 :: tempb2
-    REAL*8 :: tempb3
-    REAL*8 :: tempb4
-    REAL*8 :: tempb5
-    REAL*8 :: tempb6
-    REAL*8 :: tempb7
-    REAL*8, DIMENSION(shapes) :: tempb8
     temp = 0.5d0*rho_inf*mach*mach
-    h = 0.d0
-    v = 0.d0
     DO j=1,shape_points
       m = shape_points_index(j)
       r = point%right(m)
@@ -65,67 +57,23 @@ CONTAINS
       ds2 = DSQRT(ds2)
       CALL PUSHREAL8(ds)
       ds = 0.5d0*(ds1+ds2)
-      nx = point%nx(m)
-      ny = point%ny(m)
       CALL PUSHREAL8(cp)
       cp = point%prim(4, m) - pr_inf
-      CALL PUSHREAL8(cp)
       cp = -(cp/temp)
-      h(point%flag_2(m)) = h(point%flag_2(m)) + cp*nx*ds
-      v(point%flag_2(m)) = v(point%flag_2(m)) + cp*ny*ds
     END DO
-    cl = v*DCOS(theta) - h*DSIN(theta)
-    cd = h*DCOS(theta) + v*DSIN(theta)
-! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
-! & PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
-! & PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
-! & PETSC_COMM_WORLD, ierr)
-! Cl = lCl
-! Cd = lCd
-! Cm = lCm
-! if(rank == 0) then
-!     do j = 1, shapes
-!         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm
-!     end do
-! end if
-    tempb8 = clcdb/cd
-    clb = clb + tempb8
-    cdb = cdb - cl*tempb8/cd
-    clcdb = 0.0_8
-    pitch_momb = 0.0_8
-    pitch_momb = cmb
-    cmb = 0.0_8
     hb = 0.0_8
     vb = 0.0_8
-    hb = DCOS(theta)*cdb - DSIN(theta)*clb
-    thetab = thetab + DCOS(theta)*SUM(v*cdb) - DSIN(theta)*SUM(v*clb) - &
-&     DCOS(theta)*SUM(h*clb) - DSIN(theta)*SUM(h*cdb)
-    vb = DCOS(theta)*clb + DSIN(theta)*cdb
-    cdb = 0.0_8
+    vb = DCOS(theta)*clb
+    hb = -(DSIN(theta)*clb)
     clb = 0.0_8
-    tempb = 0.0_8
     DO j=shape_points,1,-1
       m = shape_points_index(j)
-      my = point%y(m)
-      nx = point%nx(m)
       ny = point%ny(m)
-      mx = point%x(m)
-      tempb0 = -(ds*(mx-0.25d0)*pitch_momb(point%flag_2(m)))
-      tempb1 = -(cp*ny*pitch_momb(point%flag_2(m)))
-      tempb2 = ds*my*pitch_momb(point%flag_2(m))
-      tempb3 = cp*nx*pitch_momb(point%flag_2(m))
-      cpb = ds*ny*vb(point%flag_2(m)) + ds*nx*hb(point%flag_2(m)) + nx*&
-&       tempb2 + ny*tempb0
-      nyb = ds*cp*vb(point%flag_2(m)) + cp*tempb0
-      dsb = cp*ny*vb(point%flag_2(m)) + cp*nx*hb(point%flag_2(m)) + my*&
-&       tempb3 + (mx-0.25d0)*tempb1
-      mxb = ds*tempb1
-      nxb = ds*cp*hb(point%flag_2(m)) + cp*tempb2
-      myb = ds*tempb3
-      CALL POPREAL8(cp)
-      tempb = tempb + cp*cpb/temp**2
+      nyb = ds*cp*vb(point%flag_2(m))
+      nx = point%nx(m)
+      cpb = ds*nx*hb(point%flag_2(m)) + ds*ny*vb(point%flag_2(m))
+      dsb = cp*nx*hb(point%flag_2(m)) + cp*ny*vb(point%flag_2(m))
+      nxb = ds*cp*hb(point%flag_2(m))
       cpb = -(cpb/temp)
       CALL POPREAL8(cp)
       pointb%prim(4, m) = pointb%prim(4, m) + cpb
@@ -134,19 +82,21 @@ CONTAINS
       CALL POPREAL8(ds)
       ds1b = 0.5d0*dsb
       ds2b = 0.5d0*dsb
+      my = point%y(m)
       r = point%right(m)
       rx = point%x(r)
       ry = point%y(r)
+      mx = point%x(m)
       CALL POPREAL8(ds2)
       IF (ds2 .EQ. 0.0) THEN
         ds2b = 0.0
       ELSE
         ds2b = ds2b/(2.D0*DSQRT(ds2))
       END IF
-      tempb4 = 2*(rx-mx)*ds2b
-      tempb5 = 2*(ry-my)*ds2b
-      rxb = tempb4
-      ryb = tempb5
+      tempb = 2*(rx-mx)*ds2b
+      tempb0 = 2*(ry-my)*ds2b
+      rxb = tempb
+      ryb = tempb0
       l = point%left(m)
       lx = point%x(l)
       ly = point%y(l)
@@ -156,12 +106,12 @@ CONTAINS
       ELSE
         ds1b = ds1b/(2.D0*DSQRT(ds1))
       END IF
-      tempb6 = 2*(mx-lx)*ds1b
-      mxb = mxb + tempb6 - tempb4
-      tempb7 = 2*(my-ly)*ds1b
-      myb = myb + tempb7 - tempb5
-      lxb = -tempb6
-      lyb = -tempb7
+      tempb1 = 2*(mx-lx)*ds1b
+      mxb = tempb1 - tempb
+      tempb2 = 2*(my-ly)*ds1b
+      myb = tempb2 - tempb0
+      lxb = -tempb1
+      lyb = -tempb2
       pointb%y(r) = pointb%y(r) + ryb
       pointb%x(r) = pointb%x(r) + rxb
       pointb%y(m) = pointb%y(m) + myb
@@ -169,7 +119,6 @@ CONTAINS
       pointb%y(l) = pointb%y(l) + lyb
       pointb%x(l) = pointb%x(l) + lxb
     END DO
-    machb = machb + rho_inf*0.5d0*2*mach*tempb
   END SUBROUTINE COMPUTE_CL_CD_CM_B
 
   SUBROUTINE COMPUTE_CL_CD_CM()

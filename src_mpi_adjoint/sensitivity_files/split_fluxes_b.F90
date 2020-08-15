@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE SPLIT_FLUXES_MOD_DIFF
-  USE PARAMETER_MOD_DIFF
+  USE PARAMETER_MOD
   IMPLICIT NONE
 
 CONTAINS
@@ -22,7 +22,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -120,7 +119,6 @@ CONTAINS
     DOUBLE PRECISION :: beta, s1, b1, a1pos
     DOUBLE PRECISION :: temp1, temp2
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx
@@ -162,7 +160,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -260,7 +257,6 @@ CONTAINS
     DOUBLE PRECISION :: beta, s1, b1, a1neg
     DOUBLE PRECISION :: temp1, temp2
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx
@@ -302,7 +298,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -400,7 +395,6 @@ CONTAINS
     DOUBLE PRECISION :: beta, s2, b2, a2pos
     DOUBLE PRECISION :: temp1, temp2
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx
@@ -442,7 +436,6 @@ CONTAINS
     DOUBLE PRECISION :: temp1b, temp2b
     DOUBLE PRECISION :: pr_by_rho, u_sqr
     DOUBLE PRECISION :: pr_by_rhob, u_sqrb
-
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1b
     DOUBLE PRECISION :: temp
@@ -540,7 +533,6 @@ CONTAINS
     DOUBLE PRECISION :: beta, s2, b2, a2neg
     DOUBLE PRECISION :: temp1, temp2
     DOUBLE PRECISION :: pr_by_rho, u_sqr
-
     DOUBLE PRECISION :: result1
     tx = ny
     ty = -nx

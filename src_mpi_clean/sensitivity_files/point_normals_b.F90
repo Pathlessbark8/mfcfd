@@ -9,8 +9,7 @@ CONTAINS
 !  Differentiation of compute_normals in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: *(point.x) *(point.y) *(point.nx)
 !                *(point.ny)
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
-!                *(point.ny)
+!   with respect to varying inputs: *(point.x) *(point.y)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
 !                point.ny:in
   SUBROUTINE COMPUTE_NORMALS_B()

@@ -22,29 +22,18 @@ CONTAINS
 !                point.ny:in point.prim:in point.vorticity_sqr:in
   SUBROUTINE OBJECTIVE_FUNCTION_B()
     IMPLICIT NONE
-    
-    total_loss_stagpressureb = SUM(vector_cost_funcb)
     clb = clb + vector_cost_funcb
-    cdb = cdb + vector_cost_funcb
-    cmb = cmb + vector_cost_funcb
-    clcdb = clcdb + vector_cost_funcb
-    total_entropyb = SUM(vector_cost_funcb)
-    total_enstrophyb = SUM(vector_cost_funcb)
     vector_cost_funcb = 0.0_8
-    CALL OBJECTIVE_FUNCTION_J_B()
-    CALL COMPUTE_ENSTROPHY_B()
-    CALL COMPUTE_ENTROPY_B()
     CALL COMPUTE_CL_CD_CM_B()
   END SUBROUTINE OBJECTIVE_FUNCTION_B
 
   SUBROUTINE OBJECTIVE_FUNCTION()
     IMPLICIT NONE
     CALL COMPUTE_CL_CD_CM()
-    CALL COMPUTE_ENTROPY()
-    CALL COMPUTE_ENSTROPHY()
-    CALL OBJECTIVE_FUNCTION_J()
-    vector_cost_func = total_loss_stagpressure + cl + cd + cm + clcd + &
-&     total_entropy + total_enstrophy
+    ! CALL COMPUTE_ENTROPY()
+    ! CALL COMPUTE_ENSTROPHY()
+    ! CALL OBJECTIVE_FUNCTION_J()
+    vector_cost_func = cl
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF

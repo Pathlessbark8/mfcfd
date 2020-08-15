@@ -215,8 +215,6 @@ CONTAINS
       ELSE
         distb = power*dist**(power-1)*weightsb
       END IF
-      IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&         weightsb
       CALL POPREAL8(dist)
       IF (dels**2 + deln**2 .EQ. 0.0) THEN
         tempb3 = 0.0
@@ -522,8 +520,6 @@ CONTAINS
       ELSE
         distb = power*dist**(power-1)*weightsb
       END IF
-      IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&         weightsb
       CALL POPREAL8(dist)
       IF (dels**2 + deln**2 .EQ. 0.0) THEN
         tempb3 = 0.0
@@ -828,8 +824,6 @@ CONTAINS
       ELSE
         distb = power*dist**(power-1)*weightsb
       END IF
-      IF (.NOT.dist .LE. 0.0) powerb = powerb + dist**power*LOG(dist)*&
-&         weightsb
       CALL POPREAL8(dist)
       IF (dels**2 + deln**2 .EQ. 0.0) THEN
         tempb3 = 0.0

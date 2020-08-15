@@ -10,10 +10,10 @@ MODULE STATE_UPDATE_MOD_DIFF
 
 CONTAINS
 !  Differentiation of state_update in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: q_inf euler *(point.nx) *(point.ny)
-!                *(point.prim) *(point.prim_old) *(point.flux_res)
-!   with respect to varying inputs: q_inf euler *(point.nx) *(point.ny)
-!                *(point.prim) *(point.prim_old) *(point.flux_res)
+!   gradient     of useful results: *(point.nx) *(point.ny) *(point.prim)
+!                *(point.prim_old) *(point.flux_res)
+!   with respect to varying inputs: *(point.nx) *(point.ny) *(point.prim)
+!                *(point.prim_old) *(point.flux_res)
 !   Plus diff mem management of: point.nx:in point.ny:in point.prim:in
 !                point.prim_old:in point.flux_res:in
   SUBROUTINE STATE_UPDATE_B(rk)
@@ -163,8 +163,7 @@ CONTAINS
       ub(2) = ub(2) + u2_rotb
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
-        eulerb = eulerb - 0.5d0*SUM(point%flux_res(:, k)*ub)
-        pointb%flux_res(:, k) = pointb%flux_res(:, k) - 0.5d0*euler*ub
+        pointb%flux_res(:, k) = pointb%flux_res(:, k) - euler*0.5d0*ub
       ELSE
         u_oldb = u_oldb + tbt*ub
         pointb%flux_res(:, k) = pointb%flux_res(:, k) - obt*0.5d0*ub
@@ -217,8 +216,7 @@ CONTAINS
       ub(2) = ub(2) + u2_rotb
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
-        eulerb = eulerb - 0.5d0*SUM(point%flux_res(:, k)*ub)
-        pointb%flux_res(:, k) = pointb%flux_res(:, k) - 0.5d0*euler*ub
+        pointb%flux_res(:, k) = pointb%flux_res(:, k) - euler*0.5d0*ub
       ELSE
         u_oldb = u_oldb + tbt*ub
         pointb%flux_res(:, k) = pointb%flux_res(:, k) - obt*0.5d0*ub
@@ -271,8 +269,7 @@ CONTAINS
       ub(3) = 0.0_8
       CALL POPCONTROL1B(branch)
       IF (branch .EQ. 0) THEN
-        eulerb = eulerb - 0.5d0*SUM(point%flux_res(:, k)*ub)
-        pointb%flux_res(:, k) = pointb%flux_res(:, k) - 0.5d0*euler*ub
+        pointb%flux_res(:, k) = pointb%flux_res(:, k) - euler*0.5d0*ub
       ELSE
         u_oldb = u_oldb + tbt*ub
         pointb%flux_res(:, k) = pointb%flux_res(:, k) - obt*0.5d0*ub
@@ -446,9 +443,9 @@ CONTAINS
   END SUBROUTINE CONSERVED_TO_PRIMITIVE
 
 !  Differentiation of func_delta in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: cfl *(point.x) *(point.y) *(point.prim)
+!   gradient     of useful results: *(point.x) *(point.y) *(point.prim)
 !                *(point.delta)
-!   with respect to varying inputs: cfl *(point.x) *(point.y) *(point.prim)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.prim)
 !                *(point.delta)
 !   Plus diff mem management of: point.x:in point.y:in point.prim:in
 !                point.delta:in
@@ -460,7 +457,6 @@ CONTAINS
     REAL*8 :: delta_tb
     REAL*8 :: min_dist
     REAL*8, SAVE :: lmin=1.0d0
-    REAL*8, SAVE :: lminb=0.0_8
     REAL*8 :: gmin
     REAL*8 :: x_i, y_i, x_k, y_k
     REAL*8 :: x_ib, y_ib, x_kb, y_kb
@@ -501,7 +497,6 @@ CONTAINS
         CALL PUSHREAL8(mod_u)
         mod_u = DSQRT(u1*u1 + u2*u2)
         delta_t = dist/(mod_u+3.0d0*DSQRT(pr/rho))
-        CALL PUSHREAL8(delta_t)
         delta_t = cfl*delta_t
         IF (min_delt .GT. delta_t) THEN
           min_delt = delta_t
@@ -524,8 +519,6 @@ CONTAINS
           delta_tb = min_deltb
           min_deltb = 0.0_8
         END IF
-        CALL POPREAL8(delta_t)
-        cflb = cflb + delta_t*delta_tb
         delta_tb = cfl*delta_tb
         k = point%conn(i, r)
         pr = point%prim(4, k)
@@ -620,13 +613,13 @@ CONTAINS
   END SUBROUTINE FUNC_DELTA
 
 !  Differentiation of conserved_vector_ubar in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: q_inf prim nx ny ubar
-!   with respect to varying inputs: q_inf prim nx ny ubar
+!   gradient     of useful results: prim nx ny ubar
+!   with respect to varying inputs: prim nx ny ubar
   SUBROUTINE CONSERVED_VECTOR_UBAR_B(prim, primb, ubar, ubarb, nx, nxb, &
 &   ny, nyb)
     IMPLICIT NONE
     REAL*8 :: u1_inf, u2_inf, u1_inf_rot, u2_inf_rot, e_inf
-    REAL*8 :: u1_infb, u2_infb, u1_inf_rotb, u2_inf_rotb, e_infb
+    REAL*8 :: u1_inf_rotb, u2_inf_rotb, e_infb
     REAL*8 :: u1, u2, pr, rho, u1_rot, u2_rot, e
     REAL*8 :: u1b, u2b, prb, rhob, u1_rotb, u2_rotb, eb
     REAL*8 :: beta, s2, b2_inf, a2n_inf
@@ -759,10 +752,6 @@ CONTAINS
     nyb = nyb + u2_inf*u2_inf_rotb + txb + u2*u2_rotb
     tyb = u2_inf*u1_inf_rotb + u2*u1_rotb
     nxb = nxb + u1_inf*u2_inf_rotb - tyb + u1*u2_rotb
-    u1_infb = tx*u1_inf_rotb + nx*u2_inf_rotb
-    u2_infb = ty*u1_inf_rotb + ny*u2_inf_rotb
-    q_infb(3) = q_infb(3) + u2_infb
-    q_infb(2) = q_infb(2) + u1_infb
   END SUBROUTINE CONSERVED_VECTOR_UBAR_B
 
   SUBROUTINE CONSERVED_VECTOR_UBAR(prim, ubar, nx, ny)
@@ -817,4 +806,3 @@ CONTAINS
   END SUBROUTINE CONSERVED_VECTOR_UBAR
 
 END MODULE STATE_UPDATE_MOD_DIFF
-

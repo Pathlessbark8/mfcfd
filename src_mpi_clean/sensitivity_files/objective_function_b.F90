@@ -11,40 +11,26 @@ MODULE OBJECTIVE_FUNCTION_MOD_DIFF
 
 CONTAINS
 !  Differentiation of objective_function in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: mach theta power *clcd *cd
-!                *vector_cost_func *cl *cm *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.prim) *(point.vorticity_sqr)
-!   with respect to varying inputs: mach theta power *clcd *cd
-!                *vector_cost_func *cl *cm *(point.x) *(point.y)
-!                *(point.nx) *(point.ny) *(point.prim) *(point.vorticity_sqr)
-!   Plus diff mem management of: clcd:in cd:in vector_cost_func:in
-!                cl:in cm:in point.x:in point.y:in point.nx:in
-!                point.ny:in point.prim:in point.vorticity_sqr:in
+!   gradient     of useful results: *vector_cost_func *cl *(point.x)
+!                *(point.y) *(point.nx) *(point.ny) *(point.prim)
+!   with respect to varying inputs: *vector_cost_func *cl *(point.x)
+!                *(point.y) *(point.nx) *(point.ny) *(point.prim)
+!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!                point.y:in point.nx:in point.ny:in point.prim:in
   SUBROUTINE OBJECTIVE_FUNCTION_B()
     IMPLICIT NONE
-    total_loss_stagpressureb = SUM(vector_cost_funcb)
     clb = clb + vector_cost_funcb
-    cdb = cdb + vector_cost_funcb
-    cmb = cmb + vector_cost_funcb
-    clcdb = clcdb + vector_cost_funcb
-    total_entropyb = SUM(vector_cost_funcb)
-    total_enstrophyb = SUM(vector_cost_funcb)
     vector_cost_funcb = 0.0_8
-    CALL OBJECTIVE_FUNCTION_J_B()
-    CALL COMPUTE_ENSTROPHY_B()
-    CALL COMPUTE_ENTROPY_B()
     CALL COMPUTE_CL_CD_CM_B()
   END SUBROUTINE OBJECTIVE_FUNCTION_B
 
   SUBROUTINE OBJECTIVE_FUNCTION()
     IMPLICIT NONE
     CALL COMPUTE_CL_CD_CM()
-    CALL COMPUTE_ENTROPY()
-    CALL COMPUTE_ENSTROPHY()
-    CALL OBJECTIVE_FUNCTION_J()
-    vector_cost_func = total_loss_stagpressure + cl + cd + cm + clcd + &
-&     total_entropy + total_enstrophy
+! call compute_entropy()
+! call compute_enstrophy()
+! call objective_function_J()
+    vector_cost_func = cl
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF
-
