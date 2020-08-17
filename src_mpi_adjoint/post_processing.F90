@@ -38,4 +38,31 @@ module post_processing_mod
         
     end subroutine
     
+    subroutine print_sensitivity_output()
+        
+        implicit none
+        
+        integer :: i
+        character(len=64) :: pfile
+        character(len=10) :: itos
+        
+        if(proc==1) then
+            pfile = 'sensitivity/sensitivity.dat'
+        else
+            pfile = 'sensitivity/'//'sensitivity-'//trim(itos(4,rank))//'.dat'
+        end if
+        
+        OPEN(UNIT=501,FILE=trim(pfile))
+        
+        write(501,*)local_points, it-1 , res_old
+        
+        do i = 1, local_points
+            write(501,'(1i8, 2e30.20)')point%original_id(i), &
+            & pointb%x(i), pointb%y(i)
+        end do
+        
+        close(501)
+        
+    end subroutine
+    
 end module post_processing_mod
