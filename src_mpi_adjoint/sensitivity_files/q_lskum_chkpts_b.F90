@@ -90,18 +90,11 @@ CONTAINS
     SNAPS = chkpts
     INFO = 5
 
-
     OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-    ! OPEN(UNIT=302,FILE="residue_b",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-    
-    
+    vector_cost_funcb = 1.0d0
     CALL COMPUTE_NORMALS()
     CALL GENERATE_CONNECTIVITY()
-    ! cost_funcb = 1.0d0
-    ! DO i=1,max_points
-    !     point%phi1(:, i) = 1.0d0
-    !     point%phi2(:, i) = 1.0d0
-    !   END DO 
+
     IF (rank .EQ. 0) THEN
         WRITE(*, *) 
         WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
@@ -181,16 +174,19 @@ CONTAINS
         !
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
-        pointb%delta = 0.0_8
+        IF (ALLOCATED(clb)) clb = 0.0_8
+        pointb%x = 0.0_8
+        pointb%y = 0.0_8
+        pointb%nx = 0.0_8
+        pointb%ny = 0.0_8
         pointb%prim = 0.0_8
         pointb%prim_old = 0.0_8
-        pointb%q = 0.0_8
         pointb%flux_res = 0.0_8
+        pointb%q = 0.0_8
         pointb%dq = 0.0_8
-        ! pointb%ddq = 0.0_8
+        pointb%qm = 0.0_8
         pointb%temp = 0.0_8
-        ! pointb%phi1 = 0.0_8
-        ! pointb%phi2 = 0.0_8
+        pointb%delta = 0.0_8
         IF (rank .EQ. 0) THEN
             write(*,*)
             write(*,*)'%%%%%%%%-Adjoint computations begin-%%%%%%%'
@@ -289,7 +285,8 @@ CONTAINS
     9030 FORMAT (' youturn at',I7)
     9040 FORMAT (' restore at',I7)
 !                  
-    ! CALL PRINT_PHI_OUTPUT()                                                                                                                                
+    CALL COMPUTE_NORMALS_B()
+    CALL PRINT_SENSITIVITY_OUTPUT()                                                                                                                         
 !                                                                                                                                                  
 !       End of the revolve algorithm ..   
 
