@@ -35,9 +35,9 @@ CONTAINS
 
 !  Differentiation of venkat_limiter in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: phi
-!   with respect to varying inputs: vl_const *(point.min_dist)
-!                *(point.q) *(point.qm) qtilde phi
-!   Plus diff mem management of: point.min_dist:in point.q:in point.qm:in
+!   with respect to varying inputs: *(point.q) *(point.qm) qtilde
+!                phi
+!   Plus diff mem management of: point.q:in point.qm:in
 !	The following subroutines are used for venkatakrishnan limiter .. 	
   SUBROUTINE VENKAT_LIMITER_D(qtilde, qtilded, phi, phid, k)
     IMPLICIT NONE

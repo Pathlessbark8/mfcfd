@@ -2,7 +2,7 @@ module initial_conditions_mod
 
     use data_structure_mod_diff
     use petsc_data_structure_mod
-    USE PARAMETER_MOD_DIFF
+    USE PARAMETER_MOD
 
 contains
 

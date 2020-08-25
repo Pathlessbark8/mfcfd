@@ -101,19 +101,14 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0) THEN
-        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
-      ELSE IF (dist .EQ. 0.0) THEN
-        IF (power .EQ. 1.0) THEN
+      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
+&     ) THEN
+        weightsd = power*dist**(power-1)*distd
+      ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
           weightsd = distd
         ELSE
           weightsd = 0.0
         END IF
-      ELSE IF (power .EQ. INT(power)) THEN
-        weightsd = power*dist**(power-1)*distd
-      ELSE
-        weightsd = 0.0
-      END IF
       weights = dist**power
       dels_weightsd = delsd*weights + dels*weightsd
       dels_weights = dels*weights
@@ -338,19 +333,14 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0) THEN
-        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
-      ELSE IF (dist .EQ. 0.0) THEN
-        IF (power .EQ. 1.0) THEN
+      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
+&     ) THEN
+        weightsd = power*dist**(power-1)*distd
+      ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
           weightsd = distd
         ELSE
           weightsd = 0.0
         END IF
-      ELSE IF (power .EQ. INT(power)) THEN
-        weightsd = power*dist**(power-1)*distd
-      ELSE
-        weightsd = 0.0
-      END IF
       weights = dist**power
       dels_weightsd = delsd*weights + dels*weightsd
       dels_weights = dels*weights
@@ -576,16 +566,11 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0) THEN
-        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
-      ELSE IF (dist .EQ. 0.0) THEN
-        IF (power .EQ. 1.0) THEN
-          weightsd = distd
-        ELSE
-          weightsd = 0.0
-        END IF
-      ELSE IF (power .EQ. INT(power)) THEN
+      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
+&     ) THEN
         weightsd = power*dist**(power-1)*distd
+    ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
+        weightsd = distd
       ELSE
         weightsd = 0.0
       END IF
@@ -814,16 +799,11 @@ CONTAINS
         distd = arg1d/(2.D0*DSQRT(arg1))
       END IF
       dist = DSQRT(arg1)
-      IF (dist .GT. 0.0) THEN
-        weightsd = dist**power*(LOG(dist)*powerd+power*distd/dist)
-      ELSE IF (dist .EQ. 0.0) THEN
-        IF (power .EQ. 1.0) THEN
-          weightsd = distd
-        ELSE
-          weightsd = 0.0
-        END IF
-      ELSE IF (power .EQ. INT(power)) THEN
+      IF (dist .GT. 0.0 .OR. (dist .LT. 0.0 .AND. power .EQ. INT(power))&
+&     ) THEN
         weightsd = power*dist**(power-1)*distd
+      ELSE IF (dist .EQ. 0.0 .AND. power .EQ. 1.0) THEN
+        weightsd = distd
       ELSE
         weightsd = 0.0
       END IF
@@ -963,4 +943,3 @@ CONTAINS
   END SUBROUTINE INTERIOR_DGY_NEG
 
 END MODULE INTERIOR_FLUXES_MOD_DIFF
-

@@ -2,7 +2,7 @@
 	# $(error directory not set)
 # endif
 
-SRCDIR=/home/kumar/FORTRAN/sensitivity_mfcfd/src_mpi_serial
+SRCDIR=/home/kumar/FORTRAN/mfcfd/src_mpi_serial
 
 all:
 	rm -rf src
@@ -12,12 +12,6 @@ all:
 	cd src && make -j -f makefile.primal execname
 	mv src/execname .
 	@echo "Built mpi solver"
-
-input:
-	cp -r $(MF_DIR)/mfpre .
-	cd mfpre && make -f makefile
-	cp mfpre/graphpart .
-	rm -rf mfpre
 
 clean:
 	rm -rf src

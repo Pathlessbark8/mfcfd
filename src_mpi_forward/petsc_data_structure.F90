@@ -4,16 +4,17 @@ module petsc_data_structure_mod
 
 
     use petscvec
-    USE PARAMETER_MOD_DIFF
+    USE PARAMETER_MOD
     use data_structure_mod_diff
 
     implicit none
 
     PetscMPIInt      :: rank,proc
+    Vec          :: pd_x, pd_y
     Vec          :: p_dq, pd_dq
     Vec          :: p_qm, pd_qm
     Vec          :: p_prim, pd_prim
-    PetscLogEvent    :: dq_comm, prim_comm, qm_comm
+    PetscLogEvent    :: dq_comm, prim_comm, qm_comm, x_comm, y_comm
 
     contains
 
@@ -44,12 +45,21 @@ module petsc_data_structure_mod
         call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,4,4*local_points,&
             &PETSC_DECIDE,ghost_points,pghost,pointd%prim(1,1),pd_prim,ierr)
 
+        call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,1,local_points,&
+            &PETSC_DECIDE,ghost_points,pghost,pointd%x(1),pd_x,ierr)
+
+        call VecCreateGhostBlockWithArray(PETSC_COMM_WORLD,1,local_points,&
+            &PETSC_DECIDE,ghost_points,pghost,pointd%y(1),pd_y,ierr)
+
+
         call VecGetSize(p_prim,plen,ierr)
         plen = plen/4
 
         call PetscLogEventRegister('dq_comm',  0,dq_comm,ierr);
         call PetscLogEventRegister('qm_comm',  0,qm_comm,ierr);
         call PetscLogEventRegister('prim_comm',  0,prim_comm,ierr);
+        call PetscLogEventRegister('x_comm',  0, x_comm,ierr);
+        call PetscLogEventRegister('y_comm',  0, y_comm,ierr);
 
     end subroutine 
 
@@ -133,5 +143,48 @@ module petsc_data_structure_mod
 
     end subroutine
 
+    subroutine update_begin_x_ghost()
+        implicit none
+        PetscErrorCode      :: ierr
+        if (proc==1) return
+
+        call PetscLogEventBegin(x_comm, ierr)
+        call VecGhostUpdateBegin(pd_x,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        call PetscLogEventBegin(x_comm, ierr)
+
+    end subroutine 
+
+    subroutine update_end_x_ghost()
+        implicit none
+        PetscErrorCode      :: ierr
+        if (proc==1) return
+
+        call PetscLogEventBegin(x_comm, ierr)
+        call VecGhostUpdateEnd(pd_x,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        call PetscLogEventEnd(x_comm, ierr)
+
+    end subroutine
+
+    subroutine update_begin_y_ghost()
+        implicit none
+        PetscErrorCode      :: ierr
+        if (proc==1) return
+
+        call PetscLogEventBegin(y_comm, ierr)
+        call VecGhostUpdateBegin(pd_y,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        call PetscLogEventBegin(y_comm, ierr)
+
+    end subroutine 
+
+    subroutine update_end_y_ghost()
+        implicit none
+        PetscErrorCode      :: ierr
+        if (proc==1) return
+
+        call PetscLogEventBegin(y_comm, ierr)
+        call VecGhostUpdateEnd(pd_y,INSERT_VALUES,SCATTER_FORWARD,ierr)
+        call PetscLogEventEnd(y_comm, ierr)
+
+    end subroutine
 
 end module petsc_data_structure_mod

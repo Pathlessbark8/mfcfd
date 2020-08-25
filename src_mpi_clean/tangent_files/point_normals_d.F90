@@ -8,8 +8,7 @@ MODULE POINT_NORMALS_MOD_DIFF
 CONTAINS
 !  Differentiation of compute_normals in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.nx) *(point.ny)
-!   with respect to varying inputs: *(point.x) *(point.y) *(point.nx)
-!                *(point.ny)
+!   with respect to varying inputs: *(point.x) *(point.y)
 !   Plus diff mem management of: point.x:in point.y:in point.nx:in
 !                point.ny:in
   SUBROUTINE COMPUTE_NORMALS_D()
@@ -211,3 +210,4 @@ CONTAINS
   END SUBROUTINE COMPUTE_NORMALS
 
 END MODULE POINT_NORMALS_MOD_DIFF
+

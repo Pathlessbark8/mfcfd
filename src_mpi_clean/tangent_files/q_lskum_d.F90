@@ -10,6 +10,7 @@ MODULE Q_LSKUM_MOD_DIFF
   USE GENERATE_CONNECTIVITY_MOD_DIFF
   USE FPI_SOLVER_MOD_DIFF
   USE INITIAL_CONDITIONS_MOD
+  USE IEEE_ARITHMETIC
   IMPLICIT NONE
 
 CONTAINS
@@ -30,17 +31,6 @@ CONTAINS
     INTEGER :: i
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
-    if(rank == 30) then
-        WRITE(*, *) '%%%%%%%%%%%%%-<<X Value Set To 1>>-%%%%%%%%%%%%'
-        pointd%x(1) = 1.0d0
-    END IF
-
-    call update_begin_x_ghost()
-    call update_end_x_ghost()
-
-    call update_begin_y_ghost()
-    call update_end_y_ghost()
-
     CALL COMPUTE_NORMALS_D()
     CALL GENERATE_CONNECTIVITY()
     IF (rank .EQ. 0) THEN
@@ -62,27 +52,76 @@ CONTAINS
       WRITE(*, *) 
     END IF
     IF (restart .EQ. 0) THEN
-        itr = 0
-        IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
-        IF (ALLOCATED(cld)) cld = 0.0_8
-        pointd%prim = 0.0_8
-        pointd%prim_old = 0.0_8
-        pointd%flux_res = 0.0_8
-        pointd%q = 0.0_8
-        pointd%dq = 0.0_8
-        pointd%qm = 0.0_8
-        pointd%temp = 0.0_8
-        pointd%delta = 0.0_8
-      END IF
-      DO it=itr+1,itr+max_iters
-        CALL FPI_SOLVER_D(it)
-    if (rank==0) then
-        WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-  &     residue
-        WRITE(301, *) it, residue
-    end if
-        END DO
-      CLOSE(unit=301) 
-    END SUBROUTINE Q_LSKUM_D
+      itr = 0
+      IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
+      IF (ALLOCATED(cld)) cld = 0.0_8
+      pointd%prim = 0.0_8
+      pointd%prim_old = 0.0_8
+      pointd%flux_res = 0.0_8
+      pointd%q = 0.0_8
+      pointd%dq = 0.0_8
+      pointd%qm = 0.0_8
+      pointd%temp = 0.0_8
+      pointd%delta = 0.0_8
+    ELSE
+      IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
+      IF (ALLOCATED(cld)) cld = 0.0_8
+      pointd%prim = 0.0_8
+      pointd%prim_old = 0.0_8
+      pointd%flux_res = 0.0_8
+      pointd%q = 0.0_8
+      pointd%dq = 0.0_8
+      pointd%qm = 0.0_8
+      pointd%temp = 0.0_8
+      pointd%delta = 0.0_8
+    END IF
+    DO it=itr+1,itr+max_iters
+      CALL FPI_SOLVER_D(it)
+! if (rank==0) then
+      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
+&     residue
+      WRITE(301, *) it, residue
+    END DO
+! end if
+    CLOSE(unit=301) 
+  END SUBROUTINE Q_LSKUM_D
+
+  SUBROUTINE Q_LSKUM()
+    IMPLICIT NONE
+    INTEGER :: i
+    IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
+&                   status='REPLACE', action='WRITE') 
+    CALL COMPUTE_NORMALS()
+    CALL GENERATE_CONNECTIVITY()
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) 
+      WRITE(*, *) '%%%%-Normals and connectivity generated-%%%'
+      WRITE(*, *) 
+    END IF
+! Set U_old to U for first iteration
+    DO i=1,local_points
+      point%u_old(1, i) = point%prim(1, i)
+      point%u_old(2, i) = point%prim(1, i)*point%prim(2, i)
+      point%u_old(3, i) = point%prim(1, i)*point%prim(3, i)
+      point%u_old(4, i) = 2.5d0*point%prim(4, i) + 0.5d0*point%prim(1, i&
+&       )*(point%prim(2, i)*point%prim(2, i)+point%prim(3, i)*point%prim&
+&       (3, i))
+    END DO
+    IF (rank .EQ. 0) THEN
+      WRITE(*, *) '%%%%%%%%%%%%%-Iterations begin-%%%%%%%%%%%%'
+      WRITE(*, *) 
+    END IF
+    IF (restart .EQ. 0) itr = 0
+    DO it=itr+1,itr+max_iters
+      CALL FPI_SOLVER(it)
+! if (rank==0) then
+      WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
+&     residue
+      WRITE(301, *) it, residue
+    END DO
+! end if
+    CLOSE(unit=301) 
+  END SUBROUTINE Q_LSKUM
 
 END MODULE Q_LSKUM_MOD_DIFF
+

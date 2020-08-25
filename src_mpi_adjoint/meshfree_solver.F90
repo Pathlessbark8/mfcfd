@@ -58,14 +58,6 @@ program meshfree_solver
         write(*,*)
     end if
     
-    ! if(read_phi_file == 1) then
-    !         call read_phi_data()
-    ! endif
-    ! if(read_phi_file == 0) then
-    !         allocate(point%phi1(4, max_points))
-    !         allocate(point%phi2(4, max_points))
-    ! endif
-    
     !       Allocate solution variables
     
     call allocate_soln()

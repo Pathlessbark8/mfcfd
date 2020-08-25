@@ -2,19 +2,18 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
 
 CONTAINS
 !  Differentiation of compute_cl_cd_cm in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: *clcd *cd *cl *cm
-!   with respect to varying inputs: mach theta *clcd *cd *cl *cm
-!                *(point.x) *(point.y) *(point.nx) *(point.ny)
-!                *(point.prim)
-!   Plus diff mem management of: clcd:in cd:in cl:in cm:in point.x:in
-!                point.y:in point.nx:in point.ny:in point.prim:in
+!   variations   of useful results: *cl
+!   with respect to varying inputs: *cl *(point.x) *(point.y) *(point.nx)
+!                *(point.ny) *(point.prim)
+!   Plus diff mem management of: cl:in point.x:in point.y:in point.nx:in
+!                point.ny:in point.prim:in
   SUBROUTINE COMPUTE_CL_CD_CM_D()
     IMPLICIT NONE
     INTEGER :: i, j, k
@@ -27,13 +26,17 @@ CONTAINS
     REAL*8 :: ds1d, ds2d, dsd
     REAL*8, DIMENSION(shapes) :: h, v, pitch_mom
     REAL*8, DIMENSION(shapes) :: hd, vd
-    REAL*8, DIMENSION(shapes) :: lcl, lcd, lcm, lcl1, lcd1, lcld1
+    REAL*8, DIMENSION(shapes) :: lcl, lcd, lcm, lcl1, lcd1
     REAL*8 :: nx, ny
     REAL*8 :: nxd, nyd
     CHARACTER(len=64) :: cp_file
     CHARACTER(len=10) :: itos
-
-    PetscErrorCode :: ierr
+    INTRINSIC TRIM
+    INTRINSIC DSQRT
+    INTRINSIC DCOS
+    INTRINSIC DSIN
+    TYPE(UNKNOWNTYPE) :: proc
+! PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&
@@ -100,27 +103,21 @@ CONTAINS
     cl = v*DCOS(theta) - h*DSIN(theta)
     cd = h*DCOS(theta) + v*DSIN(theta)
     cm = pitch_mom
-call MPI_Allreduce(Cl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
-& PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(Cd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
+! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
+! & PETSC_COMM_WORLD, ierr)
+! call MPI_Allreduce(lCd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
 ! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
-Cl = lCl1
-! Cd = lCd1
+! Cl = lCl
+! Cd = lCd
 ! Cm = lCm
-    ! if(rank == 0) then
-    !     clcd = cl/cd
-    ! end if
+    clcd = cl/cd
 ! if(rank == 0) then
 !     do j = 1, shapes
 !         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm
 !     end do
 ! end if
-call MPI_Allreduce(Cld, lCld1 , shapes, MPI_DOUBLE, MPI_SUM, &
-& PETSC_COMM_WORLD, ierr)
-Cld=lcld1
-
     CLOSE(unit=201) 
   END SUBROUTINE COMPUTE_CL_CD_CM_D
 
@@ -136,12 +133,12 @@ Cld=lcld1
     REAL*8 :: nx, ny
     CHARACTER(len=64) :: cp_file
     CHARACTER(len=10) :: itos
-
+    INTRINSIC TRIM
     INTRINSIC DSQRT
     INTRINSIC DCOS
     INTRINSIC DSIN
-
-    PetscErrorCode :: ierr
+    TYPE(UNKNOWNTYPE) :: proc
+! PetscErrorCode :: ierr
     cp_file = 'cp/'//'cp-file'
     IF (proc .GT. 1) cp_file = 'cp/'//'cp-file'//TRIM(itos(4, rank))
     OPEN(unit=201, file=trim(cp_file), form='FORMATTED', status=&

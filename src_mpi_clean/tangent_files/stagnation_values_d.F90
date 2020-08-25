@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE STAGNATION_VALUES_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -63,7 +63,7 @@ CONTAINS
     REAL*8 :: pwr1
     REAL*8 :: arg1
     REAL*8 :: result1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     gammapower = gamma/(gamma-1)
     pwx1 = 1 + (gamma-1)/2*mach*mach
     pwr1 = pwx1**gammapower

@@ -1,7 +1,6 @@
 -cfl 0.2
--max_iters 10
+-max_iters 50
 -format_file legacy
--vl_const 650
--inner_iterations 1
--mach 0.63
--aoa 2.0 
+-vl_const 50
+-inner_iterations 3
+-restart_solution no

@@ -11,7 +11,7 @@ phi:
 	cp parameter.F90 src/
 	cd src && make -j -f makefile execname
 	mv src/execname .
-	@echo "Built mpi adjoint solver w.r.t phi"
+	@echo "Built mpi adjoint solver w.r.t x y"
 
 input:
 	cp -r $(MF_DIR)/mfpre .

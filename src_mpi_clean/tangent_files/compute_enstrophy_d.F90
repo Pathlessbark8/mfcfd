@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE COMPUTE_ENSTROPHY_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   IMPLICIT NONE
@@ -27,7 +27,7 @@ CONTAINS
     REAL*8 :: gtotal_enstrophy
     INTRINSIC DSQRT
     REAL*8 :: arg1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     total_enstrophy = 0.d0
     DO i=1,local_points
       x_i = point%x(i)

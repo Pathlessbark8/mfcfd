@@ -2,7 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE STATE_UPDATE_MOD_DIFF
-#include <petsc/finclude/petscsys.h>
+! #include <petsc/finclude/petscsys.h>
   USE DATA_STRUCTURE_MOD_DIFF
   USE PETSC_DATA_STRUCTURE_MOD
   USE FLUX_RESIDUAL_MOD_DIFF
@@ -11,8 +11,8 @@ MODULE STATE_UPDATE_MOD_DIFF
 CONTAINS
 !  Differentiation of state_update in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.prim)
-!   with respect to varying inputs: q_inf euler *(point.nx) *(point.ny)
-!                *(point.prim) *(point.prim_old) *(point.flux_res)
+!   with respect to varying inputs: *(point.nx) *(point.ny) *(point.prim)
+!                *(point.prim_old) *(point.flux_res)
 !   Plus diff mem management of: point.nx:in point.ny:in point.prim:in
 !                point.prim_old:in point.flux_res:in
   SUBROUTINE STATE_UPDATE_D(rk)
@@ -312,7 +312,7 @@ CONTAINS
 
 !  Differentiation of func_delta in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.delta)
-!   with respect to varying inputs: cfl *(point.x) *(point.y) *(point.prim)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.prim)
 !                *(point.delta)
 !   Plus diff mem management of: point.x:in point.y:in point.prim:in
 !                point.delta:in
@@ -338,7 +338,7 @@ CONTAINS
     REAL*8 :: arg1d
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       min_deltd = 0.0_8
@@ -415,7 +415,7 @@ CONTAINS
     INTRINSIC DSQRT
     REAL*8 :: arg1
     DOUBLE PRECISION :: result1
-    PetscErrorCode :: ierr
+! PetscErrorCode :: ierr
     DO i=1,local_points
       min_delt = 1.0d0
       DO r=1,point%nbhs(i)
@@ -444,7 +444,7 @@ CONTAINS
 
 !  Differentiation of conserved_vector_ubar in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: ubar
-!   with respect to varying inputs: q_inf prim nx ny ubar
+!   with respect to varying inputs: prim nx ny ubar
   SUBROUTINE CONSERVED_VECTOR_UBAR_D(prim, primd, ubar, ubard, nx, nxd, &
 &   ny, nyd)
     IMPLICIT NONE
@@ -460,6 +460,14 @@ CONTAINS
     REAL*8 :: ubard(4), primd(4)
     REAL*8 :: nx, ny, tx, ty
     REAL*8 :: nxd, nyd, txd, tyd
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    EXTERNAL DERF_D
+    DOUBLE PRECISION :: DERF
+    DOUBLE PRECISION :: DERF_D
+    INTRINSIC SQRT
+    INTRINSIC EXP
     DOUBLE PRECISION :: result1
     DOUBLE PRECISION :: result1d
     REAL*8 :: arg1
@@ -489,8 +497,7 @@ CONTAINS
     result1 = DSQRT(arg1)
     b2_infd = (-((s2d*s2+s2*s2d)*DEXP(-(s2*s2))))/(2.0d0*result1)
     b2_inf = DEXP(-(s2*s2))/(2.0d0*result1)
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
+    result1d = DERF_D(s2, s2d, result1)
     a2n_infd = -(0.5d0*result1d)
     a2n_inf = 0.5d0*(1.0d0-result1)
     rhod = primd(1)
@@ -532,8 +539,7 @@ CONTAINS
     b2d = (-((s2d*s2+s2*s2d)*EXP(-(s2*s2))*2.0d0*result10)-EXP(-(s2*s2))&
 &     *2.0d0*result10d)/(2.0d0*result10)**2
     b2 = EXP(-(s2*s2))/(2.0d0*result10)
-    result1d = dexp(-s2**2)*(2.d0/sqrt(pi))*s2d
-    result1 = derf(s2)
+    result1d = DERF_D(s2, s2d, result1)
     a2pd = 0.5d0*result1d
     a2p = 0.5d0*(1.0d0+result1)
     ubard(1) = rho_inf*a2n_infd + rhod*a2p + rho*a2pd
@@ -565,7 +571,12 @@ CONTAINS
     REAL*8 :: b2, a2p, temp1, temp2
     REAL*8 :: ubar(4), prim(4)
     REAL*8 :: nx, ny, tx, ty
-
+    INTRINSIC DSQRT
+    INTRINSIC DEXP
+    EXTERNAL DERF
+    DOUBLE PRECISION :: DERF
+    INTRINSIC SQRT
+    INTRINSIC EXP
     DOUBLE PRECISION :: result1
     REAL*8 :: arg1
     REAL*8 :: result10

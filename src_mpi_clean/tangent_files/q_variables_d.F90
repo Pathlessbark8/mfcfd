@@ -67,8 +67,8 @@ CONTAINS
 
 !  Differentiation of eval_q_derivatives in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.dq) *(point.qm)
-!   with respect to varying inputs: power *(point.x) *(point.y)
-!                *(point.q) *(point.dq) *(point.qm)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.q)
+!                *(point.dq) *(point.qm)
 !   Plus diff mem management of: point.x:in point.y:in point.q:in
 !                point.dq:in point.qm:in
   SUBROUTINE EVAL_Q_DERIVATIVES_D()
@@ -240,8 +240,8 @@ CONTAINS
 
 !  Differentiation of eval_q_inner_loop in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *(point.temp)
-!   with respect to varying inputs: power *(point.x) *(point.y)
-!                *(point.q) *(point.dq) *(point.temp)
+!   with respect to varying inputs: *(point.x) *(point.y) *(point.q)
+!                *(point.dq) *(point.temp)
 !   Plus diff mem management of: point.x:in point.y:in point.q:in
 !                point.dq:in point.temp:in
   SUBROUTINE EVAL_Q_INNER_LOOP_D()

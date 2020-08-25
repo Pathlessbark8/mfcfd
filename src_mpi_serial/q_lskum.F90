@@ -20,7 +20,9 @@ contains
         integer :: i
 
         if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-        ! point%x(78) = point%x(78) - 1e-7 
+        if(rank == 30) then
+            point%x(1) = point%x(1) + 1e-7
+        end if
         call compute_normals()
         call generate_connectivity()
 
@@ -65,13 +67,13 @@ contains
         
         CLOSE(UNIT=301)
         if(rank==0) then
-            write(*,*) "SG", total_loss_stagpressure 
-            write(*,*) "Cl", cl
-            write(*,*) "Cd", cd
-            write(*,*) "Cm", cm
-            write(*,*) "Clcd", clcd
-            write(*,*) "Entropy", total_entropy
-            write(*,*) "Enstrophy", total_enstrophy
+            ! write(*,*) "SG", total_loss_stagpressure 
+            ! write(*,*) "Cl", cl
+            ! write(*,*) "Cd", cd
+            ! write(*,*) "Cm", cm
+            ! write(*,*) "Clcd", clcd
+            ! write(*,*) "Entropy", total_entropy
+            ! write(*,*) "Enstrophy", total_enstrophy
             write(*,*) "Vector function is ", vector_cost_func
         end if
     end subroutine
