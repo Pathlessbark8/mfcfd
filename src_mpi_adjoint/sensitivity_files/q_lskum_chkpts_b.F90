@@ -2,6 +2,7 @@
 !  Tapenade 3.14 (r7259) - 18 Jan 2019 09:36
 !
 MODULE Q_LSKUM_MOD_CHKPTS_DIFF
+#include <petsc/finclude/petscsys.h>
 !	First written on 14.10.2016
 !	updated on Dec 26, 2016
 !	updated on Dec 29, 2016
@@ -25,7 +26,7 @@ CONTAINS
     ! INTEGER :: ad_count
     INTEGER :: i0
     ! INTEGER :: branch
-
+    PetscErrorCode :: ierr
     INTEGER :: t, r, ijk, k
     INTEGER :: ii1
     integer :: pflag = 1, iflag = 1
@@ -284,8 +285,14 @@ CONTAINS
     9020 FORMAT (' firsturn at',I6)
     9030 FORMAT (' youturn at',I7)
     9040 FORMAT (' restore at',I7)
-!                  
+!
+
     CALL COMPUTE_NORMALS_B()
+    ! CALL UPDATE_BEGIN_XB_GHOST()
+    ! CALL UPDATE_END_XB_GHOST()
+    ! CALL UPDATE_BEGIN_YB_GHOST()
+    ! CALL UPDATE_END_YB_GHOST()
+
     CALL PRINT_SENSITIVITY_OUTPUT()                                                                                                                         
 !                                                                                                                                                  
 !       End of the revolve algorithm ..   

@@ -100,26 +100,32 @@ CONTAINS
     cl = v*DCOS(theta) - h*DSIN(theta)
     cd = h*DCOS(theta) + v*DSIN(theta)
     cm = pitch_mom
-call MPI_Allreduce(Cl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
-& PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(Cd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
+! call MPI_Allreduce(Cl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
-! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
+! ! call MPI_Allreduce(Cd, lCd1 , shapes, MPI_DOUBLE, MPI_SUM, &
+! ! & PETSC_COMM_WORLD, ierr)
+! ! call MPI_Allreduce(lCm, Cm , shapes, MPI_DOUBLE, MPI_SUM, &
+! ! & PETSC_COMM_WORLD, ierr)
+! Cl = lCl1
+! ! Cd = lCd1
+! ! Cm = lCm
+!     ! if(rank == 0) then
+!     !     clcd = cl/cd
+!     ! end if
+! ! if(rank == 0) then
+! !     do j = 1, shapes
+! !         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm
+! !     end do
+! ! end if
+! call MPI_Allreduce(Cld, lCld1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)
-Cl = lCl1
-! Cd = lCd1
-! Cm = lCm
-    ! if(rank == 0) then
-    !     clcd = cl/cd
-    ! end if
-! if(rank == 0) then
-!     do j = 1, shapes
-!         write(*,'(i4,3e30.20)') j, gCl, gCd, gCm
-!     end do
-! end if
-call MPI_Allreduce(Cld, lCld1 , shapes, MPI_DOUBLE, MPI_SUM, &
-& PETSC_COMM_WORLD, ierr)
-Cld=lcld1
+! Cld=lcld1
+
+CALL MPI_REDUCE(Cld, lCld1, 1, mpi_double, &
+&             mpi_sum, 0, petsc_comm_world, ierr)
+CALL MPI_REDUCE(Cl, lCl1, 1, mpi_double, &
+&             mpi_sum, 0, petsc_comm_world, ierr)
+    IF (rank .EQ. 0) WRITE(*, *) 'total cl :', lCl1, '  total cld:', lcld1 
 
     CLOSE(unit=201) 
   END SUBROUTINE COMPUTE_CL_CD_CM_D

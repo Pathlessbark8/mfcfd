@@ -27,8 +27,8 @@ CONTAINS
     ! CALL OBJECTIVE_FUNCTION_J_D()
     vector_cost_funcd = cld
     vector_cost_func = cl
-    if(rank==0) then
-      write(*,*) "Vector function derivative is ", vector_cost_funcd
+    ! if(rank==0) then
+    !   write(*,*) "Vector function derivative is ", vector_cost_funcd
     !   write(*,*) "SG", total_loss_stagpressured 
     !   write(*,*) "Cld", cld
     !   write(*,*) "Cdd", cdd
@@ -37,7 +37,7 @@ CONTAINS
     !   write(*,*) "Entropy", total_entropyd
     !   write(*,*) "Enstrophyd", total_enstrophyd
     !   write(*,*) "Vector function is ", vector_cost_func
-    end if
+    ! end if
   END SUBROUTINE OBJECTIVE_FUNCTION_D
 
   SUBROUTINE OBJECTIVE_FUNCTION()

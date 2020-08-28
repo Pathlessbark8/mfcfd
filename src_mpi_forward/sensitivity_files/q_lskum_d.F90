@@ -30,6 +30,9 @@ CONTAINS
     INTEGER :: i
     IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
 &                   status='REPLACE', action='WRITE') 
+
+    pointd%x = 0.0_8
+    pointd%y = 0.0_8
     if(rank == 30) then
         WRITE(*, *) '%%%%%%%%%%%%%-<<X Value Set To 1>>-%%%%%%%%%%%%'
         pointd%x(1) = 1.0d0

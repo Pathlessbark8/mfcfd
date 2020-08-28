@@ -74,7 +74,8 @@ module petsc_data_structure_mod
         call VecDestroy(pd_dq,ierr)
         call VecDestroy(pd_qm,ierr)
         call VecDestroy(pd_prim,ierr)
-
+        call VecDestroy(pd_x,ierr)
+        call VecDestroy(pd_y,ierr)
     end subroutine 
 
 

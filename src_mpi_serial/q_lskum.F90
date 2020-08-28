@@ -21,7 +21,7 @@ contains
 
         if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
         if(rank == 30) then
-            point%x(1) = point%x(1) + 1e-7
+            point%x(1) = point%x(1) - 1E-6
         end if
         call compute_normals()
         call generate_connectivity()

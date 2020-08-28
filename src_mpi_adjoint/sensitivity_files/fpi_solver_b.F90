@@ -72,6 +72,7 @@ MODULE FPI_SOLVER_MOD_DIFF
             CALL UPDATE_END_PRIM_GHOST()
         END DO
         CALL OBJECTIVE_FUNCTION_B()
+        
         CALL UPDATE_BEGIN_PRIMB_GHOST()
         CALL UPDATE_END_PRIMB_GHOST()
         do j = local_points+1, max_points 
@@ -104,10 +105,26 @@ MODULE FPI_SOLVER_MOD_DIFF
             do j = local_points+1, max_points 
                 pointb%dq(:, :, j) = 0.0d0
             end do
+            CALL UPDATE_BEGIN_QMB_GHOST()
+            CALL UPDATE_END_QMB_GHOST()
+            do j = local_points+1, max_points 
+                pointb%qm(:, :, j) = 0.0d0
+            end do
             DO i=inner_iterations,1,-1
                 CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
                 CALL EVAL_UPDATE_INNERLOOP_B()
                 CALL EVAL_Q_INNER_LOOP_B()
+
+                CALL UPDATE_BEGIN_QB_GHOST()
+                CALL UPDATE_END_QB_GHOST()
+                do j = local_points+1, max_points 
+                    pointb%q(:, j) = 0.0d0
+                end do
+                CALL UPDATE_BEGIN_DQB_GHOST()
+                CALL UPDATE_END_DQB_GHOST()
+                do j = local_points+1, max_points 
+                    pointb%dq(:, :, j) = 0.0d0
+                end do
             END DO
             CALL POPREAL8ARRAY(point%dq, 2*4*max_points)
             CALL POPREAL8ARRAY(point%qm, 2*4*max_points)
