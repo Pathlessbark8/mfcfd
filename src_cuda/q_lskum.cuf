@@ -62,7 +62,11 @@ contains
 
                 if(solution_restart == 0) itr = 0
 
-                istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferL1)
+                ! istat = cudaFuncSetAttribute(cal_flux_residual, cudaFuncAttributeMaxDynamicSharedMemorySize, 96000)
+                ! if (istat /= 0) then
+                !     print *, 'main: error setting cudaFuncAttributeMaxDynamicSharedMemorySize',cudaGetErrorString(istat)
+                !     stop
+                ! endif
 
                 do it = itr+1, itr+max_iters
 

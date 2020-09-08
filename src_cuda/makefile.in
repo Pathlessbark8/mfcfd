@@ -3,4 +3,5 @@ FC = pgfortran
 
 #when using cuda-memcheck, use this flag: -ta=nvidia,lineinfo
 
-FFLAGS = -O3 -Mcuda=nordc,lineinfo -Mcuda=keepptx,ptxinfo
+FFLAGS = -O3 -Mcuda=nordc -Mcuda=maxregcount:160
+# FFLAGS = -O3 -Mcuda=nordc,lineinfo -Mcuda=keepptx,ptxinfo

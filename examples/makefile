@@ -1,8 +1,8 @@
-ifndef MF_DIR
-	$(error directory not set)
-endif
+#ifndef MF_DIR
+#	$(error directory not set)
+#endif
 
-SRCDIR=$(MF_DIR)/src_cuda
+SRCDIR=/home/meshfree/mfcfd/src_cuda
 
 gpu: 
 	rm -rf src
