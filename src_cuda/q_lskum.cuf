@@ -88,12 +88,20 @@ contains
                                         call eval_update_innerloop<<<grid, tBlock>>>(point_d%dq, point_d%inner)
                                 end do
 
-                                call cal_flux_residual<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                call cal_flux_residual1<<<grid, tBlock>>>(point_d%x, point_d%nx, &
                                         & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
                                         & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
                                         & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
                                         & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
                                         & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, point_d%phi1)
+
+                                call cal_flux_residual2<<<grid, tBlock>>>(point_d%x, point_d%nx, &
+                                        & point_d%flag, point_d%min_dist, point_d%nbhs, point_d%conn, &
+                                        & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
+                                        & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
+                                        & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
+                                        & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, point_d%phi1)
+
 
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &

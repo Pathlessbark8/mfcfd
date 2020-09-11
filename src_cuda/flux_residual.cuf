@@ -4,7 +4,86 @@ module flux_residual_mod
 
 contains
 
-        attributes(global) subroutine cal_flux_residual(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
+        attributes(global) subroutine cal_flux_residual1(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
+                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+
+                implicit none
+
+                ! device variables
+                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
+                ! local variables
+                integer :: i, r, k
+                ! shared
+                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                integer :: threadid, blockd
+
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
+
+                threadid = threadIdx%x
+                blockd = blockDim%x
+
+                flux_shared = 0.0d0
+                share = 0.0d0
+                
+                flux_res_d(1,i) = 0.0d0
+                flux_res_d(2,i) = 0.0d0
+                flux_res_d(3,i) = 0.0d0
+                flux_res_d(4,i) = 0.0d0
+
+                if (flag_d(i) == 0) then
+
+                        ! call wall_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                        !         & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+
+                        ! call wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                        !         & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                        ! call wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                        !         & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                elseif (flag_d(i) == 2) then
+
+                        call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+
+                        call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                        call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                elseif (flag_d(i) == 1) then
+
+                        call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+
+                        call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                        call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                        call interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        
+                end if
+
+                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
+                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
+                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
+                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
+        
+        end subroutine
+
+        attributes(global) subroutine cal_flux_residual2(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
                 & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
                 & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
 
@@ -37,48 +116,42 @@ contains
 
                         call wall_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
                                 & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-
                         call wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
                                 & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
                         call wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
                                 & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                end if
+                ! elseif (flag_d(i) == 2) then
 
-                if (flag_d(i) == 2) then
+                !         call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                !                 & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                        call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-
-                        call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                !         call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                !                 & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                        call outer_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                !         call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                !                 & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                end if
+                ! elseif (flag_d(i) == 1) then
 
-                if (flag_d(i) == 1) then
+                !         call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                !                 & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                        call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-
-                        call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                !         call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                !                 & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                        call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                !         call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                !                 & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                        call interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                !         call interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                !                 & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
                 end if
 
-                flux_res_d(1,i) = flux_shared(threadId) 
-                flux_res_d(2,i) = flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_shared(threadId + blockD * 3) 
+                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
+                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
+                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
+                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
         
         end subroutine
         
@@ -103,7 +176,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
                 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -212,7 +285,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -322,7 +395,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -432,7 +505,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
                 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -542,7 +615,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -651,7 +724,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -760,7 +833,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -869,7 +942,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -978,7 +1051,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
                 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -1087,7 +1160,7 @@ contains
                 real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
                 real*8 :: sum_delx_delf(4), sum_dely_delf(4)
                 real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
+
                 real*8 :: dels_weights, deln_weights
 
                 real*8 :: flux_shared(:), share(:), qtilde(:)
@@ -1229,17 +1302,11 @@ contains
                         endif
 
                 enddo
-
-                phi1_d(1,k) = qtilde(threadid)
-                phi1_d(2,k) = qtilde(threadid + blockd * 1)
-                phi1_d(3,k) = qtilde(threadid + blockd * 2)
-                phi1_d(4,k) = qtilde(threadid + blockd * 3)
                         
                 qtilde(threadid) = q_d(1,k) - 0.5d0*qtilde(threadid)*(delx*dq_d(1,1,k) + dely*dq_d(2,1,k))
                 qtilde(threadid + blockd) = q_d(2,k) - 0.5d0*qtilde(threadid + blockd * 1)*(delx*dq_d(1,2,k) + dely*dq_d(2,2,k))
                 qtilde(threadid + blockd * 2) = q_d(3,k) - 0.5d0*qtilde(threadid + blockd * 2)*(delx*dq_d(1,3,k) + dely*dq_d(2,3,k))
                 qtilde(threadid + blockd * 3) = q_d(4,k) - 0.5d0*qtilde(threadid + blockd * 3)*(delx*dq_d(1,4,k) + dely*dq_d(2,4,k))
-
 
                 beta = -qtilde(threadid + blockd * 3)*0.5d0
 
@@ -1772,4 +1839,3 @@ contains
         end
 
 end module flux_residual_mod
-
