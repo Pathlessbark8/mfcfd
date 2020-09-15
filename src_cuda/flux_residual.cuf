@@ -18,10 +18,21 @@ contains
                 real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
                 real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
                 ! local variables
-                integer :: i, r, k
+                integer :: i, r, k, j
                 ! shared
                 real*8, shared :: flux_shared(256), share(512), qtilde(256)
                 integer :: threadid, blockd
+
+                real*8 :: rho, u1, u2, pr
+                real*8 :: tx, ty, nx, ny
+                real*8 :: x_i, y_i, x_k, y_k
+                real*8 :: delx, dely, det, one_by_det
+                real*8 :: dels, deln
+                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+                real*8 :: dist, weights
+                real*8 :: dels_weights, deln_weights
+                integer :: a=0,b=1
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
@@ -38,6 +49,192 @@ contains
                 flux_res_d(3,i) = 0.0d0
                 flux_res_d(4,i) = 0.0d0
 
+                sum_delx_sqr = 0.0d0
+                sum_dely_sqr = 0.0d0
+                sum_delx_dely = 0.0d0
+
+                sum_delx_delf = 0.0d0
+                sum_dely_delf = 0.0d0
+
+                x_i = x_d(1,i)
+                y_i = x_d(2,i)
+
+                nx = nx_d(1,i)
+                ny = nx_d(2,i)
+
+                tx = ny
+                ty = -nx
+
+                do j = 1, xpos_nbhs_d(i)
+
+                    k = xpos_conn_d(i,j)
+                    k = conn_d(i, k)
+
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
+
+                    delx = x_k - x_i
+                    dely = y_k - y_i
+
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
+
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
+
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
+
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+
+!                       Higher order accuracy using q-variables ..
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
+
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    if (flag_d(i) == 0) then
+                        call flux_quad_GxII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 1) then
+                        call flux_Gxp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 2) then
+                        call flux_quad_GXIII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    end if
+
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    if (flag_d(i) == 0) then
+                        call flux_quad_GxII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 1) then
+                        call flux_Gxp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 2) then 
+                        call flux_quad_GXIII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    end if
+
+
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+
+            end do
+
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
+                
+            if (flag_d(i) == 0) then
+                flux_shared(threadId) = flux_shared(threadId) + 2.0d0 * (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + 2.0d0 * (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + 2.0d0 * (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + 2.0d0 * (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            else
+                flux_shared(threadId) = flux_shared(threadId) + (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            end if
+
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
+
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
+
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
+
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
+
+            tx = ny
+            ty = -nx
+
+            do j = 1, xneg_nbhs_d(i)
+
+                    k = xneg_conn_d(i,j)
+                    k = conn_d(i, k)
+
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
+
+                    delx = x_k - x_i
+                    dely = y_k - y_i
+
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
+
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
+
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
+
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+
+!                   Higher order accuracy using q-variables ..
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
+
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    if (flag_d(i) == 0) then
+                        call flux_quad_GxI(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 1) then
+                        call flux_Gxn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 2) then
+                        call flux_quad_GXIV(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    end if
+
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    if (flag_d(i) == 0) then
+                        call flux_quad_GxI(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 1) then
+                        call flux_Gxn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    elseif (flag_d(i) == 2) then
+                        call flux_quad_GXIV(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    end if
+
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+
+            end do
+
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
+
+            if (flag_d(i) == 0) then
+                flux_shared(threadId) = flux_shared(threadId) + 2.0d0 * (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + 2.0d0 * (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + 2.0d0 * (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + 2.0d0 * (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            else
+                flux_shared(threadId) = flux_shared(threadId) + (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
+                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            end if
+
+
                 if (flag_d(i) == 0) then
 
                         ! call wall_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
@@ -46,27 +243,27 @@ contains
                         ! call wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
                         !         & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                        ! call wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                        !         & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
                 elseif (flag_d(i) == 2) then
 
-                        call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        ! call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                        !         & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                        call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        ! call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                        !         & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
                         call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
                                 & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
                 elseif (flag_d(i) == 1) then
 
-                        call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        ! call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                        !         & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                        call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        ! call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                        !         & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
                         call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
                                 & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
@@ -80,6 +277,14 @@ contains
                 flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
                 flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
                 flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
+
+                ! if (i==1) then
+                !     print *, "Q ", q_d(1,i), q_d(2,i), q_d(3,i), q_d(4,i)
+                !     print *, "DQ1 ", dq_d(1,1,i), dq_d(1,2, i), dq_d(1,3,i), dq_d(1,4,i)
+                !     print *, "DQ2 ", dq_d(2,1,i), dq_d(2,2, i), dq_d(2,3,i), dq_d(2,4,i)
+                !     print *, "FluxRes ", flux_res_d(1,i), flux_res_d(2,i), flux_res_d(3,i), flux_res_d(4,i)
+                !     print *, "Prim ", prim_d(1,i), prim_d(2,i), prim_d(3,i), prim_d(4,i)
+                ! end if
         
         end subroutine
 
@@ -121,30 +326,30 @@ contains
                         call wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
                                 & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                ! elseif (flag_d(i) == 2) then
+                elseif (flag_d(i) == 2) then
 
-                !         call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                !                 & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                !         call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                !                 & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                !         call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                !                 & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                ! elseif (flag_d(i) == 1) then
+                elseif (flag_d(i) == 1) then
 
-                !         call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                !                 & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                !         call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                !                 & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                !         call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                !                 & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
-                !         call interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                !                 & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
                         
                 end if
 
@@ -152,6 +357,14 @@ contains
                 flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
                 flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
                 flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
+
+                ! if (i==10000) then
+                !     print *, "Q ", q_d(1,i), q_d(2,i), q_d(3,i), q_d(4,i)
+                !     print *, "DQ1 ", dq_d(1,1,i), dq_d(1,2, i), dq_d(1,3,i), dq_d(1,4,i)
+                !     print *, "DQ2 ", dq_d(2,1,i), dq_d(2,2, i), dq_d(2,3,i), dq_d(2,4,i)
+                !     print *, "FluxRes ", flux_res_d(1,i), flux_res_d(2,i), flux_res_d(3,i), flux_res_d(4,i)
+                !     print *, "Prim ", prim_d(1,i), prim_d(2,i), prim_d(3,i), prim_d(4,i)
+                ! end if
         
         end subroutine
         
