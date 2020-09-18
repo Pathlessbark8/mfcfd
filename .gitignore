@@ -9,6 +9,7 @@ execname
 *.mod
 *.o
 *.txt
+!CMakeLists.txt
 examples/forward/src/*
 examples/adjoint/src/*
 examples/serial/src/*
