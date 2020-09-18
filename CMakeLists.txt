@@ -18,10 +18,10 @@ set(LIBS ${LIBS} ${PETSC_LIBRARIES})
 #------------------------------------------------------------------------------#
 # HDF5 support
 #------------------------------------------------------------------------------#
-find_package(HDF5 COMPONENTS C CXX REQUIRED)
+find_package(HDF5 COMPONENTS C CXX Fortran REQUIRED)
 link_directories( ${HDF5_LIBRARY_DIRS})
-include_directories(${HDF5_CXX_INCLUDE_DIRS})
-set(LIBS ${LIBS} ${HDF5_CXX_LIBRARIES})
+include_directories(${HDF5_Fortran_INCLUDE_DIRS})
+set(LIBS ${LIBS} ${HDF5_Fortran_LIBRARIES})
 
 if( MFCFD EQUAL SERIAL )
 message("Building Serial MeshFree Solver")
