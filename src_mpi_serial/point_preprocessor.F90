@@ -181,84 +181,47 @@ contains
 
         implicit none
 
-        ! INTEGER(HID_T) :: file_id       ! File identifier
-        ! INTEGER(HID_T) :: dset_id       ! Dataset identifier
-        ! INTEGER(HID_T) :: attr_id
+        integer:: i, k, r, nproc
+        integer :: wall_temp,outer_temp,interior_temp,shape_temp
+        character(len=64) :: part_grid, dataset_string
 
-        ! INTEGER(HID_T) :: filetype, memtype
-        ! INTEGER(HSIZE_T), DIMENSION(1) :: dims
-        ! INTEGER(HSIZE_T), DIMENSION(1) :: adims = (1)
-        ! INTEGER(HSIZE_T), DIMENSION(1) :: maxdims
-        ! INTEGER, DIMENSION(:), ALLOCATABLE, TARGET :: rdata    ! Read buffer
-        
-        ! INTEGER :: error ! Error flag
-        ! INTEGER(8) :: r
-        ! integer :: i, j, k, nproc
-        ! integer :: wall_temp,outer_temp,interior_temp,shape_temp
+        integer, dimension(:),pointer          :: nfititer
+        real*8 :: nx
 
-        ! TYPE(C_PTR) :: f_ptr
+        character(len=10) :: itos, itos_unpad
+        character(len=10) :: main_group, ghost_group, local_group, point_string, rank_string 
+        character(len=10) :: flag1_s, flag2_s, left_s, right_s, min_dist_s, nbhs_counts_s, nx_s
+        character(len=10) :: ny_s, qtdepth_s, x_s, y_s
 
-        ! character(len=64) :: part_grid
-        ! character(len=64) :: dset_name
-        ! character(len=10) :: itos
+        part_grid = 'point/point.h5'
+        if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
-        ! part_grid = 'point/point.h5'
-        ! ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
+        main_group = '/'//trim(itos_unpad(rank+1))
+        ghost_group = '/ghost'
+        local_group = '/local'
+        flag1_s = 'flag1'  
+        flag2_s = 'flag2'  
+        left_s = 'left'  
+        right_s = 'right'  
+        min_dist_s = 'min_dist'  
+        nbhs_counts_s = 'nbhs_counts'  
+        nx_s = 'nx' 
+        ny_s = 'ny'  
+        qtdepth_s = 'qtdepth'  
+        x_s = 'x'  
+        y_s = 'y' 
 
-        ! CALL H5ReadAttribute(part_grid, "/1/local/1/flag1", r)
+        point_string = '/'//trim(itos_unpad(1))
+        dataset_string = main_group//local_group//point_string
+
+        CALL H5ReadAttribute(part_grid, "/1/local/1/flag1", r)
+        CALL H5ReadAttribute(part_grid, "/1/local/1/flag1", nx)
+        CALL H5ReadDataset(part_grid, dataset_string, nfititer)
+        write(*,*) 'nbhs are ', nfititer(1), ' ', nfititer(2)
         ! IF (ErrorFlag.lt.0) goto 990
-        ! write(*,*)'flag1 =',r
+        write(*,*)'flag1 is ',r
+        write(*,*) 'nx is ', nx
 
     end subroutine 
 
 end module 
-
-       ! CALL h5open_f(error)
-        ! if (error == -1) then
-        !     WRITE(*,*) 'Error in file opening'
-        ! end if
-        
-        ! CALL h5fopen_f (part_grid, H5F_ACC_RDWR_F, file_id, error)
-
-        ! if (error == -1) then
-        !     WRITE(*,*) 'Actual Error in file opening'
-        ! end if
-
-        ! dset_name = '/1/local/1'
-        ! CALL h5dopen_f(file_id, dset_name, dset_id, error)
-        ! if (error == -1) then
-        !     WRITE(*,*) 'Error in reading data set '
-        ! end if
-        ! CALL h5aopen_f(dset_id, 'flag1', attr_id, error)
-
-        ! CALL H5Aget_type_f(attr_id, filetype, error)
-        ! if (error == -1) then
-        !     WRITE(*,*) 'Error in file attribute'
-        ! end if
-
-        ! CALL H5Tarray_create_f(H5T_STD_I32LE, 1, adims, memtype, error)
-
-        ! ! CALL H5Tget_array_dims_f(filetype, adims, error)
-        
-        ! CALL H5Aget_space_f(attr_id, space_id, error)
-        ! CALL H5Sget_simple_extent_dims_f(space_id, dims, maxdims, error)
-
-        ! ALLOCATE(rdata(dims(1)))
-
-        ! CALL H5Tarray_create_f(H5T_STD_I32LE, 1, adims, memtype, error)
-
-        ! f_ptr = C_LOC(rdata)
-
-        ! CALL H5Aread_f(attr_id, memtype, f_ptr, error)
-
-        ! WRITE(*,*) "The value of the attribute is ", r
-
-        ! CALL H5Aclose_f(attr_id, error)
-        ! CALL H5Dclose_f(dset_id, error)
-        ! CALL h5fclose_f(file_id, error)
-        ! CALL H5Sclose_f(space_id, error)
-        ! CALL H5Tclose_f(memtype, error)
-        ! !
-        ! ! Close FORTRAN interface.
-        ! !
-        ! CALL h5close_f(error)
