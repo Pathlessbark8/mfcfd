@@ -125,7 +125,7 @@ MODULE ReadH5Dataset
     INTEGER(HID_T)      :: p_id
     INTEGER(HID_T)      :: d_id
     INTEGER(HID_T)      :: type_id
-    INTEGER             :: dspace
+    INTEGER(HID_T)      :: dspace
   
     INTEGER(HID_T), DIMENSION(:), ALLOCATABLE :: OpenLevels_id
     INTEGER(HID_T), DIMENSION(:), ALLOCATABLE :: OpenLevels_type
@@ -615,7 +615,7 @@ MODULE ReadH5Dataset
       !<<<<<<<<<<<<<<<<<<<<<<< Arguments >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
       !Coming in
       CHARACTER (len = *), INTENT(in) :: DebugStr
-      INTEGER, OPTIONAL,   INTENT(in) :: DebugValue
+      INTEGER(4), OPTIONAL,   INTENT(in) :: DebugValue
   
       !Going out:
       !none
@@ -625,13 +625,13 @@ MODULE ReadH5Dataset
   
       !<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>
   
-      IF (DebugMsg) THEN
-         IF (PRESENT(DebugValue)) THEN
-            write(6,'(a,1x,i)')DebugStr,DebugValue
-         ELSE
-            write(6,'(a)')DebugStr
-         ENDIF
-      ENDIF
+      ! IF (DebugMsg) THEN
+      !    IF (PRESENT(DebugValue)) THEN
+      !       write(6,'(a,1x,i)')DebugStr,DebugValue
+      !    ELSE
+      !       write(6,'(a)')DebugStr
+      !    ENDIF
+      ! ENDIF
   
     END SUBROUTINE DebugMessage
   
@@ -1993,7 +1993,7 @@ MODULE ReadH5Dataset
       INTEGER(hsize_t), DIMENSION(1)                       :: maxdatadims
       INTEGER(hsize_t), DIMENSION(1)                       :: dims
       CHARACTER(len=LEN(dataset))                          :: H5dataset
-      INTEGER(SIZE_T)                                      :: strlen
+      INTEGER(8)                                      :: strlen
       INTEGER                                              :: ltype
   
       !<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>
@@ -2046,7 +2046,7 @@ MODULE ReadH5Dataset
   
       dims=1
   
-      CALL DebugMessage("     > String length  :",strlen)
+      ! CALL DebugMessage("     > String length  :",strlen)
       CALL DebugMessage("     > Defined length :",LEN(H5dataset))
   
       H5dataset = ""
@@ -2104,7 +2104,7 @@ MODULE ReadH5Dataset
       INTEGER(hsize_t), DIMENSION(1)                       :: maxdatadims
       INTEGER(hsize_t), DIMENSION(1)                       :: dims
       CHARACTER(len=LEN(dataset)), DIMENSION(:), ALLOCATABLE, TARGET :: H5dataset
-      INTEGER(SIZE_T)                                      :: strlen
+      INTEGER(8)                                            :: strlen
       INTEGER                                              :: ltype
   
       CHARACTER(len=LEN(dataset))                          :: substr
@@ -2199,7 +2199,7 @@ MODULE ReadH5Dataset
          return
       ENDIF
   
-      CALL DebugMessage("     > String length  :",strlen)
+      ! CALL DebugMessage("     > String length  :",strlen)
       CALL DebugMessage("     > Defined length :",LEN(H5dataset))
       CALL DebugMessage("     > Array dimension:",SIZE(H5dataset))
   
@@ -2315,7 +2315,7 @@ MODULE ReadH5Dataset
       INTEGER                                              :: ltype
   
       INTEGER(SIZE_T)                                      :: type_sizeI
-      INTEGER                                              :: offset
+      INTEGER(HID_T)                                           :: offset
   
       !<<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>>>>>>
   
@@ -2412,7 +2412,7 @@ MODULE ReadH5Dataset
       INTEGER                                              :: ltype
   
       INTEGER(SIZE_T)                                      :: type_sizeI
-      INTEGER                                              :: offset
+      INTEGER(HID_T)                                              :: offset
   
       !<<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>>>>>>
   
@@ -2559,7 +2559,7 @@ MODULE ReadH5Dataset
       INTEGER                                              :: ltype
   
       INTEGER(SIZE_T)                                      :: type_sizeR
-      INTEGER                                              :: offset
+      INTEGER(HID_T)                                              :: offset
   
       !<<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>>>>>>
   
@@ -2656,7 +2656,7 @@ MODULE ReadH5Dataset
       INTEGER                                              :: ltype
   
       INTEGER(SIZE_T)                                      :: type_sizeR
-      INTEGER                                              :: offset
+      INTEGER(HID_T)                                              :: offset
   
       !<<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>>>>>>
   
@@ -2803,7 +2803,7 @@ MODULE ReadH5Dataset
       INTEGER                                              :: ltype
   
       INTEGER(SIZE_T)                                      :: type_sizeD
-      INTEGER                                              :: offset
+      INTEGER(HID_T)                                              :: offset
   
       !<<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>>>>>>
   
@@ -2899,7 +2899,7 @@ MODULE ReadH5Dataset
       REAL(KIND=DP), DIMENSION(:), ALLOCATABLE, TARGET     :: H5dataset
   
       INTEGER(SIZE_T)                                      :: type_sizeD
-      INTEGER                                              :: offset
+      INTEGER(HID_T)                                              :: offset
       INTEGER                                              :: ltype
   
       !<<<<<<<<<<<<<<<<<<<<<<<< Start of routine code >>>>>>>>>>>>>>>>>>>>>>>

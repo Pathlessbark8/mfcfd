@@ -207,7 +207,7 @@ contains
 
         ! CALL H5ReadAttribute(part_grid, "/1/local/1/flag1", r)
         ! IF (ErrorFlag.lt.0) goto 990
-        write(*,*)'flag1 =',r
+        ! write(*,*)'flag1 =',r
 
     end subroutine 
 
