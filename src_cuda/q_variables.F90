@@ -1,0 +1,242 @@
+module q_variables_mod
+       
+        use device_data_structure_mod
+
+contains
+
+        attributes(global) subroutine eval_q_variables(prim_d, q_d)
+
+                        implicit none
+
+                        ! device variables
+                        real*8 :: prim_d(:,:), q_d(:,:)
+                        ! local variables
+                        integer :: i
+                        real*8 :: rho, u1, u2, pr, beta
+                        real*8 :: two_times_beta
+
+                        i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                        if(i > mp_d) return
+
+                        rho = prim_d(1,i)
+                        u1 = prim_d(2,i)
+                        u2 = prim_d(3,i)
+                        pr = prim_d(4,i)
+
+                        beta = 0.5d0*rho/pr
+
+                        q_d(1,i) = dlog(rho) + (dlog(beta)*2.5d0) - beta*(u1*u1 + u2*u2)
+
+                        two_times_beta = 2.0d0*beta
+
+                        q_d(2,i) = two_times_beta*u1
+
+                        q_d(3,i) = two_times_beta*u2
+
+                        q_d(4,i) = -two_times_beta
+
+        end subroutine
+
+        attributes(global) subroutine eval_q_derivatives(x_d, nbhs_d, conn_d, q_d, qm_d, dq_d)
+
+                implicit none
+
+                ! device variables
+                real*8 :: q_d(:,:), dq_d(:,:,:), qm_d(:,:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
+                real*8 :: x_d(:,:)
+                ! local variables
+                integer :: i
+                integer :: k, r, nbh
+                real*8 :: x_i, y_i, x_k, y_k
+                real*8 :: delx, dely, dist, weights
+                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                real*8 :: sum_delx_delq(4), sum_dely_delq(4)
+                real*8 :: det, delq, temp
+                real*8 :: one_by_det
+
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
+
+                x_i = x_d(1,i)
+                y_i = x_d(2,i)
+
+                sum_delx_sqr = 0.d0
+                sum_dely_sqr = 0.d0
+                sum_delx_dely = 0.d0
+
+                sum_delx_delq = 0.d0
+                sum_dely_delq = 0.d0
+
+                qm_d(1, :, i) = q_d(:, i)
+                qm_d(2, :, i) = q_d(:, i)
+
+                do k = 1, nbhs_d(i)
+
+                        nbh = conn_d(i,k)
+                        
+                        do r = 1, 4
+                                if(q_d(r, nbh) > qm_d(1, r, i)) then
+                                        qm_d(1, r, i) = q_d(r, nbh)
+                                endif
+                                if(q_d(r, nbh) < qm_d(2, r, i)) then
+                                        qm_d(2, r, i) = q_d(r, nbh)
+                                endif
+                        end do
+                        
+                        x_k = x_d(1,nbh)
+                        y_k = x_d(2,nbh)
+
+                        delx = x_k - x_i
+                        dely = y_k - y_i
+
+                        dist = dsqrt(delx*delx + dely*dely)
+                        weights = dist**power_d
+
+                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+
+                        sum_delx_dely = sum_delx_dely + delx*dely*weights
+
+                        sum_delx_delq = sum_delx_delq + weights*delx*(q_d(:,nbh) - q_d(:,i))
+                        sum_dely_delq = sum_dely_delq + weights*dely*(q_d(:,nbh) - q_d(:,i))
+
+                enddo
+
+                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                one_by_det = 1.0d0/det
+
+                dq_d(1,:,i) = (sum_delx_delq*sum_dely_sqr&
+                & - sum_dely_delq*sum_delx_dely)*one_by_det
+                dq_d(2,:,i) = (sum_dely_delq*sum_delx_sqr&
+                                &- sum_delx_delq*sum_delx_dely)*one_by_det
+
+        end subroutine
+
+        attributes(global) subroutine eval_q_inner_loop(x_d, nbhs_d, conn_d, q_d, dq_d, ddq_d, inner_d)
+
+                implicit none
+
+                ! device variables
+                real*8 :: q_d(:,:), dq_d(:,:,:), ddq_d(:,:,:), inner_d(:,:)
+                integer :: nbhs_d(:), conn_d(:,:)
+                real*8 :: x_d(:,:)
+                ! local variables
+                integer :: i
+                integer :: k, r, nbh
+                real*8 :: x_i, y_i, x_k, y_k
+                real*8 :: delx, dely, dist, weights
+                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+                real*8 :: det, temp
+                real*8 :: one_by_det
+                real*8 :: sum_delx_delq1, sum_delx_delq2, sum_delx_delq3, sum_delx_delq4, sum_dely_delq1, sum_dely_delq2, sum_dely_delq3, sum_dely_delq4
+                real*8 :: q1, q2, q3, q4
+        
+                real*8 :: temp1, temp2
+
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
+
+                x_i = x_d(1,i)
+                y_i = x_d(2,i)
+
+                sum_delx_sqr = 0.d0
+                sum_dely_sqr = 0.d0
+                sum_delx_dely = 0.d0
+
+                temp1 = 0.d0
+                temp2 = 0.d0
+
+                sum_delx_delq1 = 0.d0
+                sum_delx_delq2 = 0.d0
+                sum_delx_delq3 = 0.d0
+                sum_delx_delq4 = 0.d0
+
+                sum_dely_delq1 = 0.d0
+                sum_dely_delq2 = 0.d0
+                sum_dely_delq3 = 0.d0
+                sum_dely_delq4 = 0.d0
+
+                q1 = q_d(1, i)
+                q2 = q_d(2, i)
+                q3 = q_d(3, i)
+                q4 = q_d(4, i)
+
+                do k = 1, nbhs_d(i)
+
+                        nbh = conn_d(i,k)
+                        
+			x_k = x_d(1,nbh)
+                        y_k = x_d(2,nbh)
+
+                        delx = x_k - x_i
+                        dely = y_k - y_i
+
+                        dist = dsqrt(delx*delx + dely*dely)
+                        weights = dist**power_d
+
+                        sum_delx_sqr = sum_delx_sqr + delx*delx*weights
+                        sum_dely_sqr = sum_dely_sqr + dely*dely*weights
+
+                        sum_delx_dely = sum_delx_dely + delx*dely*weights
+
+                        temp1 = q1 - 0.5d0 * (delx * dq_d(1,1,i) + dely * dq_d(2,1,i))
+                        temp2 = q_d(1,nbh) - 0.5d0 * (delx * dq_d(1,1,nbh) + dely * dq_d(2,1,nbh))
+                        sum_delx_delq1 = sum_delx_delq1 + (weights * delx * (temp2 - temp1))
+                        sum_dely_delq1 = sum_dely_delq1 + (weights * dely * (temp2 - temp1))
+
+                        temp1 = q2 - 0.5d0 * (delx * dq_d(1,2,i) + dely * dq_d(2,2,i))
+                        temp2 = q_d(2,nbh) - 0.5d0 * (delx * dq_d(1,2,nbh) + dely * dq_d(2,2,nbh))
+                        sum_delx_delq2 = sum_delx_delq2 + (weights * delx * (temp2 - temp1))
+                        sum_dely_delq2 = sum_dely_delq2 + (weights * dely * (temp2 - temp1))
+
+                        temp1 = q3 - 0.5d0 * (delx * dq_d(1,3,i) + dely * dq_d(2,3,i))
+                        temp2 = q_d(3,nbh) - 0.5d0 * (delx * dq_d(1,3,nbh) + dely * dq_d(2,3,nbh))
+                        sum_delx_delq3 = sum_delx_delq3 + (weights * delx * (temp2 - temp1))
+                        sum_dely_delq3 = sum_dely_delq3 + (weights * dely * (temp2 - temp1))
+
+                        temp1 = q4 - 0.5d0 * (delx * dq_d(1,4,i) + dely * dq_d(2,4,i))
+                        temp2 = q_d(4,nbh) - 0.5d0 * (delx * dq_d(1,4,nbh) + dely * dq_d(2,4,nbh))
+                        sum_delx_delq4 = sum_delx_delq4 + (weights * delx * (temp2 - temp1))
+                        sum_dely_delq4 = sum_dely_delq4 + (weights * dely * (temp2 - temp1))
+
+                enddo
+
+                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+                one_by_det = 1.0d0/det
+
+                inner_d(1,i) = one_by_det * (sum_delx_delq1 * sum_dely_sqr - sum_dely_delq1 * sum_delx_dely)
+                inner_d(2,i) = one_by_det * (sum_delx_delq2 * sum_dely_sqr - sum_dely_delq2 * sum_delx_dely)
+                inner_d(3,i) = one_by_det * (sum_delx_delq3 * sum_dely_sqr - sum_dely_delq3 * sum_delx_dely)
+                inner_d(4,i) = one_by_det * (sum_delx_delq4 * sum_dely_sqr - sum_dely_delq4 * sum_delx_dely)
+                
+                inner_d(5,i) = one_by_det * (sum_dely_delq1 * sum_delx_sqr - sum_delx_delq1 * sum_delx_dely)
+                inner_d(6,i) = one_by_det * (sum_dely_delq2 * sum_delx_sqr - sum_delx_delq2 * sum_delx_dely)
+                inner_d(7,i) = one_by_det * (sum_dely_delq3 * sum_delx_sqr - sum_delx_delq3 * sum_delx_dely)
+                inner_d(8,i) = one_by_det * (sum_dely_delq4 * sum_delx_sqr - sum_delx_delq4 * sum_delx_dely)
+
+        end subroutine
+
+        attributes(global) subroutine eval_update_innerloop(dq_d, inner_d)
+
+                implicit none
+
+                ! device variables
+                real*8 :: dq_d(:,:,:), inner_d(:,:)
+
+                integer :: i
+
+                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+                if(i > mp_d) return
+
+                dq_d(1,:,i) = inner_d(1:4,i)
+                dq_d(2,:,i) = inner_d(5:8,i)
+
+
+        end subroutine
+
+end module q_variables_mod

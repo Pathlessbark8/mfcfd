@@ -1,0 +1,151 @@
+module device_data_structure_mod
+
+
+        use parameter_mod
+        use data_structure_mod
+        use cudafor
+        use cudadevice
+
+        implicit none
+
+        integer, constant :: mp_d, fo_flag, gamma_d, mach_d
+        real*8, constant :: cfl_d, power_d, vl_d, eu_d
+        real*8, constant :: qinf1_d, qinf2_d, qinf3_d, qinf4_d
+
+        type :: points_d
+
+                real*8, device, dimension(:,:), allocatable :: x
+                integer, device, dimension(:), allocatable :: flag 
+                integer, device, dimension(:), allocatable :: nbhs
+                integer, device, dimension(:,:), allocatable :: conn
+                real*8, device, dimension(:,:), allocatable :: phi1
+                real*8, device, dimension(:,:), allocatable :: nx
+                
+                real*8, device, dimension(:), allocatable :: min_dist
+
+                real*8, device, dimension(:,:), allocatable :: prim
+                real*8, device, dimension(:,:), allocatable :: prim_old
+                real*8, device, dimension(:,:), allocatable :: flux_res
+
+                real*8, device, dimension(:,:), allocatable :: q
+                real*8, device, dimension(:), allocatable :: delta
+                real*8, device, dimension(:,:,:), allocatable :: dq
+                real*8, device, dimension(:,:,:), allocatable :: ddq
+                real*8, device, dimension(:,:,:), allocatable :: qm
+                real*8, device, dimension(:,:), allocatable :: inner
+
+                integer, device, dimension(:), allocatable :: xpos_nbhs, xneg_nbhs, ypos_nbhs, yneg_nbhs
+                integer*1, device, dimension(:,:), allocatable :: xpos_conn, xneg_conn
+                integer*1, device, dimension(:,:), allocatable :: ypos_conn, yneg_conn
+
+        end type points_d
+        
+        type(points_d) :: point_d
+
+    contains
+
+        subroutine allocate_device_soln()
+                implicit none
+
+                allocate(point_d%prim(4,max_points))
+                allocate(point_d%prim_old(4,max_points))
+
+                allocate(point_d%flux_res(4,max_points))
+
+                allocate(point_d%q(4,max_points))
+                allocate(point_d%phi1(4,max_points))
+                allocate(point_d%delta(max_points))
+
+                allocate(point_d%dq(2,4,max_points))
+                allocate(point_d%ddq(3,4,max_points))
+                allocate(point_d%qm(2,4,max_points))
+                allocate(point_d%inner(12,max_points))
+        
+                allocate(point_d%xpos_nbhs(max_points))
+                allocate(point_d%xneg_nbhs(max_points))
+                allocate(point_d%ypos_nbhs(max_points))
+                allocate(point_d%yneg_nbhs(max_points))
+
+                allocate(point_d%xpos_conn(max_points,15))
+                allocate(point_d%xneg_conn(max_points,15))
+
+                allocate(point_d%ypos_conn(max_points,15))
+                allocate(point_d%yneg_conn(max_points,15))
+
+        end subroutine
+
+        subroutine deallocate_device_soln()
+                implicit none
+
+                deallocate(point_d%prim)
+                deallocate(point_d%prim_old)
+
+                deallocate(point_d%flux_res)
+
+                deallocate(point_d%q)
+                deallocate(point_d%phi1)
+                deallocate(point_d%delta)
+
+                deallocate(point_d%dq)
+                deallocate(point_d%ddq)
+
+                deallocate(point_d%xpos_nbhs)
+                deallocate(point_d%xneg_nbhs)
+                deallocate(point_d%yneg_nbhs)
+                deallocate(point_d%ypos_nbhs)
+
+                deallocate(point_d%xpos_conn)
+                deallocate(point_d%xneg_conn)
+
+                deallocate(point_d%ypos_conn)
+                deallocate(point_d%yneg_conn)
+
+        end subroutine
+
+        subroutine host_to_device()
+                implicit none
+
+                ! set constant point info on device
+                mp_d = max_points
+                cfl_d = cfl
+                power_d = power
+                vl_d = vl_const
+                fo_flag = f_o_flag
+                eu_d = euler
+                gamma_d = gamma
+                mach_d = mach
+                qinf1_d = q_inf(1)
+                qinf2_d = q_inf(2)
+                qinf3_d = q_inf(3)
+                qinf4_d = q_inf(4)
+                ! transfer from host to device(solution)
+                point_d%prim = point%prim
+                ! grid variables transfer
+                point_d%x(1,:) = point%x
+                point_d%x(2,:) = point%y
+                point_d%nx(1,:) = point%nx
+                point_d%nx(2,:) = point%ny
+                point_d%nbhs = point%nbhs
+                point_d%conn = point%conn
+                point_d%flag = point%flag_1
+                point_d%min_dist = point%min_dist
+                point_d%xpos_nbhs = point%xpos_nbhs
+                point_d%xneg_nbhs = point%xneg_nbhs
+                point_d%ypos_nbhs = point%ypos_nbhs
+                point_d%yneg_nbhs = point%yneg_nbhs
+                point_d%xpos_conn = point%xpos_conn
+                point_d%xneg_conn = point%xneg_conn
+                point_d%ypos_conn = point%ypos_conn
+                point_d%yneg_conn = point%yneg_conn
+
+        end subroutine
+
+        subroutine device_to_host()
+                implicit none
+
+                point%prim    = point_d%prim
+                point%phi1    = point_d%phi1
+
+        end subroutine
+
+end module device_data_structure_mod
