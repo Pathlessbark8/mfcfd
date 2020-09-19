@@ -10,7 +10,6 @@ program meshfree_solver
         use point_preprocessor_mod
         use q_lskum_mod
         use compute_force_coeffs_mod
-        USE HDF5
 
         implicit none
         real*8  :: totaltime,runtime
@@ -50,6 +49,8 @@ program meshfree_solver
                 write(*,*)
         end if
         
+        call read_hdf5input_point_data()
+
 !         call read_input_point_data()
         
 ! !       Allocate solution variables

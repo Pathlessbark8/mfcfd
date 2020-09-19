@@ -2,6 +2,7 @@ module point_preprocessor_mod
 
     use data_structure_mod
     use petsc_data_structure_mod
+    USE ReadH5dataset
 
 contains
 
@@ -172,4 +173,92 @@ contains
 
     end subroutine
 
+    subroutine read_hdf5input_point_data()
+
+#include <petsc/finclude/petscsys.h>
+
+        use petscsys
+
+        implicit none
+
+        ! INTEGER(HID_T) :: file_id       ! File identifier
+        ! INTEGER(HID_T) :: dset_id       ! Dataset identifier
+        ! INTEGER(HID_T) :: attr_id
+
+        ! INTEGER(HID_T) :: filetype, memtype
+        ! INTEGER(HSIZE_T), DIMENSION(1) :: dims
+        ! INTEGER(HSIZE_T), DIMENSION(1) :: adims = (1)
+        ! INTEGER(HSIZE_T), DIMENSION(1) :: maxdims
+        ! INTEGER, DIMENSION(:), ALLOCATABLE, TARGET :: rdata    ! Read buffer
+        
+        ! INTEGER :: error ! Error flag
+        ! INTEGER(8) :: r
+        ! integer :: i, j, k, nproc
+        ! integer :: wall_temp,outer_temp,interior_temp,shape_temp
+
+        ! TYPE(C_PTR) :: f_ptr
+
+        ! character(len=64) :: part_grid
+        ! character(len=64) :: dset_name
+        ! character(len=10) :: itos
+
+        ! part_grid = 'point/point.h5'
+        ! ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
+
+        ! CALL H5ReadAttribute(part_grid, "/1/local/1/flag1", r)
+        ! IF (ErrorFlag.lt.0) goto 990
+        write(*,*)'flag1 =',r
+
+    end subroutine 
+
 end module 
+
+       ! CALL h5open_f(error)
+        ! if (error == -1) then
+        !     WRITE(*,*) 'Error in file opening'
+        ! end if
+        
+        ! CALL h5fopen_f (part_grid, H5F_ACC_RDWR_F, file_id, error)
+
+        ! if (error == -1) then
+        !     WRITE(*,*) 'Actual Error in file opening'
+        ! end if
+
+        ! dset_name = '/1/local/1'
+        ! CALL h5dopen_f(file_id, dset_name, dset_id, error)
+        ! if (error == -1) then
+        !     WRITE(*,*) 'Error in reading data set '
+        ! end if
+        ! CALL h5aopen_f(dset_id, 'flag1', attr_id, error)
+
+        ! CALL H5Aget_type_f(attr_id, filetype, error)
+        ! if (error == -1) then
+        !     WRITE(*,*) 'Error in file attribute'
+        ! end if
+
+        ! CALL H5Tarray_create_f(H5T_STD_I32LE, 1, adims, memtype, error)
+
+        ! ! CALL H5Tget_array_dims_f(filetype, adims, error)
+        
+        ! CALL H5Aget_space_f(attr_id, space_id, error)
+        ! CALL H5Sget_simple_extent_dims_f(space_id, dims, maxdims, error)
+
+        ! ALLOCATE(rdata(dims(1)))
+
+        ! CALL H5Tarray_create_f(H5T_STD_I32LE, 1, adims, memtype, error)
+
+        ! f_ptr = C_LOC(rdata)
+
+        ! CALL H5Aread_f(attr_id, memtype, f_ptr, error)
+
+        ! WRITE(*,*) "The value of the attribute is ", r
+
+        ! CALL H5Aclose_f(attr_id, error)
+        ! CALL H5Dclose_f(dset_id, error)
+        ! CALL h5fclose_f(file_id, error)
+        ! CALL H5Sclose_f(space_id, error)
+        ! CALL H5Tclose_f(memtype, error)
+        ! !
+        ! ! Close FORTRAN interface.
+        ! !
+        ! CALL h5close_f(error)
