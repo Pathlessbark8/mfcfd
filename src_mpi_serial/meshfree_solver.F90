@@ -90,7 +90,7 @@ program meshfree_solver
 ! !       destroy petsc vectors and deallocate point/solution vectors
 !         call dest_petsc()
 !         call deallocate_soln()
-!         call dealloc_points()
+        call dealloc_points()
 
         totaltime = MPI_Wtime() - totaltime
 
