@@ -2,7 +2,8 @@ module point_preprocessor_mod
 
     use data_structure_mod
     use petsc_data_structure_mod
-    USE ReadH5dataset
+    USE HDF5
+    ! USE ReadH5dataset
 
 contains
 
@@ -192,18 +193,32 @@ contains
         character(len=10) :: main_group, total_attribute, ghost_attribute, local_attribute, point_string, rank_string 
         character(len=10) :: flag1_s, flag2_s, left_s, right_s, min_dist_s, nx_s
         character(len=10) :: ny_s, qtdepth_s, x_s, y_s
-        character(len=15) :: nbhs_counts_s
+        character(len=15) :: local_group, nbhs_counts_s
+
+        INTEGER(HID_T)      :: file_id
+        INTEGER(HID_T)      :: root_id
+        CHARACTER(LEN = 1)  :: rootname
+        INTEGER(HID_T)      :: group_id, localgroup_id
+        INTEGER(HID_T)      :: p_id
+        INTEGER(HID_T)      :: d_id, a_id
+        INTEGER(HID_T)      :: type_id
+        INTEGER(HID_T)      :: dspace
+        INTEGER             :: ErrorFlag
+        CHARACTER(LEN=100)  :: ErrorMessage
+        INTEGER             :: AllocStat
+        INTEGER(hsize_t), DIMENSION(1)                       :: dims
+        INTEGER             :: H5dataset
 
         part_grid = 'point/point.h5'
         if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
         main_group = '/'//trim(itos_unpad(rank+1))
         ghost_attribute = '/ghost'
-        local_attribute = '/local'
-        total_attribute = '/total'
-        flag1_s = '/flag1'  
+        local_attribute = 'local'
+        total_attribute = 'total'
+        flag1_s = 'flag1'  
         flag2_s = '/flag2'  
-        left_s = '/left'  
+        left_s = 'left'  
         right_s = '/right'  
         min_dist_s = '/min_dist'  
         nbhs_counts_s = '/nbhs_count'  
@@ -213,14 +228,63 @@ contains
         x_s = '/x'  
         y_s = '/y' 
 
-        CALL H5Read_initfile(part_grid, main_group)
+        CALL h5open_f(ErrorFlag)
+                
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error initialising HDF routines"
+            return
+        ENDIF
+        
+        ! CALL DebugMessage(" --- Opening HDF file")
+        
+        CALL h5fopen_f(part_grid, H5F_ACC_RDONLY_F, file_id, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening HDF file"
+            return
+        ENDIF
+        
+        ! Open the root group.
+        rootname = "/"
+        CALL h5gopen_f(file_id,rootname,root_id,ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening root group"
+            return
+        ENDIF
+
+        ! Main group
+        CALL h5gopen_f(root_id, main_group, group_id,ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening group "
+            return
+        ENDIF
+
+
+        CALL h5aopen_name_f(group_id, total_attribute, a_id, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening attribute "
+            return
+        ENDIF
+
+        dims=1
+        CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, max_points, dims, ErrorFlag)
+        CALL h5aclose_f(a_id,ErrorFlag)
+
+        CALL h5aopen_name_f(group_id, local_attribute, a_id, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening attribute "
+            return
+        ENDIF
+
+        CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, local_points, dims, ErrorFlag)
+        CALL h5aclose_f(a_id,ErrorFlag)
+        ! CALL H5Read_initfile(part_grid, main_group)
 
         ! CALL H5ReadAttribute(part_grid, main_group//total_attribute, max_points)
         ! CALL H5ReadAttribute(part_grid, main_group//total_attribute, max_points)
         ! CALL H5ReadAttribute(part_grid, "/1/ghost", ghost_points)
         ! CALL H5ReadAttribute(part_grid, main_group//local_attribute, local_points)
 
-        local_points = max_points
+        ! local_points = max_points
         write(*,*) local_points, max_points
 
         allocate(point%x(max_points))
@@ -242,12 +306,38 @@ contains
         outer_points = 0
         shape_points = 0
 
-        ! do k = 1, 100
-            k = 1
-            point_string = '/'//trim(itos_unpad(k))
-            dataset_string = main_group//local_attribute//point_string
+        local_group = trim(main_group)//'/local'
 
-            point%original_id(k) = k
+        CALL h5gopen_f(group_id, local_group, localgroup_id,ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening group "
+            return
+        ENDIF
+
+        do k = 1, local_points
+            ! k = 1
+            point_string = '/'//trim(itos_unpad(k))
+            dataset_string = trim(local_group)//point_string
+
+            CALL h5dopen_f(localgroup_id , dataset_string , d_id,ErrorFlag)
+            IF (ErrorFlag.lt.0) THEN
+                ErrorMessage=" *** Error opening dataset "
+                return
+            ENDIF
+
+            CALL h5aopen_name_f(d_id, left_s, a_id, ErrorFlag)
+            IF (ErrorFlag.lt.0) THEN
+                ErrorMessage=" *** Error opening attribute "
+                return
+            ENDIF
+            dims=1
+            CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, point%left(k), dims, ErrorFlag)
+            CALL h5aclose_f(a_id,ErrorFlag)
+
+            ! WRITE(*,*) point%left(k)
+
+
+            ! point%original_id(k) = k
             ! CALL H5ReadAttribute(part_grid, dataset_string//x_s, point%x(k))
             ! CALL H5ReadAttribute(part_grid, dataset_string//y_s, point%y(k))
             ! CALL H5ReadAttribute(part_grid, dataset_string//left_s, point%left(k))
@@ -255,13 +345,13 @@ contains
             ! CALL H5ReadAttribute(part_grid, dataset_string//flag1_s, point%flag_1(k))
             ! CALL H5ReadAttribute(part_grid, dataset_string//flag2_s, point%flag_2(k))
             ! CALL H5ReadAttribute(part_grid, dataset_string//min_dist_s, point%min_dist(k))
-            CALL H5ReadAttribute(part_grid, dataset_string//nbhs_counts_s, point%nbhs(k))
+            ! CALL H5ReadAttribute(part_grid, dataset_string//nbhs_counts_s, point%nbhs(k))
             ! CALL H5ReadAttribute(part_grid, dataset_string//qtdepth_s, point%qtdepth(k))
-            CALL H5ReadDataset(part_grid, dataset_string, nbh_array)
+            ! CALL H5ReadDataset(part_grid, dataset_string, nbh_array)
 
-            do r=1,point%nbhs(k)
-                WRITE(*,*) nbh_array(r)
-            end do
+            ! do r=1,point%nbhs(k)
+                ! WRITE(*,*) nbh_array(r)
+            ! end do
             ! !Storing the count for the point types
             ! if(point%flag_1(k) == 0) then
             !     wall_points = wall_points + 1
@@ -278,7 +368,14 @@ contains
             !     shape_points = shape_points + 1
             ! end if
 
-        ! end do    
+            CALL h5dclose_f(d_id,ErrorFlag)
+        end do    
+
+        CALL h5gclose_f(localgroup_id, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error closing local group"
+            return
+        ENDIF
 
         allocate(wall_points_index(wall_points))
         allocate(interior_points_index(interior_points))
@@ -309,7 +406,36 @@ contains
         !     end if
         ! end do  
 
-        CALL H5Read_closefile()
+        ! CALL H5Read_closefile()
+
+
+        CALL h5gclose_f(group_id,ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error closing main group"
+            return
+        ENDIF
+        
+
+        CALL h5gclose_f(root_id,ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error closing root group"
+            return
+        ENDIF
+        
+        ! Close the HDF file and HDF interface
+        
+        ! CALL DebugMessage(" --- Closing HDF file")
+        CALL h5fclose_f(file_id,ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error closing HDF file"
+            return
+        ENDIF
+        
+        CALL h5close_f(ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error closing HDF routines"
+            return
+        ENDIF
     end subroutine 
 
 end module 
