@@ -48,7 +48,9 @@ program meshfree_solver
                 write(*,*)
         end if
         
-        call read_input_point_data()
+        call read_hdf5input_point_data()
+
+        ! call read_input_point_data()
         
 !       Allocate solution variables
 
