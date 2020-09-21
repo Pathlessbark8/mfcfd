@@ -437,7 +437,7 @@ contains
                     return
                 ENDIF
                 dims=1
-                CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, :(k), dims, ErrorFlag)
+                CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, pghost(k), dims, ErrorFlag)
 
                 CALL h5aopen_name_f(d_id, val1_s, a_id, ErrorFlag)
                 IF (ErrorFlag.lt.0) THEN
