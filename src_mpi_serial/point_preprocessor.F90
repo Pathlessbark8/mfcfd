@@ -55,7 +55,7 @@ contains
 
             do k = 1, local_points
             
-                read(101,*) point%x(k), point%y(k), &
+                read(101,*)point%original_id(k), point%x(k), point%y(k), &
                 & point%left(k),point%right(k), point%flag_1(k),point%flag_2(k), &
                 & point%min_dist(k), point%nbhs(k), (point%conn(k,r),r=1,point%nbhs(k))
 
@@ -190,12 +190,12 @@ contains
         character(len=10) :: itos, itos_unpad
         character(len=10) :: main_group, total_attribute, ghost_attribute, local_attribute, point_string, rank_string 
         character(len=10) :: val1_s, val2_s
-        character(len=15) :: local_group
+        character(len=15) :: local_group, ghost_group
         CHARACTER(LEN=100)  :: ErrorMessage
 
         INTEGER(HID_T)      :: file_id
         INTEGER(HID_T)      :: root_id
-        INTEGER(HID_T)      :: group_id, localgroup_id
+        INTEGER(HID_T)      :: group_id, localgroup_id, ghostgroup_id
         INTEGER(HID_T)      :: p_id
         INTEGER(HID_T)      :: d_id, a_id
         INTEGER(HID_T)      :: type_id
@@ -209,7 +209,7 @@ contains
         REAL(KIND=8), DIMENSION(:), ALLOCATABLE, TARGET     :: H51DDoubledataset
 
         part_grid = 'point/point.h5'
-        if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
+        ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
         main_group = '/'//trim(itos_unpad(rank+1))
         ghost_attribute = 'ghost'
@@ -243,13 +243,13 @@ contains
         ! Main group
         CALL h5gopen_f(root_id, main_group, group_id,ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening group "
+            ErrorMessage=" *** Error opening main group "
             return
         ENDIF
 
         CALL h5aopen_name_f(group_id, total_attribute, a_id, ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening attribute "
+            ErrorMessage=" *** Error opening total attribute "
             return
         ENDIF
         dims=1
@@ -259,10 +259,20 @@ contains
 
         CALL h5aopen_name_f(group_id, local_attribute, a_id, ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening attribute "
+            ErrorMessage=" *** Error opening local attribute "
             return
         ENDIF
+        dims=1
         CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, local_points, dims, ErrorFlag)
+        CALL h5aclose_f(a_id,ErrorFlag)
+
+        CALL h5aopen_name_f(group_id, ghost_attribute, a_id, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening ghost attribute "
+            return
+        ENDIF
+        dims=1
+        CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, ghost_points, dims, ErrorFlag)
         CALL h5aclose_f(a_id,ErrorFlag)
 
         allocate(point%x(max_points))
@@ -279,7 +289,7 @@ contains
         allocate(point%right(max_points))
         allocate(point%original_id(local_points))
 
-        ALLOCATE(H51DIntegerdataset(6))
+        ALLOCATE(H51DIntegerdataset(7))
         ALLOCATE(H51DDoubledataset(5))
         ALLOCATE(nbh_array(20))
 
@@ -291,7 +301,7 @@ contains
         local_group = trim(main_group)//'/local'
         CALL h5gopen_f(group_id, local_group, localgroup_id,ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening group "
+            ErrorMessage=" *** Error opening local group "
             return
         ENDIF
 
@@ -314,7 +324,7 @@ contains
                 ErrorMessage=" *** Error opening attribute "
                 return
             ENDIF
-            dims=6
+            dims=7
             CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, H51DIntegerdataset, dims, ErrorFlag)
             CALL h5aclose_f(a_id,ErrorFlag)
 
@@ -331,23 +341,20 @@ contains
 
             ! WRITE(*,*) H51DDoubledataset
 
-            ! do r=1,point%nbhs(k)
-                ! WRITE(*,*) nbh_array(r)
-            ! end do
             CALL h5dclose_f(d_id,ErrorFlag)
 
-            point%original_id(k) = k
+            point%original_id(k) = H51DIntegerdataset(1)
             point%x(k) = H51DDoubledataset(1)
             point%y(k) = H51DDoubledataset(2)
-            point%left(k) = H51DIntegerdataset(1)
-            point%right(k) = H51DIntegerdataset(2)
-            point%flag_1(k) = H51DIntegerdataset(4)
-            point%flag_2(k) = H51DIntegerdataset(5)
+            point%left(k) = H51DIntegerdataset(2)
+            point%right(k) = H51DIntegerdataset(3)
+            point%flag_1(k) = H51DIntegerdataset(5)
+            point%flag_2(k) = H51DIntegerdataset(6)
             point%nx(k) = H51DDoubledataset(3)
             point%ny(k) = H51DDoubledataset(4)
-            point%qtdepth(k) = H51DIntegerdataset(3)
+            point%qtdepth(k) = H51DIntegerdataset(4)
             point%min_dist(k) = H51DDoubledataset(5)
-            point%nbhs(k) = H51DIntegerdataset(6)
+            point%nbhs(k) = H51DIntegerdataset(7)
             do r=1, point%nbhs(k)
                 point%conn(k,r) = nbh_array(r)
             end do
@@ -384,6 +391,8 @@ contains
         deallocate(nbh_array)
         deallocate(H51DIntegerdataset)
         deallocate(H51DDoubledataset)
+
+
         wall_temp = 0
         interior_temp = 0
         outer_temp = 0
@@ -406,6 +415,53 @@ contains
                 shape_points_index(shape_temp) = k
             end if
         end do  
+
+        if (proc > 1) then
+            allocate(pghost(ghost_points))
+            ALLOCATE(H51DDoubledataset(3))
+
+            ghost_group = trim(main_group)//'/ghost'
+            CALL h5gopen_f(group_id, ghost_group, ghostgroup_id,ErrorFlag)
+            IF (ErrorFlag.lt.0) THEN
+                ErrorMessage=" *** Error opening ghost group "
+                return
+            ENDIF
+
+            do k = 1, ghost_points
+                point_string = '/'//trim(itos_unpad(k))
+                dataset_string = trim(ghost_group)//point_string
+    
+                CALL h5dopen_f(ghostgroup_id , dataset_string , d_id, ErrorFlag)
+                IF (ErrorFlag.lt.0) THEN
+                    ErrorMessage=" *** Error opening dataset "
+                    return
+                ENDIF
+                dims=1
+                CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, :(k), dims, ErrorFlag)
+
+                CALL h5aopen_name_f(d_id, val1_s, a_id, ErrorFlag)
+                IF (ErrorFlag.lt.0) THEN
+                    ErrorMessage=" *** Error opening attribute "
+                    return
+                ENDIF
+                dims=3
+                CALL h5aread_f(a_id, H5T_NATIVE_DOUBLE, H51DDoubledataset, dims, ErrorFlag)
+                CALL h5aclose_f(a_id,ErrorFlag)
+
+                point%x(local_points + k) = H51DDoubledataset(1)
+                point%y(local_points + k) = H51DDoubledataset(2)
+                point%min_dist(local_points + k) = H51DDoubledataset(3)
+
+                CALL h5dclose_f(d_id,ErrorFlag)
+            end do
+
+            deallocate(H51DDoubledataset)
+            CALL h5gclose_f(ghostgroup_id, ErrorFlag)
+            IF (ErrorFlag.lt.0) THEN
+                ErrorMessage=" *** Error closing ghost group"
+                return
+            ENDIF
+        end if
 
         CALL h5gclose_f(group_id,ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
