@@ -205,7 +205,7 @@ contains
         INTEGER             :: H5dataset
         INTEGER(hsize_t), DIMENSION(1)                       :: dims
         INTEGER, DIMENSION(:), ALLOCATABLE, TARGET          :: H51DIntegerdataset
-        integer, dimension(:), pointer :: nbh_array 
+        INTEGER, dimension(:), pointer :: nbh_array 
         REAL(KIND=8), DIMENSION(:), ALLOCATABLE, TARGET     :: H51DDoubledataset
 
         part_grid = 'point/point.h5'
@@ -437,8 +437,8 @@ contains
                     return
                 ENDIF
                 dims=1
-                CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, pghost(k), dims, ErrorFlag)
-
+                CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, H5dataset, dims, ErrorFlag)
+                pghost(k) = H5dataset
                 CALL h5aopen_name_f(d_id, val1_s, a_id, ErrorFlag)
                 IF (ErrorFlag.lt.0) THEN
                     ErrorMessage=" *** Error opening attribute "

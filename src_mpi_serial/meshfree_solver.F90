@@ -85,7 +85,8 @@ program meshfree_solver
         runtime = MPI_Wtime() - runtime
 
 !       Save solution one last time
-        call print_primal_output()
+
+        ! call print_primal_output()
 
 !       destroy petsc vectors and deallocate point/solution vectors
         call dest_petsc()
