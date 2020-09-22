@@ -1,2 +1,7 @@
 build/*
 execname
+cp-file
+residue
+phi_vector
+input.nml
+point/*
