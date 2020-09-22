@@ -21,7 +21,7 @@ function itos(ndigit, n) result(str)
       nd = ndigit - 4
    else
       nd = 0 ! Dummy to suppress compiler warning
-      print*,'not recoginized'
+      print*,'not recognized'
    endif
 
    ! Pad with zeroes in beginning
@@ -46,9 +46,15 @@ function itos_unpad(n) result(str)
        write(str,'(I3)') n
     else if(n <= 9999) then
        write(str,'(I4)') n
+    else if(n <= 99999) then
+        write(str,'(I5)') n
+    else if(n <= 999999) then
+        write(str,'(I6)') n
+    else if(n <= 9999999) then
+        write(str,'(I7)') n
     else
        nd = 0 ! Dummy to suppress compiler warning
-       print*,'not recoginized'
+       WRITE(*,*)'not recognized unpad ', n
     endif
  
  end function itos_unpad

@@ -198,7 +198,7 @@ CONTAINS
         ! cost_funcb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
-                write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
+                write(*,'(a16,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
                 ! write(301, *) itim, residue
             ! end if
         end if
@@ -213,7 +213,7 @@ CONTAINS
         ! cost_funcb = 0.0_8
         IF (rank .EQ. 0) THEN
             ! if (pflag == 1) then
-                write(*,'(a12,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
+                write(*,'(a16,i8,a15,e30.20)')'iterations_back:',ITIM,'residue:',residue
                 ! write(301, *) itim, residue
             ! end if
         end if

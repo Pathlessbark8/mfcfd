@@ -23,6 +23,7 @@ program meshfree_solver
         call execute_command_line('mkdir -p solution')
         call execute_command_line('mkdir -p phistore')
         call execute_command_line('mkdir -p cp')
+        call execute_command_line('mkdir -p sensitivity')
     end if
     
     totaltime = MPI_Wtime()

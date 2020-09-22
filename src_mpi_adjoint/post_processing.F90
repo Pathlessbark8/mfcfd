@@ -54,7 +54,7 @@ module post_processing_mod
         
         OPEN(UNIT=501,FILE=trim(pfile))
         
-        write(501,*)local_points, it-1 , res_old
+        write(501,*)local_points, it-1
         
         do i = 1, local_points
             write(501,'(1i8, 2e30.20)')point%original_id(i), &

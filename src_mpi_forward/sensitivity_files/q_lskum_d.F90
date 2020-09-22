@@ -33,8 +33,8 @@ CONTAINS
 
     pointd%x = 0.0_8
     pointd%y = 0.0_8
-    if(rank == 20) then
-        WRITE(*, *) '%%%%%%%%%%%%%-<<X Value Set To 1>>-%%%%%%%%%%%%'
+    if(point%original_id(1) == 1) then
+        WRITE(*, *) '%%%%%%%%%%%%%-<<X Value Set To 1>>-%%%%%%%%%%%%', rank
         pointd%x(1) = 1.0d0
     END IF
 
