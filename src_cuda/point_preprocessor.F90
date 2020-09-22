@@ -197,7 +197,7 @@ contains
         part_grid = 'point/point.h5'
         ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
-        main_group = '/'//trim(itos_unpad(rank+1))
+        main_group = '/'//trim(itos_unpad(1))
         ghost_attribute = 'ghost'
         local_attribute = 'local'
         total_attribute = 'total'
@@ -243,23 +243,23 @@ contains
         CALL h5aclose_f(a_id,ErrorFlag)
 
 
-        CALL h5aopen_name_f(group_id, local_attribute, a_id, ErrorFlag)
-        IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening local attribute "
-            return
-        ENDIF
-        dims=1
-        CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, local_points, dims, ErrorFlag)
-        CALL h5aclose_f(a_id,ErrorFlag)
+        ! CALL h5aopen_name_f(group_id, local_attribute, a_id, ErrorFlag)
+        ! IF (ErrorFlag.lt.0) THEN
+        !     ErrorMessage=" *** Error opening local attribute "
+        !     return
+        ! ENDIF
+        ! dims=1
+        ! CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, local_points, dims, ErrorFlag)
+        ! CALL h5aclose_f(a_id,ErrorFlag)
 
-        CALL h5aopen_name_f(group_id, ghost_attribute, a_id, ErrorFlag)
-        IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening ghost attribute "
-            return
-        ENDIF
-        dims=1
-        CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, ghost_points, dims, ErrorFlag)
-        CALL h5aclose_f(a_id,ErrorFlag)
+        ! CALL h5aopen_name_f(group_id, ghost_attribute, a_id, ErrorFlag)
+        ! IF (ErrorFlag.lt.0) THEN
+        !     ErrorMessage=" *** Error opening ghost attribute "
+        !     return
+        ! ENDIF
+        ! dims=1
+        ! CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, ghost_points, dims, ErrorFlag)
+        ! CALL h5aclose_f(a_id,ErrorFlag)
 
         allocate(point%x(max_points))
         allocate(point%y(max_points))
@@ -395,7 +395,7 @@ contains
         outer_temp = 0
         shape_temp = 0
         !Storing indices of the point definitions
-        do k = 1,local_points
+        do k = 1,max_points
             if(point%flag_1(k) == 0) then
                 wall_temp = wall_temp+1
                 wall_points_index(wall_temp) = k

@@ -69,16 +69,12 @@ program meshfree_solver
     !       Set up case input
     call readnml()
 
-        !	Reading the input data ..
-    if(rank == 0) then
-            write(*,*)
-            write(*,*)'%%%%%%%%%%%%-Reading HDF5 point data-%%%%%%%%%%%'
-            write(*,*)
-    end if
-    call read_hdf5input_point_data()
+    !	Reading the input data ..
+    ! write(*,*)'%%%%%%%%%%%%-Reading HDF5 point data-%%%%%%%%%%%'
+    ! call read_hdf5input_point_data()
 
-    ! write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%'
-    ! call read_input_point_data()
+    write(*,*) '%%%%%%%%%%%%-Reading point file-%%%%%%%%%%%'
+    call read_input_point_data()
     
     write(*,*) 'Number of points:         ', max_points
     write(*,*) 'Number of wall points:    ', wall_points
