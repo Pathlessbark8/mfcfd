@@ -45,7 +45,7 @@ program meshfree_solver
 
         if(rank == 0) then
                 write(*,*)
-                write(*,*)'%%%%%%%%%%%%-Reading point data-%%%%%%%%%%%'
+                write(*,*)'%%%%%%%%%%%%-Reading HDF5 point data-%%%%%%%%%%%'
                 write(*,*)
         end if
         
