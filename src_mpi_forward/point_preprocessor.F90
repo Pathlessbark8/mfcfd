@@ -181,7 +181,7 @@ contains
 
         implicit none
 
-        integer:: i, k, r, nproc
+        integer :: i, k, r, nproc
         integer :: wall_temp,outer_temp,interior_temp,shape_temp
         character(len=65) :: part_grid, dataset_string
 
@@ -195,20 +195,16 @@ contains
         INTEGER(HID_T)      :: file_id
         INTEGER(HID_T)      :: root_id
         INTEGER(HID_T)      :: group_id, localgroup_id, ghostgroup_id
-        INTEGER(HID_T)      :: p_id
         INTEGER(HID_T)      :: d_id, a_id
-        INTEGER(HID_T)      :: type_id
-        INTEGER(HID_T)      :: dspace
         INTEGER             :: ErrorFlag
-        INTEGER             :: AllocStat
+
         INTEGER             :: H5dataset
         INTEGER(hsize_t), DIMENSION(1)                       :: dims
-        INTEGER, DIMENSION(:), ALLOCATABLE, TARGET          :: H51DIntegerdataset
-        INTEGER, dimension(:), pointer :: nbh_array 
-        REAL(KIND=8), DIMENSION(:), ALLOCATABLE, TARGET     :: H51DDoubledataset
+        INTEGER, DIMENSION(:), ALLOCATABLE          :: H51DIntegerdataset
+        INTEGER, dimension(:), ALLOCATABLE :: nbh_array 
+        REAL*8, DIMENSION(:), ALLOCATABLE     :: H51DDoubledataset
 
         part_grid = 'point/point.h5'
-        ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
 
         main_group = '/'//trim(itos_unpad(rank+1))
         ghost_attribute = 'ghost'

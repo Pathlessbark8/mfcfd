@@ -30,3 +30,25 @@ function itos(ndigit, n) result(str)
    enddo
 
 end function itos
+
+function itos_unpad(n) result(str)
+    implicit none
+    integer,intent(in) :: n
+    character(len=10) :: str
+    integer :: nd
+ 
+    ! Count no. of zeroes to pad
+    if(n <= 9) then
+       write(str,'(I1)') n
+    else if(n <= 99) then
+       write(str,'(I2)') n
+    else if(n <= 999) then
+       write(str,'(I3)') n
+    else if(n <= 9999) then
+       write(str,'(I4)') n
+    else
+       nd = 0 ! Dummy to suppress compiler warning
+       print*,'not recoginized'
+    endif
+ 
+ end function itos_unpad
