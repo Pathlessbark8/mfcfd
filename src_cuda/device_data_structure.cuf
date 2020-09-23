@@ -88,6 +88,8 @@ module device_data_structure_mod
 
                 deallocate(point_d%dq)
                 deallocate(point_d%ddq)
+                deallocate(point_d%qm)
+                deallocate(point_d%inner)
 
                 deallocate(point_d%xpos_nbhs)
                 deallocate(point_d%xneg_nbhs)

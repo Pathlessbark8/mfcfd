@@ -1,0 +1,9 @@
+-cfl 0.5
+-max_iters 5000
+-format_file legacy
+-vl_const 100
+-inner_iterations 3
+-adjoint_mode checkpoints
+-chkpts 300
+-restart_solution no
+-read_phi no
