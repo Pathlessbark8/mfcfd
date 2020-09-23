@@ -72,3 +72,45 @@ mpirun -np x ./execname
 ```
 ./execname
 ```
+
+## Ouput Files
+
+*Here xxxx is the partitioned output given by a specific CPU core.  
+For example: 0023 means the ouput was from the 24th core*
+
+`serial`, `tangent` and `adjoint` solver outputs can be found in
+* `cp` folder as `cp-filexxxx` which contains the cp output of the wall points in the form
+```
+point%flag_2(m) | point%x(m) | cp
+# m is a wall point index. 
+# If the file is blank then it did not have any wall points
+```
+* `solution` folder as `solxxxx.dat` which contains the solution output of all points in the form
+```
+point%original_id(i) | point%flag_1(i) | point%flag_2(i) | point%x(i)
+| point%y(i) | point%prim(1,i) | point%prim(2,i) | point%prim(3,i) | point%prim(4,i)
+```
+* The adjoint solver in addition to the above files also generates the adjoint differentiated values of all points in the `sensitivity` folder as `sensitivity-xxxx.dat` in the form
+```
+point%original_id(i) | pointb%x(i) | pointb%y(i)
+``` 
+
+`cuda` solver outputs can be found in
+* `cp-file` contains the cp output of the wall points in the form
+```
+point%flag_2(m) | point%x(m) | cp
+```
+* `output.dat` ontains the solution output of all points in the form
+```
+point%x(i) | point%y(i) | point%flag_1(i) | point%qtdepth(i) | point%prim(1,i) | point%prim(2,i) | point%prim(3,i) | point%prim(4,i) | mach_number | point%entropy(i) | point%sensor(i)
+```
+
+## Additional Information
+
+* Major parameters like the `number of iterations`, `cfl`, `venkat_limter constant` can be changes in the required `input.nml` or `case.in` files 
+* Most of the data structures and global variables are declared in the `data_structure.F90` or similarly named files
+* Most of the file reading and associated memory alllocation subroutines can be found in the `point_preprocessor.F90` files.
+* Most of the output related subroutines can be found in `post_processing.F90` files.
+* Primary file for the solvers is the `meshfree_solver.F90` file.
+* The actual computational subroutines can be found or are called in `q_lskum.F90` or similar named files and `fpi_solver.F90` files. 
+* MPI/PETSc related communication calls and structures can be found in `petsc_data_structure.F90`
