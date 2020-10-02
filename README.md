@@ -11,13 +11,13 @@ Meshfree Solver requires
 Apart from these dependencies the solver might require a number of transitive dependencies depending on the solver being compiled.
 
 ### Serial Solver Dependency
-* PETSc, MPI
+* PETSc, MPI (OpenMPI or MPICH)
 
 ### Tangent Solver Dependency
-* PETSc, MPI
+* PETSc, MPI (OpenMPI or MPICH)
 
 ### Adjoint Solver Dependency
-* PETSc, MPI
+* PETSc, MPI (OpenMPI or MPICH)
 
 ### CUDA Solver Dependency
 * CUDA
@@ -47,6 +47,8 @@ Run the following command from the `install` directory:
 Please specify the either cuda, serial, tangent or adjoint for the flag `mfcfd`.  
 For example: `python3 install.py --mfcfd cuda`
 
+After building, an executable `execname` will be generated.
+
 ## Environment Setup
 
 Move the generated executable `execname`, created in the install directory to the required solver directory in `mfcfd/examples`   
@@ -73,7 +75,7 @@ mpirun -np x ./execname
 ./execname
 ```
 
-## Ouput Files
+## Output Files
 
 *Here xxxx is the partitioned output given by a specific CPU core.  
 For example: 0023 means the ouput was from the 24th core*

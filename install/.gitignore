@@ -5,3 +5,4 @@ residue
 phi_vector
 input.nml
 point/*
+*.nsight-cuprof-report
