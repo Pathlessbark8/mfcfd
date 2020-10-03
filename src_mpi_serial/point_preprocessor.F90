@@ -432,10 +432,6 @@ contains
                 shape_temp = shape_temp+1
                 shape_points_index(shape_temp) = k
             end if
-
-            if(point%original_id(k)== 9521) then
-                WRITE(*,*) point%x(k-1), point%x(k+1)
-            endif
         end do  
 
         ghost_dataset = trim(main_group)//'/ghost'

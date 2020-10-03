@@ -189,23 +189,27 @@ contains
         character(len=10) :: itos, itos_unpad
         character(len=10) :: main_group, total_attribute, ghost_attribute, local_attribute, point_string, rank_string 
         character(len=10) :: val1_s, val2_s
-        character(len=15) :: local_group, ghost_group
+        character(len=15) :: local_group, ghost_group, local_dataset, ghost_dataset
         CHARACTER(LEN=100)  :: ErrorMessage
 
         INTEGER(HID_T)      :: file_id
         INTEGER(HID_T)      :: root_id
-        INTEGER(HID_T)      :: group_id, localgroup_id, ghostgroup_id
+        INTEGER(HID_T)      :: group_id, localgroup_id, ghostgroup_id, localdatset_id, ghostdataset_id
         INTEGER(HID_T)      :: p_id
         INTEGER(HID_T)      :: d_id, a_id
         INTEGER(HID_T)      :: type_id
         INTEGER(HID_T)      :: dspace
-        INTEGER             :: ErrorFlag
+        INTEGER             :: ErrorFlag, ndims
         INTEGER             :: AllocStat
         INTEGER             :: H5dataset
-        INTEGER(hsize_t), DIMENSION(1)                       :: dims
+        INTEGER             :: maxdims = 4
+        INTEGER(hsize_t), DIMENSION(1)                 :: dims
+        INTEGER(hsize_t), DIMENSION(:), ALLOCATABLE    :: main_dims
+        INTEGER(hsize_t), DIMENSION(4)                 :: datadims
+        INTEGER(hsize_t), DIMENSION(4)                 :: maxdatadims
         INTEGER, DIMENSION(:), ALLOCATABLE, TARGET          :: H51DIntegerdataset
-        INTEGER, dimension(:), pointer :: nbh_array 
         REAL(KIND=8), DIMENSION(:), ALLOCATABLE, TARGET     :: H51DDoubledataset
+        REAL(KIND=8), DIMENSION(:,:), ALLOCATABLE, TARGET     :: H52DDoubledataset
 
         part_grid = 'point/point.h5'
         ! if (proc>1) part_grid = 'point/partGrid'//trim(itos(4,rank))
@@ -288,74 +292,81 @@ contains
         allocate(point%right(max_points))
         allocate(point%original_id(local_points))
 
-        ALLOCATE(H51DIntegerdataset(7))
-        ALLOCATE(H51DDoubledataset(5))
-        ALLOCATE(nbh_array(20))
-
         wall_points = 0
         interior_points = 0
         outer_points = 0
         shape_points = 0
 
-        local_group = trim(main_group)//'/local'
-        CALL h5gopen_f(group_id, local_group, localgroup_id,ErrorFlag)
+        local_dataset = trim(main_group)//'/local'
+
+        CALL h5dopen_f(group_id , local_dataset , d_id, ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error opening local group "
+            ErrorMessage=" *** Error opening dataset "
+            return
+        ENDIF
+
+        ! Find space of 2D array
+
+        CALL h5dget_space_f(d_id, dspace, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error determining dataspace"
+            return
+        ENDIF
+     
+        CALL h5sget_simple_extent_ndims_f(dspace, ndims, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+           ErrorMessage=" *** Error determining dataspace dimensionality"
+           return
+        ENDIF
+
+        ALLOCATE(main_dims(ndims),stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error allocating dims"
+           return
+        ENDIF
+
+        CALL h5sget_simple_extent_dims_f(dspace, datadims, maxdatadims, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+           ErrorMessage=" *** Error determining dataspace size"
+           return
+        ENDIF
+    
+        main_dims = datadims
+    
+        ! Read the dataset and transfer the result
+    
+        ALLOCATE(H52DDoubledataset(main_dims(1), main_dims(2)), stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error allocating H5dataset"
+           return
+        ENDIF
+
+        CALL h5dread_f(d_id, H5T_NATIVE_DOUBLE, H52DDoubledataset, dims, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error reading data"
             return
         ENDIF
 
         do k = 1, local_points
-            ! k = 1
-            point_string = '/'//trim(itos_unpad(k))
-            dataset_string = trim(local_group)//point_string
+        !     ! k = 1
+        !     ! WRITE(*,*) nbh_array
 
-            CALL h5dopen_f(localgroup_id , dataset_string , d_id, ErrorFlag)
-            IF (ErrorFlag.lt.0) THEN
-                ErrorMessage=" *** Error opening dataset "
-                return
-            ENDIF
-            dims=20
-            CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, nbh_array, dims, ErrorFlag)
-            ! WRITE(*,*) nbh_array
-
-            CALL h5aopen_name_f(d_id, val2_s, a_id, ErrorFlag)
-            IF (ErrorFlag.lt.0) THEN
-                ErrorMessage=" *** Error opening attribute "
-                return
-            ENDIF
-            dims=7
-            CALL h5aread_f(a_id, H5T_NATIVE_INTEGER, H51DIntegerdataset, dims, ErrorFlag)
-            CALL h5aclose_f(a_id,ErrorFlag)
-
-            ! WRITE(*,*) H51DIntegerdataset
-
-            CALL h5aopen_name_f(d_id, val1_s, a_id, ErrorFlag)
-            IF (ErrorFlag.lt.0) THEN
-                ErrorMessage=" *** Error opening attribute "
-                return
-            ENDIF
-            dims=5
-            CALL h5aread_f(a_id, H5T_NATIVE_DOUBLE, H51DDoubledataset, dims, ErrorFlag)
-            CALL h5aclose_f(a_id,ErrorFlag)
-
-            ! WRITE(*,*) H51DDoubledataset
-
-            CALL h5dclose_f(d_id,ErrorFlag)
-
-            point%original_id(k) = H51DIntegerdataset(1)
-            point%x(k) = H51DDoubledataset(1)
-            point%y(k) = H51DDoubledataset(2)
-            point%left(k) = H51DIntegerdataset(2)
-            point%right(k) = H51DIntegerdataset(3)
-            point%flag_1(k) = H51DIntegerdataset(5)
-            point%flag_2(k) = H51DIntegerdataset(6)
-            point%nx(k) = H51DDoubledataset(3)
-            point%ny(k) = H51DDoubledataset(4)
-            point%qtdepth(k) = H51DIntegerdataset(4)
-            point%min_dist(k) = H51DDoubledataset(5)
-            point%nbhs(k) = H51DIntegerdataset(7)
+            point%original_id(k) = int(H52DDoubledataset(1,k))
+            point%x(k) = H52DDoubledataset(2,k)
+            point%y(k) = H52DDoubledataset(3,k)
+            point%left(k) = H52DDoubledataset(7,k)
+            point%right(k) = H52DDoubledataset(8,k)
+            point%flag_1(k) = H52DDoubledataset(10,k)
+            point%flag_2(k) = H52DDoubledataset(11,k)
+            point%nx(k) = H52DDoubledataset(4,k)
+            point%ny(k) = H52DDoubledataset(5,k)
+            point%qtdepth(k) = H52DDoubledataset(9,k)
+            point%min_dist(k) = H52DDoubledataset(6,k)
+            point%nbhs(k) = H52DDoubledataset(12,k)
             do r=1, point%nbhs(k)
-                point%conn(k,r) = nbh_array(r)
+                point%conn(k,r) = H52DDoubledataset(12+r,k)
             end do
 
             ! !Storing the count for the point types
@@ -376,20 +387,26 @@ contains
 
         end do    
 
-        CALL h5gclose_f(localgroup_id, ErrorFlag)
-        IF (ErrorFlag.lt.0) THEN
-            ErrorMessage=" *** Error closing local group"
-            return
+        DEALLOCATE(H52DDoubledataset,stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error deallocating H52DDoubledatasets"
+           return
+        ENDIF    
+
+        DEALLOCATE(main_dims, stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error deallocating dims"
+           return
         ENDIF
+
+        CALL h5dclose_f(d_id, ErrorFlag)
 
         allocate(wall_points_index(wall_points))
         allocate(interior_points_index(interior_points))
         allocate(outer_points_index(outer_points))
         allocate(shape_points_index(shape_points))
-
-        deallocate(nbh_array)
-        deallocate(H51DIntegerdataset)
-        deallocate(H51DDoubledataset)
 
 
         wall_temp = 0
@@ -397,6 +414,7 @@ contains
         outer_temp = 0
         shape_temp = 0
         !Storing indices of the point definitions
+
         do k = 1,local_points
             if(point%flag_1(k) == 0) then
                 wall_temp = wall_temp+1
@@ -415,52 +433,87 @@ contains
             end if
         end do  
 
+        ghost_dataset = trim(main_group)//'/ghost'
+
+        CALL h5dopen_f(group_id , ghost_dataset , d_id, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error opening dataset "
+            return
+        ENDIF
+
+        ! Find space of 2D array
+
+        CALL h5dget_space_f(d_id, dspace, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error determining dataspace"
+            return
+        ENDIF
+     
+        CALL h5sget_simple_extent_ndims_f(dspace, ndims, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+           ErrorMessage=" *** Error determining dataspace dimensionality"
+           return
+        ENDIF
+
+        ALLOCATE(main_dims(ndims),stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error allocating dims"
+           return
+        ENDIF
+
+        CALL h5sget_simple_extent_dims_f(dspace, datadims, maxdatadims, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+           ErrorMessage=" *** Error determining dataspace size"
+           return
+        ENDIF
+    
+        main_dims = datadims
+    
+        ! Read the dataset and transfer the result
+    
+        ALLOCATE(H52DDoubledataset(main_dims(1), main_dims(2)), stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error allocating H5dataset"
+           return
+        ENDIF
+
+        CALL h5dread_f(d_id, H5T_NATIVE_DOUBLE, H52DDoubledataset, dims, ErrorFlag)
+        IF (ErrorFlag.lt.0) THEN
+            ErrorMessage=" *** Error reading data"
+            return
+        ENDIF
+
         if (proc > 1) then
             allocate(pghost(ghost_points))
-            ALLOCATE(H51DDoubledataset(3))
-
-            ghost_group = trim(main_group)//'/ghost'
-            CALL h5gopen_f(group_id, ghost_group, ghostgroup_id,ErrorFlag)
-            IF (ErrorFlag.lt.0) THEN
-                ErrorMessage=" *** Error opening ghost group "
-                return
-            ENDIF
 
             do k = 1, ghost_points
-                point_string = '/'//trim(itos_unpad(k))
-                dataset_string = trim(ghost_group)//point_string
     
-                CALL h5dopen_f(ghostgroup_id , dataset_string , d_id, ErrorFlag)
-                IF (ErrorFlag.lt.0) THEN
-                    ErrorMessage=" *** Error opening dataset "
-                    return
-                ENDIF
-                dims=1
-                CALL h5dread_f(d_id, H5T_NATIVE_INTEGER, H5dataset, dims, ErrorFlag)
-                pghost(k) = H5dataset
-                CALL h5aopen_name_f(d_id, val1_s, a_id, ErrorFlag)
-                IF (ErrorFlag.lt.0) THEN
-                    ErrorMessage=" *** Error opening attribute "
-                    return
-                ENDIF
-                dims=3
-                CALL h5aread_f(a_id, H5T_NATIVE_DOUBLE, H51DDoubledataset, dims, ErrorFlag)
-                CALL h5aclose_f(a_id,ErrorFlag)
+                pghost(k) = int(H52DDoubledataset(1,k))
 
-                point%x(local_points + k) = H51DDoubledataset(1)
-                point%y(local_points + k) = H51DDoubledataset(2)
-                point%min_dist(local_points + k) = H51DDoubledataset(3)
-
-                CALL h5dclose_f(d_id,ErrorFlag)
+                point%x(local_points + k) = H52DDoubledataset(2,k)
+                point%y(local_points + k) = H52DDoubledataset(3,k)
+                point%min_dist(local_points + k) = H52DDoubledataset(4,k)
             end do
 
-            deallocate(H51DDoubledataset)
-            CALL h5gclose_f(ghostgroup_id, ErrorFlag)
-            IF (ErrorFlag.lt.0) THEN
-                ErrorMessage=" *** Error closing ghost group"
-                return
-            ENDIF
         end if
+
+        DEALLOCATE(H52DDoubledataset,stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error deallocating H52DDoubledatasets"
+           return
+        ENDIF    
+
+        DEALLOCATE(main_dims, stat=AllocStat)
+        IF ( AllocStat.ne.0 ) THEN
+           ErrorFlag=-1
+           ErrorMessage=" *** Error deallocating dims"
+           return
+        ENDIF
+
+        CALL h5dclose_f(d_id, ErrorFlag)
 
         CALL h5gclose_f(group_id,ErrorFlag)
         IF (ErrorFlag.lt.0) THEN
@@ -490,6 +543,7 @@ contains
             return
         ENDIF
     end subroutine 
+
 
 
         ! subroutine read_phi_data()

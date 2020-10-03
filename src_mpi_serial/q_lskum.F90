@@ -20,9 +20,10 @@ contains
         integer :: i
 
         if(rank==0)OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-        ! if(rank == 30) then
-        !     point%x(1) = point%x(1) - 1E-6
+        ! if(point%original_id(1) == 1) then
+        !     point%x(1) = point%x(1) + 1E-6
         ! end if
+        ! Reminder to have x and /or y communicated if modified for ghost points
         call compute_normals()
         call generate_connectivity()
 

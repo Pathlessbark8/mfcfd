@@ -288,10 +288,10 @@ CONTAINS
 !
 
     CALL COMPUTE_NORMALS_B()
-    ! CALL UPDATE_BEGIN_XB_GHOST()
-    ! CALL UPDATE_END_XB_GHOST()
-    ! CALL UPDATE_BEGIN_YB_GHOST()
-    ! CALL UPDATE_END_YB_GHOST()
+    CALL UPDATE_BEGIN_XB_GHOST()
+    CALL UPDATE_END_XB_GHOST()
+    CALL UPDATE_BEGIN_YB_GHOST()
+    CALL UPDATE_END_YB_GHOST()
 
     CALL PRINT_SENSITIVITY_OUTPUT()                                                                                                                         
 !                                                                                                                                                  
