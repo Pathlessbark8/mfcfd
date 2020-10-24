@@ -121,8 +121,6 @@ contains
 
                 endif
 
-                ! point%phi1(1,1) = point%phi1(1,1) + 1e-7
-
                 open(unit=110, file="phi_vector_run.dat", action="write", status="replace")
                 do i=1, max_points
                         write(110,'(8e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i), point%phi2(1,i), point%phi2(2,i), point%phi2(3,i), point%phi2(4,i)
