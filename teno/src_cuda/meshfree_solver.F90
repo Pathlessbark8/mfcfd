@@ -75,7 +75,7 @@ program meshfree_solver
         call dealloc_points()
         call deallocate_device_soln()
 
-        
+
         call cpu_time(finish) 
         write(*,*) '%%%%%%%%%%%-Simulation finished-%%%%%%%%%%%'
         write(*,*) 'Run time:  ',runtime,'seconds'

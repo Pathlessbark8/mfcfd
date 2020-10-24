@@ -1,9 +1,10 @@
 module stagnation_values_mod
+#include <petsc/finclude/petscsys.h>
 
     use data_structure_mod
+    use petsc_data_structure_mod
 
     contains
-
 
         subroutine stagnation_pressure()
 
@@ -12,8 +13,6 @@ module stagnation_values_mod
             integer :: i, indexMin, indexMax
             real*8 :: p0_inf, gammaPower, pMin, pMax, p0, mach_t, angle
             real*8 :: prim(4)
-
-            OPEN(UNIT=301,FILE="stagnation",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
 
             gammaPower = gamma/(gamma-1)
             p0_inf = pr_inf*((1 + ((gamma - 1)/2)*mach*mach) ** gammaPower)
@@ -37,10 +36,9 @@ module stagnation_values_mod
                 endif
             enddo
 
-            write(*,*) "Stagnation values are ", pMin, " ", pMax, " ", pMin/p0_inf, " ", pMax/p0_inf," ", indexMin, " ", indexMax
-            write(301,*) "Stagnation values are ", pMin, " ", pMax, " ", pMin/p0_inf, " ", pMax/p0_inf," ", indexMin, " ", indexMax
-            CLOSE(UNIT=301)
-
+            if(rank == 0) then
+                write(*,*) "Stagnation values are ", pMin, " ", pMax, " ", pMin/p0_inf, " ", pMax/p0_inf," ", indexMin, " ", indexMax
+            endif
         end subroutine
 
         subroutine objective_function_J()
@@ -50,14 +48,19 @@ module stagnation_values_mod
             integer :: i
             real*8 :: p0_inf, gammaPower, p0, p0_sum, constant, angle, mach_t
             real*8 :: prim(4)
+            real*8 :: total_p0
+            PetscErrorCode :: ierr
 
             gammaPower = gamma/(gamma-1)
             p0_inf = pr_inf*((1 + ((gamma - 1)/2)*mach*mach) ** gammaPower)
 
-            constant = 1/(p0_inf**2 * max_points)
-            p0_sum = 0
+            constant = 1/(p0_inf**2 * plen)
+            p0_sum = 0.0d0
 
-            do i=2, max_points
+            do i=1, local_points
+                if(point%original_id(i) == 1) then
+                    cycle
+                end if
                 prim = point%prim(:,i)
                 angle = sqrt(gamma * prim(4)/ prim(1))
                 mach_t = sqrt(prim(2)**2 + prim(3)**2)/angle
@@ -65,10 +68,14 @@ module stagnation_values_mod
                 p0_sum = p0_sum + (p0_inf - p0) ** 2
             enddo
 
-            ! cost_func = p0_sum * constant
+            call MPI_Reduce(p0_sum, total_p0, 1, MPI_DOUBLE, MPI_SUM, &
+                   0, PETSC_COMM_WORLD, ierr)
 
-            ! write(*,*) "Objective Function (J)", cost_func
+            cost_func = total_p0 * constant
 
+            if(rank == 0) then
+                write(*,*) "J: ", cost_func
+            endif
         end subroutine
 
 

@@ -9,7 +9,7 @@ module device_data_structure_mod
         implicit none
 
         integer, constant :: mp_d, fo_flag, gamma_d, mach_d
-        real*8, constant :: cfl_d, power_d, vl_d, eu_d, pr_inf_d
+        real*8, constant :: cfl_d, power_d, vl_d, eu_d
         real*8, constant :: qinf1_d, qinf2_d, qinf3_d, qinf4_d
 
         type :: points_d
@@ -18,13 +18,12 @@ module device_data_structure_mod
                 integer, device, dimension(:), allocatable :: flag 
                 integer, device, dimension(:), allocatable :: nbhs
                 integer, device, dimension(:,:), allocatable :: conn
-
+                real*8, device, dimension(:,:), allocatable :: phi1
                 real*8, device, dimension(:,:), allocatable :: nx
                 
                 real*8, device, dimension(:), allocatable :: min_dist
 
                 real*8, device, dimension(:,:), allocatable :: prim
-                real*8, device, dimension(:,:), allocatable :: phi1, phi2
                 real*8, device, dimension(:,:), allocatable :: prim_old
                 real*8, device, dimension(:,:), allocatable :: flux_res
 
@@ -49,13 +48,12 @@ module device_data_structure_mod
                 implicit none
 
                 allocate(point_d%prim(4,max_points))
-                allocate(point_d%phi1(4,max_points))
-                allocate(point_d%phi2(4,max_points))
                 allocate(point_d%prim_old(4,max_points))
 
                 allocate(point_d%flux_res(4,max_points))
 
                 allocate(point_d%q(4,max_points))
+                allocate(point_d%phi1(4,max_points))
                 allocate(point_d%delta(max_points))
 
                 allocate(point_d%dq(2,4,max_points))
@@ -68,25 +66,25 @@ module device_data_structure_mod
                 allocate(point_d%ypos_nbhs(max_points))
                 allocate(point_d%yneg_nbhs(max_points))
 
-                allocate(point_d%xpos_conn(max_points,25))
-                allocate(point_d%xneg_conn(max_points,25))
+                allocate(point_d%xpos_conn(max_points,15))
+                allocate(point_d%xneg_conn(max_points,15))
 
-                allocate(point_d%ypos_conn(max_points,25))
-                allocate(point_d%yneg_conn(max_points,25))
+                allocate(point_d%ypos_conn(max_points,15))
+                allocate(point_d%yneg_conn(max_points,15))
 
         end subroutine
 
         subroutine deallocate_device_soln()
+
                 implicit none
 
                 deallocate(point_d%prim)
-                deallocate(point_d%phi1)
-                deallocate(point_d%phi2)
                 deallocate(point_d%prim_old)
 
                 deallocate(point_d%flux_res)
 
                 deallocate(point_d%q)
+                deallocate(point_d%phi1)
                 deallocate(point_d%delta)
 
                 deallocate(point_d%dq)
@@ -117,15 +115,12 @@ module device_data_structure_mod
                 eu_d = euler
                 gamma_d = gamma
                 mach_d = mach
-                pr_inf_d = pr_inf
                 qinf1_d = q_inf(1)
                 qinf2_d = q_inf(2)
                 qinf3_d = q_inf(3)
                 qinf4_d = q_inf(4)
                 ! transfer from host to device(solution)
                 point_d%prim = point%prim
-                point_d%phi1 = point%phi1
-                point_d%phi2 = point%phi2
                 ! grid variables transfer
                 point_d%x(1,:) = point%x
                 point_d%x(2,:) = point%y
@@ -148,9 +143,10 @@ module device_data_structure_mod
 
         subroutine device_to_host()
                 implicit none
+
                 point%prim    = point_d%prim
                 point%phi1    = point_d%phi1
-                point%phi2    = point_d%phi2
+
         end subroutine
 
 end module device_data_structure_mod

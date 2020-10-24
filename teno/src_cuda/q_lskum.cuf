@@ -8,7 +8,6 @@ module q_lskum_mod
         use point_normals_mod    
         use generate_connectivity_mod
         use post_processing_mod
-        use stagnation_values_mod
         use cudafor
         use compute_entropy_mod
         use ieee_arithmetic
@@ -33,7 +32,7 @@ contains
 
                 OPEN(UNIT=301,FILE="residue",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 OPEN(UNIT=302,FILE="objective",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                OPEN(UNIT=303,FILE="entropy",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
+                OPEN(UNIT=303,FILE="phi_vector",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 OPEN(UNIT=404,FILE="obj_enstrophy_old",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 OPEN(UNIT=405,FILE="obj_divergence_sqr",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
                 OPEN(UNIT=406,FILE="obj_enstrophy_new",FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
@@ -100,14 +99,13 @@ contains
                                         & point_d%xpos_nbhs, point_d%xneg_nbhs, point_d%ypos_nbhs, &
                                         & point_d%yneg_nbhs, point_d%xpos_conn, point_d%xneg_conn,&
                                         & point_d%ypos_conn, point_d%yneg_conn, point_d%prim,  &
-                                        & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, &
-                                        & point_d%phi1, point_d%phi2)
+                                        & point_d%q, point_d%qm, point_d%dq, point_d%ddq, point_d%flux_res, point_d%phi1)
 
                                 call state_update<<<grid, tBlock>>>(point_d%x, point_d%nx, point_d%flag, &
                                         & point_d%nbhs, point_d%conn, point_d%prim, point_d%prim_old, &
                                         & point_d%delta, point_d%flux_res, sum_res_sqr_d, rk)
 
-                                
+
                         end do
 
                         istat = cudaGetLastError() 
@@ -127,7 +125,7 @@ contains
                         end do
 
                         sum_res_sqr = temp
-                        
+
                         residue = dsqrt(sum_res_sqr)/max_points
 
                         if (it .le. 2 .and. solution_restart == 0) then
@@ -140,7 +138,14 @@ contains
                         write(*,*) "iterations:", it, "residue:", residue
                         write(301,*) it, residue
 
-                        
+                        call device_to_host()
+
+                        ! call compute_enstrophy_old()
+                        ! write(404,*) it, cost_func
+                        ! call compute_sum_div_enstrophy()
+                        ! write(405,*) it, cost_func
+                        ! call compute_enstrophy()
+                        ! write(406,*) it, cost_func
 
                         if(ieee_is_nan(residue))exit
         
@@ -149,30 +154,19 @@ contains
                                 call device_to_host()
                                 call print_primal_output()
                         end if
-
-                        call device_to_host()
-                        ! call compute_sum_div_enstrophy()
-                        ! write(302,*) it, cost_func
-                        ! call compute_enstrophy_old()
-                        ! write(304,*) it, cost_func
-                        call compute_enstrophy()
-                        write(302,*) it, cost_func
-
                 enddo
 
                 it = it - 1
                 
-                ! call device_to_host()
-                ! call stagnation_pressure()
-                ! call compute_sum_div_enstrophy()
-                ! call compute_enstrophy()
-		! call compute_entropy()
+                call device_to_host()
+
                 write(*,*)
                 write(*,*)'%%%%%%%%%-Device to host performed-%%%%%%%%'
                 write(*,*)
 
-                ! Writing Objective Function
-                ! write(302,*) it, cost_func
+                do i=1, max_points
+                        write(303,'(4e30.20)') point%phi1(1,i), point%phi1(2,i), point%phi1(3,i), point%phi1(4,i)
+                end do
 
                 istat = cudaDeviceSynchronize()
                 if (istat .ne. 0) then

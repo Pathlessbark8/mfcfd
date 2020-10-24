@@ -19,3 +19,7 @@ examples/cuda/src/*
 examples/cuda_adjoint/runs/*
 examples/cuda_adjoint/src/*
 objective
+examples/cuda/phi_vector.dat
+examples/phi_vector
+examples/cuda/restart.dat
+examples/*

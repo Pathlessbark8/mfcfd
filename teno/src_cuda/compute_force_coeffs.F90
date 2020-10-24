@@ -22,9 +22,7 @@ module compute_force_coeffs_mod
                         cp_file = 'cp-file'
 
                         OPEN(UNIT=201,FILE=trim(cp_file),FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                        OPEN(UNIT=202,FILE='cl-cd-cm',FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                        ! OPEN(UNIT=203,FILE='objective',FORM="FORMATTED",STATUS="REPLACE",ACTION="WRITE")
-                        
+
                         temp = 0.5d0*rho_inf*Mach*Mach
 
                         H = 0.d0
@@ -73,14 +71,9 @@ module compute_force_coeffs_mod
                         Cl = V*dcos(theta) - H*dsin(theta)
                         Cd = H*dcos(theta) + V*dsin(theta)
                         Cm = pitch_mom
-
-                        write(*,*) "Cl: ", Cl, " Cd: ", Cd, " Cm:", Cm
-                        write(202, *) "Cl: ", Cl, " Cd: ", Cd, " Cm:", Cm
-                        ! write(203, *) "1000", Cl
+                        write(*,*) "Cl: ", Cl, " Cd: ", Cd, " Cm: ", Cm
 
                         CLOSE(UNIT=201)
-                        CLOSE(UNIT=202)
-                        ! CLOSE(UNIT=203)
 
                 end subroutine 
 
