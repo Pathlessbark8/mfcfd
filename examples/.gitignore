@@ -7,3 +7,6 @@ point/*
 src/*
 solution/*
 cp/*
+examples/
+vor_area
+phi_vector*

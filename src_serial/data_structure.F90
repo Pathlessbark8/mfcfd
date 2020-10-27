@@ -26,6 +26,7 @@ module data_structure_mod
 
                 real*8, dimension(:,:), allocatable :: prim
                 real*8, dimension(:,:), allocatable :: prim_old
+                real*8, dimension(:,:), allocatable :: phi1, phi2
 
                 real*8, dimension(:,:), allocatable :: U
 
@@ -44,6 +45,11 @@ module data_structure_mod
                 integer, dimension(:,:), allocatable :: ypos_conn, yneg_conn
 
                 real*8, dimension(:), allocatable :: entropy
+                real*8, dimension(:), allocatable :: enstrophy
+                real*8, dimension(:), allocatable :: vorticity
+                real*8, dimension(:), allocatable :: vorticity_sqr
+                real*8, dimension(:), allocatable :: vor_area
+                real*8, dimension(:), allocatable :: divergence_sqr
 
         end type points
 
@@ -97,6 +103,12 @@ module data_structure_mod
         character(len=20)  :: restart_solution = 'no'
         integer :: solution_restart
 
+        integer :: phi_load
+
+        real*8 :: phi_epsilon = 1
+
+        character(len=20)  :: preload_phi = 'no'
+
 !       Inner Iterations Loop count
         integer :: inner_iterations = 0
 
@@ -126,7 +138,7 @@ module data_structure_mod
         namelist / input_parameters /   &
                       shapes, &
                              cfl, &
-                       max_iters, &
+                max_iters, &
                           blockx, &
                           blocky, &
                           blockz, &
@@ -134,6 +146,8 @@ module data_structure_mod
                           power, &
                           restart_solution, &
                           solution_accuracy, &
+                          preload_phi, &
+                          phi_epsilon, &
                           format_file, &
                           nsave, &
                           interior_points_normal_flag, &
@@ -174,6 +188,13 @@ module data_structure_mod
                 end if
 
 
+                if(preload_phi == 'no') then
+                        phi_load = 0
+                elseif(preload_phi == 'base') then
+                        phi_load = 1
+                elseif(preload_phi == 'diff') then
+                        phi_load = 2
+                end if
 
                 if(tscheme == 'first') then
                         rks = 1
@@ -204,11 +225,11 @@ module data_structure_mod
                 allocate(point%ypos_nbhs(max_points))
                 allocate(point%yneg_nbhs(max_points))
 
-                allocate(point%xpos_conn(max_points,15))
-                allocate(point%xneg_conn(max_points,15))
+                allocate(point%xpos_conn(max_points,25))
+                allocate(point%xneg_conn(max_points,25))
 
-                allocate(point%ypos_conn(max_points,15))
-                allocate(point%yneg_conn(max_points,15))
+                allocate(point%ypos_conn(max_points,25))
+                allocate(point%yneg_conn(max_points,25))
 
                 
                 ! allocate(point%U_old(4,max_points))
@@ -216,6 +237,8 @@ module data_structure_mod
 
                 allocate(point%prim(4,max_points))
                 allocate(point%prim_old(4,max_points))
+                allocate(point%phi1(4,max_points))
+                allocate(point%phi2(4,max_points))
 
                 allocate(point%flux_res(4,max_points))
 
@@ -230,6 +253,12 @@ module data_structure_mod
                 allocate(Cm(shapes))
 
                 allocate(point%entropy(max_points))
+                allocate(point%enstrophy(max_points))
+                allocate(point%vorticity(max_points))
+                allocate(point%vorticity_sqr(max_points))	                
+                allocate(point%vor_area(max_points))
+                allocate(point%divergence_sqr(max_points))
+
         end subroutine
 
         subroutine deallocate_soln()
@@ -256,6 +285,10 @@ module data_structure_mod
                 deallocate(Cm)
 
                 deallocate(point%entropy)
+                deallocate(point%vorticity)
+                deallocate(point%vorticity_sqr)	                
+                deallocate(point%vor_area)
+                deallocate(point%divergence_sqr)
         end subroutine
 
 end module data_structure_mod
