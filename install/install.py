@@ -49,7 +49,7 @@ def remove_pre_existing_executable():
             raise Exception("Unable to remove pre existing executables")
             sys.exit(1)
 
-def build(mfcfd_type=None, extra_flags=[]):
+def build(mfcfd_type=None, extra_flags=[], dest_path=None):
 
     if mfcfd_type == "serial":
         mfcfd_var = "SERIAL"
@@ -72,10 +72,17 @@ def build(mfcfd_type=None, extra_flags=[]):
     except:
         print("MAKE failed")
         sys.exit(1)
-    shutil.move(os.path.join(mfcfd_build_dir, "execname"), mfcfd_working_dir)
+    if dest_path == None:
+        shutil.move(os.path.join(mfcfd_build_dir, "execname"), mfcfd_working_dir)
+    else:
+        if os.path.isdir(dest_path):
+            shutil.move(os.path.join(mfcfd_build_dir, "execname"), dest_path)
+        else:
+            print("Invalid Destination Path")
+            sys.exit(1)
     print("MFCFD has been built and a 'execname' file has been generated in the current working directory.")
 
-def install(mfcfd_type=None, extra_flags=[]):
+def install(mfcfd_type=None, extra_flags=[], dest_path=None):
     print("Building {} Meshfree Solver.".format(mfcfd_type))
     cleanup_build_directory()
     remove_pre_existing_executable()
@@ -111,6 +118,10 @@ def driver():
         "--extra", dest="extra_flags", action="append", required=False,
         default=[],
         help="Extra flags for make command.")
+    parser.add_argument(
+        "--destination", dest="dest_path", required=False,
+        default=None,
+        help="Destination Path for saving execname.")
     args = parser.parse_args()
 
     install(**vars(args))
