@@ -19,7 +19,7 @@ else()
 #------------------------------------------------------------------------------#
 # CUDA support
 #------------------------------------------------------------------------------#
-find_package(CUDA REQUIRED)
+ENABLE_LANGUAGE(CUDA)
 include_directories(${CUDA_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${CUDA_LIBRARIES})
 
@@ -74,7 +74,7 @@ foreach(MFCFD_CUDA_FILE ${MFCFD_CUDA_SOURCES})
 endforeach()
 configure_file(cuda.F90.in cuda.F90 COPYONLY)
 set(CUDA_SEPARABLE_COMPILATION ON)
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Mcuda=nordc,lineinfo")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Mcuda=nordc,lineinfo  -Minfo")
 add_executable(execname ${MFCFD_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/cuda.F90)
 target_link_libraries(execname ${CUDA_cusparse_LIBRARY} ${LIBS})
 
