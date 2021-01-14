@@ -98,7 +98,7 @@ def install(mfcfd_type=None, extra_flags=[], dest_path=None):
                 print("your CMake installation and try again.")
                 print("Attempted to execute: {}".format("cmake"))
                 sys.exit(1)
-            build(mfcfd_type, extra_flags)
+            build(mfcfd_type, extra_flags, dest_path)
         else:
             raise Exception("Invalid CMakeLists.txt found.")
             sys.exit(1)
