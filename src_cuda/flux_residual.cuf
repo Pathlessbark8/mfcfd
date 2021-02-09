@@ -20,7 +20,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -63,7 +63,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -106,7 +106,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -149,7 +149,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -191,7 +191,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -233,7 +233,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -275,7 +275,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -318,7 +318,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -362,7 +362,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -405,7 +405,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(256), share(512), qtilde(256)
+                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
