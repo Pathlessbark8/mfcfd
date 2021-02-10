@@ -63,7 +63,7 @@ contains
                 ! local variables
                 integer :: i, r, k
                 ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
+                real*8, shared :: share(1024), qtilde(512)
                 integer :: threadid, blockd
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
@@ -73,20 +73,20 @@ contains
                 threadid = threadIdx%x
                 blockd = blockDim%x
 
-                flux_shared = 0.0d0
+                ! flux_shared = 0.0d0
                 share = 0.0d0
                 
                 if (flag_d(i) == 0) then
 
-                        call wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+                        call wall_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d, i)
                         
                 end if
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
+                ! flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
+                ! flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
+                ! flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
+                ! flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
         
         end subroutine
 
@@ -540,8 +540,8 @@ contains
 
         end subroutine
 
-        attributes(device) subroutine wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine wall_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d, i)
 
                 ! device variables
                 integer :: i
@@ -643,10 +643,10 @@ contains
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
                 one_by_det = 1.d0/det
 
-                flux_shared(threadId) = flux_shared(threadId) + 2.0d0 * (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + 2.0d0 * (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + 2.0d0 * (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + 2.0d0 * (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+                flux_res_d(1,i) = flux_res_d(1,i) + 2.0d0 * (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
+                flux_res_d(2,i) = flux_res_d(2,i) + 2.0d0 * (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
+                flux_res_d(3,i) = flux_res_d(3,i) + 2.0d0 * (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
+                flux_res_d(4,i) = flux_res_d(4,i) + 2.0d0 * (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
 
         end subroutine
 
