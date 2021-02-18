@@ -5,543 +5,481 @@ module flux_residual_mod
 contains
 
         attributes(global) subroutine cal_flux_residual1(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
-                implicit none
+            implicit none
 
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
 
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+            if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                flux_shared = 0.0d0
-                share = 0.0d0
-                
-                if (flag_d(i) == 0) then
 
-                        call wall_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
-                end if
+            share = 0.0d0
+            
+            if (flag_d(i) == 0) then
 
-                flux_res_d(1,i) = flux_shared(threadId) 
-                flux_res_d(2,i) = flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_shared(threadId + blockD * 3) 
-        
+                    call wall_dGx_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                    
+            end if
+    
         end subroutine
 
         attributes(global) subroutine cal_flux_residual2(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+                & xneg_nbhs_d, xneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
                 implicit none
 
                 ! device variables
                 real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
                 integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+                integer :: xneg_nbhs_d(:)
+                integer*1:: xneg_conn_d(:,:)
                 real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
+                real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
-                integer :: i, r, k
+                integer :: i
                 ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
                 integer :: threadid, blockd
+                real*8, shared :: share(1024), qtilde(512)
 
                 i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
                 if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
-
-                flux_shared = 0.0d0
                 share = 0.0d0
                 
                 if (flag_d(i) == 0) then
-
-                        call wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
+                        call wall_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d,  phi1_d, i)
                 end if
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
         end subroutine
 
         attributes(global) subroutine cal_flux_residual3(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
-                implicit none
+            implicit none
 
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
 
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+            if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                flux_shared = 0.0d0
-                share = 0.0d0
-                
-                if (flag_d(i) == 0) then
-                        
-                        call wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
-                end if
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
+            share = 0.0d0
+            
+            if (flag_d(i) == 0) then
+                    
+                    call wall_dGy_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                    
+            end if
+    
         end subroutine
 
         attributes(global) subroutine cal_flux_residual4(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
-                implicit none
+            implicit none
 
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
 
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+            if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                flux_shared = 0.0d0
-                share = 0.0d0
 
-                if (flag_d(i) == 2) then
+            share = 0.0d0
 
-                        call outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                end if
+            if (flag_d(i) == 2) then
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
+                    call outer_dGx_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+            end if
+    
         end subroutine
-
+    
         attributes(global) subroutine cal_flux_residual5(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
-                implicit none
+            implicit none
 
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
 
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+            if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                flux_shared = 0.0d0
-                share = 0.0d0
-                
-                if (flag_d(i) == 2) then
-                        call outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)            
-                        
-                end if
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
-        end subroutine
-
-        attributes(global) subroutine cal_flux_residual6(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
-
-                implicit none
-
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
-
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-
-                if(i > mp_d) return
-
-                threadid = threadIdx%x
-                blockd = blockDim%x
-
-                flux_shared = 0.0d0
-                share = 0.0d0
-
-                if (flag_d(i) == 2) then
-                        call outer_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
-                end if
-
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
-        end subroutine
-
-        attributes(global) subroutine cal_flux_residual7(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
-
-                implicit none
-
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
-
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-
-                if(i > mp_d) return
-
-                threadid = threadIdx%x
-                blockd = blockDim%x
-
-                flux_shared = 0.0d0
-                share = 0.0d0
-
-                if (flag_d(i) == 1) then
-
-                        call interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
-                end if
-
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
-        end subroutine
-
-        attributes(global) subroutine cal_flux_residual8(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
-
-                implicit none
-
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
-
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-
-                if(i > mp_d) return
-
-                threadid = threadIdx%x
-                blockd = blockDim%x
-
-                flux_shared = 0.0d0
-                share = 0.0d0
-
-                if (flag_d(i) == 1) then
-
-                        call interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+            share = 0.0d0
             
-                        
-                end if
-
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
+            if (flag_d(i) == 2) then
+                    call outer_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)            
+                    
+            end if
+    
         end subroutine
+    
+        attributes(global) subroutine cal_flux_residual6(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
+            implicit none
+
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
+
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+            if(i > mp_d) return
+
+            threadid = threadIdx%x
+            blockd = blockDim%x
+
+
+            share = 0.0d0
+
+            if (flag_d(i) == 2) then
+                    call outer_dGy_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                    
+            end if
+    
+        end subroutine
+    
+        attributes(global) subroutine cal_flux_residual7(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+
+            implicit none
+
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
+
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+            if(i > mp_d) return
+
+            threadid = threadIdx%x
+            blockd = blockDim%x
+
+
+            share = 0.0d0
+
+            if (flag_d(i) == 1) then
+
+                    call interior_dGx_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                    
+            end if
+    
+        end subroutine
+    
+        attributes(global) subroutine cal_flux_residual8(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
+
+            implicit none
+
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
+
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+
+            if(i > mp_d) return
+
+            threadid = threadIdx%x
+            blockd = blockDim%x
+
+
+            share = 0.0d0
+
+            if (flag_d(i) == 1) then
+
+                    call interior_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+        
+                    
+            end if
+    
+        end subroutine
+    
         attributes(global) subroutine cal_flux_residual9(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
-                implicit none
+            implicit none
 
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
 
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+            if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                flux_shared = 0.0d0
-                share = 0.0d0
 
-                if (flag_d(i) == 1) then
+            share = 0.0d0
 
-                        call interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+            if (flag_d(i) == 1) then
 
-                end if
+                    call interior_dGy_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
+            end if
+    
         end subroutine
-
+    
         attributes(global) subroutine cal_flux_residual10(x_d, nx_d, flag_d, dist_d, nbhs_d, conn_d, &
-                & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
-                & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, ddq_d, flux_res_d, phi1_d)
+            & xpos_nbhs_d, xneg_nbhs_d, ypos_nbhs_d, yneg_nbhs_d, xpos_conn_d, xneg_conn_d, &
+            & ypos_conn_d, yneg_conn_d, prim_d, q_d, qm_d, dq_d, flux_res_d, phi1_d)
 
-                implicit none
+            implicit none
 
-                ! device variables
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
-                integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
-                real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: i, r, k
-                ! shared
-                real*8, shared :: flux_shared(512), share(1024), qtilde(512)
-                integer :: threadid, blockd
+            ! device variables
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: flag_d(:), nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:), xneg_nbhs_d(:), ypos_nbhs_d(:), yneg_nbhs_d(:)
+            integer*1:: xpos_conn_d(:,:), xneg_conn_d(:,:), ypos_conn_d(:,:), yneg_conn_d(:,:)
+            real*8 :: prim_d(:,:), q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: i, r, k
+            ! shared
+            real*8, shared :: share(1024), qtilde(512)
+            integer :: threadid, blockd
 
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
 
-                if(i > mp_d) return
+            if(i > mp_d) return
 
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                flux_shared = 0.0d0
-                share = 0.0d0
 
-                if (flag_d(i) == 1) then
-                        call interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-                        
-                end if
+            share = 0.0d0
 
-                flux_res_d(1,i) = flux_res_d(1,i) + flux_shared(threadId) 
-                flux_res_d(2,i) = flux_res_d(2,i) + flux_shared(threadId + blockD * 1) 
-                flux_res_d(3,i) = flux_res_d(3,i) + flux_shared(threadId + blockD * 2) 
-                flux_res_d(4,i) = flux_res_d(4,i) + flux_shared(threadId + blockD * 3) 
-        
+            if (flag_d(i) == 1) then
+                    call interior_dGy_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+                    
+            end if
+
         end subroutine
         
-        attributes(device) subroutine wall_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine wall_dGx_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:)
-                integer*1 :: xpos_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
-                
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:)
+            integer*1 :: xpos_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
+            
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                tx = ny
-                ty = -nx
+            tx = ny
+            ty = -nx
 
-                do j = 1, xpos_nbhs_d(i)
+            do j = 1, xpos_nbhs_d(i)
 
-                        k = xpos_conn_d(i,j)
-                        k = conn_d(i, k)
+                    k = xpos_conn_d(i,j)
+                    k = conn_d(i, k)
 
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                        delx = x_k - x_i
-                        dely = y_k - y_i
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
 
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
 
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
 
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
 
-!                       Higher order accuracy using q-variables ..
-                        
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_quad_GxII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_quad_GxII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_quad_GxII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_quad_GxII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+            end do
 
-                end do
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
 
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + 2.0d0 * (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + 2.0d0 * (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + 2.0d0 * (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + 2.0d0 * (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            flux_res_d(:,i) = 2.0d0 * (sum_delx_delf(:)*sum_dely_sqr - sum_dely_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
 
-        attributes(device) subroutine wall_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine wall_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d,  phi1_d, i)
 
                 ! device variables
                 integer :: i
@@ -550,7 +488,7 @@ contains
                 integer :: xneg_nbhs_d(:)
                 integer*1 :: xneg_conn_d(:,:)
                 real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
+                real*8 :: flux_res_d(:,:), dq_d(:,:,:)
                 ! local variables
                 integer :: j, k, r
                 real*8 :: rho, u1, u2, pr
@@ -564,7 +502,7 @@ contains
                 real*8 :: temp, qtilde_i(4), qtilde_k(4)
                 real*8 :: dels_weights, deln_weights
 
-                real*8 :: flux_shared(:), share(:), qtilde(:)
+                real*8 :: share(:), qtilde(:)
                 integer :: threadid, blockd
                 integer :: a=0,b=1
                 
@@ -613,18 +551,16 @@ contains
                         sum_dely_sqr = sum_dely_sqr + deln*deln_weights
 
                         sum_delx_dely = sum_delx_dely + dels*deln_weights
-
-!                       Higher order accuracy using q-variables ..
-                        
+                        !Higher order accuracy using q-variables ..
                         share(threadid) = 0.0d0
                         share(threadid + blockd) = 0.0d0
                         share(threadid + blockd * 2) = 0.0d0
                         share(threadid + blockd * 3) = 0.0d0
 
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
                         call flux_quad_GxI(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
                         
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
                         call flux_quad_GxI(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
 
@@ -643,893 +579,857 @@ contains
                 det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
                 one_by_det = 1.d0/det
 
-                flux_shared(threadId) = flux_shared(threadId) + 2.0d0 * (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + 2.0d0 * (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + 2.0d0 * (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + 2.0d0 * (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+                flux_res_d(:,i) = flux_res_d(:,i) + 2.0d0 * (sum_delx_delf(:)*sum_dely_sqr - sum_dely_delf(:)*sum_delx_dely)*one_by_det
+        end subroutine
+
+        attributes(device) subroutine wall_dGy_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: yneg_nbhs_d(:)
+            integer*1 :: yneg_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
+
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
+            
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
+
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
+
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
+
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
+
+            tx = ny
+            ty = -nx
+
+            do j = 1, yneg_nbhs_d(i)
+
+                    k = yneg_conn_d(i,j)
+                    k = conn_d(i, k)
+
+
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
+
+                    delx = x_k - x_i
+                    dely = y_k - y_i
+
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
+
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
+
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
+
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
+
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+
+
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+
+            end do
+
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
+
+            flux_res_d(:,i) = flux_res_d(:,i) + 2.0d0 * (sum_dely_delf(:)*sum_delx_sqr - sum_delx_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
 
-        attributes(device) subroutine wall_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine outer_dGx_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: yneg_nbhs_d(:)
-                integer*1 :: yneg_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:)
+            integer*1 :: xpos_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
+            
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
-                
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                tx = ny
-                ty = -nx
+            tx = ny
+            ty = -nx
 
-                do j = 1, yneg_nbhs_d(i)
+            do j = 1, xpos_nbhs_d(i)
 
-                        k = yneg_conn_d(i,j)
-                        k = conn_d(i, k)
-
-
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
-
-                        delx = x_k - x_i
-                        dely = y_k - y_i
-
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
-
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
-
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
-
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
-
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
-
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
-
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    k = xpos_conn_d(i,j)
+                    k = conn_d(i, k)
 
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                end do
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                flux_shared(threadId) = flux_shared(threadId) + 2.0d0 * (sum_dely_delf(1)*sum_delx_sqr - sum_delx_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + 2.0d0 * (sum_dely_delf(2)*sum_delx_sqr - sum_delx_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + 2.0d0 * (sum_dely_delf(3)*sum_delx_sqr - sum_delx_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + 2.0d0 * (sum_dely_delf(4)*sum_delx_sqr - sum_delx_delf(4)*sum_delx_dely)*one_by_det
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
+
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
+
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
+
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_quad_GXIII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_quad_GXIII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+
+
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+
+            end do
+
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
+
+            flux_res_d(:,i) = (sum_delx_delf(:)*sum_dely_sqr - sum_dely_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
 
-        attributes(device) subroutine outer_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine outer_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:)
-                integer*1 :: xpos_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
-                
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: xneg_nbhs_d(:)
+            integer*1 :: xneg_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
 
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
+            
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                tx = ny
-                ty = -nx
+            tx = ny
+            ty = -nx
 
-                do j = 1, xpos_nbhs_d(i)
+            do j = 1, xneg_nbhs_d(i)
 
-                        k = xpos_conn_d(i,j)
-                        k = conn_d(i, k)
-
-
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
-
-                        delx = x_k - x_i
-                        dely = y_k - y_i
-
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
-
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
-
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
-
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
-
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
-
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
-
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_quad_GXIII(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_quad_GXIII(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    k = xneg_conn_d(i,j)
+                    k = conn_d(i, k)
 
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                end do
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                flux_shared(threadId) = flux_shared(threadId) + (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
+
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
+
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
+
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_quad_GXIV(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_quad_GXIV(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+
+            end do
+
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
+
+            flux_res_d(:,i) = flux_res_d(:,i) + (sum_delx_delf(:)*sum_dely_sqr - sum_dely_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
 
-        attributes(device) subroutine outer_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine outer_dGy_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: xneg_nbhs_d(:)
-                integer*1 :: xneg_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: ypos_nbhs_d(:)
+            integer*1 :: ypos_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
 
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
-                
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
+            
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                tx = ny
-                ty = -nx
+            tx = ny
+            ty = -nx
 
-                do j = 1, xneg_nbhs_d(i)
+            do j = 1, ypos_nbhs_d(i)
 
-                        k = xneg_conn_d(i,j)
-                        k = conn_d(i, k)
+                    k = ypos_conn_d(i,j)
+                    k = conn_d(i, k)
 
 
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                        delx = x_k - x_i
-                        dely = y_k - y_i
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
 
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
 
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
 
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
 
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_quad_GXIV(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_quad_GXIV(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+            end do
 
-                end do
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
 
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            flux_res_d(:,i) = flux_res_d(:,i) + (sum_dely_delf(:)*sum_delx_sqr - sum_delx_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
-        
-        attributes(device) subroutine outer_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: ypos_nbhs_d(:)
-                integer*1 :: ypos_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
+        attributes(device) subroutine interior_dGx_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
+                            & xpos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
-                
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: xpos_nbhs_d(:)
+            integer*1 :: xpos_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
+            
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                tx = ny
-                ty = -nx
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                do j = 1, ypos_nbhs_d(i)
+            tx = ny
+            ty = -nx
 
-                        k = ypos_conn_d(i,j)
-                        k = conn_d(i, k)
+            do j = 1, xpos_nbhs_d(i)
 
-
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
-
-                        delx = x_k - x_i
-                        dely = y_k - y_i
-
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
-
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
-
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
-
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
-
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
-
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
-
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
-
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
-
-                end do
-
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + (sum_dely_delf(1)*sum_delx_sqr - sum_delx_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_dely_delf(2)*sum_delx_sqr - sum_delx_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_dely_delf(3)*sum_delx_sqr - sum_delx_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_dely_delf(4)*sum_delx_sqr - sum_delx_delf(4)*sum_delx_dely)*one_by_det
-
-        end subroutine
-        
-        attributes(device) subroutine interior_dGx_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xpos_nbhs_d, &
-                                & xpos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: xpos_nbhs_d(:)
-                integer*1 :: xpos_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
-
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
-                
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
-
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
-
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
-
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
-
-                tx = ny
-                ty = -nx
-
-                do j = 1, xpos_nbhs_d(i)
-
-                        k = xpos_conn_d(i,j)
-                        k = conn_d(i, k)
+                    k = xpos_conn_d(i,j)
+                    k = conn_d(i, k)
 
 
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                        delx = x_k - x_i
-                        dely = y_k - y_i
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
 
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
 
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
 
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
 
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gxp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gxp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gxp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gxp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+            end do
 
-                end do
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
 
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            flux_res_d(:,i) = (sum_delx_delf(:)*sum_dely_sqr - sum_dely_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
 
-        attributes(device) subroutine interior_dGx_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
-                                & xneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
+        attributes(device) subroutine interior_dGx_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, xneg_nbhs_d, &
+                            & xneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: xneg_nbhs_d(:)
-                integer*1 :: xneg_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: xneg_nbhs_d(:)
+            integer*1 :: xneg_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
 
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
-                
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
+            
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                tx = ny
-                ty = -nx
+            tx = ny
+            ty = -nx
 
-                do j = 1, xneg_nbhs_d(i)
+            do j = 1, xneg_nbhs_d(i)
 
-                        k = xneg_conn_d(i,j)
-                        k = conn_d(i, k)
+                    k = xneg_conn_d(i,j)
+                    k = conn_d(i, k)
 
 
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                        delx = x_k - x_i
-                        dely = y_k - y_i
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
 
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
 
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
 
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
 
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gxn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gxn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
 
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gxn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gxn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+            end do
 
-                end do
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
 
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + (sum_delx_delf(1)*sum_dely_sqr - sum_dely_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_delx_delf(2)*sum_dely_sqr - sum_dely_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_delx_delf(3)*sum_dely_sqr - sum_dely_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_delx_delf(4)*sum_dely_sqr - sum_dely_delf(4)*sum_delx_dely)*one_by_det
+            flux_res_d(:,i) = flux_res_d(:,i) + (sum_delx_delf(:)*sum_dely_sqr - sum_dely_delf(:)*sum_delx_dely)*one_by_det
 
         end subroutine
-        
-        attributes(device) subroutine interior_dGy_pos(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
-                                & ypos_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
 
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: ypos_nbhs_d(:)
-                integer*1 :: ypos_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
-                
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
+        attributes(device) subroutine interior_dGy_pos(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, ypos_nbhs_d, &
+                            & ypos_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
 
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: ypos_nbhs_d(:)
+            integer*1 :: ypos_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
+            
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
 
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
 
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
 
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
 
-                tx = ny
-                ty = -nx
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
 
-                do j = 1, ypos_nbhs_d(i)
+            tx = ny
+            ty = -nx
 
-                        k = ypos_conn_d(i,j)
-                        k = conn_d(i, k)
+            do j = 1, ypos_nbhs_d(i)
 
-
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
-
-                        delx = x_k - x_i
-                        dely = y_k - y_i
-
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
-
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
-
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
-
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
-
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
-
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
-
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
-                        
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
-
-                end do
-
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + (sum_dely_delf(1)*sum_delx_sqr - sum_delx_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_dely_delf(2)*sum_delx_sqr - sum_delx_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_dely_delf(3)*sum_delx_sqr - sum_delx_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_dely_delf(4)*sum_delx_sqr - sum_delx_delf(4)*sum_delx_dely)*one_by_det
-       
-        end subroutine
-        
-        attributes(device) subroutine interior_dGy_neg(flux_shared, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
-                                & yneg_conn_d, dist_d, q_d, qm_d, dq_d, ddq_d, phi1_d)
-
-                ! device variables
-                integer :: i
-                real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
-                integer :: nbhs_d(:), conn_d(:,:)
-                integer :: yneg_nbhs_d(:)
-                integer*1 :: yneg_conn_d(:,:)
-                real*8 :: q_d(:,:), qm_d(:,:,:)
-                real*8 :: flux_res_d(:,:), dq_d(:,:,:), ddq_d(:,:,:)
-                ! local variables
-                integer :: j, k, r
-                real*8 :: rho, u1, u2, pr
-                real*8 :: tx, ty, nx, ny
-                real*8 :: x_i, y_i, x_k, y_k
-                real*8 :: delx, dely, det, one_by_det
-                real*8 :: dels, deln
-                real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
-                real*8 :: sum_delx_delf(4), sum_dely_delf(4)
-                real*8 :: dist, weights
-                real*8 :: temp, qtilde_i(4), qtilde_k(4)
-                real*8 :: dels_weights, deln_weights
-
-                real*8 :: flux_shared(:), share(:), qtilde(:)
-                integer :: threadid, blockd
-                integer :: a=0,b=1
-                
-                i = (blockIdx%x-1)* blockDim%x + threadIdx%x
-                
-                threadid = threadIdx%x
-                blockd = blockDim%x
-                
-                sum_delx_sqr = 0.0d0
-                sum_dely_sqr = 0.0d0
-                sum_delx_dely = 0.0d0
-
-                sum_delx_delf = 0.0d0
-                sum_dely_delf = 0.0d0
-
-                x_i = x_d(1,i)
-                y_i = x_d(2,i)
-
-                nx = nx_d(1,i)
-                ny = nx_d(2,i)
-
-                tx = ny
-                ty = -nx
-
-                do j = 1, yneg_nbhs_d(i)
-
-                        k = yneg_conn_d(i,j)
-                        k = conn_d(i, k)
+                    k = ypos_conn_d(i,j)
+                    k = conn_d(i, k)
 
 
-                        x_k = x_d(1,k)
-                        y_k = x_d(2,k)
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
 
-                        delx = x_k - x_i
-                        dely = y_k - y_i
+                    delx = x_k - x_i
+                    dely = y_k - y_i
 
-                        dels = delx*tx + dely*ty
-                        deln = delx*nx + dely*ny
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
 
-                        dist = dsqrt(dels*dels + deln*deln)
-                        weights = dist**power_d
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
 
-                        dels_weights = dels*weights
-                        deln_weights = deln*weights
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
 
-                        sum_delx_sqr = sum_delx_sqr + dels*dels_weights
-                        sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
 
-                        sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
 
-!                       Higher order accuracy using q-variables ..
-                        share(threadid) = 0.0d0
-                        share(threadid + blockd) = 0.0d0
-                        share(threadid + blockd * 2) = 0.0d0
-                        share(threadid + blockd * 3) = 0.0d0
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyp(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyp(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+                    
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
 
-                        call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
-                        
-                        call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
-                        call flux_Gyn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+            end do
 
-                        sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
-                        sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
-                        sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
-                        sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
-                        
-                        sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
-                        sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
-                        sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
-                        sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
 
-                end do
-
-                det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
-                one_by_det = 1.d0/det
-
-                flux_shared(threadId) = flux_shared(threadId) + (sum_dely_delf(1)*sum_delx_sqr - sum_delx_delf(1)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 1) = flux_shared(threadId + blockD * 1) + (sum_dely_delf(2)*sum_delx_sqr - sum_delx_delf(2)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 2) = flux_shared(threadId + blockD * 2) + (sum_dely_delf(3)*sum_delx_sqr - sum_delx_delf(3)*sum_delx_dely)*one_by_det
-                flux_shared(threadId + blockD * 3) = flux_shared(threadId + blockD * 3) + (sum_dely_delf(4)*sum_delx_sqr - sum_delx_delf(4)*sum_delx_dely)*one_by_det
-       
+            flux_res_d(:,i) = flux_res_d(:,i) + (sum_dely_delf(:)*sum_delx_sqr - sum_delx_delf(:)*sum_delx_dely)*one_by_det
+   
         end subroutine
 
-        attributes(device) subroutine venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, ddq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+        attributes(device) subroutine interior_dGy_neg(flux_res_d, share, qtilde, x_d, nx_d, nbhs_d, conn_d, yneg_nbhs_d, &
+                            & yneg_conn_d, dist_d, q_d, qm_d, dq_d, phi1_d, i)
+
+            ! device variables
+            integer :: i
+            real*8 :: x_d(:,:), nx_d(:,:), dist_d(:), phi1_d(:,:)
+            integer :: nbhs_d(:), conn_d(:,:)
+            integer :: yneg_nbhs_d(:)
+            integer*1 :: yneg_conn_d(:,:)
+            real*8 :: q_d(:,:), qm_d(:,:,:)
+            real*8 :: flux_res_d(:,:), dq_d(:,:,:)
+            ! local variables
+            integer :: j, k, r
+            real*8 :: rho, u1, u2, pr
+            real*8 :: tx, ty, nx, ny
+            real*8 :: x_i, y_i, x_k, y_k
+            real*8 :: delx, dely, det, one_by_det
+            real*8 :: dels, deln
+            real*8 :: sum_delx_sqr, sum_dely_sqr, sum_delx_dely
+            real*8 :: sum_delx_delf(4), sum_dely_delf(4)
+            real*8 :: dist, weights
+            real*8 :: temp, qtilde_i(4), qtilde_k(4)
+            real*8 :: dels_weights, deln_weights
+
+            real*8 :: share(:), qtilde(:)
+            integer :: threadid, blockd
+            integer :: a=0,b=1
+            
+            i = (blockIdx%x-1)* blockDim%x + threadIdx%x
+            
+            threadid = threadIdx%x
+            blockd = blockDim%x
+            
+            sum_delx_sqr = 0.0d0
+            sum_dely_sqr = 0.0d0
+            sum_delx_dely = 0.0d0
+
+            sum_delx_delf = 0.0d0
+            sum_dely_delf = 0.0d0
+
+            x_i = x_d(1,i)
+            y_i = x_d(2,i)
+
+            nx = nx_d(1,i)
+            ny = nx_d(2,i)
+
+            tx = ny
+            ty = -nx
+
+            do j = 1, yneg_nbhs_d(i)
+
+                    k = yneg_conn_d(i,j)
+                    k = conn_d(i, k)
+
+
+                    x_k = x_d(1,k)
+                    y_k = x_d(2,k)
+
+                    delx = x_k - x_i
+                    dely = y_k - y_i
+
+                    dels = delx*tx + dely*ty
+                    deln = delx*nx + dely*ny
+
+                    dist = dsqrt(dels*dels + deln*deln)
+                    weights = dist**power_d
+
+                    dels_weights = dels*weights
+                    deln_weights = deln*weights
+
+                    sum_delx_sqr = sum_delx_sqr + dels*dels_weights
+                    sum_dely_sqr = sum_dely_sqr + deln*deln_weights
+
+                    sum_delx_dely = sum_delx_dely + dels*deln_weights
+                    !Higher order accuracy using q-variables ..    
+                    share(threadid) = 0.0d0
+                    share(threadid + blockd) = 0.0d0
+                    share(threadid + blockd * 2) = 0.0d0
+                    share(threadid + blockd * 3) = 0.0d0
+
+                    call venkat_limiter(qtilde, share, i, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyn(share, threadid, blockd, a, nx, ny, u1, u2, rho, pr)
+                    
+                    call venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
+                    call flux_Gyn(share, threadid, blockd, b, nx, ny, u1, u2, rho, pr)
+
+                    sum_delx_delf(1) = sum_delx_delf(1) + share(threadid)*dels_weights
+                    sum_delx_delf(2) = sum_delx_delf(2) + share(threadid + blockd * 1)*dels_weights
+                    sum_delx_delf(3) = sum_delx_delf(3) + share(threadid + blockd * 2)*dels_weights
+                    sum_delx_delf(4) = sum_delx_delf(4) + share(threadid + blockd * 3)*dels_weights
+                    
+                    sum_dely_delf(1) = sum_dely_delf(1) + share(threadid)*deln_weights
+                    sum_dely_delf(2) = sum_dely_delf(2) + share(threadid + blockd * 1)*deln_weights
+                    sum_dely_delf(3) = sum_dely_delf(3) + share(threadid + blockd * 2)*deln_weights
+                    sum_dely_delf(4) = sum_dely_delf(4) + share(threadid + blockd * 3)*deln_weights
+
+            end do
+
+            det = sum_delx_sqr*sum_dely_sqr - sum_delx_dely*sum_delx_dely
+            one_by_det = 1.d0/det
+
+            flux_res_d(:,i) = flux_res_d(:,i) + (sum_dely_delf(:)*sum_delx_sqr - sum_delx_delf(:)*sum_delx_dely)*one_by_det
+   
+        end subroutine
+
+        attributes(device) subroutine venkat_limiter(qtilde, share, k, threadid, blockd, delx, dely, q_d, qm_d, dq_d, nbhs_d, conn_d, x_d, dist_d, phi1_d)
 
                 implicit none
 
                 ! device variables
-                real*8 :: q_d(:,:), x_d(:,:), dist_d(:), dq_d(:,:,:), ddq_d(:,:,:), qm_d(:,:,:), phi1_d(:,:)
+                real*8 :: q_d(:,:), x_d(:,:), dist_d(:), dq_d(:,:,:), qm_d(:,:,:), phi1_d(:,:)
                 integer :: nbhs_d(:), conn_d(:,:)
                 ! local variables
                 integer :: r, k, i
