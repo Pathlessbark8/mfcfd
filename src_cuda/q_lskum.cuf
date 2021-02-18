@@ -63,7 +63,7 @@ contains
 
                 if(solution_restart == 0) itr = 0
 
-                istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferL1)
+                istat = cudaDeviceSetCacheConfig(cudaFuncCachePreferShared)
 
                 do it = itr+1, itr+max_iters
 
