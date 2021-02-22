@@ -59,8 +59,8 @@ MODULE Q_LSKUM_MOD_DIFF
     SUBROUTINE Q_LSKUM_B()
         IMPLICIT NONE
         INTEGER :: i
-        IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
-        &                   status='REPLACE', action='WRITE') 
+        ! IF (rank .EQ. 0) OPEN(unit=301, file='residue', form='FORMATTED', &
+        ! &                   status='REPLACE', action='WRITE') 
         vector_cost_funcb = 1.0d0
         CALL COMPUTE_NORMALS()
         CALL GENERATE_CONNECTIVITY()
@@ -84,12 +84,12 @@ MODULE Q_LSKUM_MOD_DIFF
             CALL PUSHREAL8ARRAY(point%prim_old, 4*max_points)
             CALL PUSHREAL8ARRAY(point%prim, 4*max_points)
             CALL FPI_SOLVER(it)
-            IF (rank .EQ. 0) THEN
-                WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
-                &     residue
-                WRITE(301, *) it, residue
-            end if
-        CLOSE(unit=301) 
+        !     IF (rank .EQ. 0) THEN
+        !         WRITE(*, '(a12,i8,a15,e30.20)') 'iterations:', it, 'residue:', &
+        !         &     residue
+        !         WRITE(301, *) it, residue
+        !     end if
+        ! CLOSE(unit=301) 
         END DO
         
         IF (rank .EQ. 0) THEN

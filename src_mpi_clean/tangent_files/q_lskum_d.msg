@@ -10,29 +10,49 @@
 10 conserved_vector_ubar: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
 11 conserved_vector_ubar: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
 12 generate_connectivity_mod: (DD15) Module petsc_data_structure_mod is not defined
-13 flux_gxp: (TC33) External procedure derf is not declared
-14 flux_gxp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-15 flux_gxn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-16 flux_gyp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-17 flux_gyn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-18 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-19 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-20 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-21 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-22 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-23 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-24 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-25 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-26 (DF05) External routine derf, called by (flux_gxp flux_gxn flux_gyp flux_gyn conserved_vector_ubar flux_quad_gxi flux_quad_gxii flux_quad_gxiii flux_quad_gxiv), is assumed default In:.1. and Out:.11
-27 compute_force_coeffs_mod: (DD15) Module petsc_data_structure_mod is not defined
-28 compute_cl_cd_cm: (TC20) Variable proc is not declared
-29 compute_cl_cd_cm: (TC24) Wrong number of dimensions for array itos: 1 expected, and 2 given
-30 compute_cl_cd_cm: (DF03) variable proc is used before initialized
-31 compute_cl_cd_cm: (AD03) Varied variable cp written by I-O to file 201
-32 compute_cl_cd_cm: (AD03) Varied variable *(point.x)[m] written by I-O to file 201
-33 compute_entropy_mod: (DD15) Module petsc_data_structure_mod is not defined
-34 compute_enstrophy_mod: (DD15) Module petsc_data_structure_mod is not defined
-35 stagnation_values_mod: (DD15) Module petsc_data_structure_mod is not defined
-36 data_structure_mod: (DD28) Save statement may save extra variables, please use "save::varname" 
-37 compute_cl_cd_cm_d: Tool: (TypeSpec tree regeneration) null wrapped type
-38 compute_cl_cd_cm: Tool: (TypeSpec tree regeneration) null wrapped type
+13 interior_dgx_pos: (AD12) User help requested: unknown dimension 1 of array temp
+14 interior_dgx_pos: (AD12) User help requested: unknown dimension 1 of array temp
+15 interior_dgx_neg: (AD12) User help requested: unknown dimension 1 of array temp
+16 interior_dgx_neg: (AD12) User help requested: unknown dimension 1 of array temp
+17 interior_dgy_pos: (AD12) User help requested: unknown dimension 1 of array temp
+18 interior_dgy_pos: (AD12) User help requested: unknown dimension 1 of array temp
+19 interior_dgy_neg: (AD12) User help requested: unknown dimension 1 of array temp
+20 interior_dgy_neg: (AD12) User help requested: unknown dimension 1 of array temp
+21 wall_dgx_pos: (AD12) User help requested: unknown dimension 1 of array temp
+22 wall_dgx_pos: (AD12) User help requested: unknown dimension 1 of array temp
+23 wall_dgx_neg: (AD12) User help requested: unknown dimension 1 of array temp
+24 wall_dgx_neg: (AD12) User help requested: unknown dimension 1 of array temp
+25 wall_dgy_neg: (AD12) User help requested: unknown dimension 1 of array temp
+26 wall_dgy_neg: (AD12) User help requested: unknown dimension 1 of array temp
+27 outer_dgx_pos: (AD12) User help requested: unknown dimension 1 of array temp
+28 outer_dgx_pos: (AD12) User help requested: unknown dimension 1 of array temp
+29 outer_dgx_neg: (AD12) User help requested: unknown dimension 1 of array temp
+30 outer_dgx_neg: (AD12) User help requested: unknown dimension 1 of array temp
+31 outer_dgy_pos: (AD12) User help requested: unknown dimension 1 of array temp
+32 outer_dgy_pos: (AD12) User help requested: unknown dimension 1 of array temp
+33 flux_gxp: (TC33) External procedure derf is not declared
+34 flux_gxp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+35 flux_gxn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+36 flux_gyp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+37 flux_gyn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+38 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+39 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+40 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+41 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+42 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+43 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+44 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+45 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+46 (DF05) External routine derf, called by (flux_gxp flux_gxn flux_gyp flux_gyn conserved_vector_ubar flux_quad_gxi flux_quad_gxii flux_quad_gxiii flux_quad_gxiv), is assumed default In:.1. and Out:.11
+47 compute_force_coeffs_mod: (DD15) Module petsc_data_structure_mod is not defined
+48 compute_cl_cd_cm: (TC20) Variable proc is not declared
+49 compute_cl_cd_cm: (TC24) Wrong number of dimensions for array itos: 1 expected, and 2 given
+50 compute_cl_cd_cm: (DF03) variable proc is used before initialized
+51 compute_cl_cd_cm: (AD03) Varied variable cp written by I-O to file 201
+52 compute_cl_cd_cm: (AD03) Varied variable *(point.x)[m] written by I-O to file 201
+53 compute_entropy_mod: (DD15) Module petsc_data_structure_mod is not defined
+54 compute_enstrophy_mod: (DD15) Module petsc_data_structure_mod is not defined
+55 stagnation_values_mod: (DD15) Module petsc_data_structure_mod is not defined
+56 data_structure_mod: (DD28) Save statement may save extra variables, please use "save::varname" 
+57 compute_cl_cd_cm_d: Tool: (TypeSpec tree regeneration) null wrapped type
+58 compute_cl_cd_cm: Tool: (TypeSpec tree regeneration) null wrapped type
