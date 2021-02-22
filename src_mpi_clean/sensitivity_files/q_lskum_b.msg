@@ -87,31 +87,29 @@
 87 outer_dgy_pos: (AD12) User help requested: unknown dimension 1 of array temp
 88 eval_q_derivatives: (AD12) User help requested: unknown dimension 2 of array *point%qm
 89 eval_q_derivatives: (AD12) User help requested: unknown dimension 2 of array *point%qm
-90 eval_q_derivatives: (AD12) User help requested: unknown dimension 1 of array temp
-91 eval_q_derivatives: (AD12) User help requested: unknown dimension 1 of array temp
-92 flux_gxp: (TC33) External procedure derf is not declared
-93 flux_gxp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-94 flux_gxn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-95 flux_gyp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-96 flux_gyn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-97 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-98 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-99 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-100 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-101 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-102 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-103 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-104 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
-105 (DF05) External routine derf, called by (flux_gxp flux_gxn flux_gyp flux_gyn conserved_vector_ubar flux_quad_gxi flux_quad_gxii flux_quad_gxiii flux_quad_gxiv), is assumed default In:.1. and Out:.11
-106 compute_force_coeffs_mod: (DD15) Module petsc_data_structure_mod is not defined
-107 compute_cl_cd_cm: (TC20) Variable proc is not declared
-108 compute_cl_cd_cm: (TC24) Wrong number of dimensions for array itos: 1 expected, and 2 given
-109 compute_cl_cd_cm: (DF03) variable proc is used before initialized
-110 compute_cl_cd_cm: (AD03) Varied variable cp written by I-O to file 201
-111 compute_cl_cd_cm: (AD03) Varied variable *(point.x)[m] written by I-O to file 201
-112 compute_entropy_mod: (DD15) Module petsc_data_structure_mod is not defined
-113 compute_enstrophy_mod: (DD15) Module petsc_data_structure_mod is not defined
-114 stagnation_values_mod: (DD15) Module petsc_data_structure_mod is not defined
-115 data_structure_mod: (DD28) Save statement may save extra variables, please use "save::varname" 
-116 compute_cl_cd_cm_b: Tool: (TypeSpec tree regeneration) null wrapped type
-117 compute_cl_cd_cm: Tool: (TypeSpec tree regeneration) null wrapped type
+90 flux_gxp: (TC33) External procedure derf is not declared
+91 flux_gxp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+92 flux_gxn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+93 flux_gyp: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+94 flux_gyn: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+95 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+96 flux_quad_gxi: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+97 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+98 flux_quad_gxii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+99 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+100 flux_quad_gxiii: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+101 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+102 flux_quad_gxiv: (AD09) Please provide a differential of function derf for arguments Arg1=(in) Result=(out)
+103 (DF05) External routine derf, called by (flux_gxp flux_gxn flux_gyp flux_gyn conserved_vector_ubar flux_quad_gxi flux_quad_gxii flux_quad_gxiii flux_quad_gxiv), is assumed default In:.1. and Out:.11
+104 compute_force_coeffs_mod: (DD15) Module petsc_data_structure_mod is not defined
+105 compute_cl_cd_cm: (TC20) Variable proc is not declared
+106 compute_cl_cd_cm: (TC24) Wrong number of dimensions for array itos: 1 expected, and 2 given
+107 compute_cl_cd_cm: (DF03) variable proc is used before initialized
+108 compute_cl_cd_cm: (AD03) Varied variable cp written by I-O to file 201
+109 compute_cl_cd_cm: (AD03) Varied variable *(point.x)[m] written by I-O to file 201
+110 compute_entropy_mod: (DD15) Module petsc_data_structure_mod is not defined
+111 compute_enstrophy_mod: (DD15) Module petsc_data_structure_mod is not defined
+112 stagnation_values_mod: (DD15) Module petsc_data_structure_mod is not defined
+113 data_structure_mod: (DD28) Save statement may save extra variables, please use "save::varname" 
+114 compute_cl_cd_cm_b: Tool: (TypeSpec tree regeneration) null wrapped type
+115 compute_cl_cd_cm: Tool: (TypeSpec tree regeneration) null wrapped type

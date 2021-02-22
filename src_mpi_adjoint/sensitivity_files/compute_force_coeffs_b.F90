@@ -70,11 +70,11 @@ CONTAINS
     DO j=shape_points,1,-1
       m = shape_points_index(j)
       ny = point%ny(m)
-      nyb = ds*cp*vb(point%flag_2(m))
+      nyb = cp*ds*vb(point%flag_2(m))
       nx = point%nx(m)
-      cpb = ds*nx*hb(point%flag_2(m)) + ds*ny*vb(point%flag_2(m))
-      dsb = cp*nx*hb(point%flag_2(m)) + cp*ny*vb(point%flag_2(m))
-      nxb = ds*cp*hb(point%flag_2(m))
+      cpb = ny*ds*vb(point%flag_2(m)) + nx*ds*hb(point%flag_2(m))
+      dsb = cp*ny*vb(point%flag_2(m)) + cp*nx*hb(point%flag_2(m))
+      nxb = cp*ds*hb(point%flag_2(m))
       cpb = -(cpb/temp)
       CALL POPREAL8(cp)
       pointb%prim(4, m) = pointb%prim(4, m) + cpb
@@ -90,29 +90,30 @@ CONTAINS
       mx = point%x(m)
       CALL POPREAL8(ds2)
       IF (ds2 .EQ. 0.0) THEN
-        ds2b = 0.0
+        ds2b = 0.0_8
       ELSE
         ds2b = ds2b/(2.D0*DSQRT(ds2))
       END IF
-      tempb = 2*(rx-mx)*ds2b
-      tempb0 = 2*(ry-my)*ds2b
-      rxb = tempb
-      ryb = tempb0
+      tempb0 = 2*(rx-mx)*ds2b
+      tempb = 2*(ry-my)*ds2b
+      ryb = tempb
+      myb = -tempb
+      rxb = tempb0
       l = point%left(m)
       lx = point%x(l)
       ly = point%y(l)
       CALL POPREAL8(ds1)
       IF (ds1 .EQ. 0.0) THEN
-        ds1b = 0.0
+        ds1b = 0.0_8
       ELSE
         ds1b = ds1b/(2.D0*DSQRT(ds1))
       END IF
-      tempb1 = 2*(mx-lx)*ds1b
-      mxb = tempb1 - tempb
-      tempb2 = 2*(my-ly)*ds1b
-      myb = tempb2 - tempb0
-      lxb = -tempb1
-      lyb = -tempb2
+      tempb = 2*(mx-lx)*ds1b
+      mxb = tempb - tempb0
+      tempb0 = 2*(my-ly)*ds1b
+      myb = myb + tempb0
+      lyb = -tempb0
+      lxb = -tempb
       pointb%y(r) = pointb%y(r) + ryb
       pointb%x(r) = pointb%x(r) + rxb
       pointb%y(m) = pointb%y(m) + myb
