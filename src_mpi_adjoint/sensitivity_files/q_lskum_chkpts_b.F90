@@ -175,7 +175,7 @@ CONTAINS
         !
         ITIM = CAPO + ITIMS
         ITIM = ITIM + itr
-        IF (ALLOCATED(clb)) clb = 0.0_8
+        IF (ALLOCATED(cdb)) cdb = 0.0_8
         pointb%x = 0.0_8
         pointb%y = 0.0_8
         pointb%nx = 0.0_8

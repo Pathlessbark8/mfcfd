@@ -17,12 +17,12 @@ CONTAINS
 !  Differentiation of q_lskum in reverse (adjoint) mode (with options fixinterface):
 !   gradient     of useful results: *vector_cost_func
 !   with respect to varying inputs: *(point.x) *(point.y)
-!   RW status of diff variables: *vector_cost_func:in-killed *cl:(loc)
+!   RW status of diff variables: *cd:(loc) *vector_cost_func:in-killed
 !                *(point.x):out *(point.y):out *(point.nx):(loc)
 !                *(point.ny):(loc) *(point.prim):(loc) *(point.prim_old):(loc)
 !                *(point.flux_res):(loc) *(point.q):(loc) *(point.dq):(loc)
 !                *(point.qm):(loc) *(point.temp):(loc) *(point.delta):(loc)
-!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!   Plus diff mem management of: cd:in vector_cost_func:in point.x:in
 !                point.y:in point.nx:in point.ny:in point.prim:in
 !                point.prim_old:in point.flux_res:in point.q:in
 !                point.dq:in point.qm:in point.temp:in point.delta:in
@@ -86,7 +86,7 @@ CONTAINS
     END DO
 ! end if
     CLOSE(unit=301) 
-    IF (ALLOCATED(clb)) clb = 0.0_8
+    IF (ALLOCATED(cdb)) cdb = 0.0_8
     pointb%x = 0.0_8
     pointb%y = 0.0_8
     pointb%nx = 0.0_8

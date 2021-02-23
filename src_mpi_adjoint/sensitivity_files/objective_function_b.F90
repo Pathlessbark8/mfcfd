@@ -19,7 +19,7 @@ CONTAINS
 !                point.y:in point.nx:in point.ny:in point.prim:in
   SUBROUTINE OBJECTIVE_FUNCTION_B()
     IMPLICIT NONE
-    clb = clb + vector_cost_funcb
+    cdb = cdb + vector_cost_funcb
     vector_cost_funcb = 0.0_8
     CALL COMPUTE_CL_CD_CM_B()
   END SUBROUTINE OBJECTIVE_FUNCTION_B
@@ -30,7 +30,7 @@ CONTAINS
     ! CALL COMPUTE_ENTROPY()
     ! CALL COMPUTE_ENSTROPHY()
     ! CALL OBJECTIVE_FUNCTION_J()
-    vector_cost_func = cl
+    vector_cost_func = cd
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF

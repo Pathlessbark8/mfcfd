@@ -9,11 +9,11 @@ MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
 
 CONTAINS
 !  Differentiation of compute_cl_cd_cm in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *cl *(point.x) *(point.y) *(point.nx)
+!   gradient     of useful results: *cd *(point.x) *(point.y) *(point.nx)
 !                *(point.ny) *(point.prim)
-!   with respect to varying inputs: *cl *(point.x) *(point.y) *(point.nx)
+!   with respect to varying inputs: *cd *(point.x) *(point.y) *(point.nx)
 !                *(point.ny) *(point.prim)
-!   Plus diff mem management of: cl:in point.x:in point.y:in point.nx:in
+!   Plus diff mem management of: cd:in point.x:in point.y:in point.nx:in
 !                point.ny:in point.prim:in
   SUBROUTINE COMPUTE_CL_CD_CM_B()
     IMPLICIT NONE
@@ -65,9 +65,9 @@ CONTAINS
     END DO
     hb = 0.0_8
     vb = 0.0_8
-    vb = DCOS(theta)*clb
-    hb = -(DSIN(theta)*clb)
-    clb = 0.0_8
+    hb = DCOS(theta)*cdb
+    vb = DSIN(theta)*cdb
+    cdb = 0.0_8
     DO j=shape_points,1,-1
       m = shape_points_index(j)
       ny = point%ny(m)

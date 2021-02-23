@@ -96,7 +96,7 @@ MODULE Q_LSKUM_MOD_DIFF
             WRITE(*, *) '%%%%%%%%%%%%%-Backward Pass Begins-%%%%%%%%%%%%'
             WRITE(*, *) 
         END IF
-        IF (ALLOCATED(clb)) clb = 0.0_8
+        IF (ALLOCATED(cdb)) cdb = 0.0_8
         pointb%x = 0.0_8
         pointb%y = 0.0_8
         pointb%nx = 0.0_8

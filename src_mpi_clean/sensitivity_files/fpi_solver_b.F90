@@ -13,15 +13,15 @@ MODULE FPI_SOLVER_MOD_DIFF
 
 CONTAINS
 !  Differentiation of fpi_solver in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *vector_cost_func *cl *(point.x)
+!   gradient     of useful results: *cd *vector_cost_func *(point.x)
 !                *(point.y) *(point.nx) *(point.ny) *(point.prim)
 !                *(point.prim_old) *(point.flux_res) *(point.q)
 !                *(point.dq) *(point.qm) *(point.temp) *(point.delta)
-!   with respect to varying inputs: *vector_cost_func *cl *(point.x)
+!   with respect to varying inputs: *cd *vector_cost_func *(point.x)
 !                *(point.y) *(point.nx) *(point.ny) *(point.prim)
 !                *(point.prim_old) *(point.flux_res) *(point.q)
 !                *(point.dq) *(point.qm) *(point.temp) *(point.delta)
-!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!   Plus diff mem management of: cd:in vector_cost_func:in point.x:in
 !                point.y:in point.nx:in point.ny:in point.prim:in
 !                point.prim_old:in point.flux_res:in point.q:in
 !                point.dq:in point.qm:in point.temp:in point.delta:in

@@ -72,7 +72,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv, clcd, &
 & vector_cost_func
-  REAL*8, DIMENSION(:), ALLOCATABLE :: clb, vector_cost_funcb
+  REAL*8, DIMENSION(:), ALLOCATABLE :: cdb, vector_cost_funcb
   REAL*8 :: total_entropy, total_enstrophy
   INTEGER :: plen
   INTEGER :: format

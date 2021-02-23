@@ -11,15 +11,15 @@ MODULE OBJECTIVE_FUNCTION_MOD_DIFF
 
 CONTAINS
 !  Differentiation of objective_function in reverse (adjoint) mode (with options fixinterface):
-!   gradient     of useful results: *vector_cost_func *cl *(point.x)
+!   gradient     of useful results: *cd *vector_cost_func *(point.x)
 !                *(point.y) *(point.nx) *(point.ny) *(point.prim)
-!   with respect to varying inputs: *vector_cost_func *cl *(point.x)
+!   with respect to varying inputs: *cd *vector_cost_func *(point.x)
 !                *(point.y) *(point.nx) *(point.ny) *(point.prim)
-!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!   Plus diff mem management of: cd:in vector_cost_func:in point.x:in
 !                point.y:in point.nx:in point.ny:in point.prim:in
   SUBROUTINE OBJECTIVE_FUNCTION_B()
     IMPLICIT NONE
-    clb = clb + vector_cost_funcb
+    cdb = cdb + vector_cost_funcb
     vector_cost_funcb = 0.0_8
     CALL COMPUTE_CL_CD_CM_B()
   END SUBROUTINE OBJECTIVE_FUNCTION_B
@@ -30,7 +30,8 @@ CONTAINS
 ! call compute_entropy()
 ! call compute_enstrophy()
 ! call objective_function_J()
-    vector_cost_func = cl
+    vector_cost_func = cd
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF
+
