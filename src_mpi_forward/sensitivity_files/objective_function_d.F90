@@ -22,8 +22,8 @@ CONTAINS
     ! CALL COMPUTE_ENTROPY_D()
     ! CALL COMPUTE_ENSTROPHY_D()
     ! CALL OBJECTIVE_FUNCTION_J_D()
-    vector_cost_funcd = cld
-    vector_cost_func = cl
+    vector_cost_funcd = cdd
+    vector_cost_func = cd
     ! if(rank==0) then
     !   write(*,*) "Vector function derivative is ", vector_cost_funcd
     !   write(*,*) "SG", total_loss_stagpressured 
@@ -43,7 +43,7 @@ CONTAINS
     ! CALL COMPUTE_ENTROPY()
     ! CALL COMPUTE_ENSTROPHY()
     ! CALL OBJECTIVE_FUNCTION_J()
-    vector_cost_func = cl
+    vector_cost_func = cd
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF

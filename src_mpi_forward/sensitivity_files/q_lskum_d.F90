@@ -67,7 +67,7 @@ CONTAINS
     IF (restart .EQ. 0) THEN
         itr = 0
         IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
-        IF (ALLOCATED(cld)) cld = 0.0_8
+        IF (ALLOCATED(cdd)) cdd = 0.0_8
         pointd%prim = 0.0_8
         pointd%prim_old = 0.0_8
         pointd%flux_res = 0.0_8

@@ -9,10 +9,10 @@ MODULE COMPUTE_FORCE_COEFFS_MOD_DIFF
 
 CONTAINS
 !  Differentiation of compute_cl_cd_cm in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: *cl
-!   with respect to varying inputs: *cl *(point.x) *(point.y) *(point.nx)
+!   variations   of useful results: *cd
+!   with respect to varying inputs: *cd *(point.x) *(point.y) *(point.nx)
 !                *(point.ny) *(point.prim)
-!   Plus diff mem management of: cl:in point.x:in point.y:in point.nx:in
+!   Plus diff mem management of: cd:in point.x:in point.y:in point.nx:in
 !                point.ny:in point.prim:in
   SUBROUTINE COMPUTE_CL_CD_CM_D()
     IMPLICIT NONE
@@ -103,11 +103,11 @@ CONTAINS
       pitch_mom(point%flag_2(m)) = pitch_mom(point%flag_2(m)) + (-(cp*ny&
 &       *ds*(mx-0.25d0))+cp*nx*ds*my)
     END DO
+    cl = v*DCOS(theta) - h*DSIN(theta)
     temp0 = DCOS(theta)
     temp1 = DSIN(theta)
-    cld = temp0*vd - temp1*hd
-    cl = temp0*v - temp1*h
-    cd = h*DCOS(theta) + v*DSIN(theta)
+    cdd = temp0*hd + temp1*vd
+    cd = temp0*h + temp1*v
     cm = pitch_mom
 ! call MPI_Allreduce(lCl, lCl1 , shapes, MPI_DOUBLE, MPI_SUM, &
 ! & PETSC_COMM_WORLD, ierr)

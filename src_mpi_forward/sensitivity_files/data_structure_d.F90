@@ -72,7 +72,7 @@ MODULE DATA_STRUCTURE_MOD_DIFF
   INTEGER :: max_res_point
   REAL*8, DIMENSION(:), ALLOCATABLE :: cl, cd, cm, cfv, clcd, &
 & vector_cost_func
-  REAL*8, DIMENSION(:), ALLOCATABLE :: cld, vector_cost_funcd
+  REAL*8, DIMENSION(:), ALLOCATABLE :: cdd, vector_cost_funcd
   REAL*8 :: total_entropy, total_enstrophy
   INTEGER :: plen
   INTEGER :: format
@@ -165,7 +165,7 @@ SUBROUTINE ALLOCATE_SOLN_D()
   ALLOCATE(pointd%temp(3, 4, max_points))
   ALLOCATE(pointd%qm(2,4,max_points))
   ALLOCATE(pointd%delta(max_points))
-  ALLOCATE(Cld(shapes))
+  ALLOCATE(cdd(shapes))
 END SUBROUTINE
 
 SUBROUTINE DEALLOCATE_SOLN()
@@ -213,7 +213,7 @@ SUBROUTINE DEALLOCATE_SOLN_D()
   DEALLOCATE(pointd%qm)
   DEALLOCATE(pointd%temp)
   DEALLOCATE(pointd%delta)
-  DEALLOCATE(Cld)
+  DEALLOCATE(cdd)
 END SUBROUTINE
 
 END MODULE DATA_STRUCTURE_MOD_DIFF

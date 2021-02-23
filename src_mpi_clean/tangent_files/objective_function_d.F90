@@ -11,10 +11,10 @@ MODULE OBJECTIVE_FUNCTION_MOD_DIFF
 
 CONTAINS
 !  Differentiation of objective_function in forward (tangent) mode (with options fixinterface):
-!   variations   of useful results: *vector_cost_func *cl
-!   with respect to varying inputs: *vector_cost_func *cl *(point.x)
+!   variations   of useful results: *cd *vector_cost_func
+!   with respect to varying inputs: *cd *vector_cost_func *(point.x)
 !                *(point.y) *(point.nx) *(point.ny) *(point.prim)
-!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!   Plus diff mem management of: cd:in vector_cost_func:in point.x:in
 !                point.y:in point.nx:in point.ny:in point.prim:in
   SUBROUTINE OBJECTIVE_FUNCTION_D()
     IMPLICIT NONE
@@ -22,8 +22,8 @@ CONTAINS
 ! call compute_entropy()
 ! call compute_enstrophy()
 ! call objective_function_J()
-    vector_cost_funcd = cld
-    vector_cost_func = cl
+    vector_cost_funcd = cdd
+    vector_cost_func = cd
   END SUBROUTINE OBJECTIVE_FUNCTION_D
 
   SUBROUTINE OBJECTIVE_FUNCTION()
@@ -32,7 +32,7 @@ CONTAINS
 ! call compute_entropy()
 ! call compute_enstrophy()
 ! call objective_function_J()
-    vector_cost_func = cl
+    vector_cost_func = cd
   END SUBROUTINE OBJECTIVE_FUNCTION
 
 END MODULE OBJECTIVE_FUNCTION_MOD_DIFF

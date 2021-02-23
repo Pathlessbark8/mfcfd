@@ -17,12 +17,12 @@ CONTAINS
 !  Differentiation of q_lskum in forward (tangent) mode (with options fixinterface):
 !   variations   of useful results: *vector_cost_func
 !   with respect to varying inputs: *(point.x) *(point.y)
-!   RW status of diff variables: *vector_cost_func:out *cl:(loc)
+!   RW status of diff variables: *cd:(loc) *vector_cost_func:out
 !                *(point.x):in *(point.y):in *(point.nx):(loc)
 !                *(point.ny):(loc) *(point.prim):(loc) *(point.prim_old):(loc)
 !                *(point.flux_res):(loc) *(point.q):(loc) *(point.dq):(loc)
 !                *(point.qm):(loc) *(point.temp):(loc) *(point.delta):(loc)
-!   Plus diff mem management of: vector_cost_func:in cl:in point.x:in
+!   Plus diff mem management of: cd:in vector_cost_func:in point.x:in
 !                point.y:in point.nx:in point.ny:in point.prim:in
 !                point.prim_old:in point.flux_res:in point.q:in
 !                point.dq:in point.qm:in point.temp:in point.delta:in
@@ -53,8 +53,8 @@ CONTAINS
     END IF
     IF (restart .EQ. 0) THEN
       itr = 0
+      IF (ALLOCATED(cdd)) cdd = 0.0_8
       IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
-      IF (ALLOCATED(cld)) cld = 0.0_8
       pointd%prim = 0.0_8
       pointd%prim_old = 0.0_8
       pointd%flux_res = 0.0_8
@@ -64,8 +64,8 @@ CONTAINS
       pointd%temp = 0.0_8
       pointd%delta = 0.0_8
     ELSE
+      IF (ALLOCATED(cdd)) cdd = 0.0_8
       IF (ALLOCATED(vector_cost_funcd)) vector_cost_funcd = 0.0_8
-      IF (ALLOCATED(cld)) cld = 0.0_8
       pointd%prim = 0.0_8
       pointd%prim_old = 0.0_8
       pointd%flux_res = 0.0_8
