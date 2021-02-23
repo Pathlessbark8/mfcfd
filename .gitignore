@@ -12,7 +12,7 @@ execname
 !CMakeLists.txt
 examples/forward/src/*
 examples/adjoint/src/*
-examples/serial/src/*
+examples/primal/src/*
 examples/adjoint/runs/*
 examples/forward/runs/*
 examples/cuda/runs/*

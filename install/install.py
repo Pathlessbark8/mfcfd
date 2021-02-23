@@ -51,8 +51,8 @@ def remove_pre_existing_executable():
 
 def build(mfcfd_type=None, extra_flags=[], dest_path=None):
 
-    if mfcfd_type == "serial":
-        mfcfd_var = "SERIAL"
+    if mfcfd_type == "primal":
+        mfcfd_var = "PRIMAL"
     elif mfcfd_type == "tangent":
         mfcfd_var = "TANGENT"
     elif mfcfd_type == "adjoint":
@@ -60,7 +60,7 @@ def build(mfcfd_type=None, extra_flags=[], dest_path=None):
     elif mfcfd_type == "cuda":
         mfcfd_var = "CUDA"
     else:
-        mfcfd_var = "SERIAL"
+        mfcfd_var = "PRIMAL"
         
     try:
         subprocess.check_call(["cmake", mfcfd_parent_dir, "-DMFCFD={}".format(mfcfd_var)], cwd=mfcfd_build_dir)
@@ -112,7 +112,7 @@ def driver():
         description="Compile and Install Meshfree Solver.")
     parser.add_argument(
         "--mfcfd", dest="mfcfd_type", required=True,
-        choices=["cuda", "serial", "tangent", "adjoint"], default="serial",
+        choices=["cuda", "primal", "tangent", "adjoint"], default="primal",
         help="Meshfree Solver to install.")
     parser.add_argument(
         "--extra", dest="extra_flags", action="append", required=False,
